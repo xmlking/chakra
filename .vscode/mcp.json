@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "better-auth": {
+      "url": "https://mcp.inkeep.com/better-auth/mcp"
+    },
+    "shadcn": {
+      "args": ["-y", "shadcn@latest", "mcp"],
+      "command": "npx"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { expect, test } from "vite-plus/test";
+
 import { fn } from "../src/index.ts";
 
 test("fn", () => {
