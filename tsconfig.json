@@ -1,9 +1,8 @@
 {
-  "compilerOptions": {
-    "noEmit": true,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "allowImportingTsExtensions": true,
-    "esModuleInterop": true
-  }
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/ui" },
+    { "path": "./apps/web" }
+  ]
 }

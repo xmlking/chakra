@@ -2,6 +2,21 @@
   "name": "chakra",
   "version": "0.0.0",
   "private": true,
+  "description": "Tanstack Start monorepo template",
+  "keywords": [
+    "ag-ui",
+    "ai",
+    "components",
+    "masta",
+    "monorepo",
+    "oxc",
+    "tailwind",
+    "tanstack",
+    "template",
+    "ui",
+    "vite plus"
+  ],
+  "license": "MIT",
   "workspaces": [
     "packages/*",
     "apps/*",
@@ -9,9 +24,12 @@
   ],
   "type": "module",
   "scripts": {
-    "ready": "vp check && vp run -r test && vp run -r build",
+    "check": "vp check",
+    "clean": "vp run -r clean",
     "dev": "vp run web#dev",
-    "prepare": "vp config"
+    "format": "vp check --fix",
+    "prepare": "vp config",
+    "ready": "vp check && vp run -r test && vp run -r build"
   },
   "devDependencies": {
     "vite-plus": "catalog:"
@@ -25,8 +43,22 @@
   },
   "packageManager": "bun@1.3.14",
   "catalog": {
+    "@types/bun": "1.3.14",
+    "@types/node": "25.9.1",
+    "@types/pg": "8.20.0",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260519.1",
+    "oxfmt": "0.50.0",
+    "oxlint": "1.65.0",
+    "oxlint-tsgolint": "0.22.1",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
+    "tailwindcss": "^4.1.18",
+    "typescript": "6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@latest",
+    "vite-plus": "latest",
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
-    "vite-plus": "latest"
+    "zod": "4.4.3"
   }
 }

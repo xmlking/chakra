@@ -1,6 +1,4 @@
 {
-  "npm.scriptRunner": "vp",
-  "editor.defaultFormatter": "oxc.oxc-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
@@ -13,20 +11,93 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "oxc.fmt.configPath": "./vite.config.ts",
-  "editor.formatOnSave": true,
-  "editor.formatOnSaveMode": "file",
+  "biome.enabled": false,
+  // AI Tools
+  "chat.useAgentSkills": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
   },
-
-  "files.watcherExclude": {
-    "**/routeTree.gen.ts": true
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "eslint.enable": false,
+  "explorer.autoRevealExclude": {
+    "**/.swc": true,
+    "**/.tanstack": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/dist": true,
+    "**/node_modules": true
   },
-  "search.exclude": {
-    "**/routeTree.gen.ts": true
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    ".env": ".env*",
+    ".gitignore": ".gitattributes,.vercelignore",
+    "Dockerfile": "*.Dockerfile,Dockerfile.*,compose*.yml,.dockerignore",
+    "flake.nix": "flake.lock",
+    "package.json": ".npmrc,bun.lock,bunfig.toml",
+    "README.md": "DEVELOPERS.md,CHANGELOG.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,LICENSE",
+    "tsconfig.json": "tsconfig.*.json",
+    "vite.config.*": "vitest.*",
+    "AGENTS.md": "CLAUDE.md"
+  },
+  "explorer.sortOrder": "type",
+  "files.associations": {
+    ".env*": "properties",
+    "*.css": "tailwindcss",
+    "*.mdx": "mdx",
+    "Makefile*": "makefile",
+    "project.code-workspace": "jsonc"
+  },
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+  "files.exclude": {
+    ".idea": true,
+    "**/.astro": true,
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/.swc": true,
+    "**/.tanstack": true,
+    "**/.turbo": true,
+    "**/.vercel": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": {
+      "when": "$(basename)"
+    },
+    "**/node_modules": true
   },
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.watcherExclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  // TypeScript (Native Preview) > Use Tsgo
+  "js/ts.experimental.useTsgo": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "npm.scriptRunner": "vp",
+  // enable oxlint + oxfmt
+  "oxc.enable": true,
+  "oxc.fmt.configPath": "./vite.config.ts",
+  // disable prettier, eslint, biome
+  "prettier.enable": false,
+  "search.exclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
+  "tailwindCSS.experimental.configFile": {
+    "packages/ui/src/styles/globals.css": "packages/ui/src/styles/**",
+    "packages/ui/src/styles/themes.css": "packages/ui/src/styles/**"
   }
 }
