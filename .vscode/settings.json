@@ -62,6 +62,7 @@
     "**/.tanstack": true,
     "**/.turbo": true,
     "**/.vercel": true,
+    ".vite-hooks": true,
     "**/*.js": {
       "when": "$(basename).ts"
     },
