@@ -2,7 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "module": "nodenext",
-    "lib": ["ES2023"],
+    "lib": ["ES2024"],
     "types": ["node"]
   }
 }
