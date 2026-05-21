@@ -6,18 +6,18 @@ A starter for creating a Vite Plus project.
 
 - Install dependencies:
 
-```bash
+```shell
 vp install
 ```
 
 - Run the unit tests:
 
-```bash
+```shell
 vp test
 ```
 
 - Build the library:
 
-```bash
+```shell
 vp pack
 ```

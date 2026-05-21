@@ -8,62 +8,116 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as IndexRouteImport } from "./routes/index";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as SimulateErrorRouteImport } from './routes/simulate-error'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as DemoI18nRouteImport } from './routes/demo.i18n'
 
-const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+const SimulateErrorRoute = SimulateErrorRouteImport.update({
+  id: '/simulate-error',
+  path: '/simulate-error',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoI18nRoute = DemoI18nRouteImport.update({
+  id: '/demo/i18n',
+  path: '/demo/i18n',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/simulate-error': typeof SimulateErrorRoute
+  '/demo/i18n': typeof DemoI18nRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/simulate-error': typeof SimulateErrorRoute
+  '/demo/i18n': typeof DemoI18nRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/simulate-error': typeof SimulateErrorRoute
+  '/demo/i18n': typeof DemoI18nRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: "/";
-  fileRoutesByTo: FileRoutesByTo;
-  to: "/";
-  id: "__root__" | "/";
-  fileRoutesById: FileRoutesById;
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '/about' | '/simulate-error' | '/demo/i18n'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/about' | '/simulate-error' | '/demo/i18n'
+  id: '__root__' | '/' | '/about' | '/simulate-error' | '/demo/i18n'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
+  IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  SimulateErrorRoute: typeof SimulateErrorRoute
+  DemoI18nRoute: typeof DemoI18nRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/simulate-error': {
+      id: '/simulate-error'
+      path: '/simulate-error'
+      fullPath: '/simulate-error'
+      preLoaderRoute: typeof SimulateErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/i18n': {
+      id: '/demo/i18n'
+      path: '/demo/i18n'
+      fullPath: '/demo/i18n'
+      preLoaderRoute: typeof DemoI18nRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-};
+  AboutRoute: AboutRoute,
+  SimulateErrorRoute: SimulateErrorRoute,
+  DemoI18nRoute: DemoI18nRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { createStart } from "@tanstack/react-start";
-
-import type { getRouter } from "./router.tsx";
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

@@ -23,6 +23,7 @@
   "editor.formatOnSaveMode": "file",
   "eslint.enable": false,
   "explorer.autoRevealExclude": {
+    "**/.output": true,
     "**/.swc": true,
     "**/.tanstack": true,
     "**/build": true,
@@ -35,13 +36,13 @@
   "explorer.fileNesting.patterns": {
     ".env": ".env*",
     ".gitignore": ".gitattributes,.vercelignore",
+    "AGENTS.md": "CLAUDE.md",
     "Dockerfile": "*.Dockerfile,Dockerfile.*,compose*.yml,.dockerignore",
     "flake.nix": "flake.lock",
     "package.json": ".npmrc,bun.lock,bunfig.toml",
     "README.md": "DEVELOPERS.md,CHANGELOG.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,LICENSE",
     "tsconfig.json": "tsconfig.*.json",
-    "vite.config.*": "vitest.*",
-    "AGENTS.md": "CLAUDE.md"
+    "vite.config.*": "vitest.*"
   },
   "explorer.sortOrder": "type",
   "files.associations": {
@@ -55,14 +56,12 @@
   "files.autoSaveDelay": 1000,
   "files.exclude": {
     ".idea": true,
-    "**/.astro": true,
+    ".tanstack": true,
+    ".vite-hooks": true,
     "**/.DS_Store": true,
     "**/.git": true,
     "**/.swc": true,
-    "**/.tanstack": true,
-    "**/.turbo": true,
     "**/.vercel": true,
-    ".vite-hooks": true,
     "**/*.js": {
       "when": "$(basename).ts"
     },

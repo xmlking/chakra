@@ -30,6 +30,13 @@ dist-ssr
 # AI agent worktrees
 .claude/worktrees/
 
+# Testing
+**/coverage/
+**/test-results/
+**/__tests__/snapshots/
+**/playwright-report/
+**/playwright/.cache/
+**/playwright/.auth/
+
 # Project
 TODO
-TODO.md
