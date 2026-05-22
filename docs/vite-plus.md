@@ -8,6 +8,7 @@ install vite-plus bia brew
 
 ```shell
 brew install vite-plus
+vp env off
 ```
 
 ## Development
