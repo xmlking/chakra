@@ -2,6 +2,8 @@
 
 Shared [shadcn](https://www.shadcn-svelte.com/) ui components for the workspace.
 
+> We will be using [Package Imports](https://ui.shadcn.com/docs/package-imports) and `Target Aliases` for installing components, rewriting imports in `**`Monorepo`
+
 ## Usage
 
 ### Adding Registries
@@ -107,6 +109,18 @@ bunx --bun shadcn@latest add @ai-tools/calculator -c apps/console
 
 ```shell
 bunx --bun shadcn@latest init --src-dir sidebar-07
+```
+
+### Presets
+
+Use the `apply` command to apply a `preset` to an existing project.
+
+```shell
+bunx --bun shadcn@latest apply a2r6bw
+# to decode a preset
+bunx --bun shadcn@latest preset decode b5owWMfJ8l
+# Use preset resolve in an existing project to see the preset that matches your current configuration.
+bunx --bun shadcn@latest preset resolve -c packages/ui
 ```
 
 ### shadcn-zod-form (W.I.P)
