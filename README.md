@@ -11,6 +11,7 @@ brew tap oven-sh/bun
 brew install bun
 
 brew install vite-plus
+vp env off
 ```
 
 To run this application:
