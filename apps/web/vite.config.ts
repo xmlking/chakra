@@ -21,8 +21,8 @@ const config = defineConfig({
     tanstackStart(),
     viteReact(),
     sentryTanstackStart({
-      org: "chakra",
-      project: "web",
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
     }),
   ],
