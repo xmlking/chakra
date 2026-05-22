@@ -29,15 +29,6 @@ vp run test
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
-### Removing Tailwind CSS
-
-If you prefer not to use Tailwind CSS:
-
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
-
 ## Linting & Formatting
 
 This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for linting and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) formatting. The following scripts are available:
@@ -91,6 +82,11 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 - 📦 Centralized state management with TanStack Store
 - 🔌 Extensible architecture for multiple AI providers
 - 🛠️ TypeScript for type safety
+
+### AI Code Agents
+
+- 🧠 Spec-Driven Development (SDD) with [Spec Kit](https://speckit.org/)
+- 🎁 Feature-Sliced Design ([FSD](https://feature-sliced.design/))
 
 ## Architecture
 
