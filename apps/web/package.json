@@ -5,9 +5,11 @@
   "type": "module",
   "imports": {
     "#components/*": "./src/components/*.tsx",
-    "#paraglide/*": "./src/paraglide/*.js",
+    "#config/*": "./src/config/*.ts",
     "#hooks/*": "./src/hooks/*.ts",
-    "#lib/*": "./src/lib/*.ts"
+    "#lib/*": "./src/lib/*.ts",
+    "#paraglide/*": "./src/paraglide/*.js",
+    "#types/*": "./src/types/*.ts"
   },
   "scripts": {
     "build": "tsc && vp build && cp instrument.server.mjs .output/server",
@@ -23,6 +25,7 @@
   },
   "dependencies": {
     "@inlang/paraglide-js": "catalog:",
+    "@lonik/themer": "catalog:",
     "@sentry/tanstackstart-react": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",

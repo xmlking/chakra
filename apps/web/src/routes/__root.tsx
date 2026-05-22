@@ -4,6 +4,8 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { Providers } from "#components/providers";
+import { siteConfig } from "#config/site.config";
 import { getLocale } from "#paraglide/runtime";
 
 import appCss from "@workspace/ui/globals.css?url";
@@ -27,22 +29,33 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 
   head: () => ({
     meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: siteConfig.title },
+      { name: "description", content: siteConfig.description },
       {
-        charSet: "utf-8",
+        name: "keywords",
+        content:
+          "tanstack router, tanstack start, dark mode, light mode, theme provider, useTheme, SSR, FOUC",
       },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
-      },
-      {
-        title: "TanStack Start Starter",
-      },
+      { name: "robots", content: "index, follow" },
+      { name: "theme-color", content: "#0f766e" },
+      { name: "application-name", content: siteConfig.name },
+      { property: "og:site_name", content: siteConfig.name },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_US" },
+      { property: "og:title", content: siteConfig.title },
+      { property: "og:description", content: siteConfig.description },
+      { property: "og:image", content: siteConfig.og },
+      { property: "og:image:alt", content: "Chakra logo" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: siteConfig.title },
+      { name: "twitter:description", content: siteConfig.description },
+      { name: "twitter:image", content: siteConfig.og },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico" },
     ],
   }),
   notFoundComponent: () => (
@@ -62,9 +75,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
+
         {/* </TooltipProvider> */}
-        {import.meta.env.MODE === "development" && (
+        {import.meta.env.DEV && (
           <TanStackDevtools
             config={{
               position: "bottom-right",
