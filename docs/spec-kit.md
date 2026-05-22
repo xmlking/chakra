@@ -166,13 +166,13 @@ Recommended:
 
 Recommended installation:
 
-```bash
+```shell
 uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 ```
 
 Verify:
 
-```bash
+```shell
 specify --version
 ```
 
@@ -182,7 +182,7 @@ specify --version
 
 Without installation:
 
-```bash
+```shell
 uvx --from git+https://github.com/github/spec-kit.git specify init my-project
 ```
 
@@ -192,19 +192,19 @@ uvx --from git+https://github.com/github/spec-kit.git specify init my-project
 
 Claude integration:
 
-```bash
+```shell
 specify init my-project --integration claude
 ```
 
 Copilot integration:
 
-```bash
+```shell
 specify init my-project --integration copilot
 ```
 
 Cursor integration:
 
-```bash
+```shell
 specify init my-project --integration cursor
 ```
 
@@ -520,7 +520,7 @@ Supported integrations include:
 
 List integrations:
 
-```bash
+```shell
 specify integration list
 ```
 
@@ -532,13 +532,13 @@ Extensions add new capabilities to Spec Kit.
 
 Install:
 
-```bash
+```shell
 specify extension add <extension-name>
 ```
 
 Search:
 
-```bash
+```shell
 specify extension search
 ```
 
@@ -601,7 +601,7 @@ Examples:
 
 Install:
 
-```bash
+```shell
 specify preset add <preset-name>
 ```
 
@@ -613,7 +613,7 @@ specify preset add <preset-name>
 
 ## Initialize
 
-```bash
+```shell
 specify init my-project
 ```
 
@@ -621,7 +621,7 @@ specify init my-project
 
 ## Current Directory
 
-```bash
+```shell
 specify init --here
 ```
 
@@ -629,7 +629,7 @@ specify init --here
 
 ## Skip Git
 
-```bash
+```shell
 specify init my-project --no-git
 ```
 
@@ -637,7 +637,7 @@ specify init my-project --no-git
 
 ## Debug Mode
 
-```bash
+```shell
 specify init my-project --debug
 ```
 
@@ -645,7 +645,7 @@ specify init my-project --debug
 
 ## Check Environment
 
-```bash
+```shell
 specify check
 ```
 
@@ -653,7 +653,7 @@ specify check
 
 ## Extensions
 
-```bash
+```shell
 specify extension search
 specify extension add spec-kit-review
 ```
@@ -823,7 +823,7 @@ Useful enterprise extensions:
 
 Re-run initialization:
 
-```bash
+```shell
 specify init --integration claude
 ```
 
@@ -833,7 +833,7 @@ specify init --integration claude
 
 Configure credential manager:
 
-```bash
+```shell
 git config --global credential.helper manager
 ```
 
@@ -843,7 +843,7 @@ git config --global credential.helper manager
 
 Remove extension:
 
-```bash
+```shell
 specify extension remove <name>
 ```
 

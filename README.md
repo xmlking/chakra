@@ -1,19 +1,30 @@
 Welcome to your new TanStack Start app!
 
-# Getting Started
+## Getting Started
+
+### Prerequisite
+
+```shell
+brew install node
+
+brew tap oven-sh/bun
+brew install bun
+
+brew install vite-plus
+```
 
 To run this application:
 
-```bash
+```shell
 bun install
 vp run dev
 ```
 
-# Building For Production
+## Building For Production
 
 To build this application for production:
 
-```bash
+```shell
 vp run build
 ```
 
@@ -21,7 +32,7 @@ vp run build
 
 This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
 
-```bash
+```shell
 vp run test
 ```
 
@@ -33,7 +44,7 @@ This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
 This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for linting and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) formatting. The following scripts are available:
 
-```bash
+```shell
 vp run check
 vp run fix
 ```
@@ -42,7 +53,7 @@ vp run fix
 
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
-```bash
+```shell
 vp run build
 vp run preview
 ```
@@ -110,7 +121,7 @@ This add-on wires up ParaglideJS for localized routing and message formatting.
 
 Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
 
-```bash
+```shell
 pnpm dlx shadcn@latest add button
 ```
 
@@ -118,7 +129,7 @@ pnpm dlx shadcn@latest add button
 
 1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
 
-   ```bash
+   ```shell
    bunx --bun @better-auth/cli secret
    ```
 
@@ -143,7 +154,7 @@ export const auth = betterAuth({
 
 Then run migrations:
 
-```bash
+```shell
 bunx --bun @better-auth/cli migrate
 ```
 
@@ -182,7 +193,7 @@ A beautiful pastry conference website built with TanStack Start and Netlify, fea
 
 ## Getting Started
 
-```bash
+```shell
 # Create a new project with this example
 npx netlify-cta my-conference --example events
 
@@ -200,7 +211,7 @@ pnpm dev
 
 To use the AI assistant, set one of the following environment variables:
 
-```bash
+```shell
 # Anthropic (Claude)
 ANTHROPIC_API_KEY=your-key-here
 

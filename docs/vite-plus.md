@@ -2,6 +2,14 @@
 
 A starter for creating a Vite+ monorepo.
 
+## Install
+
+install vite-plus bia brew
+
+```shell
+brew install vite-plus
+```
+
 ## Development
 
 - Check everything is ready:
