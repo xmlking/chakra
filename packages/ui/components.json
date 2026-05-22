@@ -11,15 +11,15 @@
     "prefix": ""
   },
   "iconLibrary": "lucide",
-  "aliases": {
-    "components": "#components",
-    "ui": "#components/shadcn",
-    "lib": "#lib",
-    "hooks": "#hooks",
-    "utils": "#lib/utils"
-  },
   "rtl": false,
   "menuColor": "default",
   "menuAccent": "subtle",
+  "aliases": {
+    "components": "#components",
+    "utils": "#lib/utils",
+    "ui": "#components/shadcn",
+    "lib": "#lib",
+    "hooks": "#hooks"
+  },
   "registries": {}
 }
