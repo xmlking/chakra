@@ -1,0 +1,983 @@
+# Spec Kit Developer Documentation
+
+A complete developer guide for using [Spec Kit](https://speckit.org/?utm_source=chatgpt.com) and the [GitHub Spec Kit repository](https://github.com/github/spec-kit?utm_source=chatgpt.com) for Spec-Driven Development (SDD). This document explains the workflow, modes, commands, architecture, extensions, integrations, and practical implementation patterns.
+
+---
+
+# Table of Contents
+
+1. Introduction
+2. What is Spec-Driven Development?
+3. Core Philosophy
+4. Installation
+5. Project Structure
+6. Workflow Overview
+7. Core Modes & Commands
+8. Artifact Lifecycle
+9. AI Agent Integrations
+10. Extensions System
+11. Presets System
+12. CLI Reference
+13. Typical Development Flow
+14. Example End-to-End Workflow
+15. Best Practices
+16. Enterprise Usage
+17. Troubleshooting
+18. Advanced Patterns
+19. Recommended Team Workflow
+20. Conclusion
+
+---
+
+# 1. Introduction
+
+Spec Kit is an open-source toolkit for AI-assisted software engineering using a methodology called **Spec-Driven Development (SDD)**.
+
+Instead of prompting AI agents ad hoc, Spec Kit structures development into formal stages:
+
+```text
+Specification → Planning → Tasks → Implementation
+```
+
+Each stage produces markdown artifacts that become context for the next stage.
+
+Official resources:
+
+- [SpecKit Website](https://speckit.org/?utm_source=chatgpt.com)
+- [GitHub Repository](https://github.com/github/spec-kit?utm_source=chatgpt.com)
+- [Documentation Site](https://github.github.io/spec-kit/?utm_source=chatgpt.com)
+
+---
+
+# 2. What is Spec-Driven Development?
+
+Spec-Driven Development (SDD) shifts software development from:
+
+```text
+Prompt → Generate Code
+```
+
+to:
+
+```text
+Intent → Specification → Plan → Tasks → Implementation
+```
+
+The specification becomes the primary artifact.
+
+Instead of AI generating code directly from a loose prompt:
+
+- Requirements are formalized
+- Constraints are clarified
+- Architecture is planned
+- Tasks are generated systematically
+- AI executes implementation against the plan
+
+This improves:
+
+- Consistency
+- Predictability
+- Traceability
+- Maintainability
+- Team collaboration
+- AI output quality
+
+---
+
+# 3. Core Philosophy
+
+Spec Kit promotes several foundational principles.
+
+## 3.1 Define “What” Before “How”
+
+Focus on:
+
+- user behavior
+- product goals
+- acceptance criteria
+- workflows
+
+Avoid premature implementation details.
+
+---
+
+## 3.2 Specifications are Executable
+
+Specifications are not documentation only.
+
+They drive:
+
+- planning
+- architecture
+- task generation
+- implementation
+- testing
+- validation
+
+---
+
+## 3.3 Multi-Step AI Refinement
+
+Spec Kit discourages one-shot prompting.
+
+Instead:
+
+```text
+Clarify → Plan → Analyze → Implement
+```
+
+This reduces hallucinations and architectural drift.
+
+---
+
+## 3.4 Structured Context
+
+Markdown artifacts become reusable structured context for AI agents.
+
+Examples:
+
+- `spec.md`
+- `plan.md`
+- `tasks.md`
+- `constitution.md`
+
+---
+
+# 4. Installation
+
+## 4.1 Requirements
+
+Required:
+
+- Python 3.8+
+- Git 2.20+
+- AI coding agent
+- Internet access
+
+Recommended:
+
+- `uv`
+- VS Code / Cursor
+- Claude / Copilot / Gemini / Codex
+
+---
+
+## 4.2 Install via uv
+
+Recommended installation:
+
+```bash
+uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+```
+
+Verify:
+
+```bash
+specify --version
+```
+
+---
+
+## 4.3 One-Time Execution
+
+Without installation:
+
+```bash
+uvx --from git+https://github.com/github/spec-kit.git specify init my-project
+```
+
+---
+
+## 4.4 Initialize a Project
+
+Claude integration:
+
+```bash
+specify init my-project --integration claude
+```
+
+Copilot integration:
+
+```bash
+specify init my-project --integration copilot
+```
+
+Cursor integration:
+
+```bash
+specify init my-project --integration cursor
+```
+
+---
+
+# 5. Project Structure
+
+Typical initialized structure:
+
+```text
+my-project/
+├── .specify/
+│   ├── templates/
+│   ├── extensions/
+│   ├── presets/
+│   ├── overrides/
+│   └── artifacts/
+├── specs/
+├── plans/
+├── tasks/
+├── .claude/
+├── .github/
+└── README.md
+```
+
+---
+
+# 6. Workflow Overview
+
+Core lifecycle:
+
+```text
+1. Constitution
+2. Specify
+3. Clarify
+4. Plan
+5. Tasks
+6. Analyze
+7. Implement
+```
+
+---
+
+# 7. Core Modes & Commands
+
+Spec Kit exposes slash commands inside AI coding agents.
+
+---
+
+# 7.1 Constitution Mode
+
+Command:
+
+```text
+/speckit.constitution
+```
+
+Purpose:
+
+Defines project-wide engineering principles.
+
+Examples:
+
+- coding standards
+- testing rules
+- UX principles
+- architecture constraints
+- security requirements
+
+Example:
+
+```text
+/speckit.constitution
+Focus on accessibility, test coverage, modular architecture, and API consistency.
+```
+
+Output artifact:
+
+```text
+constitution.md
+```
+
+---
+
+# 7.2 Specify Mode
+
+Command:
+
+```text
+/speckit.specify
+```
+
+Purpose:
+
+Defines requirements and user stories.
+
+Focus on:
+
+- business intent
+- workflows
+- acceptance criteria
+- user outcomes
+
+Avoid:
+
+- implementation details
+- libraries
+- frameworks
+
+Example:
+
+```text
+/speckit.specify
+Build a Kanban project management platform with realtime collaboration and role-based access.
+```
+
+Output artifact:
+
+```text
+spec.md
+```
+
+---
+
+# 7.3 Clarify Mode
+
+Command:
+
+```text
+/speckit.clarify
+```
+
+Purpose:
+
+Finds ambiguity and missing requirements.
+
+The AI asks targeted questions such as:
+
+- authentication method?
+- scalability expectations?
+- offline support?
+- mobile support?
+- permission models?
+
+Benefits:
+
+- removes ambiguity
+- improves planning quality
+- reduces implementation drift
+
+Output:
+
+Updated `spec.md`
+
+---
+
+# 7.4 Plan Mode
+
+Command:
+
+```text
+/speckit.plan
+```
+
+Purpose:
+
+Defines architecture and implementation strategy.
+
+Typical content:
+
+- frameworks
+- database choice
+- deployment model
+- API architecture
+- state management
+- testing strategy
+
+Example:
+
+```text
+/speckit.plan
+Use Next.js App Router, PostgreSQL, Prisma, Redis, and WebSockets.
+```
+
+Output artifact:
+
+```text
+plan.md
+```
+
+---
+
+# 7.5 Tasks Mode
+
+Command:
+
+```text
+/speckit.tasks
+```
+
+Purpose:
+
+Breaks the plan into executable implementation tasks.
+
+Generates:
+
+- task hierarchy
+- dependencies
+- implementation order
+- testing requirements
+
+Output artifact:
+
+```text
+tasks.md
+```
+
+Example task:
+
+```markdown
+- [ ] Create Prisma schema
+- [ ] Implement authentication middleware
+- [ ] Add Kanban drag-and-drop support
+```
+
+---
+
+# 7.6 Analyze Mode
+
+Command:
+
+```text
+/speckit.analyze
+```
+
+Purpose:
+
+Performs consistency checks across artifacts.
+
+Checks:
+
+- missing requirements
+- uncovered tasks
+- contradictory plans
+- incomplete acceptance criteria
+
+Usually executed before implementation.
+
+---
+
+# 7.7 Implement Mode
+
+Command:
+
+```text
+/speckit.implement
+```
+
+Purpose:
+
+Executes generated tasks.
+
+The AI agent:
+
+- writes code
+- creates files
+- updates configs
+- implements features
+- follows spec constraints
+
+This is the final execution phase.
+
+---
+
+# 8. Artifact Lifecycle
+
+Spec Kit uses chained markdown artifacts.
+
+## Lifecycle Diagram
+
+```text
+constitution.md
+        ↓
+spec.md
+        ↓
+plan.md
+        ↓
+tasks.md
+        ↓
+implementation
+```
+
+Each artifact becomes structured context for later phases.
+
+---
+
+# 9. AI Agent Integrations
+
+Spec Kit supports 30+ AI coding agents.
+
+Supported integrations include:
+
+| Agent          | Support |
+| -------------- | ------- |
+| Claude Code    | Full    |
+| GitHub Copilot | Full    |
+| Cursor         | Full    |
+| Gemini CLI     | Full    |
+| Windsurf       | Full    |
+| Codex CLI      | Partial |
+| Qwen Code      | Full    |
+| Roo Code       | Full    |
+
+List integrations:
+
+```bash
+specify integration list
+```
+
+---
+
+# 10. Extensions System
+
+Extensions add new capabilities to Spec Kit.
+
+Install:
+
+```bash
+specify extension add <extension-name>
+```
+
+Search:
+
+```bash
+specify extension search
+```
+
+---
+
+# 10.1 Extension Categories
+
+| Category    | Purpose                |
+| ----------- | ---------------------- |
+| process     | Workflow orchestration |
+| code        | Validation & review    |
+| docs        | Documentation tooling  |
+| visibility  | Reporting & analytics  |
+| integration | External systems       |
+
+---
+
+# 10.2 Popular Extensions
+
+## Architecture Guard
+
+Detects architecture drift.
+
+---
+
+## QA Testing
+
+Maps implementation against acceptance criteria.
+
+---
+
+## Spec Validate
+
+Adds gated review workflows.
+
+---
+
+## Security Review
+
+Performs AI-assisted security audits.
+
+---
+
+## Worktree Isolation
+
+Creates isolated Git worktrees for parallel AI agents.
+
+---
+
+# 11. Presets System
+
+Presets customize Spec Kit behavior.
+
+Examples:
+
+- Product Forge
+- TinySpec
+- Canon
+- AIDE Workflow
+
+Install:
+
+```bash
+specify preset add <preset-name>
+```
+
+---
+
+# 12. CLI Reference
+
+---
+
+## Initialize
+
+```bash
+specify init my-project
+```
+
+---
+
+## Current Directory
+
+```bash
+specify init --here
+```
+
+---
+
+## Skip Git
+
+```bash
+specify init my-project --no-git
+```
+
+---
+
+## Debug Mode
+
+```bash
+specify init my-project --debug
+```
+
+---
+
+## Check Environment
+
+```bash
+specify check
+```
+
+---
+
+## Extensions
+
+```bash
+specify extension search
+specify extension add spec-kit-review
+```
+
+---
+
+# 13. Typical Development Flow
+
+Example workflow:
+
+```text
+1. Create constitution
+2. Write specification
+3. Clarify ambiguities
+4. Generate implementation plan
+5. Generate tasks
+6. Analyze coverage
+7. Implement tasks
+8. Review implementation
+```
+
+---
+
+# 14. Example End-to-End Workflow
+
+## Step 1 — Constitution
+
+```text
+/speckit.constitution
+Prioritize accessibility, performance, testing, and clean architecture.
+```
+
+---
+
+## Step 2 — Specify
+
+```text
+/speckit.specify
+Build a collaborative markdown note-taking platform with realtime sync.
+```
+
+---
+
+## Step 3 — Clarify
+
+```text
+/speckit.clarify
+```
+
+AI asks questions about:
+
+- sync model
+- auth
+- collaboration
+- offline support
+
+---
+
+## Step 4 — Plan
+
+```text
+/speckit.plan
+Use Next.js, Supabase, and TipTap editor.
+```
+
+---
+
+## Step 5 — Tasks
+
+```text
+/speckit.tasks
+```
+
+Generated tasks:
+
+```markdown
+- Configure Supabase auth
+- Create collaborative editor
+- Implement websocket sync
+- Add optimistic UI updates
+```
+
+---
+
+## Step 6 — Analyze
+
+```text
+/speckit.analyze
+```
+
+---
+
+## Step 7 — Implement
+
+```text
+/speckit.implement
+```
+
+---
+
+# 15. Best Practices
+
+## Keep Specifications Human-Readable
+
+Good specs are:
+
+- concise
+- explicit
+- testable
+- user-focused
+
+---
+
+## Avoid Premature Technical Decisions
+
+Do not overload `spec.md` with implementation details.
+
+Architecture belongs in `plan.md`.
+
+---
+
+## Use Clarify Aggressively
+
+Most AI implementation failures come from ambiguous requirements.
+
+---
+
+## Treat Tasks as Source of Truth
+
+Implementation should follow generated tasks closely.
+
+---
+
+## Run Analyze Before Implement
+
+This catches:
+
+- missing requirements
+- conflicting assumptions
+- uncovered edge cases
+
+---
+
+# 16. Enterprise Usage
+
+Spec Kit supports:
+
+- offline environments
+- air-gapped infrastructure
+- custom extension catalogs
+- internal presets
+- governance enforcement
+
+Useful enterprise extensions:
+
+- Architecture Guard
+- Plan Review Gate
+- Security Review
+- CI Guard
+- Spec Validate
+
+---
+
+# 17. Troubleshooting
+
+## Slash Commands Missing
+
+Re-run initialization:
+
+```bash
+specify init --integration claude
+```
+
+---
+
+## Git Issues
+
+Configure credential manager:
+
+```bash
+git config --global credential.helper manager
+```
+
+---
+
+## Extension Conflicts
+
+Remove extension:
+
+```bash
+specify extension remove <name>
+```
+
+---
+
+## Broken Templates
+
+Check override priority:
+
+```text
+.specify/templates/overrides/
+```
+
+---
+
+# 18. Advanced Patterns
+
+---
+
+# 18.1 Multi-Agent Development
+
+Use worktree extensions for parallel agents:
+
+```text
+Frontend Agent
+Backend Agent
+Testing Agent
+Security Agent
+```
+
+---
+
+# 18.2 Continuous Validation
+
+Add gates:
+
+```text
+spec → review → plan → validation → implementation
+```
+
+---
+
+# 18.3 Spec Drift Prevention
+
+Use:
+
+- Spec Sync
+- Reconcile
+- Retrospective
+
+to keep implementation aligned.
+
+---
+
+# 18.4 Spec-to-Issue Automation
+
+Convert tasks into GitHub issues:
+
+```text
+/speckit.taskstoissues
+```
+
+---
+
+# 19. Recommended Team Workflow
+
+## Small Teams
+
+Recommended flow:
+
+```text
+Specify → Plan → Tasks → Implement
+```
+
+Minimal extensions.
+
+---
+
+## Medium Teams
+
+Recommended additions:
+
+- Clarify
+- Analyze
+- QA
+- Review
+
+---
+
+## Enterprise Teams
+
+Recommended additions:
+
+- Architecture Guard
+- Security Review
+- Spec Validate
+- CI Gates
+- Worktree Isolation
+
+---
+
+# 20. Conclusion
+
+Spec Kit transforms AI-assisted development from unstructured prompting into a disciplined engineering workflow.
+
+Key benefits:
+
+- predictable AI execution
+- structured engineering process
+- improved maintainability
+- reusable project context
+- better collaboration
+- scalable AI workflows
+
+Core process:
+
+```text
+Constitution
+    ↓
+Specify
+    ↓
+Clarify
+    ↓
+Plan
+    ↓
+Tasks
+    ↓
+Analyze
+    ↓
+Implement
+```
+
+Useful links:
+
+- [SpecKit Website](https://speckit.org/?utm_source=chatgpt.com)
+- [GitHub Repository](https://github.com/github/spec-kit?utm_source=chatgpt.com)
+- [Official Docs](https://github.github.io/spec-kit/?utm_source=chatgpt.com)
