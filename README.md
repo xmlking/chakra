@@ -159,15 +159,6 @@ Then run migrations:
 bunx --bun @better-auth/cli migrate
 ```
 
-# Events Example - Haute Pâtisserie 2026
-
-A beautiful pastry conference website built with TanStack Start and Netlify, featuring:
-
-- **Speakers & Sessions**: Managed with content-collections for easy markdown-based content
-- **Conference Schedule**: Day-by-day timeline of all sessions
-- **AI Assistant (Remy)**: An AI-powered chat assistant to help attendees navigate the conference
-- **Elegant Dark Theme**: Custom typography with Playfair Display and copper/gold accents
-
 ## Features
 
 ### Content Management
@@ -227,46 +218,6 @@ GEMINI_API_KEY=your-key-here
 ```
 
 The assistant will automatically use the first available provider.
-
-## Customization
-
-### Adding Speakers
-
-Create a new markdown file in `content/speakers/`:
-
-```markdown
----
-name: "Chef Name"
-title: "Executive Pastry Chef"
-specialty: "French Pastry"
-restaurant: "Restaurant Name"
-location: "City, Country"
-headshot: "speakers/chef-name.jpg"
-awards:
-  - "Award 1"
-  - "Award 2"
----
-
-Bio content here...
-```
-
-### Adding Sessions
-
-Create a new markdown file in `content/talks/`:
-
-```markdown
----
-title: "Session Title"
-speaker: "Chef Name"
-duration: "90 minutes"
-image: "talks/session-image.jpg"
-topics:
-  - "Topic 1"
-  - "Topic 2"
----
-
-Session description here...
-```
 
 ## Theme
 
