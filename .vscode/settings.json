@@ -48,7 +48,7 @@
   "files.associations": {
     ".env*": "properties",
     "*.css": "tailwindcss",
-    "*.mdx": "mdx",
+    "*.mdx": "markdown",
     "Makefile*": "makefile",
     "project.code-workspace": "jsonc"
   },

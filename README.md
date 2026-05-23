@@ -17,7 +17,7 @@ vp env off
 To run this application:
 
 ```shell
-bun install
+vp install
 vp run dev
 ```
 
@@ -26,7 +26,7 @@ vp run dev
 To build this application for production:
 
 ```shell
-vp run build
+vp run -r build
 ```
 
 ## Testing
@@ -34,7 +34,7 @@ vp run build
 This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
 
 ```shell
-vp run test
+vp run -r test
 ```
 
 ## Styling
@@ -55,13 +55,22 @@ vp run fix
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp run build
-vp run preview
+vp run -r build
+vp run -r preview
 ```
 
 The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
 
 For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
+
+## Clean
+
+> [!WARNING]  
+> delete generated directories and `node_modules`
+
+```shell
+vp run -r clean
+```
 
 # TanStack Chat Application
 
