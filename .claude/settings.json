@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": ["Bash(vp lint)", "Bash(vp test)", "Read(~/.zshrc)"],
+    "deny": ["Bash(curl *)", "Read(./.env.production)"]
+  },
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp"
+  }
+}
