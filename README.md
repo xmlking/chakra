@@ -1,8 +1,8 @@
 Welcome to your new TanStack Start app!
 
-## Getting Started
+## Prerequisites
 
-### Prerequisite
+Install [Vite+](https://viteplus.dev/guide/) so the `vp` command is available on your `PATH`.
 
 ```shell
 brew install node
@@ -14,12 +14,29 @@ brew install vite-plus
 vp env off
 ```
 
-To run this application:
+## Getting started
 
-```shell
+```bash
+git clone https://github.com/xmlking/chakra.git
+cd chakra
 vp install
-vp run dev
+vp dev
 ```
+
+Open the URL printed in the terminal (Vite’s default is usually `http://localhost:5173`).
+
+### Everyday commands
+
+| Command      | Purpose                                                          |
+| ------------ | ---------------------------------------------------------------- |
+| `vp dev`     | Start the dev server with HMR                                    |
+| `vp build`   | Production build                                                 |
+| `vp preview` | Preview the production build locally                             |
+| `vp check`   | Format, lint, and type-check (fix with `--fix` where applicable) |
+| `vp test`    | Run tests                                                        |
+| `vp help`    | List built-in commands and options                               |
+
+`package.json` scripts (`dev`, `build`, `check`, `test`, …) delegate to these same `vp` entry points.
 
 ## Building For Production
 
@@ -72,6 +89,16 @@ For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tu
 vp run -r clean
 ```
 
+## Maintain
+
+update dependencies
+
+```shell
+vp outdated
+vp update --latest -ir
+vp upgrade # updates the vp installation itself.
+```
+
 # TanStack Chat Application
 
 Am example chat application built with TanStack Start, TanStack Store, and Claude AI.
@@ -108,6 +135,7 @@ ANTHROPIC_API_KEY=your_anthropic_api_key
 
 - 🧠 Spec-Driven Development (SDD) with [Spec Kit](https://speckit.org/)
 - 🎁 Feature-Sliced Design ([FSD](https://feature-sliced.design/))
+- 🧹 [React Doctor](https://www.react.doctor/): The Tool That Catches What Your AI Agent Gets Wrong
 
 ## Architecture
 

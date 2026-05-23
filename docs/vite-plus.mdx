@@ -30,6 +30,46 @@ _flag is available for all commands_
 -v, --verbose           # Show full detailed summary after execution.
 ```
 
+## Root Workspace Commands
+
+```shell
+vp dev # starts the dev server powered by Vite.
+
+vp check        # runs format, lint, and type checks together.
+vp check --fix  # runs format, lint, and type checks together and fix
+# `vp lint`, `vp fmt`, and `vp test` let you run those tools directly.
+vp staged       # o run checks against the files currently staged in Git
+
+vp run clean    # remove all generated directories and node_modules
+
+vp build        # builds all apps.
+vp preview      # previews the production build locally.
+
+vp env doctor   # check vite+ is setup properly
+```
+
+## Sub Module Commands
+
+```shell
+vp run web#dev
+vp run @workspace/db#studio
+```
+
+## Manage Dependencies
+
+wrap package-manager workflows
+
+`vp add`, `vp remove`, `vp update`, `vp dedupe`, `vp outdated`, `vp why`, and `vp info`
+
+```shell
+vp install --filter web #  scopes install work in monorepos
+```
+
+# Maintain
+
+- `vp upgrade` updates the vp installation itself.
+- `vp implode` removes vp and related Vite+ data from your machine.
+
 ## References
 
 - [Vite+ Core Commands](https://viteplus.dev/guide/)

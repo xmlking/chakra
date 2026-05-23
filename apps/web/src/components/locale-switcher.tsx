@@ -24,6 +24,7 @@ export function LocaleSwitcher() {
             key={locale}
             onClick={() => setLocale(locale)}
             aria-pressed={locale === currentLocale}
+            // oxlint-disable-next-line react-doctor/no-inline-exhaustive-style
             style={{
               cursor: "pointer",
               padding: "0.35rem 0.75rem",

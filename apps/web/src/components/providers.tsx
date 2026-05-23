@@ -9,10 +9,8 @@ export function Providers({ children }: { children: ReactNode }) {
     <ThemeProvider>
       <TooltipProvider>
         {/* <AuthProvider> */}
-        <TooltipProvider>
-          {children}
-          <Toaster />
-        </TooltipProvider>
+        {children}
+        <Toaster />
         {/* </AuthProvider> */}
       </TooltipProvider>
     </ThemeProvider>
