@@ -104,7 +104,7 @@ export default defineConfig({
       reportsDirectory: "./coverage",
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
-        "**/src/**/*.{test,spec,stories}.{ts,tsx}",
+        "**/{src,tests}/**/*.{test,spec,stories}.{ts,tsx}",
         "apps/web/src/icons/**",
         "packages/ui/src/components/**",
       ],
@@ -113,23 +113,23 @@ export default defineConfig({
       {
         test: {
           name: "server",
-          include: ["**/src/**/*.{test,spec}.ts"],
-          // exclude: [...configDefaults.exclude, "src/**/*.{test,spec}.tsx"],
+          include: ["**/{src,tests}/**/*.{test,spec}.ts"],
+          // exclude: [...configDefaults.exclude, "**/{src,tests}/**/*.{test,spec}.tsx"],
           environment: "node",
-          // setupFiles: ["src/test-setup.ts"],
+          // setupFiles: ["tests/test-setup.ts"],
         },
       },
       {
         test: {
           name: "browser",
-          include: ["**/src/**/*.{test,spec}.tsx"],
+          include: ["**/{src,tests}/**/*.{test,spec}.tsx"],
           browser: {
             enabled: true,
             headless: !!process.env.CI,
             provider: playwright(),
             instances: [{ browser: "chromium" }],
           },
-          // globalSetup: ["src/test-global-setup.ts"],
+          // globalSetup: ["tests/test-global-setup.ts"],
         },
       },
     ],
