@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/about")({
   component: About,
+  // caching
+  staleTime: 10_000, // Fresh for 10 seconds
+  gcTime: 5 * 60_000, // Keep in memory for 5 minutes
 });
 
 function About() {

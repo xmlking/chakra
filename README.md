@@ -16,7 +16,7 @@ vp env off
 
 ## Getting started
 
-```bash
+```shell
 git clone https://github.com/xmlking/chakra.git
 cd chakra
 vp install

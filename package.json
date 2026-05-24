@@ -26,7 +26,7 @@
   "scripts": {
     "check": "vp check",
     "clean": "git clean -xdf coverage node_modules",
-    "dev": "vp run web#dev",
+    "dev": "vp run console#dev",
     "prepare": "vp config",
     "ready": "vp check && vp run -r test && vp run -r build"
   },
@@ -83,6 +83,7 @@
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260521.1",
+    "@unpic/react": "1.0.2",
     "@vitejs/plugin-react": "6.0.2",
     "@vitest/coverage-v8": "4.1.7",
     "@vitest/ui": "4.1.7",

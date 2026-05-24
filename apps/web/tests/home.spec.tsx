@@ -29,19 +29,15 @@ describe("Home route", () => {
   });
 
   it("renders the project overview card", async () => {
-    const screen = await render(<Home />);
+    const { getByText } = await render(<Home />);
 
-    await expect.element(screen.getByText("Project Overview")).toBeInTheDocument();
-    await expect
-      .element(screen.getByText(/Track progress and recent activity/i))
-      .toBeInTheDocument();
+    await expect.element(getByText("Project Overview")).toBeInTheDocument();
+    await expect.element(getByText(/Track progress and recent activity/i)).toBeInTheDocument();
   });
 
   it("renders the theme switcher", async () => {
-    const screen = await render(<Home />);
+    const { getByTitle } = await render(<Home />);
 
-    await expect
-      .element(screen.getByRole("button", { name: /theme: system/i }))
-      .toBeInTheDocument();
+    await expect.element(getByTitle(/theme: system/i)).toBeInTheDocument();
   });
 });

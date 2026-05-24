@@ -12,7 +12,7 @@
     "#types/*": "./src/types/*.ts"
   },
   "scripts": {
-    "build": "tsc && dotenv-run -v -r ../.. -- vp build",
+    "build": "dotenv-run -v -r ../.. -- vp build",
     "clean": "git clean -xdf .output .tanstack test-results node_modules",
     "dev": "dotenv-run -v -r ../.. -- vp dev",
     "preview": "dotenv-run -v -r ../.. -- vp preview"
@@ -22,27 +22,24 @@
     "@lonik/themer": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
-    "@tanstack/react-query": "catalog:",
-    "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
-    "@tanstack/react-router-ssr-query": "catalog:",
     "@tanstack/react-start": "catalog:",
     "@tanstack/react-store": "catalog:",
     "@tanstack/router-plugin": "catalog:",
+    "@unpic/react": "catalog:",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
     "lucide-react": "catalog:",
     "nitro": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "tailwindcss": "catalog:",
-    "vite-tsconfig-paths": "6.1.1"
+    "sonner": "catalog:",
+    "tailwindcss": "catalog:"
   },
   "devDependencies": {
-    "@playwright/test": "catalog:",
+    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "catalog:",
-    "@tanstack/eslint-config": "0.4.0",
     "@tanstack/react-devtools": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
