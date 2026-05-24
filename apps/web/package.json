@@ -12,16 +12,14 @@
     "#types/*": "./src/types/*.ts"
   },
   "scripts": {
-    "build": "tsc && dotenv-run -v -r ../.. -- vp build && cp instrument.server.mjs .output/server",
+    "build": "tsc && dotenv-run -v -r ../.. -- vp build",
     "clean": "git clean -xdf .output .tanstack test-results node_modules",
     "dev": "dotenv-run -v -r ../.. -- vp dev",
-    "preview": "dotenv-run -v -r ../.. -- vp preview",
-    "start": "node --import ./.output/server/instrument.server.mjs .output/server/index.mjs"
+    "preview": "dotenv-run -v -r ../.. -- vp preview"
   },
   "dependencies": {
     "@inlang/paraglide-js": "catalog:",
     "@lonik/themer": "catalog:",
-    "@sentry/tanstackstart-react": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/react-query": "catalog:",
