@@ -4,22 +4,17 @@ A starter for creating a Vite+ monorepo.
 
 ## Development
 
-- Check everything is ready:
-
-```shell
-vp run ready
-```
-
 - Run the tests:
 
 ```shell
-vp run -r test
+vp test
 ```
 
 - Build the monorepo:
 
 ```shell
-vp run -r build
+cd apps/web
+vp run build
 ```
 
 - Run the development server:
@@ -28,10 +23,9 @@ vp run -r build
 vp run dev
 ```
 
-- Other commands
+- Lint. and format
 
 ```shell
-vp run fix
-vp run check
-vp run clean
+vp check
+vp check --fix
 ```
