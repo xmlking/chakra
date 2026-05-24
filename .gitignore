@@ -61,7 +61,6 @@ lerna-debug.log*
 
 # Project
 TODO/
-TODO1/
 **/*.db
 packages/db/src/schema/copy_me_auth.ts
 infra/traefik/acme.json
