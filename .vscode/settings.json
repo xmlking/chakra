@@ -84,6 +84,11 @@
   "js/ts.experimental.useTsgo": true,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "json.schemaDownload.enable": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://inlang.com/schema/": true,
+    "https://ui.shadcn.com/": true
+  },
   "npm.scriptRunner": "vp",
   // enable oxlint + oxfmt
   "oxc.enable": true,
