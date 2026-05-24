@@ -4,7 +4,7 @@ import { Image } from "@unpic/react";
 import { LocaleSwitcher } from "#components/locale-switcher";
 import { m } from "#paraglide/messages";
 
-import logo from "../assets/logo.svg";
+import logo from "../../assets/logo.svg";
 
 export const Route = createFileRoute("/demo/i18n")({
   component: App,

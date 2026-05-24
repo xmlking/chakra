@@ -12,7 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SimulateErrorRouteImport } from './routes/simulate-error'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoI18nRouteImport } from './routes/demo.i18n'
+import { Route as DemoI18nRouteImport } from './routes/demo/i18n'
 
 const SimulateErrorRoute = SimulateErrorRouteImport.update({
   id: '/simulate-error',
