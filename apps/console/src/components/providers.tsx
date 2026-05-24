@@ -3,7 +3,6 @@ import { Toaster } from "@workspace/ui/components/shadcn/sonner";
 import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { Suspense, type ReactNode } from "react";
 
-import { WelcomeToast } from "#components/welcome-toast";
 // import { AuthProvider } from "./auth/auth-provider"
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -13,8 +12,7 @@ export function Providers({ children }: { children: ReactNode }) {
         {/* <AuthProvider> */}
         {children}
         <Suspense fallback={null}>
-          <Toaster closeButton />
-          <WelcomeToast />
+          <Toaster />
         </Suspense>
         {/* </AuthProvider> */}
       </TooltipProvider>
