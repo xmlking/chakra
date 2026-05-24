@@ -4,7 +4,6 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-import { Providers } from "#components/providers";
 import { siteConfig } from "#config/site.config";
 import { getLocale } from "#paraglide/runtime";
 
@@ -71,11 +70,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang={getLocale()} suppressHydrationWarning>
       <head>
-        {/* <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} /> */}
         <HeadContent />
       </head>
       <body>
-        <Providers>{children}</Providers>
+        {children}
         <TanStackDevtools
           config={{
             position: "bottom-right",

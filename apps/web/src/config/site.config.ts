@@ -1,8 +1,8 @@
 import type { SiteConfig } from "#types/index";
 
 export const siteConfig: SiteConfig = {
-  name: "Chakra Studio",
-  title: "Agent Management Console | Chakra",
+  name: "Chakra Web",
+  title: "Agent Management App | Chakra",
   description: "A control plane for enterprise agentic assets",
   origin: "https://chakra-console.vercel.dev",
   keywords: [
