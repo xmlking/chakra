@@ -22,6 +22,11 @@
     "@lonik/themer": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
+    "@tanstack/react-devtools": "catalog:",
+    "@tanstack/react-form": "catalog:",
+    "@tanstack/react-form-devtools": "catalog:",
+    "@tanstack/react-pacer": "catalog:",
+    "@tanstack/react-pacer-devtools": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "catalog:",
@@ -29,26 +34,37 @@
     "@tanstack/react-router-ssr-query": "catalog:",
     "@tanstack/react-start": "catalog:",
     "@tanstack/react-store": "catalog:",
-    "@tanstack/router-plugin": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "@tanstack/react-table-devtools": "catalog:",
     "@unpic/react": "catalog:",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
+    "better-result": "catalog:",
+    "date-fns": "catalog:",
+    "hucre": "catalog:",
     "lucide-react": "catalog:",
     "nitro": "catalog:",
+    "pg": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sonner": "catalog:",
-    "tailwindcss": "catalog:"
+    "tailwindcss": "catalog:",
+    "workflow": "catalog:",
+    "zod": "catalog:",
+    "zustand": "catalog:"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
+    "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:"
   }
 }

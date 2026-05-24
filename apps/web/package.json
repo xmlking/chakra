@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "imports": {
@@ -21,12 +21,9 @@
     "@inlang/paraglide-js": "catalog:",
     "@lonik/themer": "catalog:",
     "@tailwindcss/vite": "catalog:",
-    "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "@tanstack/react-start": "catalog:",
-    "@tanstack/react-store": "catalog:",
-    "@tanstack/router-plugin": "catalog:",
     "@unpic/react": "catalog:",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
@@ -40,12 +37,15 @@
   "devDependencies": {
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
+    "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:"
   }
 }
