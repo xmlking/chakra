@@ -31,6 +31,13 @@ export function Header() {
           >
             i18n
           </Link>
+          <Link
+            to="/simulate-error"
+            className="nav-link"
+            activeProps={{ className: "nav-link is-active" }}
+          >
+            Simulate Error
+          </Link>
           <a
             href="https://tanstack.com/start/latest/docs/framework/react/overview"
             className="nav-link"

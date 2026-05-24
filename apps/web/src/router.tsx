@@ -1,6 +1,7 @@
 import { createRouter } from "@tanstack/react-router";
 
 import { ErrorBoundary } from "#components/error-boundary";
+// import { AppError } from "#components/app-error";
 import { NotFound } from "#components/not-found";
 import { Providers } from "#components/providers";
 
