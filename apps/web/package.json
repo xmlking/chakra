@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "tsc && vp build && cp instrument.server.mjs .output/server",
-    "clean": "git clean -xdf test-results .cache .output coverage node_modules",
+    "clean": "git clean -xdf .output .tanstack node_modules",
     "dev": "NODE_OPTIONS='--import ./instrument.server.mjs' vp dev",
     "preview": "vp preview",
     "start": "node --import ./.output/server/instrument.server.mjs .output/server/index.mjs",

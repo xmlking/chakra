@@ -9,5 +9,10 @@ const body = page.elementLocator(document.body);
 test("renders name", async () => {
   const { getByText } = await render(<HelloWorld name="Vitest" />);
   await body.click();
-  await expect.element(getByText("Hello Vitest!")).toBeVisible();
+  await expect.element(getByText("Hello Vitest!")).toBeInTheDocument();
+});
+
+test("renders correctly and matches snapshot", () => {
+  const element = render(<HelloWorld name="Vitest" />);
+  expect(element).toMatchSnapshot();
 });

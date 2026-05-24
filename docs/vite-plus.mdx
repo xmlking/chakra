@@ -46,6 +46,22 @@ vp build        # builds all apps.
 vp preview      # previews the production build locally.
 
 vp env doctor   # check vite+ is setup properly
+vp cache clean  # when you need to clear cached task results.
+# The task cache is stored in `node_modules/.vite/task-cache`
+```
+
+Testing
+
+> [!IMPORTANT]
+> The snapshot artifact (`__snapshots__`) should be committed alongside code changes, and reviewed as part of your code review process.
+
+```shell
+vp test
+vp test watch
+vp test path/to/file.test.ts #  run a single test file
+vp test -t "renders correctly and matches snapshot" # run tests whose name matches
+vp test --coverage
+vp test watch --ui
 ```
 
 ## Sub Module Commands
