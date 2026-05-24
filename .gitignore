@@ -60,7 +60,8 @@ lerna-debug.log*
 .claude/settings.local.json
 
 # Project
-TODO
+TODO/
+TODO1/
 **/*.db
 packages/db/src/schema/copy_me_auth.ts
 infra/traefik/acme.json
