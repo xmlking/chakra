@@ -17,7 +17,7 @@
   "scripts": {
     "build": "vp pack",
     "check": "vp check",
-    "clean": "git clean -xdf dist node_modules",
+    "clean": "git clean -xdf dist test-results node_modules",
     "dev": "vp pack --watch",
     "prepublishOnly": "vp run build",
     "test": "vp test",
