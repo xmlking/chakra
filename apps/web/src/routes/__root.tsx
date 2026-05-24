@@ -2,8 +2,8 @@ import { TanStackDevtools } from "@tanstack/react-devtools";
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-import { Footer } from "#components/footer1";
-import { Header } from "#components/header1";
+import { Footer } from "#components/footer";
+import { Header } from "#components/header";
 import { siteConfig } from "#config/site.config";
 import { getLocale } from "#paraglide/runtime";
 
