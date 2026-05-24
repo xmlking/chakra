@@ -22,7 +22,7 @@
     "./templates/*": "./src/templates/*"
   },
   "scripts": {
-    "clean": "git clean -xdf dist node_modules",
+    "clean": "git clean -xdf dist test-results node_modules",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
