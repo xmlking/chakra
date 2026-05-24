@@ -103,7 +103,11 @@ export default defineConfig({
       reporter: ["text", "html", "json-summary"],
       reportsDirectory: "./coverage",
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.{test,spec,stories}.{ts,tsx}", "src/icons/**", "tests/**"],
+      exclude: [
+        "**/src/**/*.{test,spec,stories}.{ts,tsx}",
+        "apps/web/src/icons/**",
+        "packages/ui/src/components/**",
+      ],
     },
     projects: [
       {
