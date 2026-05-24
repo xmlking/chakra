@@ -25,12 +25,14 @@
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "clean": "git clean -xdf test-results .tanstack .output coverage node_modules",
+    "clean": "git clean -xdf coverage node_modules",
     "dev": "vp run web#dev",
     "prepare": "vp config",
     "ready": "vp check && vp run -r test && vp run -r build"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "catalog:",
+    "@vitest/ui": "catalog:",
     "oxlint-plugin-react-doctor": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
@@ -81,6 +83,8 @@
     "@types/react-dom": "19.2.3",
     "@typescript/native-preview": "7.0.0-dev.20260521.1",
     "@vitejs/plugin-react": "6.0.2",
+    "@vitest/coverage-v8": "4.1.7",
+    "@vitest/ui": "4.1.7",
     "better-auth": "1.7.0-beta.3",
     "better-result": "2.9.2",
     "class-variance-authority": "0.7.1",
