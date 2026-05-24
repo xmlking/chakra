@@ -1,4 +1,4 @@
-# Web
+# Console
 
 Welcome to your new TanStack Start app!
 
@@ -7,7 +7,7 @@ Welcome to your new TanStack Start app!
 To run this application:
 
 ```shell
-vp run web#dev
+vp run console#dev
 ```
 
 ## Building For Production
@@ -15,7 +15,7 @@ vp run web#dev
 To build this application for production:
 
 ```shell
-vp run web#build
+vp run console#build
 ```
 
 ## Testing
@@ -55,7 +55,7 @@ If you prefer not to use Tailwind CSS:
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp run web#build
+vp run console#build
 node dist/server/index.mjs
 ```
 

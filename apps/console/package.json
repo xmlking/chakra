@@ -1,6 +1,6 @@
 {
-  "name": "web",
-  "version": "0.0.0",
+  "name": "console",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "imports": {
@@ -22,8 +22,11 @@
     "@lonik/themer": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
+    "@tanstack/react-query": "catalog:",
+    "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
+    "@tanstack/react-router-ssr-query": "catalog:",
     "@tanstack/react-start": "catalog:",
     "@tanstack/react-store": "catalog:",
     "@tanstack/router-plugin": "catalog:",
@@ -38,7 +41,6 @@
     "tailwindcss": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
     "@types/node": "catalog:",

@@ -10,7 +10,6 @@ export const Route = createFileRoute("/demo/i18n")({
   component: App,
 });
 
-// FIXME: https://github.com/ascorbic/unpic-img/issues/862
 function App() {
   return (
     <div className="text-center">
