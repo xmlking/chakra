@@ -83,7 +83,7 @@ For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tu
 ## Clean
 
 > [!WARNING]  
-> delete generated directories and `node_modules`
+> delete generated directories and `node_modules`. you need to run `vp i` get them back.
 
 ```shell
 vp run -r clean
