@@ -1,13 +1,7 @@
-import * as Sentry from "@sentry/tanstackstart-react";
 import { Link, type NotFoundRouteProps } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { useEffect } from "react";
 
-export function NotFound(props: NotFoundRouteProps) {
-  useEffect(() => {
-    Sentry.captureException(props);
-  }, [props]);
-
+export function NotFound(_props: NotFoundRouteProps) {
   return (
     <div className="space-y-2 p-2">
       <div className="text-gray-600 dark:text-gray-400">

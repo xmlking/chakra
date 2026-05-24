@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/tanstackstart-react";
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
@@ -29,10 +28,6 @@ export function AppError(props: ErrorComponentProps) {
   useEffect(() => {
     queryClientErrorBoundary.reset();
   }, [queryClientErrorBoundary]);
-
-  useEffect(() => {
-    Sentry.captureException(props);
-  }, [props]);
 
   return (
     <div className="mt-8 flex items-center justify-center p-4">
