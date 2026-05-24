@@ -38,7 +38,6 @@
     "tailwindcss": "catalog:"
   },
   "devDependencies": {
-    "@tailwindcss/typography": "^0.5.16",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
     "@types/node": "catalog:",
