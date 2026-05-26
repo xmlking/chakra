@@ -6,7 +6,8 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*.ts"
+    "./*": "./src/*.ts",
+    "./env": "./env.ts"
   },
   "scripts": {
     "build": "vp pack",
@@ -16,6 +17,7 @@
     "drop": "dotenv-run -v --drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
+    "postinstall": "vite-env types && vite-env generate",
     "pull": "drizzle-kit pull",
     "push": "drizzle-kit push",
     "seed": "DB_SEEDING=true bun scripts/seed.ts",
