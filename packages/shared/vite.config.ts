@@ -1,9 +1,6 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  test: {
-    includeSource: ["src/**/*.{js,ts}"],
-  },
   pack: {
     dts: {
       tsgo: true,
