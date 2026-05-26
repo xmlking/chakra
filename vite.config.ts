@@ -60,7 +60,10 @@ export default defineConfig({
       "jsx-a11y",
       "promise",
     ],
-    jsPlugins: [{ name: "react-doctor", specifier: "oxlint-plugin-react-doctor" }],
+    jsPlugins: [
+      { name: "react-doctor", specifier: "oxlint-plugin-react-doctor" },
+      { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
+    ],
     categories: {
       correctness: "error",
     },
@@ -78,6 +81,7 @@ export default defineConfig({
     rules: {
       ...reactDoctorRules,
       "no-default-export": "error",
+      "vite-plus/prefer-vite-plus-imports": "error",
     },
     overrides: [
       {
