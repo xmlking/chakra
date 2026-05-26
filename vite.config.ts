@@ -110,6 +110,7 @@ export default defineConfig({
         test: {
           name: "server",
           include: ["**/{src,tests}/**/*.{test,spec}.ts"],
+          includeSource: ["packages/shared/{src,tests}/**/*.{js,ts}"],
           // exclude: [...configDefaults.exclude, "**/{src,tests}/**/*.{test,spec}.tsx"],
           environment: "node",
           // setupFiles: ["tests/test-setup.ts"],
