@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "drizzle-orm": {
+      "source": "pyyupsk/skills",
+      "sourceType": "github",
+      "skillPath": "drizzle-orm/SKILL.md",
+      "computedHash": "0199722e34a82bc74260ad426368df74e3f56a0993e85bdad5fa658b706d5cc5"
+    },
+    "vite-env": {
+      "source": "pyyupsk/skills",
+      "sourceType": "github",
+      "skillPath": "vite-env/SKILL.md",
+      "computedHash": "a41fce151bf6638ff37633859effbc82368c2a2d176d0fb6979c6071f09a2827"
+    }
+  }
+}

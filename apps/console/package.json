@@ -39,6 +39,7 @@
     "@tanstack/react-table-devtools": "catalog:",
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
+    "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
     "better-result": "catalog:",
