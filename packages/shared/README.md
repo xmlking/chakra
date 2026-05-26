@@ -1,14 +1,8 @@
-# vite-plus-starter
+# Shared
 
-A starter for creating a Vite Plus project.
+Shared util functions
 
 ## Development
-
-- Install dependencies:
-
-```shell
-vp install
-```
 
 - Run the unit tests:
 
@@ -21,3 +15,5 @@ vp test
 ```shell
 vp pack
 ```
+
+## Usage
