@@ -16,6 +16,10 @@
     "test": "vp test",
     "typecheck": "tsgo --noEmit"
   },
+  "dependencies": {
+    "better-result": "catalog:",
+    "zod": "catalog:"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:"
