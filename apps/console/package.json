@@ -62,6 +62,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@vite-env/cli": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"

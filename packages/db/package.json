@@ -5,8 +5,8 @@
   "description": "Drizzle database module",
   "type": "module",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./package.json": "./package.json"
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts"
   },
   "scripts": {
     "build": "vp pack",
@@ -25,6 +25,7 @@
     "up": "drizzle-kit up"
   },
   "dependencies": {
+    "@vite-env/core": "catalog:",
     "@workspace/shared": "workspace:*",
     "better-result": "catalog:",
     "drizzle-orm": "catalog:",
@@ -38,6 +39,7 @@
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
     "@typescript/native-preview": "catalog:",
+    "@vite-env/cli": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-seed": "catalog:"
   },
