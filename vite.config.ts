@@ -1,12 +1,31 @@
-import { RECOMMENDED_RULES, TANSTACK_START_RULES } from "oxlint-plugin-react-doctor";
+import {
+  RECOMMENDED_RULES,
+  TANSTACK_QUERY_RULES,
+  TANSTACK_START_RULES,
+} from "oxlint-plugin-react-doctor";
 import { /*configDefaults,*/ defineConfig } from "vite-plus";
 import { playwright } from "vite-plus/test/browser-playwright";
 
 const reactDoctorRules = {
   ...RECOMMENDED_RULES,
+  ...TANSTACK_QUERY_RULES,
   ...TANSTACK_START_RULES,
 };
 
+const ignorePatterns = [
+  "TODO/**",
+  "CHANGELOG.md",
+  ".agents/skills",
+  "**/vite-env.d.ts",
+  "**/src/routeTree.gen.ts",
+  "packages/db/drizzle/**",
+  "apps/console/src/lib/gen/**",
+  "apps/web/src/components/ui/**",
+  "packages/ui/src/components/**",
+  "!packages/ui/src/components/form/**",
+  "!packages/ui/src/components/sumo/**",
+  "packages/ui/src/styles/**",
+];
 export default defineConfig({
   staged: {
     "*": "vp check --fix",
@@ -26,19 +45,7 @@ export default defineConfig({
       attributes: ["class", "className"],
       functions: ["clsx", "cn"],
     },
-    ignorePatterns: [
-      "TODO/**",
-      "CHANGELOG.md",
-      ".agents/skills",
-      "**/src/routeTree.gen.ts",
-      "packages/db/drizzle/**",
-      "apps/console/src/lib/gen/**",
-      "apps/web/src/components/ui/**",
-      "packages/ui/src/components/**",
-      "!packages/ui/src/components/form/**",
-      "!packages/ui/src/components/sumo/**",
-      "packages/ui/src/styles/**",
-    ],
+    ignorePatterns,
   },
   lint: {
     options: { typeAware: true, typeCheck: true },
@@ -74,28 +81,13 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["apps/*/src/router.tsx", "apps/*/src/server.ts", "*.config.ts"],
+        files: ["apps/*/src/router.tsx", "apps/*/src/server.ts", "*.config.ts", "env.ts"],
         rules: {
           "no-default-export": "off",
         },
       },
     ],
-    ignorePatterns: [
-      "**/node_modules/**",
-      "**/dist/**",
-      "TODO/**",
-      "CHANGELOG.md",
-      "**/*.lock",
-      ".agents/skills",
-      "**/src/routeTree.gen.ts",
-      "packages/db/drizzle/**",
-      "apps/console/src/lib/gen/**",
-      "apps/web/src/components/ui/**",
-      "packages/ui/src/components/**",
-      "!packages/ui/src/components/form/**",
-      "!packages/ui/src/components/sumo/**",
-      "packages/ui/src/styles/**",
-    ],
+    ignorePatterns,
   },
   test: {
     coverage: {

@@ -11,6 +11,9 @@ dist-ssr
 build
 .output
 .react-email
+.nitro
+.vercel
+.wrangler
 
 # Environment variables
 .env
@@ -31,12 +34,18 @@ build
 !.vscode/mcp.json
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Misc
+.DS_Store
+*.pem
+.cache
+.tanstack
+worker-configuration.d.ts
 
 # Logs
 logs
