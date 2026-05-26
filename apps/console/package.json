@@ -15,6 +15,7 @@
     "build": "dotenv-run -v -r ../.. -- vp build",
     "clean": "git clean -xdf .output .tanstack test-results node_modules",
     "dev": "dotenv-run -v -r ../.. -- vp dev",
+    "postinstall": "vite-env types && vite-env generate",
     "preview": "dotenv-run -v -r ../.. -- vp preview"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-table-devtools": "catalog:",
     "@unpic/react": "catalog:",
+    "@vite-env/core": "catalog:",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
     "better-result": "catalog:",

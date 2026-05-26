@@ -1,4 +1,73 @@
 {
+  "search.exclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.readonlyInclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.watcherExclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.exclude": {
+    ".git": true,
+    ".idea": true,
+    ".vite-hooks": true,
+    ".tanstack": true,
+
+    "**/.DS_Store": true,
+    "**/.swc": true,
+    "**/.vercel": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": {
+      "when": "$(basename)"
+    },
+    "**/node_modules": true
+  },
+  "files.associations": {
+    ".env*": "properties",
+    "*.css": "tailwindcss",
+    "*.mdx": "markdown",
+    "Makefile*": "makefile",
+    "project.code-workspace": "jsonc"
+  },
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+
+  // use LF line endings
+  "files.eol": "\n",
+
+  // disable prettier, eslint, biome
+  "prettier.enable": false,
+  "eslint.enable": false,
+  "biome.enabled": false,
+  // enable oxlint + oxfmt
+  "oxc.enable": true,
+
+  // oxfmt via vite+
+  "oxc.fmt.configPath": "./vite.config.ts",
+
+  // vite+ for npm scripts
+  "npm.scriptRunner": "vp",
+
+  // AI Tools
+  "chat.useAgentSkills": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
+
+  // format on save and paste
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
@@ -11,17 +80,7 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "biome.enabled": false,
-  // AI Tools
-  "chat.useAgentSkills": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.oxc": "explicit"
-  },
-  "editor.defaultFormatter": "oxc.oxc-vscode",
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.formatOnSaveMode": "file",
-  "eslint.enable": false,
+
   "explorer.autoRevealExclude": {
     "**/.output": true,
     "**/.swc": true,
@@ -45,41 +104,7 @@
     "vite.config.*": "vitest.*"
   },
   "explorer.sortOrder": "type",
-  "files.associations": {
-    ".env*": "properties",
-    "*.css": "tailwindcss",
-    "*.mdx": "markdown",
-    "Makefile*": "makefile",
-    "project.code-workspace": "jsonc"
-  },
-  "files.autoSave": "onFocusChange",
-  "files.autoSaveDelay": 1000,
-  "files.exclude": {
-    ".idea": true,
-    ".tanstack": true,
-    ".vite-hooks": true,
-    "**/.DS_Store": true,
-    "**/.git": true,
-    "**/.swc": true,
-    "**/.vercel": true,
-    "**/*.js": {
-      "when": "$(basename).ts"
-    },
-    "**/*.js.map": {
-      "when": "$(basename)"
-    },
-    "**/node_modules": true
-  },
-  "files.readonlyInclude": {
-    "**/.tanstack/**/*": true,
-    "**/routeTree.gen.ts": true,
-    "bun.lock": true
-  },
-  "files.watcherExclude": {
-    "**/.tanstack/**/*": true,
-    "**/routeTree.gen.ts": true,
-    "bun.lock": true
-  },
+
   // TypeScript (Native Preview) > Use Tsgo
   "js/ts.experimental.useTsgo": true,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
@@ -89,17 +114,7 @@
     "https://inlang.com/schema/": true,
     "https://ui.shadcn.com/": true
   },
-  "npm.scriptRunner": "vp",
-  // enable oxlint + oxfmt
-  "oxc.enable": true,
-  "oxc.fmt.configPath": "./vite.config.ts",
-  // disable prettier, eslint, biome
-  "prettier.enable": false,
-  "search.exclude": {
-    "**/.tanstack/**/*": true,
-    "**/routeTree.gen.ts": true,
-    "bun.lock": true
-  },
+
   "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
   "tailwindCSS.experimental.configFile": {
     "packages/ui/src/styles/globals.css": "packages/ui/src/styles/**",
