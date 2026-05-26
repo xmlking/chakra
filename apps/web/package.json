@@ -13,7 +13,7 @@
   },
   "scripts": {
     "build": "dotenv-run -v -r ../.. -- vp build",
-    "clean": "git clean -xdf .output .tanstack test-results node_modules",
+    "clean": "git clean -xdf .output .tanstack test-results coverage node_modules",
     "dev": "dotenv-run -v -r ../.. -- vp dev",
     "postinstall": "vite-env types && vite-env generate",
     "preview": "dotenv-run -v -r ../.. -- vp preview"
