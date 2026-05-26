@@ -51,7 +51,9 @@ vp run -r build
 This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
 
 ```shell
-vp run -r test
+vp test
+vp test --coverage
+vp test watch --ui
 ```
 
 ## Styling
@@ -82,7 +84,7 @@ For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tu
 
 ## Clean
 
-> [!WARNING]  
+> [!WARNING]
 > delete generated directories and `node_modules`. you need to run `vp i` get them back.
 
 ```shell
