@@ -191,6 +191,21 @@
         "react-dom": "catalog:",
       },
     },
+    "packages/utils": {
+      "name": "@workspace/utils",
+      "version": "0.0.0",
+      "dependencies": {
+        "better-result": "catalog:",
+        "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@types/node": "catalog:",
+        "@typescript/native-preview": "catalog:",
+      },
+      "peerDependencies": {
+        "typescript": "catalog:",
+      },
+    },
   },
   "overrides": {
     "vite": "catalog:",
@@ -1276,6 +1291,8 @@
     "@workspace/shared": ["@workspace/shared@workspace:packages/shared"],
 
     "@workspace/ui": ["@workspace/ui@workspace:packages/ui"],
+
+    "@workspace/utils": ["@workspace/utils@workspace:packages/utils"],
 
     "@xhmikosr/archive-type": ["@xhmikosr/archive-type@8.0.1", "", { "dependencies": { "file-type": "^21.3.0" } }, "sha512-toXuiWChyfOpEiCPsIw6HGHaNji5LVkvB6EREL548vGWr+hGaehwxG4LzN20vm9aGFXwnA/Jty8yW2/SmV+1zQ=="],
 
