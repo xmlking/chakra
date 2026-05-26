@@ -1,3 +1,3 @@
-export * from "./helpers.ts";
-export * from "./regex.ts";
-export * from "./errors/index.ts";
+export * from "./helpers";
+export * from "./regex";
+export * from "./errors";
