@@ -6,9 +6,8 @@
 
 declare module 'virtual:env/client' {
   const env: {
-    readonly VITE_API_URL: string
     readonly VITE_APP_NAME: string
-    readonly VITE_DEBUG: boolean
+    readonly VITE_CONSOLE_URL: string
   }
   export { env }
   export default env
@@ -22,10 +21,9 @@ declare module 'virtual:env/server' {
     readonly BETTER_AUTH_ADMIN_EMAIL: string
     readonly BETTER_AUTH_ADMIN_PASSWORD: string
     readonly SHARED_ORGANIZATION_ID: string
-    readonly JWT_SECRET: string
-    readonly VITE_API_URL: string
+    readonly CONTACT_EMAIL: string
     readonly VITE_APP_NAME: string
-    readonly VITE_DEBUG: boolean
+    readonly VITE_CONSOLE_URL: string
   }
   export { env }
   export default env

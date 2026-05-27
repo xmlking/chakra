@@ -8,6 +8,7 @@ import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
 
 const config = defineConfig({
+  envDir: "../..", // HINT: use workspace root .env files
   resolve: { tsconfigPaths: true },
   plugins: [
     ViteEnv(),
