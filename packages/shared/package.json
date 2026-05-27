@@ -9,11 +9,7 @@
     "./*": "./src/*.ts"
   },
   "scripts": {
-    "build": "vp pack",
-    "check": "vp check",
     "clean": "git clean -xdf dist test-results coverage node_modules",
-    "dev": "vp pack --watch",
-    "test": "vp test",
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {

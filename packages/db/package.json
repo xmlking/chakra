@@ -10,10 +10,8 @@
     "./env": "./env.ts"
   },
   "scripts": {
-    "build": "vp pack",
-    "check": "vp check && drizzle-kit check",
+    "check": "drizzle-kit check",
     "clean": "git clean -xdf .drizzle dist test-results coverage node_modules",
-    "dev": "vp pack --watch",
     "drop": "dotenv-run -v --drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
@@ -22,7 +20,6 @@
     "push": "drizzle-kit push",
     "seed": "DB_SEEDING=true bun scripts/seed.ts",
     "studio": "drizzle-kit studio",
-    "test": "vp test",
     "typecheck": "tsgo --noEmit",
     "up": "drizzle-kit up"
   },
