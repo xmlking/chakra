@@ -15,8 +15,7 @@ export const isUrl = (url: string) => {
   try {
     new URL(url);
     return true;
-    // oxlint-disable-next-line no-unused-vars
-  } catch (_e) {
+  } catch {
     return false;
   }
 };
