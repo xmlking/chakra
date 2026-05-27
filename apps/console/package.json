@@ -12,11 +12,11 @@
     "#types/*": "./src/types/*.ts"
   },
   "scripts": {
-    "build": "dotenv-run -v -r ../.. -- vp build",
+    "build": "vp build",
     "clean": "git clean -xdf .output .tanstack test-results coverage node_modules",
-    "dev": "dotenv-run -v -r ../.. -- vp dev",
+    "dev": "vp dev",
     "postinstall": "vite-env types && vite-env generate",
-    "preview": "dotenv-run -v -r ../.. -- vp preview"
+    "preview": "vp preview"
   },
   "dependencies": {
     "@inlang/paraglide-js": "catalog:",

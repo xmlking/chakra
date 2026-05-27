@@ -31,7 +31,6 @@
     "ready": "vp check && vp test && vp run -r build"
   },
   "devDependencies": {
-    "@dotenv-run/cli": "catalog:",
     "@playwright/test": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
@@ -56,7 +55,6 @@
     "@better-auth/stripe": "1.7.0-beta.3",
     "@better-upload/client": "3.0.19",
     "@better-upload/server": "3.0.19",
-    "@dotenv-run/cli": "1.3.6",
     "@icons-pack/react-simple-icons": "13.13.0",
     "@inlang/paraglide-js": "2.18.1",
     "@lonik/themer": "0.5.4",

@@ -6,8 +6,10 @@
 
 declare module 'virtual:env/client' {
   const env: {
-    readonly VITE_API_URL: string
     readonly VITE_APP_NAME: string
+    readonly VITE_CONSOLE_URL: string
+    readonly VITE_DOCS_URL: string
+    readonly VITE_WEB_URL: string
     readonly VITE_DEBUG: boolean
   }
   export { env }
@@ -16,9 +18,12 @@ declare module 'virtual:env/client' {
 
 declare module 'virtual:env/server' {
   const env: {
-    readonly JWT_SECRET: string
-    readonly VITE_API_URL: string
+    readonly OPENROUTER_API_KEY: string
+    readonly OPENROUTER_MODEL: string
     readonly VITE_APP_NAME: string
+    readonly VITE_CONSOLE_URL: string
+    readonly VITE_DOCS_URL: string
+    readonly VITE_WEB_URL: string
     readonly VITE_DEBUG: boolean
   }
   export { env }
