@@ -26,7 +26,6 @@
   "scripts": {
     "check": "vp check",
     "clean": "git clean -xdf coverage node_modules",
-    "dev": "vp run console#dev",
     "prepare": "vp config",
     "ready": "vp check && vp test && vp run -r build"
   },
