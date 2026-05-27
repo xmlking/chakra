@@ -17,10 +17,10 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
-    "@typescript/native-preview": "catalog:"
+    "@types/node": "catalog:"
   },
   "peerDependencies": {
+    "@typescript/native-preview": "catalog:",
     "typescript": "catalog:"
   }
 }
