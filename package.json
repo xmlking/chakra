@@ -28,7 +28,7 @@
     "clean": "git clean -xdf coverage node_modules",
     "dev": "vp run console#dev",
     "prepare": "vp config",
-    "ready": "vp check && vp run -r test && vp run -r build"
+    "ready": "vp check && vp test && vp run -r build"
   },
   "devDependencies": {
     "@dotenv-run/cli": "catalog:",
