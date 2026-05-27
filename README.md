@@ -66,7 +66,7 @@ This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for lint
 
 ```shell
 vp run check
-vp run fix
+vp run check --fix
 ```
 
 ## Deploy with Nitro

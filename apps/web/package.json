@@ -28,13 +28,10 @@
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
     "@workspace/ui": "workspace:*",
-    "better-auth": "catalog:",
     "lucide-react": "catalog:",
-    "nitro": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "sonner": "catalog:",
-    "tailwindcss": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -46,6 +43,8 @@
     "@types/react-dom": "catalog:",
     "@vite-env/cli": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "nitro": "catalog:",
+    "tailwindcss": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },
