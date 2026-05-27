@@ -29,9 +29,9 @@ Open the URL printed in the terminal (Vite’s default is usually `http://localh
 
 | Command              | Purpose                                                          |
 | -------------------- | ---------------------------------------------------------------- |
-| `vp run dev`         | Start the dev server (web) with HMR                              |
-| `vp build`           | Production build                                                 |
-| `vp run web#preview` | Preview the production build locally                             |
+| `vp run web#dev`     | Start the dev server (web) with HMR                              |
+| `vp run web#build`   | Production build (web)                                           |
+| `vp run web#preview` | Preview the production build locally (web)                       |
 | `vp check`           | Format, lint, and type-check (fix with `--fix` where applicable) |
 | `vp test`            | Run tests                                                        |
 | `vp help`            | List built-in commands and options                               |
