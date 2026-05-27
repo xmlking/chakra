@@ -37,12 +37,12 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "@vite-env/cli": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-seed": "catalog:"
   },
   "peerDependencies": {
+    "@typescript/native-preview": "catalog:",
     "typescript": "catalog:"
   }
 }
