@@ -40,6 +40,7 @@
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
     "@workspace/db": "workspace:*",
+    "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
     "better-result": "catalog:",

@@ -6,6 +6,10 @@ description: The Unified Toolchain for the Web.
 
 [Vite+](https://viteplus.dev/) Manage your runtime, package manager, and frontend stack with one tool.
 
+We are using Vite+ [Monorepo](https://viteplus.dev/guide/monorepo) project structure
+
+- The root `vite.config.ts` consist shared linting, formatting, testing, staged checks, and task definitions. For project-specific dev server, development, build, and preview behavior, use sub module specific `vite.config.ts` file i.e., `apps/web/vite.config.ts` etc
+
 # Quick Start
 
 Create a project, install dependencies, and use the default commands:
@@ -32,8 +36,11 @@ _flag is available for all commands_
 
 ## Root Workspace Commands
 
+> [!TIP]
+> Pass a folder to **built-in** Vite commands when you want to target one app:
+
 ```shell
-vp run -r dev   # starts the dev server powered by Vite.
+vp dev apps/web # starts the dev server powered by Vite.
 
 vp check        # runs format, lint, and type checks together.
 vp check --fix  # runs format, lint, and type checks together and fix

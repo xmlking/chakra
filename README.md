@@ -14,18 +14,30 @@ brew install vite-plus
 vp env off
 ```
 
+Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
+
+```shell
+# check if browsers are already installed by Playwright
+bunx playwright install --list
+# install browsers and system dependencies if needed
+bunx playwright install --with-deps chromium
+```
+
 ## Getting started
 
 ```shell
 git clone https://github.com/xmlking/chakra.git
 cd chakra
 vp install
-vp dev
+vp dev apps/console
 ```
 
-Open the URL printed in the terminal (Vite’s default is usually `http://localhost:5173`).
+Open the URL printed in the terminal (Vite’s default is usually `http://localhost:3000`).
 
 ### Everyday commands
+
+> [!TIP]
+> Pass a folder to **built-in** Vite commands when you want to target one app:
 
 | Command               | Purpose                                                          |
 | --------------------- | ---------------------------------------------------------------- |

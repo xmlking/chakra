@@ -2,7 +2,7 @@
 
 Shared [shadcn](https://www.shadcn-svelte.com/) ui components for the workspace.
 
-> We will be using [Package Imports](https://ui.shadcn.com/docs/package-imports) and `Target Aliases` for installing components, rewriting imports in `**`Monorepo`
+> We will be using [Package Imports](https://ui.shadcn.com/docs/package-imports) and `Target Aliases` for installing components, rewriting imports in `Monorepo`
 
 ## Usage
 
@@ -80,7 +80,7 @@ bunx --bun shadcn@latest search @ai-elements -q "message"
 ```
 
 > [!TIP]
-> The full list of registries is available at SHADCN [Registry Directory](https://ui.shadcn.com/docs/directory).  
+> The full list of registries is available at SHADCN [Registry Directory](https://ui.shadcn.com/docs/directory).
 > You can `search`, `view` and `add` items from the registry index without configuring the `components.json` file.
 
 ### Adding Blocks

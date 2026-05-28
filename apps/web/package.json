@@ -27,6 +27,7 @@
     "@tanstack/react-start": "catalog:",
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
+    "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
     "lucide-react": "catalog:",
     "react": "catalog:",
