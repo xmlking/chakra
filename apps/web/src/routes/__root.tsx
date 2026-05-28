@@ -60,10 +60,12 @@ export const Route = createRootRoute({
   shellComponent: RootDocument,
 });
 
+// oxlint-disable-next-line react-doctor/only-export-components
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang={getLocale()} suppressHydrationWarning>
       <head>
+        {/* oxlint-disable-next-line react-doctor/no-danger */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>

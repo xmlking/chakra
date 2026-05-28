@@ -9,6 +9,7 @@ import {
 
 export const Route = createFileRoute("/")({ component: App });
 
+// oxlint-disable-next-line react/only-export-components
 function App() {
   return (
     <main className="page-wrap px-4 pt-14 pb-8">

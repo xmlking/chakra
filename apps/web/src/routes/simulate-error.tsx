@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+// oxlint-disable-next-line react-doctor/only-export-components
 export const Route = createFileRoute("/simulate-error")({
   component() {
+    // oxlint-disable-next-line react-doctor/rules-of-hooks
     const [shouldError, setShouldError] = useState(false);
 
     return (
@@ -25,7 +27,7 @@ export const Route = createFileRoute("/simulate-error")({
   },
 });
 
-function ThrowSyntheticError() {
+export function ThrowSyntheticError() {
   useEffect(() => {
     throw new SyntheticError();
   }, []);

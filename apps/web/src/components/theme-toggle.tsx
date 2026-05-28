@@ -36,6 +36,7 @@ export function ThemeToggle() {
 
   useEffect(() => {
     const initialMode = getInitialMode();
+    // oxlint-disable-next-line react-doctor/no-initialize-state
     setMode(initialMode);
     applyThemeMode(initialMode);
   }, []);

@@ -84,6 +84,12 @@ export default defineConfig({
       ...reactDoctorRules,
       "no-default-export": "error",
       "vite-plus/prefer-vite-plus-imports": "error",
+      "react/only-export-components": [
+        "warn",
+        {
+          allowExportNames: ["Route"],
+        },
+      ],
     },
     overrides: [
       {

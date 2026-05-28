@@ -5,10 +5,18 @@ This is a Tanstack Start application generated with
 
 Run development server:
 
-```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+```shell
+vp run docs#dev
+```
+
+Build
+
+```shell
+vp run docs#build
+```
+
+Preview
+
+```shell
+vp run docs#preview
 ```
