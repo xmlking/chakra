@@ -7,6 +7,7 @@ export const Route = createFileRoute("/about")({
   gcTime: 5 * 60_000, // Keep in memory for 5 minutes
 });
 
+// oxlint-disable-next-line react-doctor/only-export-components
 function About() {
   return (
     <main className="page-wrap px-4 py-12">

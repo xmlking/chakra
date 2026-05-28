@@ -11,6 +11,7 @@ import { ThemeSwitcher } from "#components/theme-switcher";
 
 export const Route = createFileRoute("/")({ component: App });
 
+// oxlint-disable-next-line react/only-export-components
 function App() {
   return (
     <Card className="max-w-sm">

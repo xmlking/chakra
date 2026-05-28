@@ -1,3 +1,4 @@
+// oxlint-disable react-doctor/jsx-pascal-case
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import browserCollections from "collections/browser";
@@ -72,6 +73,8 @@ const clientLoader = browserCollections.docs.createClientLoader({
           />
         </div>
         <DocsBody>
+          {/* oxlint-disable-next-line react-doctor/jsx-pascal-case */}
+          {/* oxlint-disable-next-line react-doctor/rules-of-hooks */}
           <MDX components={useMDXComponents()} />
         </DocsBody>
       </DocsPage>
@@ -79,6 +82,7 @@ const clientLoader = browserCollections.docs.createClientLoader({
   },
 });
 
+// oxlint-disable-next-line react-doctor/only-export-components
 function Page() {
   const { path, pageTree, markdownUrl } = useFumadocsLoader(Route.useLoaderData());
 

@@ -7,6 +7,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
+// oxlint-disable-next-line react/only-export-components
 function Home() {
   return (
     <HomeLayout {...baseOptions()}>

@@ -11,6 +11,7 @@ export const Route = createFileRoute("/demo/i18n")({
 });
 
 // FIXME: https://github.com/ascorbic/unpic-img/issues/862
+// oxlint-disable-next-line react/only-export-components
 function App() {
   return (
     <div className="text-center">

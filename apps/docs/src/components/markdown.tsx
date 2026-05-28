@@ -21,6 +21,7 @@ export interface Processor {
   process: (content: string) => Promise<ReactNode>;
 }
 
+// oxlint-disable-next-line react-doctor/only-export-components
 export function rehypeWrapWords() {
   return (tree: Root) => {
     visit(tree, ["text", "element"], (node, index, parent) => {
