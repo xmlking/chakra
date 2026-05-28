@@ -34,9 +34,9 @@
     "ai": "^6.0.191",
     "class-variance-authority": "^0.7.1",
     "flexsearch": "^0.8.212",
-    "fumadocs-core": "16.9.0",
-    "fumadocs-mdx": "15.0.7",
-    "fumadocs-ui": "16.9.0",
+    "fumadocs-core": "16.9.1",
+    "fumadocs-mdx": "15.0.8",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@16.9.1",
     "hast-util-to-jsx-runtime": "^2.3.6",
     "lucide-react": "catalog:",
     "react": "catalog:",
@@ -67,6 +67,7 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
+    "@base-ui/react": "catalog:",
     "@typescript/native-preview": "catalog:",
     "typescript": "catalog:"
   }
