@@ -1,10 +1,12 @@
+import { fileURLToPath, URL } from "node:url";
+
 import { remarkImage, remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { remarkSteps } from "fumadocs-core/mdx-plugins/remark-steps";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
 
 export const docs = defineDocs({
-  dir: "content/docs",
+  dir: fileURLToPath(new URL("content/docs", import.meta.url)),
   docs: {
     postprocess: {
       includeProcessedMarkdown: true,
