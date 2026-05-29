@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
+import { m } from "@workspace/i18n/messages";
 
 import { LocaleSwitcher } from "#components/locale-switcher";
-import { m } from "#paraglide/messages";
 
 import logo from "../../assets/logo.svg";
 

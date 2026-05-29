@@ -3,6 +3,13 @@ import { useHydrated } from "@tanstack/react-router";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 
+beforeEach(() => {
+  vi.stubGlobal("__APP_VERSION__", "1.0.0");
+  vi.stubGlobal("__GIT_TAG__", "1.0.0");
+  vi.stubGlobal("__GIT_SHA__", "xyz");
+  vi.stubGlobal("__GIT_TIME__", new Date().toISOString());
+});
+
 vi.mock("@lonik/themer", () => ({
   useTheme: vi.fn<typeof useTheme>(() => ({
     theme: "system",

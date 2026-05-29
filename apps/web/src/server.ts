@@ -1,6 +1,5 @@
 import handler, { createServerEntry } from "@tanstack/react-start/server-entry";
-
-import { paraglideMiddleware } from "#paraglide/server";
+import { paraglideMiddleware } from "@workspace/i18n/server";
 
 export default createServerEntry({
   fetch(req: Request): Promise<Response> {

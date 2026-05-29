@@ -3,9 +3,9 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { getLocale } from "@workspace/i18n/runtime";
 
 import { siteConfig } from "#config/site.config";
-import { getLocale } from "#paraglide/runtime";
 
 import appCss from "@workspace/ui/globals.css?url";
 interface MyRouterContext {
