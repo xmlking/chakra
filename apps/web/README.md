@@ -7,7 +7,7 @@ Welcome to your new TanStack Start app!
 To run this application:
 
 ```shell
-vp run web#dev
+vp dev apps/docs
 ```
 
 ## Building For Production
@@ -15,7 +15,8 @@ vp run web#dev
 To build this application for production:
 
 ```shell
-vp run web#build
+vp build apps/docs
+vp preview apps/docs
 ```
 
 ## Testing
