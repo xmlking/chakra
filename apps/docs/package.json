@@ -27,7 +27,7 @@
     "@radix-ui/react-presence": "^1.1.5",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
-    "@tanstack/react-start": "1.168.10",
+    "@tanstack/react-start": "catalog:",
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
     "@workspace/ui": "workspace:*",
