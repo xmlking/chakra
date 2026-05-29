@@ -52,7 +52,7 @@ Open the URL printed in the terminal (Vite’s default is usually `http://localh
 
 ## Building For Production
 
-To build this application for production:
+To build this all applications for production:
 
 ```shell
 vp run -r build
@@ -77,8 +77,8 @@ This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for linting and [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) formatting. The following scripts are available:
 
 ```shell
-vp run check
-vp run check --fix
+vp check
+vp check --fix
 ```
 
 ## Deploy with Nitro
@@ -86,11 +86,11 @@ vp run check --fix
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp run -r build
-vp run -r preview
+vp build apps/web
+vp preview apps/web
 ```
 
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
+The build output is a self-contained Node server. To deploy, push the `.output` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
 
 For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
 
@@ -120,7 +120,7 @@ Am example chat application built with TanStack Start, TanStack Store, and Claud
 ## .env Updates
 
 ```env
-ANTHROPIC_API_KEY=your_anthropic_api_key
+OPENROUTER_API_KEY=your_open_api_key
 ```
 
 ## ✨ Features

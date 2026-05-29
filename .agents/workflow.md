@@ -2,10 +2,10 @@
 
 ## Build Commands
 
-- `vp run -r build`: Only for build/bundler issues or verifying production output
+- `vp build apps/web`: Only for build/bundler issues or verifying production output
 - `vp check`: Type-checking & type-aware linting
 
-- `vp run console#dev` runs `console` dev server indefinitely in watch mode
+- `vp dev apps/web` runs `web` dev server indefinitely in watch mode
 - `vp run @workspace/db` for Drizzle Kit commands (e.g. `vp run @workspace/db#generate` to generate a migration, `vp run @workspace/db#generate` to seed database)
 
 Don't build after every change. If lint passes; assume changes work.

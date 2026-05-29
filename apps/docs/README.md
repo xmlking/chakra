@@ -6,17 +6,17 @@ This is a Tanstack Start application generated with
 Run development server:
 
 ```shell
-vp run docs#dev
+vp dev apps/docs
 ```
 
 Build
 
 ```shell
-vp run docs#build
+vp build apps/docs
 ```
 
 Preview
 
 ```shell
-vp run docs#preview
+vp preview apps/docs
 ```
