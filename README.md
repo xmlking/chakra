@@ -165,9 +165,10 @@ OPENROUTER_API_KEY=your_open_api_key
 
 This add-on wires up ParaglideJS for localized routing and message formatting.
 
-- Messages live in `project.inlang/messages`.
+- Messages live in `packages/i18n/messages`.
+- Use `import { m } from "@workspace/i18n/messages";` to import messages.
 - URLs are localized through the Paraglide Vite plugin and router `rewrite` hooks.
-- Run the dev server or build to regenerate the `src/paraglide` outputs.
+- Run `vp run @workspace/i18n#build` to regenerate the `packages/i18n/src/paraglide` output.
 
 ## Shadcn
 

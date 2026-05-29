@@ -1,6 +1,3 @@
-import { fileURLToPath, URL } from "node:url";
-
-import { paraglideVitePlugin } from "@inlang/paraglide-js";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
@@ -15,11 +12,6 @@ const config = defineConfig({
   plugins: [
     ViteEnv(),
     devtools(),
-    paraglideVitePlugin({
-      project: fileURLToPath(new URL("./project.inlang", import.meta.url)),
-      outdir: fileURLToPath(new URL("./src/paraglide", import.meta.url)),
-      strategy: ["cookie", "preferredLanguage", "baseLocale"],
-    }),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
     tanstackStart(),

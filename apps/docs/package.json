@@ -8,7 +8,6 @@
     "#config/*": "./src/config/*.ts",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
-    "#paraglide/*": "./src/paraglide/*.js",
     "#types/*": "./src/types/*.ts"
   },
   "scripts": {

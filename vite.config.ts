@@ -142,5 +142,11 @@ export default defineConfig({
   },
   run: {
     cache: true,
+    tasks: {
+      "web:dev": {
+        command: "vp dev apps/web",
+        dependsOn: ["@workspace/i18n#build"],
+      },
+    },
   },
 });

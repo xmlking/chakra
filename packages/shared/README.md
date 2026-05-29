@@ -1,6 +1,9 @@
 # Shared
 
-Shared util functions
+Shared Isomorphic util functions used both on server-side and client-sid.
+
+> [!CAUTION]
+> this package should not relay on runtime platform specific dependencies
 
 ## Development
 

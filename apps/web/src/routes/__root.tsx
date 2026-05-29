@@ -1,11 +1,11 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { getLocale } from "@workspace/i18n/runtime";
 
 import { Footer } from "#components/footer";
 import { Header } from "#components/header";
 import { siteConfig } from "#config/site.config";
-import { getLocale } from "#paraglide/runtime";
 
 import appCss from "../globals.css?url";
 // import appCss from "@workspace/ui/globals.css?url";

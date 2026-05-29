@@ -29,3 +29,21 @@ export function runCmd(command: string) {
     return "unknown";
   }
 }
+
+export function getBuildInfo() {
+  return {
+    // String values must be wrapped in JSON.stringify() to be valid replacements
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? "dev"),
+    __GIT_TAG__: JSON.stringify(
+      process.env.GITHUB_REF_NAME ||
+        process.env.VERCEL_GIT_COMMIT_REF ||
+        runCmd("git describe --tags --always"),
+    ),
+    __GIT_SHA__: JSON.stringify(
+      process.env.GITHUB_SHA ||
+        process.env.VERCEL_GIT_COMMIT_SHA ||
+        runCmd("git rev-parse --short HEAD"),
+    ),
+    __GIT_TIME__: JSON.stringify(runCmd("git log -1 --format=%ci") ?? new Date().toISOString()),
+  };
+}
