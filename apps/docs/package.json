@@ -69,6 +69,7 @@
   "peerDependencies": {
     "@base-ui/react": "catalog:",
     "@typescript/native-preview": "catalog:",
+    "shiki": "catalog:",
     "typescript": "catalog:"
   }
 }
