@@ -27,6 +27,7 @@ const ignorePatterns = [
   "packages/ui/src/styles/**",
   "apps/docs/src/routes/__root.tsx",
   "apps/docs/src/components/ai/search.tsx",
+  "apps/docs/src/routes/docs/$.tsx",
 ];
 export default defineConfig({
   staged: {
