@@ -1,4 +1,6 @@
-export const appName = "Tanstack Start";
+import { env } from "virtual:env/client";
+
+export const appName = env.VITE_APP_NAME || "Tanstack Start";
 export const docsRoute = "/docs";
 export const docsImageRoute = "/og/docs";
 

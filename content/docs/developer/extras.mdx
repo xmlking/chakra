@@ -1,0 +1,51 @@
+---
+title: Extras
+description: See what you get together with the code.
+url: /docs/web/extras
+icon: Gift
+---
+
+## Tips and Tricks
+
+In many places, next to the code you will find some marketing tips, design suggestions, and potential risks. This is to help you build a better product and avoid common pitfalls.
+
+```tsx title="Hero.tsx"
+return (
+  <header>
+    {/* 💡 Use something that user can visualize e.g. 
+    "Ship your startup while on the toilet" */}
+    <h1>Best startup on the world</h1>
+  </header>
+);
+```
+
+### Submission tips
+
+When it comes to mobile app and browser extension, you must submit your product to review from Apple/Google etc. We have some tips for you to make sure your submission goes smoothly.
+
+```json title="app.json"
+{
+  "ios": {
+    "infoPlist": {
+      /* 🍎 add descriptive justification of using this permission on iOS */
+      "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+    }
+  }
+}
+```
+
+As well as providing you with the info on how to make your store listings better:
+
+```json title="package.json"
+{
+  "manifest": {
+    /* 💡 Use localized messages to get more visibility in web stores */
+    "name": "__MSG_extensionName__",
+    "default_locale": "en"
+  }
+}
+```
+
+## Discord community
+
+We have a Discord community where you can ask questions and share your projects. It's a great place to get help and meet other developers. Check more details at [/discord](/discord).

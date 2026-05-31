@@ -1,0 +1,44 @@
+---
+url: /docs/web/emails/overview
+title: Overview
+description: Get started with emails in Astra.
+---
+
+For mailing functionality, Astra integrates [React Email](https://react.email/docs/introduction) which enables you to build your emails from composable React components.
+
+<Callout title="Why React Email?">
+  It's a simple, yet powerful library that allows you to **write your emails in React**.
+
+It also allows you to use **Tailwind CSS for styling**, which is a huge advantage, as we can share almost everything from the main app with the emails package, keeping them consistent with rest of the app.
+
+</Callout>
+
+You can read more about `react-email` package in the [official documentation](https://react.email/docs/introduction).
+
+## Providers
+
+Astra implements multiple providers for managing and sending emails. To learn more about each provider and how to configure them, see the respective section:
+
+<Cards>
+  <Card title="Resend" href="/docs/web/emails/configuration#resend" />
+
+<Card title="SendGrid" href="/docs/web/emails/configuration#sendgrid" />
+
+<Card title="Postmark" href="/docs/web/emails/configuration#postmark" />
+
+<Card title="Plunk" href="/docs/web/emails/configuration#plunk" />
+
+  <Card title="Nodemailer" href="/docs/web/emails/configuration#nodemailer" />
+</Cards>
+
+All configuration and setup is built-in with a unified API, so you can switch between providers by simply changing the exports and even introduce your own provider without breaking any sending-related logic.
+
+## Development
+
+When you [setup your development environment](/docs/web/installation/development) and run `pnpm dev` command a new app will start at [http://localhost:3005](http://localhost:3005).
+
+![Email preview](./assets/development.png)
+
+There you'll be able to check your email templates and send test emails from your app. It includes hot-reloading, so when you make change in the code - it will be reflected in the browser.
+
+Learn more about configuration and setup of the emails in Astra in the following sections.

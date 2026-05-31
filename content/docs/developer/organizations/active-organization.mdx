@@ -1,0 +1,129 @@
+---
+url: /docs/web/organizations/active-organization
+title: Active organization
+description: Set and switch the current organization context within your application.
+---
+
+The active organization is tracked based on the **URL slug** and the **session state**. We made it **as simple as possible** to use, introducing our custom hooks and an abstraction to sync it both ways.
+
+Below you can find more details about how to access the active organization across different contexts in your application.
+
+You can customize the behavior to your needs—for example, to restrict users to at most one organization at a time.
+
+## Server component
+
+You have two separate ways to access the active organization of the currently logged-in user on the server:
+
+- from the URL slug (organization-scoped routes)
+- from the session (when no slug is present or you don't want to use it)
+
+We recommend always using the URL slug when you're doing something inside an organization-scoped route. This keeps the URL as the source of truth and works seamlessly with SSR and caching.
+
+```tsx title="page.tsx"
+import { getOrganization } from "~/lib/auth/server";
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{
+    organization: string;
+  }>;
+}) {
+  const organization = (await params).organization;
+  const activeOrganization = await getOrganization({ slug: organization });
+
+  return <>{activeOrganization?.name}</>;
+}
+```
+
+Alternatively, you can use the session to access the active organization. This reads `session.activeOrganizationId` and resolves the organization by its stable ID.
+
+```tsx title="page.tsx"
+import { getOrganization, getSession } from "~/lib/auth/server";
+
+export default async function Page() {
+  const { session } = await getSession();
+  const activeOrganization = await getOrganization({
+    id: session.activeOrganizationId,
+  });
+
+  return <>{activeOrganization?.name}</>;
+}
+```
+
+Be aware that sometimes you might encounter synchronization issues between the URL slug and the session, for example when a user opens multiple tabs to different organizations. More on this in the [Edge cases](#edge-cases) section.
+
+## Client component
+
+On the client side, we designed a dedicated hook to access the active organization - `useActiveOrganization`. It's a simple wrapper around the API that returns the active organization based on the URL slug or the session. It also helps keep the state in sync with the server session.
+
+```tsx title="client.tsx"
+"use client";
+
+import { useActiveOrganization } from "~/lib/hooks/use-active-organization";
+
+export default function ClientComponent() {
+  const { activeOrganization, activeMember } = useActiveOrganization();
+
+  return (
+    <>
+      <p>{activeOrganization?.name}</p>
+      <p>{activeMember?.role}</p>
+    </>
+  );
+}
+```
+
+Using the hook is recommended over direct API calls, as it will keep the state in sync with the server session.
+
+It also returns the active member of the active organization, so you can access the user's role and other member-specific data.
+
+## API route
+
+To access the active organization data in an API route, you can read it from the session that is appended to the context when you use [authentication middleware](/docs/web/api/protected-routes).
+
+```ts title="action/router.ts"
+export const actionRouter = new Hono().post("/", enforceAuth, async (c) => {
+  const organizationId = c.var.user.activeOrganizationId;
+  const organization = await getOrganization({ id: organizationId });
+  return c.json(organization);
+});
+```
+
+Although it's the simplest way, we recommend directly passing the `organizationId` together with the payload when you need to perform an action.
+
+```ts title="action/router.ts"
+export const actionRouter = new Hono().post(
+  "/",
+  enforceAuth,
+  validate(
+    "json",
+    z.object({
+      organizationId: z.string(),
+      /* rest of the payload */
+    }),
+  ),
+  async (c) => {
+    const { organizationId, ...payload } = c.req.valid("json");
+    const organization = await getOrganization({ id: organizationId });
+    return c.json(await performAction(organization, payload));
+  },
+);
+```
+
+This ensures that the action is performed on the correct organization, even if the user has multiple organizations open in different tabs. See [Edge cases](#edge-cases) for more details.
+
+## Edge cases
+
+- **Expected and harmless:** Short periods where the URL slug and server session differ can happen (for example, with multiple tabs or quick switching). The active tab always treats the slug as the source of truth and the session catches up.
+- **Multiple tabs:** Each tab maintains its own org context from its slug. As you switch focus, the shared session updates; brief divergence is normal and safe.
+- **Rapid switching/slow network:** During fast navigation or poor connectivity, you may momentarily see the previous org while the session updates. Show a small loading state; cancel in-flight requests tied to the old org.
+- **Missing/invalid slug:** If the slug is missing or invalid, we fall back to the session’s `activeOrganizationId` or redirect to a safe default.
+- **Access or permission changes:** If a user loses access to the org they’re viewing, the data is cleared from the session and the user is redirected to a valid organization or personal dashboard.
+
+<Callout type="warn" title="Invalidation">
+  Whenever the active organization changes, the server session is updated and the client is redirected to the new organization scope.
+
+All caches keyed by organization are invalidated to avoid leaking data between organizations.
+
+</Callout>

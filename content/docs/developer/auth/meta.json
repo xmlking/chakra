@@ -1,0 +1,4 @@
+{
+  "title": "Authentication",
+  "pages": ["overview", "configuration", "flow", "2fa"]
+}

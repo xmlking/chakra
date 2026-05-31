@@ -1,0 +1,15 @@
+{
+  "title": "Astra",
+  "description": "AI builder platform",
+  "icon": "Bot",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "---Overview---",
+    "hello-world",
+    "---Links---",
+    "[Mail][Contact us](https://x.com/xmlking)",
+    "[Github][Github](https://github.com/xmlking/astra)"
+  ]
+}

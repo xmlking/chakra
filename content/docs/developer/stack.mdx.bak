@@ -1,0 +1,101 @@
+---
+title: Tech Stack
+description: A detailed look at the technical details.
+url: /docs/web/stack
+icon: Cpu
+---
+
+import {
+  SiNextdotjs,
+  SiReact,
+  SiTurborepo,
+  SiHono,
+  SiTailwindcss,
+  SiRadixui,
+  SiShadcnui,
+  SiDrizzle,
+  SiReactquery,
+  SiPostgresql,
+  SiBetterauth,
+} from "@icons-pack/react-simple-icons";
+
+
+## Turborepo
+
+[Turborepo](https://turbo.build/) is a monorepo tool that helps you manage your project's dependencies and scripts. We chose a monorepo setup to make it easier to manage the structure of different features and enable code sharing between different packages.
+
+<Card
+  href="https://turbo.build/"
+  title="Turborepo - Make Ship Happen"
+  description="turbo.build"
+  icon={<TurborepoLight />}
+/>
+
+## Next.js
+
+[Next.js](https://nextjs.org) is one of the most popular [React](https://react.dev) frameworks that enables server-side rendering, static site generation, and more. We chose Next.js for its flexibility and ease of use. We're also using it to host our serverless API.
+
+<Cards>
+  <Card href="https://react.dev" title="React" description="react.dev" icon={<ReactLight />} />
+
+  <Card href="https://nextjs.org" title="Next.js" description="nextjs.org" icon={<SiNextdotjs />} />
+</Cards>
+
+## Hono & React Query
+
+[Hono](https://hono.dev) is a small, simple, and ultrafast web framework for the edge. It provides tools to help you build APIs and web applications faster. It includes an RPC client for making type-safe function calls from the frontend. We use Hono to build our serverless API endpoints.
+
+To make data fetching and caching from our API easy and reliable, we pair Hono with [React Query](https://tanstack.com/query/latest). It helps manage asynchronous data, caching, and state synchronization between the client and backend, delivering a fast and seamless UX.
+
+<Cards>
+  <Card href="https://hono.dev" title="Hono" description="hono.dev" icon={<Hono />} />
+
+<Card
+href="https://tanstack.com/query/latest"
+title="React Query"
+description="tanstack.com"
+icon={
+<ReactQuery />
+}
+/>
+</Cards>
+
+## Better Auth
+
+[Better Auth](https://www.better-auth.com) is a modern authentication library for fullstack applications. It provides ready-to-use snippets for features like email/password login, magic links, OAuth providers, and more. We use Better Auth to handle all authentication flows in our application.
+
+<Card
+  href="https://www.better-auth.com"
+  title="Better Auth"
+  description="better-auth.com"
+  icon={<BetterAuthLight />}
+/>
+
+## Tailwind CSS
+
+[Tailwind CSS](https://tailwindcss.com) is a utility-first CSS framework that helps you build custom designs without writing any CSS. We also use [Radix UI](https://radix-ui.com) for our headless components library and [shadcn/ui](https://ui.shadcn.com), which enables you to generate pre-designed components with a single command.
+
+<Cards className="grid-cols-2 sm:grid-cols-3">
+  <Card href="https://tailwindcss.com" title="Tailwind CSS" description="tailwindcss.com" icon={<TailwindCSS />} />
+
+<Card
+  href="https://radix-ui.com"
+  title="Radix UI"
+  description="radix-ui.com"
+  icon={<RadixUILight />}
+/>
+
+<Card href="https://ui.shadcn.com" title="shadcn/ui" description="ui.shadcn.com" icon={<ShadcnUiLight />} />
+</Cards>
+
+## Drizzle
+
+[Drizzle](https://orm.drizzle.team/) is a super fast [ORM](https://orm.drizzle.team/docs/overview) (Object-Relational Mapping) tool for databases. It helps manage databases, generate TypeScript types from your schema, and run queries in a fully type-safe way.
+
+We use [PostgreSQL](https://www.postgresql.org) as our default database, but thanks to Drizzle's flexibility, you can easily switch to MySQL, SQLite or any [other supported database](https://orm.drizzle.team/docs/connect-overview) by updating a few configuration lines.
+
+<Cards>
+  <Card href="https://orm.drizzle.team/" title="Drizzle" description="orm.drizzle.team" icon={<DrizzleORMLight />} />
+
+<Card href="https://www.postgresql.org" title="PostgreSQL" description="postgresql.org" icon={<PostgreSQL />} />
+</Cards>

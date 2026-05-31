@@ -1,0 +1,49 @@
+---
+url: /docs/web/database/migrations
+title: Migrations
+description: Migrate your changes to the database.
+---
+
+You have your schema in place, and you want to apply your changes to the database. Astra provides you a convenient way to do so with pre-configured CLI commands.
+
+## Generating migration
+
+To generate a migration, from the schema you need to run the following command:
+
+```bash
+pnpm with-env turbo db:generate
+```
+
+This will create a new `.sql` file in the `migrations` directory.
+
+<Callout>
+  Drizzle will also generate a `.json` representation of the migration in the `meta` directory, but
+  it's for its internal purposes and you shouldn't need to touch it.
+</Callout>
+
+## Applying migrations
+
+To apply the migrations to the database, you need to run the following command:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:migrate
+```
+
+This will apply all the migrations that have not been applied yet. If any conflicts arise, you can resolve them by modifying the generated migration file.
+
+## Pushing changes
+
+To push changes directly to the database, you can use the following command:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:push
+```
+
+This lets you push your schema changes directly to the database and omit managing SQL migration files.
+
+<Callout type="warn" title="Use with caution!">
+  Pushing changes directly to the database (without using migrations) could be risky. Please be careful when using it; we recommend it only for local development and local databases.
+
+[Read more about it in the Drizzle docs](https://orm.drizzle.team/kit-docs/overview#prototyping-with-db-push).
+
+</Callout>

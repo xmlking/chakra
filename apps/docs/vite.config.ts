@@ -21,10 +21,12 @@ const config = defineConfig({
   plugins: [
     ViteEnv(),
     devtools(),
-    mdx(await import("./source.config"), {
-      outDir: fileURLToPath(new URL("./.source", import.meta.url)),
+    mdx(),
+    // please see https://tanstack.com/start/latest/docs/framework/react/guide/hosting#nitro for guides on hosting
+    nitro({
+      preset: "vercel",
+      rollupConfig: { external: [/^@sentry\//] },
     }),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
     tanstackStart({
       prerender: {

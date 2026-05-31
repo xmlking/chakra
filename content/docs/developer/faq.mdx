@@ -1,0 +1,91 @@
+---
+title: FAQ
+description: Find answers to common technical questions.
+url: /docs/web/faq
+icon: MessageCircleQuestionMark
+---
+
+## Why isn't everything hidden and configured with one BIG config file?
+
+Astra intentionally exposes the underlying code rather than hiding it behind configuration files (like some starters do). This design choice follows our **you own your code** philosophy, giving you full control and flexibility over your codebase.
+
+While a single config file might seem simpler initially, it often becomes restrictive when you need to customize functionality beyond what the config allows. With direct access to the code, you can modify any part of the system to match your specific requirements.
+
+## I don't know some technology! Should I buy Astra?
+
+You should be prepared for a learning curve or consider learning it first. However, Astra will still work for you if you're willing to learn.
+
+Even without knowing some technologies, you can still use the rest of the features.
+
+## I don't need mobile app or browser extension, what should I do?
+
+You can simply ignore the mobile app and browser extension parts of the project. You can remove the `apps/mobile` and `apps/extension` directories from the project.
+
+The modular nature of Astra allows you to remove parts of the project that you don't need without affecting the rest of the stack.
+
+## I want to use a different provider for X
+
+Sure! Astra is designed to be modular, so configuring new provider (e.g. for emails, billing or any other service) is straightforward. You just need to make sure your configuration is compatible with common interface to be able to plug it into the codebase.
+
+## Will you add more packages in the future?
+
+Yes, we will keep updating Astra with new packages and features. This kit is designed to be modular, allowing for new features and packages to be added without interfering with your existing code. You can always [update your project](/docs/web/installation/update) to the latest version.
+
+## Can I use this kit for a non-SaaS project?
+
+This kit is mainly designed for SaaS projects. If you're building something other than a SaaS, the Next.js SaaS Boilerplate might include features you don't need. You can still use it for non-SaaS projects, but you may need to remove or modify features that are specific to SaaS use cases.
+
+## Can I use personal accounts only?
+
+Yes! You can disable team accounts and have personal accounts only by setting a feature flag.
+
+## Does it set up the production instance for me?
+
+No, Astra does not set up the production instance for you. This includes setting up databases, Stripe, or any other services you need. Astra does not have access to your Stripe or Resend accounts, so setup on your end is required. Astra provides the codebase and documentation to help you set up your SaaS project.
+
+## Does the starter include Solito?
+
+No. Solito will not be included in this repo. It is a great tool if you want to share code between your Next.js and Expo app. However, the main purpose of this repo is not the integration between Next.js and Expo — it's the code splitting of your SaaS platforms into a monorepo. You can utilize the monorepo with multiple apps, and it can be any app such as Vite, Electron, etc.
+
+Integrating Solito into this repo isn't hard, and there are a few [official templates](https://github.com/nandorojo/solito/tree/master/example-monorepos) by the creators of Solito that you can use as a reference.
+
+## Does this pattern leak backend code to my client applications?
+
+No, it does not. The `api` package should only be a production dependency in the Next.js application where it's served. The Expo app, browser extension, and all other apps you may add in the future should only add the `api` package as a dev dependency. This lets you have full type safety in your client applications while keeping your backend code safe.
+
+If you need to share runtime code between the client and server, you can create a separate `shared` package for this and import it on both sides.
+
+## How do I get support if I encounter issues?
+
+For support, you can:
+
+1. Visit our [Discord](https://discord.gg/KjpK2uk3JP)
+2. Contact us via support email ([hello@astra.dev](mailto:hello@astra.dev))
+
+## Are there any example projects or demos?
+
+Yes - feel free to check out our demo app at [demo.astra.dev](https://demo.astra.dev). Also, you can get inspired by projects built by our customers - take a look at [Showcase](/#showcase).
+
+## How do I deploy my application?
+
+Please check the [production checklist](/docs/web/deployment/checklist) for more information.
+
+## How do I update my project when a new version of the boilerplate is released?
+
+Please read the [documentation for updating your Astra code](/docs/web/installation/update).
+
+## Can I use the React package X with this kit?
+
+Yes, you can use any React package with this kit. The kit is based on React, so you are generally only constrained by the underlying technologies and not by the kit itself. Since you own and can edit all the code, you can adapt the kit to your needs. However, if there are limitations with the underlying technology, you might need to work around them.
+
+## Can I integrate Astra into an existing project?
+
+Astra is a full-stack starter intended to be used as the foundation of your app. You can copy individual modules or patterns into an existing codebase, but retrofitting the entire starter into a mature project is typically not recommended and is not officially supported. If you choose to copy parts, prefer isolating boundaries (e.g., `packages/` modules) and aligning interfaces first.
+
+## Where can I deploy my application?
+
+Astra targets modern Node.js/Next.js runtimes. You can deploy to providers that support these environments, such as [Vercel](/docs/web/deployment/vercel), [Railway](/docs/web/deployment/railway), [Render](/docs/web/deployment/render), [Fly](/docs/web/deployment/fly), or [Netlify](/docs/web/deployment/netlify) - following their Next.js guidance. Review our [production checklist](/docs/web/deployment/checklist) before going live.
+
+## Can I easily swap providers (billing, email, etc.)?
+
+Yes. The starter organizes integrations behind clear interfaces so you can replace providers (e.g., billing or email) with minimal surface changes. Keep your implementation behind a module boundary and adapt to the existing types to avoid ripple effects.
