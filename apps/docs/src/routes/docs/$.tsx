@@ -14,11 +14,11 @@ import {
   ViewOptionsPopover,
 } from "fumadocs-ui/layouts/docs/page";
 import { MessageCircleIcon } from "lucide-react";
-import { Suspense } from "react";
-
+import { Suspense, type ReactNode } from "react";
+import {cn } from "@workspace/ui/lib/utils"
+import { ClientAPIPage } from "@/components/api-page";
 import { AISearch, AISearchPanel, AISearchTrigger } from "@/components/ai/search";
 import { useMDXComponents } from "@/components/mdx";
-import { cn } from "@/lib/cn";
 import { baseOptions } from "@/lib/layout.shared";
 import { gitConfig } from "@/lib/shared";
 import { slugsToMarkdownPath, source } from "@/lib/source";
@@ -29,7 +29,10 @@ export const Route = createFileRoute("/docs/$")({
   loader: async ({ params }) => {
     const slugs = params._splat?.split("/") ?? [];
     const data = await serverLoader({ data: slugs });
-    await clientLoader.preload(data.path);
+
+    if (data.type === "docs") {
+      await clientLoader.preload(data.path);
+    }
     return data;
   },
 });
@@ -42,10 +45,22 @@ const serverLoader = createServerFn({
     const page = source.getPage(slugs);
     if (!page) throw notFound();
 
+    const pageTree = await source.serializePageTree(source.getPageTree());
+    if (page.type === "openapi") {
+      return {
+        type: "openapi",
+        title: page.data.title,
+        description: page.data.description,
+        pageTree,
+        props: await page.data.getClientAPIPageProps(),
+      };
+    }
+
     return {
+      type: "docs",
       path: page.path,
       markdownUrl: slugsToMarkdownPath(page.slugs).url,
-      pageTree: await source.serializePageTree(source.getPageTree()),
+      pageTree,
     };
   });
 
@@ -62,7 +77,7 @@ const clientLoader = browserCollections.docs.createClientLoader({
     },
   ) {
     return (
-      <DocsPage toc={toc}>
+      <DocsPage toc={toc} tableOfContent={{ style: "clerk" }}>
         <DocsTitle>{frontmatter.title}</DocsTitle>
         <DocsDescription>{frontmatter.description}</DocsDescription>
         <div className="-mt-4 flex flex-row items-center gap-2 border-b pb-6">
@@ -84,10 +99,25 @@ const clientLoader = browserCollections.docs.createClientLoader({
 
 // oxlint-disable-next-line react-doctor/only-export-components
 function Page() {
-  const { path, pageTree, markdownUrl } = useFumadocsLoader(Route.useLoaderData());
+  const page = useFumadocsLoader(Route.useLoaderData());
+  let content: ReactNode;
+
+  if (page.type === "openapi") {
+    content = (
+      <DocsPage full>
+        <DocsTitle>{page.title}</DocsTitle>
+        <DocsDescription>{page.description}</DocsDescription>
+        <DocsBody>
+          <ClientAPIPage {...page.props} />
+        </DocsBody>
+      </DocsPage>
+    );
+  } else {
+    content = <Suspense>{clientLoader.useContent(page.path, page)}</Suspense>;
+  }
 
   return (
-    <DocsLayout {...baseOptions()} tree={pageTree}>
+    <DocsLayout {...baseOptions()} tree={page.pageTree}>
       <AISearch>
         <AISearchPanel />
         <AISearchTrigger
@@ -104,7 +134,7 @@ function Page() {
         </AISearchTrigger>
       </AISearch>
 
-      <Suspense>{clientLoader.useContent(path, { markdownUrl, path })}</Suspense>
+      {content}
     </DocsLayout>
   );
 }

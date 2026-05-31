@@ -1,16 +1,30 @@
-import { fileURLToPath, URL } from "node:url";
-
 import { remarkImage, remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
 import { remarkSteps } from "fumadocs-core/mdx-plugins/remark-steps";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
+import { blogMetaSchema, blogPageSchema } from "fumapress/adapters/mdx/schema";
 
 export const docs = defineDocs({
-  dir: fileURLToPath(new URL("content/docs", import.meta.url)),
+  // dir: fileURLToPath(new URL("content/docs", import.meta.url)),
+  dir: "../../content/docs",
   docs: {
     postprocess: {
       includeProcessedMarkdown: true,
     },
+  },
+});
+
+export const blog = defineDocs({
+  dir: "../../content/blog",
+  docs: {
+    async: true,
+    schema: blogPageSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: blogMetaSchema,
   },
 });
 
