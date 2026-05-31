@@ -1,0 +1,108 @@
+---
+url: /docs/web/emails/sending
+title: Sending emails
+description: Learn how to send emails in Astra.
+---
+
+The strategy for sending emails, that every provider has to implement, is **extremely simple**:
+
+```ts
+export interface EmailProviderStrategy {
+  send: (args: { to: string; subject: string; text: string; html?: string }) => Promise<void>;
+}
+```
+
+<Callout>
+  You don't need to worry much about it, as all the providers are already configured for you. Just
+  be aware of it if you want to add your custom provider.
+</Callout>
+
+Then, we define a general `sendEmail` function that you can use as an API for sending emails in your app:
+
+```ts
+const sendEmail = async <T extends EmailTemplate>({
+  to,
+  template,
+  variables,
+  locale,
+}: {
+  to: string;
+  template: T;
+  variables: EmailVariables[T];
+  locale?: string;
+}) => {
+  const { html, text, subject } = await getTemplate({
+    id: template,
+    variables,
+    locale,
+  });
+
+  return send({ to, subject, html, text });
+};
+```
+
+The arguments are:
+
+- `to`: The recipient's email address.
+- `template`: The email template to use.
+- `variables`: The variables to pass to the template.
+- `locale`: The locale to use for the email.
+
+It returns a promise that resolves when the email is sent successfully. If there is an error, the promise will be rejected with an error message.
+
+To send an email, just invoke the `sendEmail` with the correct arguments from the **server-side** of your application:
+
+```ts
+import { sendEmail } from "@workspace/email/server";
+
+sendEmail({
+  to: "user@example.com",
+  template: EmailTemplate.WELCOME,
+  variables: {
+    name: "John Doe",
+  },
+  locale: "en",
+});
+```
+
+And that's it! You're ready to send emails in your application 🚀
+
+## Authentication emails
+
+Astra comes with a set of pre-configured authentication emails for various purposes, including magic links and password reset functionality.
+
+To handle the sending of these emails at the right time, we use [Better Auth Hooks](https://www.better-auth.com/docs/concepts/email), which trigger when specific authentication events occur.
+
+The logic for determining which email to send is already implemented for you in the `packages/auth/src/server.ts` file, alongside your [authentication configuration](/docs/web/auth/configuration):
+
+```ts title="server.ts"
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+    sendResetPassword: async ({ user, url }) =>
+      sendEmail({
+        to: user.email,
+        template: EmailTemplate.RESET_PASSWORD,
+        variables: {
+          url,
+        },
+      }),
+  },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) =>
+      sendEmail({
+        to: user.email,
+        template: EmailTemplate.CONFIRM_EMAIL,
+        variables: {
+          url,
+        },
+      }),
+  },
+
+  /* other options */
+});
+```
+
+As you can see, the authentication emails are automatically sent when needed (e.g. when user requests password reset or needs to verify their email address).
+
+You can customize authentication templates by modifying them in the `packages/email/src/templates` directory, or create your own templates for other use cases in your application.

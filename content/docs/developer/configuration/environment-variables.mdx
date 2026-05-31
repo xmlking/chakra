@@ -1,0 +1,102 @@
+---
+url: /docs/web/configuration/environment-variables
+title: Environment variables
+description: Learn how to configure environment variables.
+---
+
+Environment variables are defined in the `.env` file in the root of the repository and in the root of the `apps/web` package.
+
+- **Shared environment variables**: Defined in the **root** `.env` file. These are shared between environments (e.g., development, staging, production) and apps (e.g., web, mobile).
+- **Environment-specific variables**: Defined in `.env.development` and `.env.production` files. These are specific to the development and production environments.
+- **App-specific variables**: Defined in the app-specific directory (e.g., `apps/web`). These are specific to the app and are not shared between apps.
+- **Secret keys**: Not stored in the `.env` file. Instead, they are stored in the environment variables of the CI/CD system.
+- **Local secret keys**: If you need to use secret keys locally, you can store them in the `.env.local` file. This file is not committed to Git, making it safe for sensitive information.
+
+## Shared variables
+
+Here you can add all the environment variables that are shared across all the apps. This file should be located in the **root** of the project.
+
+To override these variables in a specific environment, please add them to the specific environment file (e.g. `.env.development`, `.env.production`).
+
+```dotenv title=".env.local"
+# Shared environment variables
+
+# The database URL is used to connect to your database.
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+
+# The name of the product. This is used in various places across the apps.
+PRODUCT_NAME="Astra"
+
+# The url of the web app. Used mostly to link between apps.
+URL="http://localhost:3000"
+
+...
+```
+
+If you're using Supabase for your database, the [Supabase recipe](/docs/web/recipes/supabase#configure-environment-variables) shows the exact `DATABASE_URL` format and how to set it in your `.env.local`.
+
+## App-specific variables
+
+Here you can add all the environment variables that are specific to the app (e.g. `apps/web`).
+
+You can also override the shared variables defined in the root `.env` file.
+
+```dotenv title="apps/web/.env.local"
+# App-specific environment variables
+
+# Env variables extracted from shared to be exposed to the client in Next.js app
+NEXT_PUBLIC_PRODUCT_NAME="${PRODUCT_NAME}"
+NEXT_PUBLIC_URL="${URL}"
+NEXT_PUBLIC_DEFAULT_LOCALE="${DEFAULT_LOCALE}"
+
+# Theme mode and color
+NEXT_PUBLIC_THEME_MODE="system"
+NEXT_PUBLIC_THEME_COLOR="orange"
+
+...
+```
+
+<Callout title="NEXT_PUBLIC_ prefix">
+  To make environment variables available in the Next.js **client-side** app code, you need to prefix them with `NEXT_PUBLIC_`. They will be injected to the code during the build process.
+
+Only environment variables prefixed with `NEXT_PUBLIC_` will be injected, so don't use this prefix for environment variables that should be used only in the server-side code.
+
+[Read more about Next.js environment variables.](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables)
+
+</Callout>
+
+## Secret keys
+
+Secret keys and sensitive information are to be never stored in the `.env` file. Instead, **they are stored in the environment variables of the CI/CD system.**
+
+<Callout title="What does this mean?">
+  It means that you will need to add the secret keys to the environment variables of your CI/CD
+  system (e.g., GitHub Actions, Vercel, Cloudflare, your VPS, Netlify, etc.). This is not a
+  Astra-specific requirement, but a best practice for security for any application. Ultimately, it's
+  your choice.
+</Callout>
+
+Below is some examples of "what is a secret key?" in practice.
+
+```dotenv title=".env.local"
+# Secret keys
+
+# The database URL is used to connect to your database.
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
+
+# Stripe server config - required only if you use Stripe as a billing provider
+STRIPE_WEBHOOK_SECRET=""
+STRIPE_SECRET_KEY=""
+
+# Lemon Squeezy server config - required only if you use Lemon Squeezy as a billing provider
+LEMON_SQUEEZY_API_KEY=""
+LEMON_SQUEEZY_SIGNING_SECRET=""
+LEMON_SQUEEZY_STORE_ID=""
+
+...
+```
+
+<Callout title="Secrets used locally">
+  If you need to use secret keys locally, you can store them in the `.env.local` file. This file is
+  not committed to Git, therefore it is safe to store sensitive information in it.
+</Callout>

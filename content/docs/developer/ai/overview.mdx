@@ -1,0 +1,45 @@
+---
+url: /docs/web/ai/overview
+title: Overview
+description: Get started with AI integration in your Astra project.
+---
+
+For AI integration, Astra leverages the [Vercel AI SDK](https://sdk.vercel.ai/docs/introduction), which provides a comprehensive set of tools and utilities to help you build AI applications more easily and efficiently.
+
+<Callout title="Why Vercel AI SDK?">
+  It's a simple yet powerful library that exposes a unified API for all major AI providers.
+
+This allows you to build your AI application without worrying about the intricacies of each underlying provider's API.
+
+</Callout>
+
+You can learn more about the `ai` package in the [official documentation](https://sdk.vercel.ai/docs/introduction).
+
+## Features
+
+The starter comes with the most common AI features built-in, such as:
+
+- **Chat**: Build chat applications with ease.
+- **Streaming responses**: Stream responses from your AI provider in real-time.
+- **Image generation**: Generate images using AI technology.
+- **Embeddings**: Generate embeddings for your data.
+- **Vector stores**: Store and query your embeddings efficiently.
+
+You can easily compose your application using these building blocks or extend them to suit your specific needs.
+
+## Providers
+
+**Astra relies on the AI SDK to provide support for various AI providers.**
+
+This means you can easily switch between different AI providers without changing your code, as long as they are supported by the `ai` package.
+
+You can find the list of supported providers in the [official documentation](https://sdk.vercel.ai/providers/ai-sdk-providers).
+
+<Callout title="Custom providers">
+  There is also the possibility to add your own custom provider. It just needs to implement the common interface and provide all the necessary methods.
+
+Read more about this in the [official guide](https://sdk.vercel.ai/providers/community-providers/custom-providers).
+
+</Callout>
+
+The configuration for each provider is straightforward and simple. We'll explore this in more detail in the [Configuration](/docs/web/ai/configuration) section.

@@ -1,0 +1,34 @@
+---
+title: Docker
+description: "instructions to build docker image locally"
+date: "2025-12-27T19:25:51.369Z"
+---
+
+## Overview
+
+instructions to build docker image locally
+
+```shell
+# debug build
+docker build --no-cache --progress=plain -f apps/web/Dockerfile  -t astra-web:latest .
+# regular build
+docker build -f apps/web/Dockerfile  -t astra-web:latest .
+
+# debug run
+docker run --init -it --entrypoint sh astra-web:latest
+# regular run
+docker run --init -it -p 3000:3000 astra-web:latest
+```
+
+## Reference
+
+- [Dockerfile](https://www.astra.dev/docs/web/deployment/docker)
+- [Self-host your Next.js Turborepo app with Docker](https://www.astra.dev/blog/self-host-your-nextjs-turborepo-app-with-docker-in-5-minutes)
+- [Traefik Forward Auth v4](https://traefik-forward-auth.italypaleale.me/)
+- [Tinyauth](https://tinyauth.app/docs/getting-started/) - is a tiny OpenID Connect (OIDC) authentication and authorization server and forward auth provider for Traefik.
+- [Google OAuth Traefik Forward Auth: Most Convenient MFA](https://www.simplehomelab.com/google-oauth-traefik-forward-auth-2024/)
+- [Authentik](https://goauthentik.io/)
+
+## TODO
+
+- Setup docker compose like this https://github.com/LucasSantana-Dev/homelab/tree/main

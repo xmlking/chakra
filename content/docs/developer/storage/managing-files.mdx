@@ -1,0 +1,178 @@
+---
+url: /docs/web/storage/managing-files
+title: Managing files
+description: Learn how to manage files in Astra.
+---
+
+Before you start managing files, make sure you have [configured storage](/docs/web/storage/configuration).
+
+## Permissions
+
+Most S3-compatible storage providers allow you to configure bucket permissions and access policies. It's crucial to properly set these up to secure your files and control who can access them.
+
+Here are some key security recommendations:
+
+- Keep your bucket private by default
+- Use IAM roles and policies to manage access
+- Enable server-side encryption for sensitive data
+- Configure CORS settings appropriately for client-side uploads
+- Regularly audit bucket permissions and access logs
+
+Making your bucket public is strongly discouraged as it can expose sensitive data and lead to unauthorized access and unexpected costs from bandwidth usage.
+
+For detailed guidance on configuring bucket policies and permissions, refer to your storage provider's documentation:
+
+- [AWS S3 Security Documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-policy-language-overview.html)
+- [DigitalOcean Spaces Security](https://docs.digitalocean.com/products/spaces/how-to/manage-access/)
+- [Cloudflare R2 Security](https://developers.cloudflare.com/r2/api/s3/tokens/)
+- [Supabase Storage Security](https://supabase.com/docs/guides/storage/security/access-control)
+
+## Uploading files
+
+As explained in the [overview](/docs/web/storage/overview), Astra uses presigned URLs to upload files to your storage provider.
+
+We prepared a special endpoint to generate presigned URLs for your uploads to use in your client-side code.
+
+```ts title="storage/router.ts"
+export const storageRouter = new Hono().get(
+  "/upload",
+  enforceAuth,
+  validate("query", getObjectUrlSchema),
+  async (c) => c.json(await getUploadUrl(c.req.valid("query"))),
+);
+```
+
+<Callout title="Expiration time" type="warn">
+  The signed URL is only valid for a limited time and will work for anyone who has access to it
+  during that period. Make sure to handle the URL securely and avoid exposing it to unauthorized
+  users.
+</Callout>
+
+Then, you can use it to upload files to the generated presigned URL from your frontend code:
+
+```tsx title="upload.tsx"
+const upload = useMutation({
+    mutationFn: async (data: { file?: File }) => {
+      const extension = data.file?.type.split("/").pop();
+      const path = `files/${crypto.randomUUID()}.${extension}`;
+
+      const { url: uploadUrl } = await handle(api.storage.upload.$get)({
+        query: { path },
+      });
+
+      const response = await fetch(uploadUrl, {
+        method: "PUT",
+        body: data.file,
+        headers: {
+          "Content-Type": data.file?.type ?? "",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file!");
+      }
+    },
+    onError: (error) => {
+      toast.error(error.message});
+    },
+    onSuccess: async ({ publicUrl, oldImage }, _b, context) => {
+      toast.success("File uploaded!");
+    },
+  });
+```
+
+The code above demonstrates how to implement file uploads in your application:
+
+1. First, we have a server-side endpoint (`storageRouter`) that generates presigned URLs for uploads. This endpoint:
+   - [Requires authentication](/docs/web/api/protected-routes) via `enforceAuth`
+   - Validates the request parameters using `validate`
+   - Returns a presigned URL for uploading
+
+2. Then, in the frontend code (`upload.tsx`), we use React Query's `useMutation` hook to handle the upload process:
+   - Requests a presigned URL from the server
+   - Uploads the file directly to the storage provider using the presigned URL
+   - Handles success and error cases with toast notifications
+
+This approach ensures secure file uploads while avoiding server bandwidth costs and function timeout issues.
+
+### Public uploads
+
+Although **it's not recommended** to use public uploads in production, you can use the same endpoint to generate presigned URLs for public uploads:
+
+```ts title="storage/router.ts"
+export const storageRouter = new Hono().get(
+  "/upload",
+  validate("query", getObjectUrlSchema),
+  async (c) => c.json(await getUploadUrl(c.req.valid("query"))),
+);
+```
+
+Just remove the `enforceAuth` middleware from the endpoint and keep rest of the logic the same.
+
+## Displaying files
+
+We provide dedicated endpoints for retrieving signed URLs specifically for displaying files. These URLs are time-limited to maintain security, so they cannot be used for permanent storage or long-term access:
+
+```ts title="storage/router.ts"
+export const storageRouter = new Hono().get(
+  "/signed",
+  enforceAuth,
+  validate("query", getObjectUrlSchema),
+  async (c) => c.json(await getSignedUrl(c.req.valid("query"))),
+);
+```
+
+This endpoint is perfect for displaying files that should only be accessible to authorized users for a limited time.
+
+### Public files
+
+For displaying files publicly (without authorization and time limitations), you can use the `/public` endpoint:
+
+```ts title="storage/router.ts"
+export const storageRouter = new Hono().get(
+  "/public",
+  validate("query", getObjectUrlSchema),
+  async (c) => c.json(await getPublicUrl(c.req.valid("query"))),
+);
+```
+
+This endpoint generates a public URL for the file that you can use to display in your application. Please ensure that your bucket policy allows public access to the files and verify that you're not exposing any sensitive information.
+
+## Deleting files
+
+Deleting files works almost the same way as uploading files. You just need to generate a presigned URL for deletion and then use it to remove the file:
+
+```ts title="storage/router.ts"
+export const storageRouter = new Hono().get(
+  "/delete",
+  validate("query", getObjectUrlSchema),
+  async (c) => c.json(await getDeleteUrl(c.req.valid("query"))),
+);
+```
+
+Then, in the frontend code, we use React Query's `useMutation` hook to handle the deletion process:
+
+```tsx title="delete.tsx"
+const remove = useMutation({
+  mutationFn: async () => {
+    const path = file.split("/").pop();
+    if (!path) return;
+
+    const { url: deleteUrl } = await handle(api.storage.delete.$get)({
+      query: { path: `files/${path}` },
+    });
+
+    await fetch(deleteUrl, {
+      method: "DELETE",
+    });
+  },
+  onError: (error) => {
+    toast.error(error.message);
+  },
+  onSuccess: () => {
+    toast.success("File removed!");
+  },
+});
+```
+
+Now that you understand how to manage files in Astra, it's time to build something awesome! Try creating a file upload component, building a photo gallery, or implementing a document management system.

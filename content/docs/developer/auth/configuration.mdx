@@ -1,0 +1,135 @@
+---
+url: /docs/web/auth/configuration
+title: Configuration
+description: Configure authentication for your application.
+---
+
+Astra supports multiple different authentication methods:
+
+- **Password** - the traditional email/password method
+- **Magic Link** - passwordless email link authentication
+- **Passkey** - passkeys as an alternative to passwords
+- **Anonymous** - guest mode for unauthenticated users
+- **OAuth** - OAuth providers, [Apple](https://www.better-auth.com/docs/authentication/apple), [Google](https://www.better-auth.com/docs/authentication/google) and [Github](https://www.better-auth.com/docs/authentication/github) are set up by default
+
+All authentication methods are enabled by default, but you can easily customize them to your needs. You can enable or disable any method, and configure them according to your requirements.
+
+<Callout>
+  Remember that you can mix and match these methods or add new ones - for example, you can have both
+  password and magic link authentication enabled at the same time, giving your users more
+  flexibility in how they authenticate.
+</Callout>
+
+Authentication configuration can be customized through a simple configuration file. The following sections explain the available options and how to configure each authentication method based on your requirements.
+
+## API
+
+The **server-side** authentication configuration is set at `packages/auth/src/server.ts`. It confgures [Better Auth](https://better-auth.com) package to use the correct providers and settings:
+
+```ts title="server.ts"
+export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: true,
+    sendResetPassword: () => {},
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: () => {},
+  },
+  database: drizzleAdapter(db, {
+    provider: "pg",
+    schema,
+  }),
+  plugins: [
+    magicLink({
+      sendMagicLink: () => {},
+    }),
+    passkey(),
+    anonymous(),
+    expo(),
+    nextCookies(),
+  ],
+  socialProviders: {
+    [SocialProvider.APPLE]: {
+      clientId: env.APPLE_CLIENT_ID,
+      clientSecret: env.APPLE_CLIENT_SECRET,
+      appBundleIdentifier: env.APPLE_APP_BUNDLE_IDENTIFIER,
+    },
+    [SocialProvider.GOOGLE]: {
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+    },
+    [SocialProvider.GITHUB]: {
+      clientId: env.GITHUB_CLIENT_ID,
+      clientSecret: env.GITHUB_CLIENT_SECRET,
+    },
+  },
+
+  /* other configuration options */
+});
+```
+
+The configuration is validated against Better Auth's schema at runtime, providing immediate feedback if any settings are incorrect or insecure. This validation ensures your authentication setup remains robust and properly configured.
+
+All authentication routes and handlers are centralized within the [Hono API](/docs/web/api/overview), giving you a single source of truth and complete control over the authentication flow. This centralization makes it easier to maintain, debug, and customize the authentication process as needed.
+
+[Read more about it in the official documentation](https://www.better-auth.com/docs/basic-usage).
+
+## UI
+
+We have separate configuration that determines what is displayed to your users in the **UI**. It's set at `apps/web/config/auth.ts`.
+
+The recommendation is to **not update this directly** - instead, please define the environment variables and override the default behavior.
+
+```ts title="apps/web/config/auth.ts"
+import env from "env.config";
+
+import { SocialProvider, authConfigSchema } from "@workspace/auth";
+
+import type { AuthConfig } from "@workspace/auth";
+
+export const authConfig = authConfigSchema.parse({
+  providers: {
+    password: env.NEXT_PUBLIC_AUTH_PASSWORD,
+    magicLink: env.NEXT_PUBLIC_AUTH_MAGIC_LINK,
+    passkey: env.NEXT_PUBLIC_AUTH_PASSKEY,
+    anonymous: env.NEXT_PUBLIC_AUTH_ANONYMOUS,
+    oAuth: [SocialProvider.APPLE, SocialProvider.GOOGLE, SocialProvider.GITHUB],
+  },
+}) satisfies AuthConfig;
+```
+
+The configuration is also validated using the Zod schema, so if something is off, you'll see the errors.
+
+For example, if you want to switch from password to magic link, you'd change the following environment variables:
+
+```dotenv title=".env.local"
+NEXT_PUBLIC_AUTH_PASSWORD=false
+NEXT_PUBLIC_AUTH_MAGIC_LINK=true
+```
+
+To display third-party providers in the UI, you need to set the `oAuth` array to include the provider you want to display. The default is Apple, Google and Github:
+
+```tsx title="apps/web/config/auth.ts"
+providers: {
+    ...
+    oAuth: [SocialProvider.APPLE, SocialProvider.GOOGLE, SocialProvider.GITHUB],
+    ...
+},
+```
+
+## Third party providers
+
+To enable third-party authentication providers, you'll need to:
+
+1. Set up an OAuth application in the provider's developer console (like [Apple Developer Portal](https://developer.apple.com/account/), [Google Cloud Console](https://console.cloud.google.com/), [Github Developer Settings](https://github.com/settings/developers) or any other provider you want to use)
+2. Configure the corresponding environment variables in your Astra application
+
+Each OAuth provider requires its own set of credentials and environment variables. Please refer to the [Better Auth documentation](https://better-auth.com/docs/concepts/oauth) for detailed setup instructions for each supported provider.
+
+<Callout title="Multiple environments">
+  Make sure to set both development and production environment variables appropriately. Your OAuth
+  provider may require different callback URLs for each environment.
+</Callout>

@@ -1,0 +1,38 @@
+---
+url: /docs/web/auth/overview
+title: Overview
+description: Get started with authentication.
+---
+
+Astra uses [Better Auth](https://better-auth.com) to handle authentication. It's a secure, production-ready authentication solution that integrates seamlessly with many frameworks and provides enterprise-grade security out of the box.
+
+<Callout title="Why Better Auth?">
+  One of the core principles of Astra is to do things **as simple as possible**, and to make everything **as performant as possible**.
+
+Better Auth provides an excellent developer experience with minimal configuration required, while maintaining enterprise-grade security standards. Its framework-agnostic approach and focus on performance makes it the perfect choice for Astra.
+
+Recently, Better Auth [announced](https://www.better-auth.com/blog/authjs-joins-better-auth) an incorporation of [Auth.js (27k+ stars on Github)](https://authjs.dev/), making it even more powerful and flexible.
+
+</Callout>
+
+You can read more about Better Auth in the [official documentation](https://better-auth.com/docs).
+
+Astra supports multiple authentication methods:
+
+- **Password** - the traditional email/password method
+- **Magic Link** - magic links
+- **Passkey** - passkeys ([WebAuthn](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API))
+- **Anonymous** - allowing users to proceed anonymously
+- **OAuth** - OAuth social providers ([Apple](https://www.better-auth.com/docs/authentication/apple), [Google](https://www.better-auth.com/docs/authentication/google) and [Github](https://www.better-auth.com/docs/authentication/github) preconfigured)
+- **Forward Auth** - Kubernetes ingress integration for nginx/Traefik
+- **OIDC Provider** — SSO for apps like Grafana, Weave GitOps
+
+As well as common applications flows, with ready-to-use views and components:
+
+- **Sign in** - sign in with email/password or OAuth providers
+- **Sign up** - sign up with email/password or OAuth providers
+- **Sign out** - sign out
+- **Password recovery** - forgot and reset password
+- **Email verification** - verify email
+
+You can construct your auth flow like LEGO bricks - plug in needed parts and customize them to your needs.

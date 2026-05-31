@@ -1,0 +1,357 @@
+---
+url: /docs/web/installation/commands
+title: Common commands
+description: Learn about common commands you need to know to work with the project.
+---
+
+<Callout>
+  For sure, you don't need these commands to kickstart your project, but it's useful to know they
+  exist for when you need them.
+</Callout>
+
+<Callout title="Want shorter commands?">
+  You can set up aliases for these commands in your shell configuration file. For example, you can set up an alias for `pnpm` to `p`:
+
+```bash title="~/.bashrc"
+alias p='pnpm'
+```
+
+Or, if you're using [Zsh](https://ohmyz.sh/), you can add the alias to `~/.zshrc`:
+
+```bash title="~/.zshrc"
+alias p='pnpm'
+```
+
+Then run `source ~/.bashrc` or `source ~/.zshrc` to apply the changes.
+
+You can now use `p` instead of `pnpm` in your terminal. For example, `p i` instead of `pnpm install`.
+
+</Callout>
+
+<Callout title="Injecting environment variables">
+  To inject environment variables into the command you run, prefix it with `with-env`:
+
+```bash
+pnpm with-env <command>
+```
+
+For example, `pnpm with-env pnpm build` will run `pnpm build` with the environment variables injected.
+
+Some commands, like `pnpm dev`, automatically inject the environment variables for you.
+
+</Callout>
+
+## Installing dependencies
+
+To install the dependencies, run:
+
+```bash
+pnpm install
+```
+
+## Starting development server
+
+Start development server by running:
+
+```bash
+pnpm dev
+```
+
+## Building project
+
+To build the project (including all apps and packages), run:
+
+```bash
+pnpm build
+```
+
+## Building specific app/package
+
+To build a specific app/package, run:
+
+```bash
+pnpm turbo build --filter=<package-name>
+```
+
+## Cleaning project
+
+To clean the project, run:
+
+```bash
+pnpm clean
+```
+
+Then, reinstall the dependencies:
+
+```bash
+pnpm install
+```
+
+## Formatting code
+
+To check for formatting errors using Prettier, run:
+
+```bash
+pnpm format
+```
+
+To fix formatting errors using Prettier, run:
+
+```bash
+pnpm format:fix
+```
+
+## Linting code
+
+To check for linting errors using ESLint, run:
+
+```bash
+pnpm lint
+```
+
+To fix linting errors using ESLint, run:
+
+```bash
+pnpm lint:fix
+```
+
+## Typechecking
+
+To typecheck the code using TypeScript for any type errors, run:
+
+```bash
+pnpm typecheck
+```
+
+## Adding UI components
+
+<Tabs items={["Web", "Mobile"]}>
+  <Tab value="Web">
+    To add a new web component, run:
+
+    ```bash
+    pnpm --filter @workspace/ui-web ui:add
+    ```
+
+    This command will add and export a new component to `@workspace/ui-web` package.
+
+  </Tab>
+
+  <Tab value="Mobile">
+    To add a new mobile component, run:
+
+    ```bash
+    pnpm --filter @workspace/ui-mobile ui:add
+    ```
+
+    This command will add and export a new component to `@workspace/ui-mobile` package.
+
+  </Tab>
+</Tabs>
+
+## Services commands
+
+<Callout title="Prerequisite: Docker installed">
+  To run the services containers locally, you need to have [Docker](https://www.docker.com/) installed on your machine.
+
+You can always use the cloud-hosted solution (e.g. [Neon](https://neon.tech/), [Turso](https://turso.tech/) for database) for your projects.
+
+</Callout>
+
+We have a few commands to help you manage the services containers (for local development).
+
+### Starting containers
+
+To start the services containers, run:
+
+```bash
+pnpm services:start
+```
+
+It will run all the services containers. You can check their configs in `docker-compose.yml`.
+
+### Setting up services
+
+To setup all the services, run:
+
+```bash
+pnpm services:setup
+```
+
+It will start all the services containers and run necessary setup steps.
+
+### Stopping containers
+
+To stop the services containers, run:
+
+```bash
+pnpm services:stop
+```
+
+### Displaying status
+
+To check the status and logs of the services containers, run:
+
+```bash
+pnpm services:status
+```
+
+### Displaying logs
+
+To display the logs of the services containers, run:
+
+```bash
+pnpm services:logs
+```
+
+### Database commands
+
+We have a few commands to help you manage the database leveraging [Drizzle CLI](https://orm.drizzle.team/kit-docs/commands).
+
+#### Generating migrations
+
+To generate a new migration, run:
+
+```bash
+pnpm with-env turbo db:generate
+```
+
+It will create a new migration `.sql` file in the `packages/db/migrations` folder.
+
+#### Running migrations
+
+To run the migrations against the db, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:migrate
+```
+
+It will apply all the pending migrations.
+
+#### Pushing changes directly
+
+<Callout type="warn" title="Don't mess up with your schema!">
+  Make sure you know what you're doing before pushing changes directly to the db.
+</Callout>
+
+To push changes directly to the db, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:push
+```
+
+It lets you push your schema changes directly to the database and omit managing SQL migration files.
+
+#### Checking database status
+
+To check the status of the database, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:status
+```
+
+It will display the status of the applied migrations and the pending ones.
+
+```bash
+Applied migrations:
+- 0000_cooing_vargas
+- 0001_curious_wallflower
+- 0002_good_vertigo
+- 0003_peaceful_devos
+- 0004_fat_mad_thinker
+- 0005_yummy_bucky
+- 0006_glorious_vargas
+
+Pending migrations:
+- 0007_nebulous_havok
+```
+
+#### Resetting database
+
+To reset the database, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:reset
+```
+
+It will reset the database to the initial state.
+
+#### Seeding database
+
+To seed the database with some example data (for development purposes), run:
+
+```bash
+pnpm with-env turbo db:seed
+```
+
+It will populate your database with some example data.
+
+#### Checking database
+
+To check the database schema consistency, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:check
+```
+
+#### Studying database
+
+To study the database schema in the browser, run:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:studio
+```
+
+This will start the Studio on [https://local.drizzle.studio](https://local.drizzle.studio).
+
+## Tests commands
+
+### Running tests
+
+To run the tests, run:
+
+```bash
+pnpm test
+```
+
+This will run all the tests in the project using Turbo tasks. As it leverages Turbo caching, it's [recommended](/docs/web/tests/unit#configuration) to run it in your CI/CD pipeline.
+
+### Running tests projects
+
+To run tests for all Vitest [Test Projects](https://vitest.dev/guide/projects), run:
+
+```bash
+pnpm test:projects
+```
+
+This will run all the tests in the project using Vitest.
+
+### Watching tests
+
+To watch the tests, run:
+
+```bash
+pnpm test:projects:watch
+```
+
+This will watch the tests for all [Test Projects](https://vitest.dev/guide/projects) and run them automatically when you make changes.
+
+### Generating code coverage
+
+To generate code coverage report, run:
+
+```bash
+pnpm turbo test:coverage
+```
+
+This will generate a code coverage report in the `coverage` directory under `tooling/vitest` package.
+
+### Viewing code coverage
+
+To preview the code coverage report in the browser, run:
+
+```bash
+pnpm turbo test:coverage:view
+```
+
+This will launch the report's `.html` file in your default browser.

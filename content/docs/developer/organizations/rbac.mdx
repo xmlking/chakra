@@ -1,0 +1,99 @@
+---
+url: /docs/web/organizations/rbac
+title: RBAC (Roles & Permissions)
+description: Manage roles, permissions, and access scopes.
+---
+
+Role-based access control (RBAC) lets you define who can do what in an organization.
+
+<Callout title="New to RBAC?">
+  If you're new to the RBAC concept, a simple mental model is:
+
+- Users belong to organizations.
+- Users get roles.
+- Roles map to permissions on resources.
+
+</Callout>
+
+In Astra, we primarily rely on the [Better Auth plugin](https://www.better-auth.com/docs/plugins/organization) for the heavy lifting - roles, permissions, teams, and member management - while handling critical logic with our own code.
+
+This provides a flexible access control system, letting you control user access based on their role in the organization. You can also define custom permissions per role.
+
+<Callout title="Everything is configured out of the box!">
+  Astra ships with the default RBAC system configured out of the box. This setup may be enough if you're not planning a very complex access control system, but you can also easily customize it to your needs.
+
+It also includes [protecting routes](/docs/web/api/protected-routes) that users with specific roles can access by adding custom middlewares and disabling certain actions in the UI.
+
+</Callout>
+
+## Roles
+
+Roles are named bundles of permissions. Keep them few and well-defined. By default, we have the following roles:
+
+```ts
+const MemberRole = {
+  MEMBER: "member",
+  ADMIN: "admin",
+  OWNER: "owner",
+} as const;
+```
+
+A user can have multiple roles in an organization. For example, a user can be a member and an admin (if it makes sense for your application).
+
+<Callout type="warn" title="Don't confuse organization admin with super admin">
+  The organization's `admin` role is **different** from the user's global `admin` role.
+
+The organization `admin` governs permissions only inside the organization, whereas the global `admin` controls access to the [super admin dashboard](/docs/web/admin/overview).
+
+</Callout>
+
+To create additional roles with custom permissions, see the [official documentation](https://www.better-auth.com/docs/plugins/organization#create-access-control) for more details.
+
+## Permissions
+
+Permissions represent what actions a role can perform on which resources. To check if the current user has permission to perform an action, you can use the `hasPermission` function.
+
+```ts
+const canCreateProject = await authClient.organization.hasPermission({
+  permissions: {
+    project: ["create"],
+  },
+});
+```
+
+Or, if you're performing the check on the server, you can use the `hasPermission` function from the `auth.api` object.
+
+```ts
+await auth.api.hasPermission({
+  headers: await headers(),
+  body: {
+    permissions: {
+      project: ["create"], // This must match the structure in your access control
+    },
+  },
+});
+```
+
+Once your roles and permissions are defined, you can avoid server checks (e.g., to reduce API calls) by using the client-side `checkRolePermission` function.
+
+```ts
+const { activeMember } = useActiveOrganization();
+
+const canUpdateProject = authClient.organization.checkRolePermission({
+  permissions: {
+    project: ["update"],
+  },
+  role: activeMember.role,
+});
+```
+
+We leverage the existing custom hook to retrieve the active member role within the [active organization](/docs/web/organizations/active-organization) context. That way, you can easily check whether a member has permission to perform an action without a server round trip.
+
+<Callout type="warn">
+  This does not include any dynamic roles or permissions because everything runs synchronously on
+  the client-side. Use the `hasPermission` APIs to include checks for dynamic roles and permissions.
+</Callout>
+
+If you need to add more granular permissions to existing roles, or create new ones, use the [`createAccessControl`](https://www.better-auth.com/docs/plugins/organization#custom-permissions) API.
+
+For further customization - such as dynamic access control, lifecycle hooks, or team management - see the guidance in the [official documentation](https://www.better-auth.com/docs/plugins/organization).
