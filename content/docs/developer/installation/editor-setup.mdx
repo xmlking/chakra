@@ -1,0 +1,83 @@
+---
+url: /docs/web/installation/editor-setup
+title: Editor setup
+description: Learn how to set up your editor for the fastest development experience.
+---
+
+Of course you can use every IDE you like, but you will have the best possible developer experience with this starter kit when using **VSCode-based** editor with the suggested settings and extensions.
+
+## Settings
+
+We have included most recommended settings in the `.vscode/settings.json` file to make your development experience as smooth as possible. It include mostly configs for tools like Prettier, ESLint and Tailwind which are used to enforce some conventions across the codebase. You can adjust them to your needs.
+
+## LLM rules
+
+We exposed a special endpoint that will scan all the docs and return the content as a text file which you can use to train your LLM or put in a prompt. You can find it at [/llms.txt](/llms.txt).
+
+The repository also includes a custom rules for most popular AI editors and agents to ensure that AI completions are working as expected and following our conventions.
+
+### AGENTS.md
+
+We've integrated specific rules that help maintain code quality and ensure AI-assisted completions align with our project standards.
+
+You can find them in the `AGENTS.md` file at the root of the project. This format is a standardized way to instruct AI agents to follow project conventions when generating code and it's used by over **20,000** open-source projects - including [Cursor](https://cursor.sh/), [Aider](https://aider.chat/), [Codex from OpenAI](https://openai.com/blog/openai-codex/), [Jules from Google](https://jules.ai/), [Windsurf](https://windsurf.dev/), and many others.
+
+```md title="AGENTS.md"
+### Code Style and Structure
+
+- Write concise, technical TypeScript code with accurate examples
+- Use functional and declarative programming patterns; avoid classes
+- Prefer iteration and modularization over code duplication
+
+### Naming Conventions
+
+....
+```
+
+To learn more about `AGENTS.md` rules check out the [official documentation](https://agents.md/).
+
+## Extensions
+
+Once you cloned the project and opened it in VSCode you should be promted to install suggested extensions which are defined in the `.vscode/extensions.json` automatically. In case you rather want to install them manually you can do so at any time later.
+
+These are the extensions we recommend:
+
+### ESLint
+
+Global extension for static code analysis. It will help you to find and fix problems in your JavaScript code.
+
+<Card
+  title="Download ESLint"
+  href="https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint"
+  description="marketplace.visualstudio.com"
+/>
+
+### Prettier
+
+Global extension for code formatting. It will help you to keep your code clean and consistent.
+
+<Card
+  title="Download Prettier"
+  href="https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode"
+  description="marketplace.visualstudio.com"
+/>
+
+### Pretty TypeScript Errors
+
+Improves TypeScript error messages shown in the editor.
+
+<Card
+  title="Download Pretty TypeScript Errors"
+  href="https://marketplace.visualstudio.com/items?itemName=yoavbls.pretty-ts-errors"
+  description="marketplace.visualstudio.com"
+/>
+
+### Tailwind CSS IntelliSense
+
+Adds IntelliSense for Tailwind CSS classes to enable autocompletion and linting.
+
+<Card
+  title="Download Tailwind CSS IntelliSense"
+  href="https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss"
+  description="marketplace.visualstudio.com"
+/>

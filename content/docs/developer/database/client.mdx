@@ -1,0 +1,78 @@
+---
+url: /docs/web/database/client
+title: Database client
+description: Use database client to interact with the database.
+---
+
+The database client is an export of the Drizzle client. It is automatically typed by Drizzle based on the schema and is exposed as the db object from the database package (`@workspace/db`) in the monorepo.
+
+This guide covers how to initialize the client and also basic operations, such as querying, creating, updating, and deleting records. To learn more about the Drizzle client, check out the [official documentation](https://orm.drizzle.team/kit-docs/overview).
+
+## Initializing the client
+
+Pass the validated `DATABASE_URL` to the client to initialize it.
+
+```ts title="server.ts"
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
+import { env } from "../env";
+
+const client = postgres(env.DATABASE_URL);
+export const db = drizzle(client);
+```
+
+Now it's exported from the `@workspace/db` package and can be used across the codebase (server-side).
+
+## Querying data
+
+To query data, you can use the `db` object and its methods:
+
+```ts title="query.ts"
+import { eq } from "@workspace/db";
+import { db } from "@workspace/db/server";
+import { customer } from "@workspace/db/schema";
+
+export const getCustomerByUserId = async (userId: string) => {
+  const [data] = await db.select().from(customer).where(eq(customer.userId, userId));
+
+  return data ?? null;
+};
+```
+
+<Cards className="sm:grid-cols-3">
+  <Card title="Select" description="orm.drizzle.team" href="https://orm.drizzle.team/docs/select" />
+
+<Card
+  title="Filters"
+  description="orm.drizzle.team"
+  href="https://orm.drizzle.team/docs/operators"
+/>
+
+  <Card title="Joins" description="orm.drizzle.team" href="https://orm.drizzle.team/docs/joins" />
+</Cards>
+
+## Mutating data
+
+You can use the exported utilities to mutate data. Insert, update or delete records in fast and fully type-safe way:
+
+```ts title="mutation.ts"
+import { eq } from "@workspace/db";
+import { db } from "@workspace/db/server";
+import { customer } from "@workspace/db/schema";
+
+export const upsertCustomer = (data: InsertCustomer) => {
+  return db.insert(customer).values(data).onConflictDoUpdate({
+    target: customer.userId,
+    set: data,
+  });
+};
+```
+
+<Cards className="sm:grid-cols-3">
+  <Card title="Insert" description="orm.drizzle.team" href="https://orm.drizzle.team/docs/insert" />
+
+<Card title="Update" description="orm.drizzle.team" href="https://orm.drizzle.team/docs/update" />
+
+  <Card title="Delete" description="orm.drizzle.team" href="https://orm.drizzle.team/docs/delete" />
+</Cards>

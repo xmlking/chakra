@@ -1,0 +1,42 @@
+---
+url: /docs/web/troubleshooting/emails
+title: Emails
+description: Find answers to common emails issues.
+---
+
+## I want to use a different email provider
+
+Of course! You can use any email provider that you want. All you need to do is to implement the `EmailProviderStrategy` and export it in your `index.ts` file.
+
+[Read more about sending emails](/docs/web/emails/sending)
+
+## My emails are landing in the spam folder
+
+Emails landing in spam folders is a common issue. Here are key steps to improve deliverability:
+
+1. **Configure proper domain setup**:
+   - Use a dedicated subdomain for sending emails (e.g., mail.yourdomain.com)
+   - Ensure [reverse DNS (PTR) records](https://www.cloudflare.com/learning/dns/dns-records/dns-ptr-record/) are properly configured
+   - Warm up your sending domain gradually
+
+2. **Implement authentication protocols**:
+   - Set up [SPF records](https://www.cloudflare.com/learning/dns/dns-records/dns-spf-record/) to specify authorized sending servers
+   - Enable [DKIM signing](https://www.cloudflare.com/learning/dns/dns-records/dns-dkim-record/) to verify email authenticity
+   - Configure [DMARC policies](https://www.cloudflare.com/learning/dns/dns-records/dns-dmarc-record/) to prevent spoofing
+
+3. **Follow deliverability best practices**:
+   - Include clear unsubscribe mechanisms in all marketing communications
+   - Personalize content appropriately
+   - Avoid excessive promotional language and spam triggers
+   - Maintain consistent HTML formatting and styling
+   - Only include links to verified domains
+   - Keep a regular sending schedule
+   - Clean your email lists regularly
+   - Use double opt-in for new subscribers
+
+4. **Monitor and optimize**:
+   - Track key metrics like delivery rates, opens, and bounces
+   - Monitor spam complaint rates
+   - Review email authentication reports
+   - Test emails across different clients and devices
+   - Adjust sending practices based on performance data

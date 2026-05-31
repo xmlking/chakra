@@ -1,0 +1,83 @@
+---
+url: /docs/web/database/schema
+title: Schema
+description: Learn about the database schema.
+---
+
+Creating a schema for your data is one of the primary tasks when building a new application.
+
+You can find the schema of each table in `packages/db/src/schema` directory. The schema is organized by domain and each file groups related tables together (e.g. `billing.ts` contains the `customer`, `order` and `subscription` tables).
+
+## Defining schema
+
+The schema is defined using SQL-like utilities from [drizzle-orm](https://orm.drizzle.team/docs/sql-schema-declaration).
+
+It supports all the SQL features, such as enums, indexes, foreign keys, extensions and more.
+
+<Callout title="Code-first approach">
+  We're relying on the [code-first approach](https://orm.drizzle.team/docs/migrations), where we
+  define the schema in code and then generate the SQL from it. That way we can approach full
+  type-safety and the simplest flow for database updates and migrations.
+</Callout>
+
+## Example
+
+Let's take a look at the `subscription` table, where we store information about our customers' subscriptions.
+
+```typescript title="billing.ts"
+export const subscription = pgTable(
+  "subscription",
+  {
+    id: text().primaryKey().$defaultFn(generateId),
+    customerId: text()
+      .references(() => customer.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
+    externalId: text().notNull(),
+    variantId: text().notNull(),
+    status: subscriptionStatusEnum().notNull(),
+    store: text().notNull(),
+    periodStartsAt: timestamp().notNull(),
+    periodEndsAt: timestamp().notNull(),
+    trialStartsAt: timestamp(),
+    trialEndsAt: timestamp(),
+    createdAt: timestamp().notNull().defaultNow(),
+    updatedAt: timestamp()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [unique().on(t.externalId, t.store)],
+);
+```
+
+We're using a few native SQL utilities here, such as:
+
+- `pgTable` - a table definition.
+- `primaryKey` - a primary key.
+- `defaultFn` - a default function.
+- `$onUpdate` - an on update function.
+- `notNull` - a not null constraint.
+- `defaultNow` - a default now function.
+- `timestamp` - a timestamp.
+- `text` - a text.
+- `unique` - a unique constraint.
+- `references` - a reference to another table.
+
+What's more, Drizzle gives us the ability to export the TypeScript types for the table, which we can reuse e.g. for the API calls.
+
+Also, we can use the drizzle extension [drizzle-zod](https://orm.drizzle.team/docs/zod) to generate the Zod schemas for the table.
+
+```typescript title="customer.ts"
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+
+export const insertSubscriptionSchema = createInsertSchema(subscription);
+export const selectSubscriptionSchema = createSelectSchema(subscription);
+export const updateSubscriptionSchema = createUpdateSchema(subscription);
+
+export type SelectSubscription = z.infer<typeof selectSubscriptionSchema>;
+export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+export type UpdateSubscription = z.infer<typeof updateSubscriptionSchema>;
+```
+
+Then we can use the generated schemas in API handlers and form validations to validate the data.

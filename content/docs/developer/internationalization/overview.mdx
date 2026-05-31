@@ -1,0 +1,35 @@
+---
+url: /docs/web/internationalization/overview
+title: Overview
+description: Get started with internationalization in Astra.
+---
+
+Astra uses [i18next](https://www.i18next.com/) for internationalization, which is one of the most popular and mature (over 10 years of development!) i18n frameworks for JavaScript.
+
+<Callout title="Why i18next?">
+  With i18next, you can easily translate your application into multiple languages, handle complex
+  pluralization rules, format dates and numbers according to locale, and much more. The framework is
+  highly extensible through plugins and provides excellent TypeScript support out of the box.
+</Callout>
+
+You can read more about `i18next` package in the [official documentation](https://www.i18next.com/overview/getting-started).
+
+## Getting started
+
+Astra comes with `i18next` pre-configured and abstracted behind the `@workspace/i18n` package. This abstraction layer ensures that any future changes to the underlying translation library won't impact your application code. The internationalization setup is ready to use out of the box and includes:
+
+- Multiple language support out of the box
+- Type-safe translations with generated types
+- Automatic language detection
+- Easy-to-use React hooks for translations
+- Built-in number and date formatting
+- Support for nested translation keys
+- Pluralization handling
+
+To start using internationalization in your app, you'll need to:
+
+1. Configure your supported languages
+2. Add translation files
+3. Use translation hooks in your components
+
+Check out the following sections to learn more about each step:

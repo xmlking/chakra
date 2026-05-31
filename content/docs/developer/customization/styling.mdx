@@ -1,0 +1,144 @@
+---
+url: /docs/web/customization/styling
+title: Styling
+description: Get started with styling your app.
+---
+
+To build the web user interface, Astra comes with [Tailwind CSS](https://tailwindcss.com/) and [Radix UI](https://www.radix-ui.com/) pre-configured.
+
+<Callout title="Why Tailwind CSS and Radix UI?" type="info">
+  The combination of Tailwind CSS and Radix UI gives ready-to-use, accessible UI components that can
+  be fully customized to match your brand's design.
+</Callout>
+
+## Tailwind configuration
+
+In the `packages/ui/shared/src/styles` directory, you will find shared CSS files with Tailwind CSS configuration. To change global styles, you can edit the files in this folder.
+
+Here is an example of a shared CSS file that includes the Tailwind CSS configuration:
+
+```css title="packages/ui/shared/src/styles/globals.css"
+@import "tailwindcss";
+@import "./themes.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.65rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  ...
+}
+```
+
+For colors, we rely strictly on [CSS Variables](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties) in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) format to allow for easy theme management without the need for any JavaScript.
+
+Also, each app has its own `globals.css` file, which extends the shared config and allows you to override the global styles.
+
+Here is an example of an app's `globals.css` file:
+
+```css title="apps/web/src/assets/styles/globals.css"
+@import "@workspace/ui/globals.css";
+@import "@workspace/ui-web/globals.css";
+
+@theme inline {
+  /* Overridden theme variables for the app */
+  --background: oklch(0.98 0.01 80);
+  --foreground: oklch(0.22 0.03 120);
+  --card: oklch(0.97 0.02 50);
+  --card-foreground: oklch(0.18 0.01 280);
+  ...
+}
+```
+
+This way, we maintain a separation of concerns and a clear structure for the Tailwind CSS configuration.
+
+## Themes
+
+Astra comes with **9+** predefined themes, which you can use to quickly change the look and feel of your app.
+
+They're defined in the `packages/ui/shared/src/styles/themes` directory. Each theme is a set of variables that can be overridden:
+
+```ts title="packages/ui/shared/src/styles/themes/colors/orange.ts"
+export const orange = {
+  light: {
+    background: [1, 0, 0],
+    foreground: [0.141, 0.005, 285.823],
+    card: [1, 0, 0],
+    "card-foreground": [0.141, 0.005, 285.823],
+    ...
+  }
+} satisfies ThemeColors;
+```
+
+Each variable is stored as a [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch) array, which is then converted to a CSS variable at build time (by our custom build script). That way we can ensure full type-safety and reuse themes across different parts of our apps (e.g. use the same theme in emails).
+
+Feel free to add your own themes or override the existing ones to match your brand's identity.
+
+To apply a theme to your app, you can use the `data-theme` attribute on the `html` element:
+
+```tsx title="apps/web/src/app/layout.tsx"
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html>
+      <body data-theme="orange">{children}</body>
+    </html>
+  );
+}
+```
+
+## Dark mode
+
+Astra comes with built-in dark mode support.
+
+Each theme has a corresponding set of dark mode variables, which are used to switch the theme to its dark mode counterpart.
+
+```ts title="packages/ui/shared/src/styles/themes/colors/orange.ts"
+export const orange = {
+  light: {},
+  dark: {
+    background: [0.141, 0.005, 285.823],
+    foreground: [0.985, 0, 0],
+    card: [0.21, 0.006, 285.885],
+    "card-foreground": [0.985, 0, 0],
+    ...
+  }
+} satisfies ThemeColors;
+```
+
+Because the dark variant is defined to use a class (`@custom-variant dark (&:is(.dark *))`) in the shared Tailwind configuration, we need to add the `dark` class to the `html` element to apply dark mode styles.
+
+For this purpose, we're using the [next-themes](https://github.com/pacocoursey/next-themes) package under the hood to handle user preference management.
+
+```tsx title="apps/web/src/providers/theme.tsx"
+export const ThemeProvider = memo<ThemeProviderProps>(({ children }) => {
+  return (
+    <NextThemeProvider attribute="class" defaultTheme={appConfig.theme.mode} enableSystem>
+      {children}
+      <ThemeConfigProvider />
+    </NextThemeProvider>
+  );
+});
+```
+
+You can also define the default theme mode and color in the [app configuration](/docs/web/configuration/app).
+
+<Cards>
+  <Card title="Tailwind CSS" description="tailwindcss.com" href="https://tailwindcss.com/" />
+
+  <Card title="Radix UI" description="radix-ui.com" href="https://www.radix-ui.com/" />
+</Cards>

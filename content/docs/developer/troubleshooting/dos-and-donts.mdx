@@ -1,0 +1,71 @@
+---
+title: DOs and DON'Ts
+description: "List of Do's and son'ts for frontend developers with respect to javascript frameworks"
+date: "2025-12-27T19:25:51.369Z"
+---
+
+## Overview
+
+List of Do's and son'ts for frontend developers with respect to javascript frameworks ;)
+
+## TanStack From
+
+### DefaultValue
+
+**TanStack Form** need `defaultValues` for both `Create` and `Update` cases. Otherwise you get `Changing an uncontrolled input to be controlled` error.
+
+Ref: [tanstack debugging](https://tanstack.com/form/v1/docs/framework/react/guides/debugging)
+
+<Callout type="info" title="TLDR">
+  Explicit `defaultValues` are required: TanStack Form uses `defaultValues` as the source of truth
+  for the form's initial structure and type inference.
+</Callout>
+
+### Zod schema for optional URL/Email fields
+
+`z.string().email().optional()` doesn't work, append `.or(z.literal(""))`
+
+Ref: [discussions 2801](https://github.com/colinhacks/zod/discussions/2801) , [issues 310](https://github.com/colinhacks/zod/issues/310)
+
+✅ DO
+
+```tsx
+backendUrl: (schema) =>
+  schema.url({ message: "Invalid backend URL" }).or(z.literal("")),
+```
+
+## TanStack Table
+
+### Excessive `Dialog` mounting
+
+Conditionally mount `Dialog` Components in Table's `ActionButton`.
+
+<Callout type="warn" title="Reason">
+  `ActionButton` is rendered for each row of a large table. Mounting them ahead of time before
+  needed, will result excessive use of memory.
+</Callout>
+
+✅ DO
+
+```tsx
+{
+  showUpsertDialog && (
+    <UpsertDialog
+      initialData={row.original}
+      open={showUpsertDialog}
+      setOpen={setShowUpsertDialog}
+    />
+  );
+}
+```
+
+## Drizzle Schema
+
+### No defaults values for zod schema
+
+when defining `drizzle-zod` schema for create/update input, don't set default values. Instead set default values in database schema
+
+<Callout type="warn" title="Reason">
+  Lets say you want to update `percentage` field to `0` and if you have default value in zod schema
+  as `45`, when update, next-safe-action will set it back to `45`
+</Callout>

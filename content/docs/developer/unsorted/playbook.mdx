@@ -1,0 +1,54 @@
+---
+title: Playbook
+description: "Step by step guide to create this repo"
+icon: Wrench
+date: "2025-12-27T19:25:51.368Z"
+---
+
+## Overview
+
+## Better Auth
+
+Using [@better-auth/cli](https://www.better-auth.com/docs/concepts/cli) to initialize and setup **[Better Auth](https://www.better-auth.com)**
+
+### Init
+
+The init command allows you to initialize Better Auth in your project iteratively.
+
+This will generate `auth-client.ts` , `auth.ts` and add dependencies.
+
+```shell
+cd apps/console
+bunx @better-auth/cli@latest init
+```
+
+### Generate
+
+Generate better auth database schema for [Drizzle ORL](https://orm.drizzle.team/)
+
+> Run the migration or generate the schema to add the necessary fields and tables to the database.
+
+```shell
+cd packages/db
+dotenv-run -v -- bunx @better-auth/cli generate --config ../../apps/console/src/lib/auth.ts --output src/schema/auth.ts
+```
+
+## React Email
+
+Setting up Resend / react-email
+
+Let's talk about the packages we just installed:
+
+- **resend**: It is the service that we will be using to send emails
+- **react-email**: It allows us to create email templates using React Js.
+- **@react-email/render**: For converting react js based templates to an html string.
+
+```shell
+cd apps/console
+bun add react-email -D -E
+bun add resend @react-email/components  @react-email/render -E
+```
+
+## References
+
+- How to send emails using Next.js 14, Resend and React-Email [blog](https://mydevpa.ge/blog/how-to-send-emails-using-next-14-resend-and-react-email)

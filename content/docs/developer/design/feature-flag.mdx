@@ -1,0 +1,309 @@
+---
+title: Feature Flags Admin - Design Specification
+description: ""
+date: "2025-12-27T19:27:18.188Z"
+---
+
+## Overview
+
+The admin page enables authorized users to manage feature flags through a web interface. It provides CRUD operations, real-time evaluation, rule management, and analytics insights.
+
+## Authentication & Authorization
+
+- **Protection**: Admin middleware enforces role-based access (`admin` role by default)
+- **Session**: Requires active Better Auth session with admin privileges
+- **Multi-tenancy**: Organization-scoped when `multiTenant.enabled: true`
+
+## Core UI Components
+
+### 1. Page Header
+
+```text
+[Feature Flags Admin]                    [+ Create Flag] [Refresh]
+```
+
+- **Title**: "Feature Flags Admin"
+- **Create Button**: Primary action to create new flags
+- **Refresh Button**: Manual refresh of flag data
+- **Search Bar**: Filter flags by name/key (debounced input)
+
+### 2. Flags List Table
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ Name/Key          | Type    | Status  | Rollout | Rules | Actions   │
+├─────────────────────────────────────────────────────────────────────┤
+│ new-dashboard     | boolean | enabled | 25%     | 2     | [E][D]    │
+│ ai-features       | string  | disabled| 0%      | 0     | [E][D]    │
+│ payment-v2        | variant | enabled | 50%     | 3     | [E][D]    │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+**Columns**:
+
+- **Name/Key**: Display name + flag key (monospace)
+- **Type**: Flag type (boolean, string, number, json, variant)
+- **Status**: Enabled/Disabled toggle
+- **Rollout**: Percentage or targeting info (hover for details)
+- **Rules**: Count of active rules (clickable)
+- **Actions**: Edit [E], Delete [D] buttons
+
+**Features**:
+
+- Sortable columns
+- Pagination for large datasets
+- Inline status toggle
+- Color coding (green=enabled, red=disabled, yellow=partial rollout)
+
+### 3. Flag Creation/Edit Modal
+
+#### Basic Information
+
+```text
+Name: [                    ]  (display name)
+Key:  [new-feature-flag    ]  (auto-generated from name)
+Type: [boolean ▼]             (boolean|string|number|json|variant)
+Description: [                                        ]
+
+☐ Enabled
+☐ Track analytics
+```
+
+#### Default Value
+
+```text
+Default Value: [false] (type-specific input)
+```
+
+#### Targeting Rules
+
+```text
+Rules (evaluated in order):     [+ Add Rule]
+
+Rule 1: [User Role] [equals] [admin]
+  → Return: [true]              [↑] [↓] [×]
+
+Rule 2: [User Attribute] [contains] [beta]
+  → Return: [true]              [↑] [↓] [×]
+
+Fallback: Return default value ([false])
+```
+
+**Rule Builder**:
+
+- **Condition Type**: User Role, User ID, User Attribute, Custom Header, Percentage
+- **Operator**: equals, not equals, contains, in, greater than, less than
+- **Value**: Dynamic input based on condition type
+- **Return Value**: Type-specific input
+- **Reordering**: Drag handles or up/down arrows
+
+#### Percentage Rollout
+
+```text
+☐ Enable percentage rollout
+Rollout: [25%] ────●────────── 100%
+
+☐ Sticky rollout (consistent per user)
+```
+
+#### Variants (for variant type flags)
+
+```text
+Variants:                       [+ Add Variant]
+
+control:  [{ "version": "v1" }] [×]
+treatment: [{ "version": "v2" }] [×]
+
+Distribution:
+control:    40% ──●──────────── 100%
+treatment:  60% ────────●────── 100%
+```
+
+### 4. Flag Details Panel
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ [new-dashboard]                                          [Edit] [×] │
+├─────────────────────────────────────────────────────────────────────┤
+│ Status: ● Enabled    Type: boolean    Created: 2024-01-15           │
+│ Description: New React-based dashboard with improved UX             │
+│                                                                     │
+│ Targeting Rules (2):                                                │
+│ 1. User role equals "admin" → true                                  │
+│ 2. User attribute "betaTester" equals true → true                   │
+│ 3. Fallback → false                                                 │
+│                                                                     │
+│ Rollout: 25% of eligible users                                      │
+│                                                                     │
+│ Analytics (Last 7 days):                                            │
+│ • Evaluations: 1,247                                                │
+│ • Unique users: 89                                                  │
+│ • True rate: 22%                                                    │
+│ • Performance: avg 2.3ms                                            │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 5. Live Evaluation Tester
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ Test Flag Evaluation                                                │
+├─────────────────────────────────────────────────────────────────────┤
+│ Flag: [new-dashboard ▼]                                             │
+│ User ID: [user123      ]                                            │
+│ Context:                                                            │
+│ {                                                                   │
+│   "userRole": "admin",                                              │
+│   "attributes": {                                                   │
+│     "tier": "pro"                                                   │
+│   }                                                                 │
+│ }                                                                   │
+│                                              [Test Evaluation]      │
+│                                                                     │
+│ Result: ✓ true                                                      │
+│ Reason: rule_match (User role equals "admin")                       │
+│ Latency: 1.2ms                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 6. User Overrides Management
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ User Overrides                                   [+ Add Override]   │
+├─────────────────────────────────────────────────────────────────────┤
+│ user123  | new-dashboard | true     | expires 2024-02-15 | [×]      │
+│ user456  | ai-features   | "beta"   | permanent          | [×]      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 7. Audit Log
+
+```text
+┌─────────────────────────────────────────────────────────────────────┐
+│ Audit Log                                                           │
+├─────────────────────────────────────────────────────────────────────┤
+│ 2024-01-20 14:30 | admin@company.com | updated | new-dashboard      │
+│ 2024-01-20 14:25 | admin@company.com | created | ai-features        │
+│ 2024-01-19 16:45 | admin@company.com | deleted | old-feature        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## Technical Requirements
+
+### State Management
+
+```typescript
+interface AdminPageState {
+  flags: FeatureFlag[];
+  loading: boolean;
+  error: string | null;
+  selectedFlag: FeatureFlag | null;
+  editingFlag: FeatureFlag | null;
+  testContext: EvaluationContext;
+  auditLogs: FlagAudit[];
+  overrides: FlagOverride[];
+}
+```
+
+### API Integration
+
+Uses admin endpoints from `/api/admin/flags`:
+
+- `GET /api/admin/flags` - List flags
+- `POST /api/admin/flags` - Create flag
+- `PATCH /api/admin/flags/:id` - Update flag
+- `DELETE /api/admin/flags/:id` - Delete flag
+- `GET /api/admin/flags/:id/stats` - Analytics data
+
+### Real-time Updates
+
+- WebSocket connection for live flag changes
+- Optimistic updates for better UX
+- Auto-refresh every 30 seconds
+- Manual refresh capability
+
+## User Experience
+
+### Responsive Design
+
+- Desktop-first (admin tool)
+- Minimum width: 1024px
+- Collapsible sidebar on smaller screens
+
+### Accessibility
+
+- ARIA labels for screen readers
+- Keyboard navigation support
+- Focus management in modals
+- High contrast color scheme option
+
+### Performance
+
+- Virtual scrolling for large flag lists
+- Debounced search input
+- Lazy loading of analytics data
+- Caching with cache invalidation
+
+### Error Handling
+
+- Toast notifications for actions
+- Inline validation errors
+- Fallback UI for failed states
+- Retry mechanisms for transient errors
+
+## Security Considerations
+
+### Client-side Validation
+
+- Input sanitization for flag names/descriptions
+- JSON schema validation for rule conditions
+- XSS prevention for user-generated content
+
+### Rate Limiting
+
+- Debounced API calls
+- Bulk operation limits
+- Progressive loading for large datasets
+
+### Audit Trail
+
+- All administrative actions logged
+- IP address and user agent tracking
+- Retention policy compliance
+
+## Implementation Notes
+
+### Technology Stack
+
+- React with TypeScript
+- Better Auth client integration
+- Tailwind CSS for styling
+- React Hook Form for forms
+- React Query for data fetching
+
+### File Structure
+
+```text
+src/admin/
+├── components/
+│   ├── FlagsList.tsx
+│   ├── FlagEditor.tsx
+│   ├── RuleBuilder.tsx
+│   ├── EvaluationTester.tsx
+│   └── AuditLog.tsx
+├── hooks/
+│   ├── useFlags.ts
+│   ├── useAuditLogs.ts
+│   └── useEvaluation.ts
+├── types/
+│   └── admin.ts
+└── AdminPage.tsx
+```
+
+### Progressive Enhancement
+
+- Works without JavaScript (basic CRUD)
+- Enhanced UX with JavaScript enabled
+- Offline support for viewing flags
+- Service worker for background sync
