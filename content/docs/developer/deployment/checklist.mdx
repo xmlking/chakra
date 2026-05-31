@@ -1,0 +1,198 @@
+---
+url: /docs/web/deployment/checklist
+title: Checklist
+description: Let's deploy your Astra app to production!
+---
+
+When you're ready to deploy your project to production, follow this checklist.
+
+This process may take a few hours and some trial and error, so buckle up - you're almost there!
+
+<Steps>
+  <Step>
+    ## Create database instance
+
+    **Why it's necessary?**
+
+    A production-ready database instance is essential for storing your application's data securely and reliably in the cloud. [PostgreSQL](https://www.postgresql.org/) is the recommended database for Astra due to its robustness, features, and wide support.
+
+    **How to do it?**
+
+    You have several options for hosting your PostgreSQL database:
+
+    * [Supabase](/docs/web/recipes/supabase) - Provides a fully managed Postgres database with additional features
+    * [Vercel Postgres](https://vercel.com/storage/postgres) - Serverless SQL database optimized for Vercel deployments
+    * [Neon](https://neon.tech/) - Serverless Postgres with automatic scaling
+    * [Turso](https://turso.tech/) - Edge database built on libSQL with global replication
+    * [DigitalOcean](https://www.digitalocean.com/products/managed-databases) - Managed database clusters with automated failover
+
+    Choose a provider based on your needs for:
+
+    * Pricing and budget
+    * Geographic region availability
+    * Scaling requirements
+    * Additional features (backups, monitoring, etc.)
+
+  </Step>
+
+  <Step>
+    ## Migrate database
+
+    **Why it's necessary?**
+
+    Pushing database migrations ensures that your database schema in the remote database instance is configured to match Astra's requirements. This step is crucial for the application to function correctly.
+
+    **How to do it?**
+
+    You basically have two possibilities of doing a migration:
+
+    <Tabs items={["Using Github Actions (recommended)", "Running locally"]}>
+      <Tab value="Using Github Actions (recommended)">
+        Astra comes with predefined Github Actions workflow to handle database migrations. You can find its definition in the `.github/workflows/publish-db.yml` file.
+
+        What you need to do is to set your `DATABASE_URL` as a [secret for your Github repository](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions).
+
+        Then, you can run the workflow which will publish the database schema to your remote database instance.
+
+        [Check how to run Github Actions workflow.](https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/manually-running-a-workflow)
+      </Tab>
+
+      <Tab value="Running locally">
+        You can also run your migrations locally, although this is not recommended for production.
+
+        To do so, set the `DATABASE_URL` environment variable to your database URL (that comes from your database provider) in `.env.local` file and run the following command:
+
+        ```bash
+        pnpm with-env pnpm --filter @workspace/db db:migrate
+        ```
+
+        This command will run the migrations and apply them to your remote database.
+
+        [Learn more about database migrations.](/docs/web/database/migrations)
+      </Tab>
+    </Tabs>
+
+  </Step>
+
+  <Step>
+    ## Configure OAuth Providers
+
+    **Why it's necessary?**
+
+    Configuring OAuth providers like [Google](https://www.better-auth.com/docs/authentication/google) or [Github](https://www.better-auth.com/docs/authentication/github) ensures that users can log in using their existing accounts, enhancing user convenience and security. This step involves setting up the OAuth credentials in the provider's developer console, configuring the necessary environment variables, and setting up callback URLs to point to your production app.
+
+    **How to do it?**
+
+    1. Follow the provider-specific guides to set up OAuth credentials for the providers you want to use. For example:
+       * [Apple OAuth setup guide](https://www.better-auth.com/docs/authentication/apple)
+       * [Google OAuth setup guide](https://www.better-auth.com/docs/authentication/google)
+       * [Github OAuth setup guide](https://www.better-auth.com/docs/authentication/github)
+    2. Once you have the credentials, set the corresponding environment variables in your project. For the example providers above:
+       * For Apple: `APPLE_CLIENT_ID` and `APPLE_CLIENT_SECRET`
+       * For Google: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+       * For Github: `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`
+    3. Ensure that the callback URLs for each provider are set to point to your production app. **This is crucial for the OAuth flow to work correctly.**
+
+    You can add or remove OAuth providers based on your needs. Just make sure to follow the provider's setup guide, set the required environment variables, and configure the callback URLs correctly.
+
+  </Step>
+
+  <Step>
+    ## Setup billing provider
+
+    **Why it's necessary?**
+
+    Well - you want to get paid, right? Setting up billing ensures that you can charge your users for using your SaaS application, enabling you to monetize your service and cover operational costs.
+
+    **How to do it?**
+
+    * Create a [Stripe](/docs/web/billing/stripe), [Lemon Squeezy](/docs/web/billing/lemon-squeezy) or [Polar](/docs/web/billing/polar) account.
+    * Update the environment variables with the correct values for your billing service.
+    * Point webhooks from Stripe, Lemon Squeezy or Polar to `/api/billing/webhook`.
+    * Refer to the [relevant documentation](/docs/web/billing/overview) for more details on setting up billing.
+
+  </Step>
+
+  <Step>
+    ## Setup emails provider
+
+    **Why it's necessary?**
+
+    Setting up an email provider is crucial for your SaaS application to send notifications, confirmations, and other important messages to your users. This enhances user experience and engagement, and is a standard practice in modern web applications.
+
+    **How to do it?**
+
+    * Create an account with an email service provider of your choice. See [available providers](/docs/web/emails/configuration#providers) for more information.
+    * Update the environment variables with the correct values for your email service.
+    * Refer to the [relevant documentation](/docs/web/emails/overview) for more details on setting up email.
+
+  </Step>
+
+  <Step>
+    ## Setup storage provider
+
+    **Why it's necessary?**
+
+    Don't forget to configure your storage provider, if you want to operate on files in your app. By default, this is optional — the app can run without a storage provider — but some features could be unavailable (e.g., avatar uploads and other file-related actions).
+
+    **How to do it?**
+
+    * Review the [Storage overview](/docs/web/storage/overview).
+    * Follow [Storage configuration](/docs/web/storage/configuration) to choose and set up a provider.
+    * Add any required environment variables in your **hosting provider**.
+
+  </Step>
+
+  <Step>
+    ## Environment variables
+
+    **Why it's necessary?**
+
+    Setting the correct environment variables is essential for the application to function correctly. These variables include API keys, database URLs, and other configuration details required for your app to connect to various services.
+
+    **How to do it?**
+
+    Use our `.env.example` files to get the correct environment variables for your project. Then add them to your **hosting provider's environment variables**. Redeploy the app once you have the URL to set in the environment variables.
+
+  </Step>
+
+  <Step>
+    ## Deploy web app to production
+
+    **Why it's necessary?**
+
+    Because your users are waiting! Deploying your Next.js app to a hosting provider makes it accessible to users worldwide, allowing them to interact with your application.
+
+    **How to do it?**
+
+    Deploy your Next.js app to chosen hosting provider. **Copy the deployment URL and set it as an environment variable in your project's settings.** Feel free to check out our dedicated guides for the most popular hosting providers:
+
+    <Cards>
+      <Card title="Vercel" description="Deploy your Astra web app to Vercel platform." href="/docs/web/deployment/vercel" />
+
+      <Card title="Netlify" description="Deploy your Astra web app to Netlify platform." href="/docs/web/deployment/netlify" />
+
+      <Card title="Render" description="Deploy your Astra web app to Render platform." href="/docs/web/deployment/render" />
+
+      <Card title="Railway" description="Deploy your Astra web app to Railway platform." href="/docs/web/deployment/railway" />
+
+      <Card title="AWS Amplify" description="Deploy your Astra web app to AWS Amplify platform." href="/docs/web/deployment/amplify" />
+
+      <Card title="Docker" description="Containerize your Astra web app using Docker." href="/docs/web/deployment/docker" />
+
+      <Card title="Fly.io" description="Deploy your Astra web app to Fly.io platform." href="/docs/web/deployment/fly" />
+    </Cards>
+
+    We also have a dedicated guide for [deploying your API as a standalone service](/docs/web/deployment/api).
+
+  </Step>
+</Steps>
+
+That's it! Your app is now live and accessible to your users, good job! 🎉
+
+<Callout title="Other things to consider">
+  * Update the legal pages with your company's information (privacy policy, terms of service, etc.).
+  * Remove the placeholder blog and documentation content / or replace it with your own. * Customize
+  authentication emails and other email templates. * Update the favicon and logo with your own
+  branding. * Update the FAQ and other static content with your own information.
+</Callout>

@@ -1,0 +1,93 @@
+---
+url: /docs/web/ai/configuration
+title: Configuration
+description: Configure AI integration in your Astra project.
+---
+
+To ensure scalability and avoid security vulnerabilities, AI requests are proxied by our [Hono backend](/docs/web/api/overview). This means you need to set up AI integration on both the client and server side.
+
+<Callout title="Why proxy requests?">
+  We want to avoid exposing API keys directly to the browser, as this could lead to abuse of your
+  key and generate unnecessary costs.
+</Callout>
+
+In this section, we'll explore the configuration for both sides to give you a smooth start.
+
+## Server-side
+
+On the backend, you need to set up two things: environment variables to configure the provider and the procedure to pass responses to the client. Let's go through it!
+
+### Environment variables
+
+You need to set the environment variables that correspond to the AI provider you want to use.
+
+For example, for the OpenAI provider, you would need to set the following environment variables:
+
+```dotenv
+OPENAI_API_KEY=<your-openai-api-key>
+```
+
+However, if you want to use the Anthropic provider, you would need to set these environment variables:
+
+```dotenv
+ANTHROPIC_API_KEY=<your-anthropic-api-key>
+```
+
+You can find the list of all available providers in the [official documentation](https://sdk.vercel.ai/providers/ai-sdk-providers), along with the required variables that need to be set to ensure the integration works correctly.
+
+### API endpoint
+
+As we're proxying the requests, we need to register an [API endpoint](/docs/web/api/new-endpoint) that will be used to pass the responses to the client.
+
+The steps will be the same as we described in the [API](/docs/web/api/new-endpoint) section. An example implementation could look like this:
+
+```ts title="ai/router.ts"
+export const aiRouter = new Hono().post("/chat", async (c) =>
+  streamText({
+    model: openai.responses("gpt-5"),
+    messages: convertToModelMessages((await c.req.json()).messages),
+  }).toUIMessageStreamResponse(),
+);
+```
+
+As you can see, we're defining which provider and specific model we want to use here.
+
+We're also using [Streams API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API/Concepts), which allows us to pass the result to the user as soon as the model starts generating it, without needing to wait for the full response to be completed. This gives the user a sense of immediacy and makes the conversation more interactive.
+
+## Client-side
+
+To consume the server response, we can leverage the ready-to-use hooks provided by the [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-ui/chatbot), such as the `useChat` hook:
+
+```tsx title="page.tsx"
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
+
+const AI = () => {
+  const { messages } = useChat({
+    transport: new DefaultChatTransport({
+      api: "/api/ai/chat",
+    }),
+  });
+
+  return (
+    <div>
+      {messages.map((message) => (
+        <div key={message.id}>
+          {message.parts.map((part, i) => {
+            switch (part.type) {
+              case "text":
+                return <div key={`${message.id}-${i}`}>{part.text}</div>;
+            }
+          })}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default AI;
+```
+
+By leveraging this integration, we can easily manage the state of the AI request and update the UI as soon as the response is ready.
+
+Astra ships with a ready-to-use implementation of AI chat, allowing you to see this solution in action. Feel free to reuse or modify it according to your needs.

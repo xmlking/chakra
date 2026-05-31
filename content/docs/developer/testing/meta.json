@@ -1,0 +1,4 @@
+{
+  "title": "Testing",
+  "pages": ["unit", "e2e"]
+}

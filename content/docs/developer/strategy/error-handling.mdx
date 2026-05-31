@@ -1,0 +1,66 @@
+---
+title: Error Handling
+description: Lightweight Result type for TypeScript with generator-based composition.
+---
+
+We are adopting [better-result](https://github.com/dmmulroy/better-result) for error handling in TypeScript/JavaScript projects.
+
+Migrate codebase from try/catch or Promise-based error handling to better-result.
+Use when adopting Result types, converting thrown exceptions to typed errors, or refactoring existing error handling to railway-oriented programming.
+
+## Quick Start
+
+```typescript
+import { Result } from "better-result";
+
+// Wrap throwing functions
+const parsed = Result.try(() => JSON.parse(input));
+
+// Check and use
+if (Result.isOk(parsed)) {
+  console.log(parsed.value);
+} else {
+  console.error(parsed.error);
+}
+
+// Or use pattern matching
+const message = parsed.match({
+  ok: (data) => `Got: ${data.name}`,
+  err: (e) => `Failed: ${e.message}`,
+});
+```
+
+## Creating Results
+
+```typescript
+// Success
+const ok = Result.ok(42);
+
+// Error
+const err = Result.err(new Error("failed"));
+
+// From throwing function
+const result = Result.try(() => riskyOperation());
+
+// From promise
+const result = await Result.tryPromise(() => fetch(url));
+
+// With custom error handling
+const result = Result.try({
+  try: () => JSON.parse(input),
+  catch: (e) => new ParseError(e),
+});
+```
+
+## Handling Errors
+
+```typescript
+// Transform error type
+const result = fetchUser(id).mapError((e) => new AppError(`Failed to fetch user: ${e.message}`));
+
+// Recover from specific errors
+const result = fetchUser(id).match({
+  ok: (user) => Result.ok(user),
+  err: (e) => (e._tag === "NotFoundError" ? Result.ok(defaultUser) : Result.err(e)),
+});
+```

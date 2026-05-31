@@ -1,0 +1,82 @@
+---
+title: Mastra
+description: ""
+date: "2025-12-27T19:25:51.367Z"
+---
+
+## Overview
+
+## Voice
+
+Initialize the voice provider with (`tts-1-hd`, `whisper-1`) settings.
+
+```js
+const voice = new OpenAIVoice({
+  speechModel: {
+    name: "tts-1-hd",
+  },
+  listeningModel: {
+    name: "whisper-1",
+  },
+  speaker: "alloy", // Default voice
+});
+```
+
+Initialize the voice provider with Azure
+
+```js
+const voice = new AzureVoice({
+  speechModel: {
+    name: "neural",
+    apiKey: "your-azure-speech-api-key",
+    region: "eastus",
+  },
+  listeningModel: {
+    name: "whisper",
+    apiKey: "your-azure-speech-api-key",
+    region: "eastus",
+  },
+  speaker: "en-US-JennyNeural", // Default voice
+});
+```
+
+Initialize the realtime voice provider
+
+```js
+const voice = new OpenAIRealtimeVoice({
+  apiKey: env.OPENAI_API_KEY,
+  model: "gpt-4o-mini-realtime",
+  speaker: "alloy",
+});
+```
+
+## Ollama
+
+```shell
+# first exit running ollama app.
+# start ollama service  (use OLLAMA_DEBUG=1/2 if you want debug logs)
+OLLAMA_DEBUG=2 ollama serve
+# to see logs
+tail -f ~/.ollama/logs/server.log
+```
+
+```shell
+# list installed models
+ollama ls
+ollama pull llama3.2:latest
+ollama pull bge-m3:latest
+ollama pull embeddinggemma:latest
+# ollama pull qwen3-embedding:latest
+```
+
+## TODO
+
+- [AGUI gomoku demo](https://github.com/ag-ui-protocol/ag-ui/pull/145)
+- [Using Mastra Agent with the OpenAI Realtime API from your Browser](https://dannadori.medium.com/using-mastra-agent-with-the-openai-realtime-api-from-your-browser-557a0018777a) , [Source](https://github.com/w-okada/mastra-realtime-voice-api-demo)
+- [AG-UI Mastra Workshop](https://github.com/CopilotKit/mastra-pm-canvas)
+- **How to Build AI Workflows with Mastra and AI SDK** (Full Tutorial) [video](https://www.youtube.com/watch?v=zMefb2AwfmM), [code](https://github.com/Quintui/mastra-story-book-workflow)
+
+## References
+
+- [A deep dive into Mastra AI workflows with code examples](https://khaledgarbaya.net/blog/mastering-mastra-ai-workflows)
+- [Beyond the Chatbot: Event-Driven Agents in Action](https://www.docker.com/blog/beyond-the-chatbot-event-driven-agents-in-action/), GitHub [repo](https://github.com/mikesir87/hackathon-july-2025)

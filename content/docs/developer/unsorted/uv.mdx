@@ -1,0 +1,65 @@
+---
+title: Python Monorepo
+description: "Python UV setup"
+date: "2025-12-27T19:25:51.364Z"
+---
+
+## Overview
+
+## Initializing a new project
+
+```shell
+cd ~/Developer/Work/python
+uv init astra
+uv init apps/agno --package --description 'AI Agent Server'
+uv init packages/shared --lib --description 'Shared code'
+```
+
+## Add Dev dependencies
+
+```shell
+uv add --dev ruff
+uv add --dev ty
+uv add --dev pytest
+uv add --dev pytest-asyncio
+```
+
+```shell
+uv run ruff format        # format (what black used to do)
+uv run ruff check --fix    # lint   (what flake8 used to do)
+uv run pytest
+```
+
+## Run
+
+run from root when using `--package` option
+
+```shell
+# run format with ruff
+uv run --package agno ruff format
+# run test with pytest
+uv run --package agno pytest
+# add dependency to individual package
+uv add --package agno typer
+# run individual package script
+uv run --package agno ai_agents_cli
+```
+
+## Installing dependencies
+
+```shell
+uv sync                     # install current package's dependencies
+uv sync --package shared    # install dependencies of specified package
+uv sync --all-packages      # install dependencies of all packages
+```
+
+## Utility
+
+```shell
+# self update
+uv self update
+# clear cache
+uv cache clean
+# Remove outdated cache entries
+uv cache prune
+```

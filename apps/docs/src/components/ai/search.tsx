@@ -18,7 +18,7 @@ import {
   useState,
 } from "react";
 
-import { cn } from "../../lib/cn";
+import {cn } from "@workspace/ui/lib/utils"
 import type { ChatUIMessage, SearchTool } from "../../routes/api.chat";
 import { Markdown } from "../markdown";
 import { buttonVariants } from "../ui/button";

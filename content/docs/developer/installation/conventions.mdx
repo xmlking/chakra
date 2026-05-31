@@ -1,0 +1,85 @@
+---
+url: /docs/web/installation/conventions
+title: Conventions
+description: Some standard conventions used across Astra codebase.
+---
+
+You're not required to follow these conventions: they're simply a standard set of practices used in the core kit. If you like them - we encourage you to keep these during your usage of the kit - so to have consistent code style that you and your teammates understand.
+
+## Turborepo Packages
+
+In this project, we use [Turborepo packages](https://turbo.build/repo/docs/core-concepts/internal-packages) to define reusable code that can be shared across multiple applications.
+
+- **Apps** are used to define the main application, including routing, layout, and global styles.
+- **Packages** shares reusable code add functionalities across multiple applications. They're configurable from the main application.
+
+<Callout title="Should I create a new package?">
+  **Recommendation:** Do not create a package for your app code unless you plan to reuse it across multiple applications or are experienced in writing library code.
+
+If your application is not intended for reuse, keep all code in the app folder. This approach saves time and reduces complexity, both of which are beneficial for fast shipping.
+
+**Experienced developers:** If you have the experience, feel free to create packages as needed.
+
+</Callout>
+
+## Imports and Paths
+
+When importing modules from packages or apps, use the following conventions:
+
+- **From a package:** Use `@workspace/package-name` (e.g., `@workspace/ui`, `@workspace/api`, etc.).
+- **From an app:** Use `~/` (e.g., `~/components`, `~/config`, etc.).
+
+## Enforcing conventions
+
+- [Prettier](https://prettier.io/) is used to enforce code formatting.
+- [ESLint](https://eslint.org/) is used to enforce code quality and best practices.
+- [TypeScript](https://www.typescriptlang.org/) is used to enforce type safety.
+
+<Cards className="grid-cols-2 sm:grid-cols-3">
+  <Card title="Prettier" href="https://prettier.io/" description="prettier.io" />
+
+<Card title="ESLint" href="https://eslint.org/" description="eslint.org" />
+
+  <Card title="TypeScript" href="https://www.typescriptlang.org/" description="typescript language" />
+</Cards>
+
+## Code health
+
+Astra provides a set of tools to ensure code health and quality in your project.
+
+### Github Actions
+
+By default, Astra sets up Github Actions to run tests on every push to the repository. You can find the Github Actions configuration in the `.github/workflows` directory.
+
+The workflow has multiple stages:
+
+- `format` - runs Prettier to format the code.
+- `lint` - runs ESLint to check for linting errors.
+- `typecheck` - runs TypeScript to check for type errors.
+
+### Git hooks
+
+Together with Astra we have set up a `commit-msg` hook which will check if your commit message follows the [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/) message format. This is important for generating changelogs and keeping a clean commit history.
+
+Although we didn't ship any pre-commit hooks (we believe in shipping fast with moving checking code responsibility to CI), you can easily add them by using [Husky](https://typicode.github.io/husky/#/).
+
+#### Setting up the Pre-Commit Hook
+
+To do so, create a `pre-commit` file in the `./..husky` directory with the following content:
+
+```bash
+#!/bin/sh
+
+pnpm typecheck
+pnpm lint
+```
+
+Turborepo will execute the commands for all the affected packages - while skipping the ones that are not affected.
+
+#### Make the Pre-Commit Hook Executable
+
+```bash
+chmod +x ./.husky/pre-commit
+```
+
+To test the pre-commit hook, try to commit a file with linting errors or type errors. The commit should fail, and you should see the error messages in the console.
