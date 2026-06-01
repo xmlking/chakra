@@ -87,8 +87,8 @@
     "@vite-env/cli": "0.5.2",
     "@vite-env/core": "0.5.2",
     "@vitejs/plugin-react": "6.0.2",
-    "@vitest/coverage-v8": "4.1.7",
-    "@vitest/ui": "4.1.7",
+    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/ui": "4.1.8",
     "better-auth": "1.7.0-beta.3",
     "better-result": "2.9.2",
     "bumpp": "11.1.0",
@@ -99,7 +99,7 @@
     "drizzle-orm": "1.0.0-rc.3",
     "drizzle-seed": "1.0.0-rc.3",
     "envin": "1.2.0",
-    "files-sdk": "1.6.0",
+    "files-sdk": "1.7.0",
     "hucre": "0.6.0",
     "lucide-react": "1.17.0",
     "nitro": "3.0.260522-beta",
@@ -123,7 +123,7 @@
     "vite-plus": "0.1.23",
     "vitest": "npm:@voidzero-dev/vite-plus-test@0.1.23",
     "vitest-browser-react": "2.2.0",
-    "workflow": "4.2.5",
+    "workflow": "4.2.6",
     "zod": "4.4.3",
     "zustand": "5.0.14"
   }
