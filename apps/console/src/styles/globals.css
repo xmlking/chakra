@@ -1,0 +1,34 @@
+@import "@repo/ui/styles/globals.css";
+@import "@repo/ui/styles/themes.css";
+
+@source "../**/*.{ts,tsx}";
+
+@theme inline {
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
+  /* --font-sans: var(--font-bricolage-grotesque); */
+  /* --font-sans: var(--font-montserrat); */
+  /* --font-mono: var(--font-geist-mono); */
+}
+
+@layer base {
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
+}
+
+@utility theme-container {
+  @apply font-sans;
+}
+
+@utility container-wrapper {
+  @apply 3xl:fixed:max-w-[calc(var(--breakpoint-2xl)+2rem)] mx-auto w-full p-4;
+}
+
+@utility container {
+  @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
+}
+
+html {
+  scroll-behavior: smooth;
+}

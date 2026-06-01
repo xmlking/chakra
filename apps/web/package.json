@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@lonik/themer": "catalog:",
-    "@tailwindcss/vite": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
     "@tanstack/react-start": "catalog:",
@@ -35,6 +34,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
     "@types/bun": "catalog:",
