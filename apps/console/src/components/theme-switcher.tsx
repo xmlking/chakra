@@ -1,6 +1,6 @@
 import { useTheme } from "@lonik/themer";
 import { useHydrated } from "@tanstack/react-router";
-import { Moon, Sun, SunMoon } from "lucide-react";
+import { MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
 
 const themeOrder = ["system", "light", "dark"] as const;
 type ThemeValue = (typeof themeOrder)[number];
@@ -17,11 +17,11 @@ export function ThemeSwitcher() {
 
   const icon =
     currentTheme === "light" ? (
-      <Sun size={16} />
+      <SunIcon className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
     ) : currentTheme === "dark" ? (
-      <Moon size={16} />
+      <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
     ) : (
-      <SunMoon size={16} />
+      <SunMoonIcon size={16} />
     );
 
   return (

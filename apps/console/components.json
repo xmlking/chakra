@@ -12,7 +12,7 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "#components",
-    "ui": "@workspace/ui/components",
+    "ui": "@workspace/ui/components/shadcn",
     "lib": "#lib",
     "hooks": "#hooks",
     "utils": "@workspace/ui/lib/utils"

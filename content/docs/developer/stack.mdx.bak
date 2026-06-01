@@ -6,18 +6,18 @@ icon: Cpu
 ---
 
 import {
-  SiNextdotjs,
-  SiReact,
-  SiTurborepo,
-  SiHono,
-  SiTailwindcss,
-  SiRadixui,
-  SiShadcnui,
-  SiDrizzle,
-  SiReactquery,
-  SiPostgresql,
-  SiBetterauth,
-} from "@icons-pack/react-simple-icons";
+  Nextdotjs,
+  React,
+  Turborepo,
+  Hono,
+  Tailwindcss,
+  Radixui,
+  Shadcnui,
+  Drizzle,
+  Reactquery,
+  Postgresql,
+  Betterauth,
+} from "@thesvg/react";
 
 
 ## Turborepo
