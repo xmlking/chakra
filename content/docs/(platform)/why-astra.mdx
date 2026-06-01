@@ -1,0 +1,39 @@
+---
+title: Why Astra?
+description: "A brief primer on why we built Astra"
+icon: QuestionIcon
+---
+
+Giving an agent the ability to act onchain sounds simple until you actually try to do it safely. The moment an agent can move funds, sign transactions, or interact with protocols, you introduce a new class of risks that traditional wallet designs were never built to handle. Astra exists to solve this exact gap: how do you give agents real execution power without giving up control?
+
+## The Problem with Agents
+
+Today, most agent systems treat wallets as an afterthought. You either hand over full control, or you build fragile guardrails around something that was never designed to be constrained.
+
+The most common pattern is still passing a raw private key through a `.env` file. The agent signs transactions directly, often with no granular permissions, no execution boundaries, and no visibility into what it _should_ or _should not_ be doing. Once the key is exposed to the runtime, the agent effectively has unrestricted authority. There is no concept of scoped access, no isolation between tasks, and no safe way to parallelize operations.
+
+Some systems attempt to improve this by wrapping wallets behind APIs or using custodial services. Others experiment with giving agents access to payment rails credit cards, API-based billing systems, or prepaid balances. While these approaches reduce direct key exposure, they introduce a different problem: they move execution offchain or into opaque systems, limiting composability with existing protocols like Uniswap or Aave.
+
+## What Astra Does Differently
+
+Astra does not try to replace wallets. It defines a way, how you use them in an agent-driven world.
+
+At its core, Astra gives you a structured way to issue permissioned, programmable access to a wallet. Instead of handing over a private key, you create scoped session keys with explicit capabilities such as
+
+- what contracts can be called
+- which functions are allowed
+- how much value can be moved
+- how long the key can be used
+- how many times the key can be used
+
+and much more.
+
+Under the hood, Astra builds on battle-tested smart account infrastructure [ZeroDev](https://zerodev.app/). This means you inherit the reliability, security model, and ecosystem compatibility of existing account abstraction systems. We are not introducing a new wallet standard or asking you to trust experimental primitives. We are using what already works and extending it to support agent-native workflows.
+
+The result is a wallet that behaves less like a signer and more like a programmable execution environment.
+
+## Designed to Work with the Ecosystem
+
+Astra is built with the assumption that the ecosystem will continue to evolve and faster than before.
+
+We are not trying to replace emerging standards or competing approaches. Instead, we aim to integrate and support them as they mature. Whether it's secure key management approaches like Foundry Keystore, payment abstractions such as [x402](https://www.x402.org/), or newer protocols like [MPP](https://docs.stripe.com/payments/machine/mpp), Astra is designed to be compatible and extensible.

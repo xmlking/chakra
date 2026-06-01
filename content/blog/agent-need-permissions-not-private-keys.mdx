@@ -1,0 +1,213 @@
+---
+title: "Agents Need Permissions, Not Private Keys"
+description: "Agents don't need private keys. Learn how permissioned smart accounts and session keys enable safer, scalable onchain automation."
+category: "community"
+image: https://images.unsplash.com/photo-1762278804798-dd7e493db051?q=100&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+authors:
+  - name: Vedant Chainani
+    url: https://envoy1084.xyz
+date: 2026-04-14
+keywords: smart accounts, session keys, account abstraction, automation, agents, programmable accounts, permissioned execution, how to secure crypto bots without private keys, session keys smart accounts explained, account abstraction for automation,
+---
+
+Agents don't really need private keys.
+
+But that's what we keep giving them anyway.
+
+We're starting to rely on scripts, bots, and now full-blown agents to move funds, execute trades, manage positions, even run entire workflows onchain. And behind the scenes, most of them are doing the same thing: holding a **private key** with full control over an account.
+
+It works, technically. But it feels wrong.
+
+We're taking something designed for humans, a single key with absolute ownership, and handing it to systems that don't need ownership at all. They don't need to own the account. They just need to do specific things, within specific limits, for a specific amount of time.
+
+Instead, we give them everything.
+
+---
+
+## How We Actually Build Today
+
+If you've built anything even slightly automated in crypto, you've probably done this.
+
+You spin up a bot, give it a private key, and let it run. A trading bot sits there executing strategies with full access to funds. It doesn't need most of that power, but there's no real way to scope it down. So it just has everything.
+
+Sometimes it's simpler. A script. A cron job. Something that runs every few minutes and performs a task. Same key. Same level of control as the actual user.
+
+And now with AI agents, we're taking it further. We're giving systems that are inherently unpredictable direct signing authority. Not limited access. Not scoped permissions. A private key and full control.
+
+And once the agent has the key, the account doesn't distinguish:
+
+- valid vs intended
+- safe vs risky
+- limited vs unlimited
+
+Everything is just allowed.
+
+It works. That's the thing, all of these setups work. They get the job done and they're already in production, everywhere. But if you zoom out, they all rely on the same pattern.
+
+Everything is built around a single primitive - **the private key**.
+
+---
+
+## From Keys to Permissions
+
+The pattern we just saw isn't accidental. It's a direct result of how accounts are designed today.
+
+At the core, most crypto accounts are still tied to a private key. It's a simple model, and for a long time, it worked. But it comes with a hard limitation, it assumes that whoever is using the account should have full control over it.
+
+That assumption made sense when accounts had one user. It breaks the moment you introduce automation.
+
+The key doesn't know if it's being used by its owner or by a bot running on someone else's infrastructure. It doesn't know if the transaction is intentional or the result of a bug three layers deep in an agent's reasoning chain. It just signs and executes.
+
+What we actually need is partial trust. The ability to say "this system is allowed to do this specific thing, under these specific conditions, and nothing else."
+
+## What If Accounts Could Enforce Rules?
+
+Instead of thinking of an account as something _controlled by a key_, think of it as something that _enforces rules_. Not just who can sign, but what is valid, how much can be spent, and when execution is allowed.
+
+This is what [account abstraction](https://ethereum.org/roadmap/account-abstraction/) makes possible. Rather than a single private key governing every action, accounts can define their own validation logic. The account itself becomes programmable with unique rules and policies.
+
+Instead of ownership, you issue permissions.
+
+Once you start thinking this way, the model changes completely. You don't hand over a private key anymore. You grant permissions.
+
+And permissions can be scoped:
+
+- limited to a specific contract or protocol
+- capped at a spend limit per transaction or in total
+- valid only within a defined time window
+- restricted to specific action types
+
+This is where concepts like session keys come in.
+
+A [session key](https://docs.erc4337.io/smart-accounts/session-keys-and-delegation.html?utm_source=chatgpt.com) is a delegated signer with built-in constraints. It can execute transactions on behalf of an account, but only within the rules attached to it. When the session expires, or a limit is hit, or a disallowed action is attempted, the account rejects it. Not at the application layer. At the account layer.
+
+What you're giving an agent isn't access to the account. You're giving it a scoped credential that only works inside a defined boundary:
+
+- valid for 1 hour
+- allowed to trade up to a limit
+- restricted to a specific protocol
+
+<SequenceDiagram chart={`
+sequenceDiagram
+    participant Agent
+    participant Session as Session Key
+    participant Account
+    participant Blockchain
+
+    Agent->>Session: Request execution
+    Session->>Account: Validate permissions
+    Account->>Account: Check rules (limit, contract, time)
+    Account->>Blockchain: Execute if valid
+    Blockchain-->>Agent: Result
+
+`} />
+
+So what does this look like in practice?
+
+If accounts are supposed to be programmable, and agents are supposed to operate with permissions instead of ownership, then the missing piece is a system that actually works that way. Not as a pattern layered on top of wallets, but as the way access is defined from the start.
+
+---
+
+## Introducing Astra
+
+Astra is an agent-first permission layer for smart accounts. It lets you give AI agents scoped, time-bound access through sessions, without handing over the main private key and hoping the rest of your stack behaves.
+
+The core idea is simple: the account stays in control, and access becomes something you issue, constrain, and revoke. Instead of treating every actor like an owner, you treat them like what they actually are: systems with a specific job to do.
+
+That means a trading bot can be allowed to execute one class of trades, within a spend limit, for a fixed period of time. A backend service can settle payments without being able to move everything else. An agent can execute a workflow without quietly becoming the wallet.
+
+Under the hood, that becomes possible because smart accounts don't have to behave like EOAs. They can enforce rules. They can validate actions differently depending on context. They can support session keys that carry bounded authority instead of permanent control.
+
+<SequenceDiagram chart={`
+sequenceDiagram
+    participant User
+    participant Account as Smart Account
+    participant Session as Session
+    participant Agent
+
+    User->>Account: Create scoped session
+    Account->>Session: Attach rules
+    Note over Session: allowed actions<br/>spend limits<br/>time window
+    User->>Agent: Give session, not owner key
+
+`} />
+
+And here's what execution looks like after that:
+
+<SequenceDiagram chart={`
+sequenceDiagram
+    participant Agent
+    participant Session as Session Key
+    participant Account as Smart Account
+    participant Chain
+
+    Agent->>Session: Request action
+    Session->>Account: Attempt execution
+    Account->>Account: Validate against rules
+    Account->>Chain: Execute if allowed
+
+`} />
+
+Even at the developer level, the model feels more natural. You're not wiring trust into infrastructure anymore. You're defining intent.
+
+```ts
+const sessionKey = await createSessionKey({
+  accountType,
+  clients,
+  entrypointVersion,
+  kernelVersion,
+  policies: [
+    // [!code focus]
+    toCallPolicy({
+      // [!code focus]
+      permissions: [
+        // [!code focus]
+        {
+          // [!code focus]
+          target: "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045", // vitalik.eth // [!code focus]
+          valueLimit: parseEther("0.05"), // can only send up to 0.05 ETH per call // [!code focus]
+        }, // [!code focus]
+      ], // [!code focus]
+      policyVersion, // [!code focus]
+    }), // [!code focus]
+    toGasPolicy({
+      // [!code focus]
+      allowed: parseEther("0.01"), // total gas budget for the session // [!code focus]
+    }), // [!code focus]
+    toRateLimitPolicy({
+      // [!code focus]
+      count: 1, // one execution // [!code focus]
+      interval: 60 * 60, // per hour // [!code focus]
+    }), // [!code focus]
+    toTimestampPolicy({
+      // [!code focus]
+      validAfter: Math.floor(Date.now() / 1000), // [!code focus]
+      validUntil: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // expires in 24h // [!code focus]
+    }), // [!code focus]
+  ], // [!code focus]
+  sessionPrivateKey,
+  signer,
+  type,
+});
+```
+
+That's the shape of access an agent actually needs.
+
+---
+
+## Beyond Private Keys
+
+As more onchain activity moves from direct human action to software-driven execution, the old model starts to break down everywhere. Not just in trading bots or backend services, but in how we think about ownership itself. Crypto spent years making accounts programmable at the protocol level. The next step is making access programmable too.
+
+That matters because agents are not going away. They're becoming a real part of the stack. They'll route payments, manage treasury flows, rebalance positions, interact with protocols, and coordinate across apps faster than any human can. If that world is real, then accounts can't stay frozen in a model built around one person, one key, one level of authority.
+
+The future account is not just controlled. It is defined.
+
+That changes the shape of everything around it. Automation gets safer. Agents become composable instead of fragile. Wallets start behaving less like interfaces you manually operate, and more like infrastructure that can express rules, limits, and intent.
+
+That's the direction we're building toward with Astra.
+
+Not a wallet for agents. An account model built for them.
+
+> Agents don't need private keys.
+> They need permissions.
