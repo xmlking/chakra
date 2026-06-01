@@ -4,10 +4,14 @@
   "icon": "Bot",
   "root": true,
   "pages": [
-    "---Introduction---",
     "index",
     "---Overview---",
-    "hello-world",
+    "why-astra",
+    "what-is-astra",
+    "---Guides---",
+    "terms",
+    "privacy-policy",
+    "...guides",
     "---Links---",
     "[Mail][Contact us](https://x.com/xmlking)",
     "[Github][Github](https://github.com/xmlking/astra)"

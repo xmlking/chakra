@@ -1,0 +1,603 @@
+---
+title: Introduction
+description: Documentation Structure Guide
+icon: Book
+---
+
+## Introduction
+
+This document defines how project documentation is organized and maintained within the repository.
+
+---
+
+## Documentation Principles
+
+Documentation should answer one of the following questions:
+
+| Question                       | Document Type    |
+| ------------------------------ | ---------------- |
+| What are the project rules?    | Standards        |
+| What are we building?          | Specifications   |
+| How will it work?              | Design Documents |
+| Why was a major decision made? | ADRs             |
+| When will it be delivered?     | Planning         |
+| How is it operated?            | Operations       |
+
+---
+
+## Repository Structure
+
+```text
+repo/
+│
+├── README.md
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+│
+├── docs/
+│   ├── standards/
+│   ├── architecture/
+│   │   └── adr/
+│   ├── specifications/
+│   ├── design/
+│   ├── planning/
+│   ├── operations/
+│   └── ai/
+│
+└── src/
+```
+
+---
+
+# Root Documents
+
+## README.md
+
+The primary entry point for the repository.
+
+Include:
+
+- Project overview
+- Quick start instructions
+- Development setup
+- Architecture overview
+- Links to detailed documentation
+
+### Example
+
+```md
+# Project Name
+
+## Overview
+
+Brief project description.
+
+## Quick Start
+
+npm install
+npm run dev
+
+## Documentation
+
+See /docs
+```
+
+---
+
+## CONTRIBUTING.md
+
+Defines how contributors work within the repository.
+
+Include:
+
+- Branching strategy
+- Commit message conventions
+- Pull request requirements
+- Code review expectations
+- Testing requirements
+
+---
+
+## CHANGELOG.md
+
+Tracks notable changes between releases.
+
+Follow a standard format such as Keep a Changelog.
+
+---
+
+# Standards
+
+Location:
+
+```text
+docs/standards/
+```
+
+Standards define rules that apply across the entire project.
+
+## Recommended Documents
+
+```text
+docs/standards/
+├── coding-guidelines.md
+├── formatting.md
+├── testing.md
+├── git-workflow.md
+└── code-review.md
+```
+
+---
+
+## Coding Guidelines
+
+Defines:
+
+- Naming conventions
+- Error handling patterns
+- Logging practices
+- Dependency management rules
+- API design conventions
+
+Example:
+
+```md
+# Coding Guidelines
+
+## Naming
+
+- Components: PascalCase
+- Functions: camelCase
+- Constants: UPPER_SNAKE_CASE
+
+## Error Handling
+
+Always use typed application errors.
+```
+
+---
+
+## Formatting
+
+Defines:
+
+- ESLint rules
+- Prettier configuration
+- Markdown formatting
+- File organization conventions
+
+---
+
+## Testing
+
+Defines:
+
+- Unit testing standards
+- Integration testing requirements
+- Coverage expectations
+- Mocking strategy
+
+---
+
+# Architecture
+
+Location:
+
+```text
+docs/architecture/
+```
+
+Contains system-level architectural documentation.
+
+Recommended files:
+
+```text
+docs/architecture/
+├── overview.md
+├── system-context.md
+├── data-model.md
+└── adr/
+```
+
+---
+
+## Architecture Overview
+
+Documents:
+
+- High-level system architecture
+- Major components
+- Service boundaries
+- External integrations
+
+---
+
+# Architecture Decision Records (ADR)
+
+Location:
+
+```text
+docs/architecture/adr/
+```
+
+ADRs capture important architectural decisions and the reasoning behind them.
+
+---
+
+## ADR Naming Convention
+
+```text
+0001-use-postgresql.md
+0002-use-nextjs-app-router.md
+0003-use-event-driven-processing.md
+```
+
+---
+
+## ADR Template
+
+```md
+# ADR-0001 Use PostgreSQL
+
+Status: Accepted
+
+## Context
+
+Describe the problem.
+
+## Decision
+
+Describe the selected solution.
+
+## Alternatives Considered
+
+- Option A
+- Option B
+
+## Consequences
+
+### Positive
+
+- Benefit
+
+### Negative
+
+- Tradeoff
+```
+
+---
+
+# Specifications
+
+Location:
+
+```text
+docs/specifications/
+```
+
+Specifications define what must be built.
+
+Organize by domain or feature.
+
+Example:
+
+```text
+docs/specifications/
+├── authentication/
+├── billing/
+├── notifications/
+└── search/
+```
+
+---
+
+## Feature Specification Structure
+
+```text
+authentication/
+├── requirements.md
+├── api-spec.md
+├── data-model.md
+└── acceptance-criteria.md
+```
+
+---
+
+## Requirements Template
+
+```md
+# Authentication Requirements
+
+## User Story
+
+As a user,
+I want to log in using Google,
+so that I can access the application.
+
+## Functional Requirements
+
+- OAuth login
+- Account linking
+
+## Non-Functional Requirements
+
+- Login under 2 seconds
+- 99.9% availability
+
+## Acceptance Criteria
+
+- User can authenticate using Google
+- Existing accounts can be linked
+```
+
+---
+
+# Design Documents
+
+Location:
+
+```text
+docs/design/
+```
+
+Design documents explain how a solution will be implemented before development begins.
+
+---
+
+## Design Template
+
+```md
+# Feature Design
+
+## Problem
+
+What problem are we solving?
+
+## Goals
+
+Expected outcomes.
+
+## Non-Goals
+
+Out-of-scope items.
+
+## Proposed Solution
+
+Detailed technical design.
+
+## Alternatives Considered
+
+Alternative approaches.
+
+## Risks
+
+Potential issues and mitigations.
+
+## Rollout Plan
+
+Deployment strategy.
+```
+
+---
+
+# Planning
+
+Location:
+
+```text
+docs/planning/
+```
+
+Planning documents describe execution and delivery.
+
+Recommended files:
+
+```text
+docs/planning/
+├── roadmap.md
+├── milestones.md
+├── quarterly-plan.md
+└── release-plan.md
+```
+
+---
+
+## Planning Documents Should Include
+
+- Priorities
+- Milestones
+- Release schedules
+- Team objectives
+- Dependencies
+
+Planning documents should not contain architecture decisions.
+
+---
+
+# Operations
+
+Location:
+
+```text
+docs/operations/
+```
+
+Operational documentation supports deployment and production maintenance.
+
+Recommended structure:
+
+```text
+docs/operations/
+├── deployment.md
+├── monitoring.md
+├── incident-response.md
+└── runbooks/
+```
+
+---
+
+## Operations Documentation
+
+Include:
+
+- Deployment procedures
+- Monitoring setup
+- Alerting strategy
+- Incident response process
+- Disaster recovery procedures
+
+---
+
+# AI Development Context
+
+Location:
+
+```text
+docs/ai/
+```
+
+Provides context for AI coding assistants and automation tools.
+
+Recommended structure:
+
+```text
+docs/ai/
+├── project-context.md
+├── architecture-rules.md
+├── coding-rules.md
+├── glossary.md
+└── prompts/
+```
+
+---
+
+## Example Project Context
+
+```md
+# Project Context
+
+## Stack
+
+- Next.js App Router
+- PostgreSQL
+- Prisma
+
+## Architecture
+
+- Modular Monolith
+
+## Rules
+
+- Services do not access databases directly.
+- Repository pattern is required.
+- Business logic belongs in services.
+```
+
+---
+
+# Documentation Lifecycle
+
+Documentation should evolve in the following order:
+
+```text
+Idea
+  ↓
+Requirements
+  ↓
+Design Document
+  ↓
+ADR (if required)
+  ↓
+Implementation
+  ↓
+Operations Documentation
+```
+
+Example:
+
+```text
+docs/specifications/authentication/
+    requirements.md
+
+docs/design/authentication-oauth.md
+
+docs/architecture/adr/
+    0007-use-oauth2-provider.md
+
+src/
+```
+
+---
+
+# Recommended Structure for Most Teams
+
+```text
+docs/
+├── standards/
+├── architecture/
+│   └── adr/
+├── specifications/
+├── design/
+├── planning/
+├── operations/
+└── ai/
+```
+
+This structure scales well from small teams to large engineering organizations while keeping documentation discoverable, maintainable, and aligned with the software development lifecycle.
+
+## Outline
+
+```
+repo/
+│
+├── README.md
+├── CONTRIBUTING.md
+├── CHANGELOG.md
+├── LICENSE
+│
+├── docs/
+│   │
+│   ├── standards/
+│   │   ├── coding-guidelines.md
+│   │   ├── formatting.md
+│   │   ├── testing.md
+│   │   ├── git-workflow.md
+│   │   └── code-review.md
+│   │
+│   ├── architecture/
+│   │   ├── overview.md
+│   │   ├── system-context.md
+│   │   ├── data-model.md
+│   │   └── adr/
+│   │       ├── 0001-use-postgresql.md
+│   │       ├── 0002-use-event-sourcing.md
+│   │       └── README.md
+│   │
+│   ├── specifications/
+│   │   ├── auth/
+│   │   │   ├── requirements.md
+│   │   │   ├── api-spec.md
+│   │   │   └── acceptance-criteria.md
+│   │   │
+│   │   └── billing/
+│   │       └── ...
+│   │
+│   ├── planning/
+│   │   ├── roadmap.md
+│   │   ├── milestones.md
+│   │   └── releases/
+│   │       ├── v1.0.md
+│   │       └── v1.1.md
+│   │
+│   ├── design/
+│   │   ├── ui-guidelines.md
+│   │   ├── ux-principles.md
+│   │   └── wireframes/
+│   │
+│   └── operations/
+│       ├── deployment.md
+│       ├── monitoring.md
+│       └── runbooks/
+│
+└── src/
+```
