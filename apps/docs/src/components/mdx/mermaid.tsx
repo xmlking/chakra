@@ -4,7 +4,9 @@ import { use, useEffect, useId, useState } from "react";
 
 export function Mermaid({ chart }: { chart: string }) {
   const [mounted, setMounted] = useState(false);
+  // oxlint-disable-next-line react-doctor/rendering-hydration-no-flicker
   useEffect(() => {
+    // oxlint-disable-next-line react-doctor/no-initialize-state
     setMounted(true);
   }, []);
 
@@ -40,6 +42,7 @@ function MermaidContent({ chart }: { chart: string }) {
       ref={(container) => {
         if (container) bindFunctions?.(container);
       }}
+      // oxlint-disable-next-line react-doctor/no-danger
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );

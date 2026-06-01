@@ -4,7 +4,7 @@
 
 - Stack: TypeScript + React (TanStack Start) in a bun + Vite+ monorepo, with Drizzle ORM, resend, shadcn/ui, and Better Auth.
 - Prefer shared `@workspace/ui` components; add primitives via shadcn CLI (`vpx shadcn@latest add <component>`).
-- Use `lucide-react` for UI icons (use `Icon` suffix, e.g. `import { Loader2Icon } from "lucide-react"`); for brand icons use `@icons-pack/react-simple-icons` (e.g. `SiGithub`).
+- Use `lucide-react` for UI icons (use `Icon` suffix, e.g. `import { Loader2Icon } from "lucide-react"`); for brand icons use `@thesvg/react` (e.g. `import Github from '@thesvg/react/github'; <Github className="size-6" />`).
 - When resolving module specifiers that begin with `#`, always respect the nearest ancestor `package.json` `"imports"` field using TypeScript’s `resolvePackageJsonImports` behavior.
 - Use shared bun catalog versions (root `package.json`) via `catalog:`.
 - Don't build after every little change. If `vp check` passes; assume changes work.

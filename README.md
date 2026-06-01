@@ -1,4 +1,6 @@
-Welcome to your new TanStack Start app!
+Starter Kit for AI Native Applications
+
+Vite Plus (Vite+) TanStack Start monorepo with Paraglide.js (i18n), drizzle-orm, better-auth, Feature-Sliced Design (FSD)
 
 ## Prerequisites
 

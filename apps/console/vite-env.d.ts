@@ -28,3 +28,8 @@ declare module 'virtual:env/server' {
   export { env }
   export default env
 }
+
+declare const __APP_VERSION__: string;
+declare const __GIT_TAG__: string;
+declare const __GIT_SHA__: string;
+declare const __GIT_TIME__: string;

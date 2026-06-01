@@ -11,6 +11,9 @@ declare module 'virtual:env/client' {
     readonly VITE_DOCS_URL: string
     readonly VITE_WEB_URL: string
     readonly VITE_DEBUG: boolean
+    readonly VITE_GITHUB_REPO: string
+    readonly VITE_GITHUB_OWNER: string
+    readonly VITE_DOCS_CATEGORY: string
   }
   export { env }
   export default env
@@ -20,11 +23,17 @@ declare module 'virtual:env/server' {
   const env: {
     readonly OPENROUTER_API_KEY: string
     readonly OPENROUTER_MODEL: string
+    readonly GITHUB_APP_ID: string
+    readonly GITHUB_APP_PRIVATE_KEY: string
+    readonly GITHUB_APP_WEBHOOK_SECRET?: string
     readonly VITE_APP_NAME: string
     readonly VITE_CONSOLE_URL: string
     readonly VITE_DOCS_URL: string
     readonly VITE_WEB_URL: string
     readonly VITE_DEBUG: boolean
+    readonly VITE_GITHUB_REPO: string
+    readonly VITE_GITHUB_OWNER: string
+    readonly VITE_DOCS_CATEGORY: string
   }
   export { env }
   export default env

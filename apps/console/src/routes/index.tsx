@@ -8,6 +8,7 @@ import {
 } from "@workspace/ui/components/shadcn/card";
 
 import { ThemeSwitcher } from "#components/theme-switcher";
+import { ThemeToggle } from "#components/theme-toggle";
 
 export const Route = createFileRoute("/")({ component: App });
 
@@ -17,7 +18,7 @@ function App() {
     <Card className="max-w-sm">
       <CardHeader>
         <CardTitle>
-          Project Overview <ThemeSwitcher />
+          Project Overview <ThemeSwitcher /> <ThemeToggle />
         </CardTitle>
         <CardDescription>
           Track progress and recent activity for your TanStack Start app.

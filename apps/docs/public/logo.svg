@@ -1,0 +1,50 @@
+<svg xmlns="http://w3.org" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <!-- Define the 24-spoke array template for perfect rotation -->
+    <g id="spoke-pair">
+      <line x1="0" y1="0" x2="0" y2="-190" stroke="#000080" stroke-width="4.5" stroke-linecap="round" />
+      <line x1="0" y1="0" x2="0" y2="190" stroke="#000080" stroke-width="4.5" stroke-linecap="round" />
+    </g>
+  </defs>
+
+  <!-- Background for rendering contrast (Optional) -->
+  <rect width="100%" height="100%" fill="#FFFFFF" />
+
+  <!-- Main wheel structure centered at (250, 250) -->
+  <g transform="translate(250, 250)">
+    
+    <!-- 1. Outer Ring -->
+    <circle r="200" fill="none" stroke="#000080" stroke-width="10" />
+    
+    <!-- 2. Inner Ring -->
+    <circle r="85" fill="none" stroke="#000080" stroke-width="4" />
+
+    <!-- 3. The 24 Spokes -->
+    <!-- 
+      The spokes are spaced at 15-degree intervals. 
+      We loop through 12 pairs to perfectly construct the 24 spokes.
+    -->
+    <use href="#spoke-pair" transform="rotate(0)" />
+    <use href="#spoke-pair" transform="rotate(15)" />
+    <use href="#spoke-pair" transform="rotate(30)" />
+    <use href="#spoke-pair" transform="rotate(45)" />
+    <use href="#spoke-pair" transform="rotate(60)" />
+    <use href="#spoke-pair" transform="rotate(75)" />
+    <use href="#spoke-pair" transform="rotate(90)" />
+    <use href="#spoke-pair" transform="rotate(105)" />
+    <use href="#spoke-pair" transform="rotate(120)" />
+    <use href="#spoke-pair" transform="rotate(135)" />
+    <use href="#spoke-pair" transform="rotate(150)" />
+    <use href="#spoke-pair" transform="rotate(165)" />
+
+    <!-- 4. Inner Rim Connectors (Half-circles touching the inner ring) -->
+    <circle r="12" cy="-85" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cy="85" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cx="-85" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cx="85" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cy="-60" transform="rotate(45)" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cy="-60" transform="rotate(135)" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cy="-60" transform="rotate(225)" fill="none" stroke="#000080" stroke-width="3" />
+    <circle r="12" cy="-60" transform="rotate(315)" fill="none" stroke="#000080" stroke-width="3" />
+  </g>
+</svg>
