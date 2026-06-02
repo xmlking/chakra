@@ -6,8 +6,8 @@ coverage = false
 # to require 90% line-level and function-level coverage
 coverageThreshold = { line = 0.7, function = 0.8, statement = 0.9 }
 
-[install]
-linker = "isolated"
+# [install]
+# linker = "isolated"
 # minimumReleaseAge = 432000
 # set default registry as a string
 #registry = "https://registry.npmjs.org"

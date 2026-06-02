@@ -73,3 +73,5 @@ TODO/
 **/*.db
 packages/db/src/schema/copy_me_auth.ts
 infra/traefik/acme.json
+
+**/.workflow-data

@@ -6,14 +6,23 @@ import viteReact from "@vitejs/plugin-react";
 import { getBuildInfo } from "@workspace/shared/git-helpers";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
+import { workflow } from "workflow/vite";
 
 const config = defineConfig({
+  root: import.meta.dirname,
   envDir: "../..", // HINT: use workspace root .env files
   resolve: { tsconfigPaths: true },
   plugins: [
+    workflow(),
     ViteEnv(),
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({
+      modules: ["workflow/nitro"],
+      workflow: {
+        dirs: ["src/workflows"],
+      },
+      rollupConfig: { external: [/^@sentry\//] },
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
