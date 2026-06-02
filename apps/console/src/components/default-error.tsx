@@ -14,7 +14,7 @@ import { useEffect } from "react";
 
 import { getIsDev } from "#lib/helpers.isomorphic";
 
-export function AppError(props: ErrorComponentProps) {
+export function DefaultError(props: ErrorComponentProps) {
   const router = useRouter();
   const isRoot = useMatch({
     strict: false,

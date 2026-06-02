@@ -2,8 +2,9 @@ import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
-import { AppError } from "#components/app-error";
-import { NotFound } from "#components/not-found";
+import { DefaultError } from "#components/default-error";
+import { DefaultLoading } from "#components/default-loading";
+import { DefaultNotFound } from "#components/default-notfound";
 import { Providers } from "#components/providers";
 
 import { routeTree } from "./routeTree.gen";
@@ -26,8 +27,9 @@ export function getRouter() {
     scrollRestorationBehavior: "smooth",
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
-    defaultNotFoundComponent: NotFound,
-    defaultErrorComponent: AppError,
+    defaultPendingComponent: DefaultLoading,
+    defaultNotFoundComponent: DefaultNotFound,
+    defaultErrorComponent: DefaultError,
     InnerWrap: ({ children }) => {
       return <Providers>{children}</Providers>;
     },

@@ -1,7 +1,7 @@
 import { Link, type NotFoundRouteProps } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/shadcn/button";
 
-export function NotFound(_props: NotFoundRouteProps) {
+export function DefaultNotFound(_props: NotFoundRouteProps) {
   return (
     <div className="space-y-2 p-2">
       <div className="text-gray-600 dark:text-gray-400">
