@@ -1,0 +1,494 @@
+---
+title: Introduction
+description: Get started with Astra Starter Kit.
+url: /docs/web
+icon: Pentagon
+---
+
+Welcome to the Astra documentation. This is your starting point for learning about the starter kit, its structure, features, and how to use it for your app development.
+
+## What is Astra??
+
+Astra is a fullstack starter kit that helps you build scalable and production-ready web apps, mobile apps, and browser extensions in minutes.
+
+## Demo apps
+
+Astra provides a suite of live demo applications you can try instantly - right in your browser, on your phone, or via browser extensions. Try them live by clicking the buttons below.
+
+## Principles
+
+Astra is built with the following principles:
+
+- **As simple as possible** - It should be easy to understand, easy to use, and strongly avoid over-engineering things.
+- **As few dependencies as possible** - It should have as few dependencies as possible to allow you to take full control over every part of the project.
+- **As performant as possible** - It should be fast and light without any unnecessary overhead.
+
+## Features
+
+Before diving into the technical details, let's overview the features Astra provides.
+
+### Multi-platform development
+
+- [Web](/docs/web/stack): Build web apps with React, Next.js, and Tailwind CSS.
+- [Mobile](/docs/mobile/stack): Build mobile apps with React Native and Expo.
+
+For those interested in AI development, check out our dedicated [Astra AI documentation](/ai/docs) with specialized features for building AI-powered applications.
+
+<Callout title="Available. Everywhere.">
+  Most features are available on all platforms. You can use the **same codebase** to build web,
+  mobile, and browser extension apps.
+</Callout>
+
+### Authentication
+
+<Cards>
+  <Card title="Ready-to-use components and views" description="Pre-built authentication components and pages that match your brand's unique style." className="shadow-none" />
+
+<Card
+  title="Email/password authentication"
+  description="Traditional email and password auth implementing validation and security best practices."
+  className="shadow-none"
+/>
+
+<Card
+  title="Magic links"
+  description="Passwordless authentication through secure email-based magic links, including rate limiting."
+  className="shadow-none"
+/>
+
+<Card
+  title="Password recovery"
+  description="Complete password reset flow including email verification and secure token handling."
+  className="shadow-none"
+/>
+
+<Card
+  title="Multi-factor authentication (MFA)"
+  description="Increase account security with support for 2FA (authenticator apps, TOTP), ready to use and customizable in your app."
+  className="shadow-none"
+/>
+
+<Card
+  title="Passkeys (passwordless)"
+  description="Passwordless authentication using Passkeys (FIDO2/WebAuthn) for seamless, phishing-resistant sign-ins."
+  className="shadow-none"
+/>
+
+<Card
+  title="Anonymous"
+  description="Allow users to proceed anonymously without requiring authentication."
+  className="shadow-none"
+/>
+
+  <Card title="OAuth providers" description="Pre-configured social authentication for Google and GitHub, ready to use." className="shadow-none" />
+</Cards>
+
+### Organizations/teams
+
+<Cards>
+  <Card title="Multi-tenancy" description="Multi-tenant organization model with ownership and membership." className="shadow-none" />
+
+<Card
+  title="Teams and members"
+  description="Create teams, invite members, assign roles and manage seats."
+  className="shadow-none"
+/>
+
+<Card
+  title="Invitations"
+  description="Email-based invites with role presets and expiry."
+  className="shadow-none"
+/>
+
+  <Card title="Roles per organization" description="Role-based permissions scoped to each organization." className="shadow-none" />
+</Cards>
+
+### Billing
+
+<Cards>
+  <Card title="Subscriptions" description="Recurring billing system supporting multiple plans, pricing tiers and usage metrics." className="shadow-none" />
+
+<Card
+  title="One-time payments"
+  description="Simple payment processing featuring secure checkout and payment confirmation."
+  className="shadow-none"
+/>
+
+<Card
+  title="Webhooks"
+  description="Real-time billing event handling and payment provider data synchronization."
+  className="shadow-none"
+/>
+
+<Card
+  title="Custom plans"
+  description="Create and manage custom pricing plans offering flexible billing options."
+  className="shadow-none"
+/>
+
+<Card
+  title="Billing components"
+  description="Ready-made components for pricing, checkout and billing management."
+  className="shadow-none"
+/>
+
+  <Card title="Multiple providers" description="Seamless integration of Stripe, LemonSqueezy and Polar payment systems." className="shadow-none" />
+</Cards>
+
+### Database
+
+<Cards>
+  <Card title="Advanced querying" description="Type-safe SQL queries, relational joins, filters, ordering, pagination and more." className="shadow-none" />
+
+<Card
+  title="Schema migrations"
+  description="Automated schema migrations with version control, rollback, and auto-generation."
+  className="shadow-none"
+/>
+
+<Card
+  title="Connection pooling"
+  description="Standalone or serverless database connections with optimal pooling strategies."
+  className="shadow-none"
+/>
+
+  <Card title="Data validation" description="End-to-end data validation using shared types and schema definitions." className="shadow-none" />
+</Cards>
+
+### API
+
+<Cards>
+  <Card title="Serverless architecture" description="Modern serverless infrastructure offering auto-scaling and high availability." className="shadow-none" />
+
+<Card
+  title="Single source of truth"
+  description="Unified data management across all apps through shared types and validation."
+  className="shadow-none"
+/>
+
+<Card
+  title="Protected routes"
+  description="Secure API endpoints implementing role-based access control and rate limiting."
+  className="shadow-none"
+/>
+
+<Card
+  title="Feature-based access"
+  description="Access control based on features and subscription plans."
+  className="shadow-none"
+/>
+
+  <Card title="Typesafe client" description="Fully typesafe frontend client featuring automatic type generation." className="shadow-none" />
+</Cards>
+
+### Admin
+
+<Cards>
+  <Card title="Super admin UI" description="Centralized admin workspace with overview metrics and quick actions." className="shadow-none" />
+
+<Card
+  title="User management"
+  description="Search, filter and manage users, status, auth methods and MFA."
+  className="shadow-none"
+/>
+
+<Card
+  title="Roles and permissions"
+  description="Granular access control for admins, moderators and support staff."
+  className="shadow-none"
+/>
+
+  <Card title="Impersonation" description="Securely impersonate users to reproduce issues and provide support." className="shadow-none" />
+</Cards>
+
+### AI
+
+<Cards>
+  <Card title="Multiple providers" className="shadow-none">
+    Seamless integration of OpenAI, Anthropic, Groq, Mistral, and Gemini. For more advanced AI features, check out [Astra AI](/ai/docs).
+  </Card>
+
+<Card
+  title="Ready-to-use components"
+  description="Pre-built chatbot and assistant components supporting real-time streaming."
+  className="shadow-none"
+/>
+
+<Card
+  title="Streaming responses"
+  description="Real-time AI response delivery including progress indicators."
+  className="shadow-none"
+/>
+
+  <Card title="Custom rules" description="Includes custom rules and prompts for AI editors and models to make you ship faster." className="shadow-none" />
+</Cards>
+
+### Internationalization
+
+<Cards>
+  <Card title="Locale routing" description="Smart routing based on user locale and automatic language detection." className="shadow-none" />
+
+<Card
+  title="Multiple languages"
+  description="Comprehensive multi-language support and translation management."
+  className="shadow-none"
+/>
+
+<Card
+  title="Language switching"
+  description="One-click language changes and persistent preferences."
+  className="shadow-none"
+/>
+
+  <Card title="Mail templates" description="Multi-language email templates including fallback options." className="shadow-none" />
+</Cards>
+
+### Emails
+
+<Cards>
+  <Card title="Transactional emails" description="Automated email delivery including tracking and analytics capabilities." className="shadow-none" />
+
+<Card
+  title="Marketing emails"
+  description="Create and send marketing campaigns using beautiful templates."
+  className="shadow-none"
+/>
+
+<Card
+  title="Email templates"
+  description="Responsive email templates supporting dark mode customization."
+  className="shadow-none"
+/>
+
+  <Card title="Multiple providers" description="Easy integration of SendGrid, Resend, and Nodemailer services." className="shadow-none" />
+</Cards>
+
+### Landing page
+
+<Cards>
+  <Card title="Hero section" description="Dynamic hero with subtle animations, platform links, and primary/secondary CTAs." className="shadow-none" />
+
+<Card
+  title="Feature highlights"
+  description="Grid and list layouts to present key features and differentiators."
+  className="shadow-none"
+/>
+
+<Card
+  title="Pricing plans"
+  description="Billing-integrated pricing table with intervals, discounts and footer notes."
+  className="shadow-none"
+/>
+
+<Card
+  title="Testimonials"
+  description="Social proof section with avatars, star ratings and counts."
+  className="shadow-none"
+/>
+
+<Card
+  title="FAQ"
+  description="Structured FAQ with SEO schema for rich results."
+  className="shadow-none"
+/>
+
+  <Card title="Re-usable CTAs" description="Buttons, badges and links to docs, pricing and community." className="shadow-none" />
+</Cards>
+
+### Marketing
+
+<Cards>
+  <Card title="SEO" description="Complete SEO toolkit including automatic sitemap generation." className="shadow-none" />
+
+<Card
+  title="Meta tags"
+  description="Flexible meta tag system supporting social media previews."
+  className="shadow-none"
+/>
+
+<Card
+  title="Tips and tricks"
+  description="Comprehensive tips and tricks for optimizing marketing of your app."
+  className="shadow-none"
+/>
+
+<Card
+  title="Mobile onboarding"
+  description="Onboarding flow for mobile apps including custom steps, authentication, and more."
+  className="shadow-none"
+/>
+
+<Card
+  title="Blog"
+  description="Full-featured blog system including categories and RSS feed."
+  className="shadow-none"
+/>
+
+<Card
+  title="Legal pages"
+  description="Pre-built legal templates including version control."
+  className="shadow-none"
+/>
+
+  <Card title="Contact form" description="Smart contact form featuring spam protection and auto-responses." className="shadow-none" />
+</Cards>
+
+### Storage
+
+<Cards>
+  <Card title="File uploads" description="Complete file upload system including progress tracking and validation." className="shadow-none" />
+
+  <Card title="S3 storage" description="S3-compatible storage offering automatic file optimization." className="shadow-none" />
+</Cards>
+
+### CMS
+
+<Cards>
+  <Card title="Blog pages" description="Complete blog management system including categories and tags." className="shadow-none" />
+
+  <Card title="MDX content collections" description="Organized content structure using MDX-based collections and custom frontmatter." className="shadow-none" />
+</Cards>
+
+### Theming
+
+<Cards>
+  <Card title="Built-in themes" description="10+ pre-built themes offering customizable color schemes." className="shadow-none" />
+
+<Card
+  title="Dark mode"
+  description="Built-in dark mode supporting system preference detection."
+  className="shadow-none"
+/>
+
+<Card
+  title="Components CLI"
+  description="Component generation tools following best practices and TypeScript standards."
+  className="shadow-none"
+/>
+
+  <Card title="Design system" description="Complete atomic design system including accessibility features." className="shadow-none" />
+</Cards>
+
+### Analytics
+
+<Cards>
+  <Card title="Event tracking" description="Custom event tracking plus automatic session management." className="shadow-none" />
+
+<Card
+  title="Page views"
+  description="Automatic page view capture including bounce rate metrics."
+  className="shadow-none"
+/>
+
+<Card
+  title="User identification"
+  description="Cross-device user tracking and session management."
+  className="shadow-none"
+/>
+
+  <Card title="Multiple providers" description="Seamless integration with multiple platforms (e.g. Google Analytics, PostHog, Plausible, Umami, Open Panel, Vemetric)." className="shadow-none" />
+</Cards>
+
+### Monitoring
+
+<Cards>
+  <Card title="Auto-capture exceptions" description="Automatically capture exceptions and errors in your application." className="shadow-none" />
+
+<Card
+  title="Track performance metrics"
+  description="Track performance metrics such as page views, user sessions, and more."
+  className="shadow-none"
+/>
+
+<Card
+  title="Source maps"
+  description="Automatically generate source maps for your application to improve error reporting."
+  className="shadow-none"
+/>
+
+  <Card title="Multiple providers" description="Seamless integration with multiple platforms (e.g. Sentry, PostHog)." className="shadow-none" />
+</Cards>
+
+### Deployment
+
+<Cards>
+  <Card title="One-click deploy" description="Simple deployment to your preferred cloud provider." className="shadow-none" />
+
+<Card
+  title="Submission guide"
+  description="Comprehensive guide for app store submissions and requirements."
+  className="shadow-none"
+/>
+
+<Card
+  title="CI/CD workflows"
+  description="Pre-configured deployment pipelines including automated testing."
+  className="shadow-none"
+/>
+
+  <Card title="Over-the-air updates" description="Instantly push code or config updates to users without resubmitting to the app store." className="shadow-none" />
+</Cards>
+
+### Testing
+
+<Cards>
+  <Card title="Unit tests" description="Write and run fast unit tests for individual functions and components with instant feedback." className="shadow-none" />
+
+<Card
+  title="Code coverage"
+  description="See precise coverage metrics that show what code is and isn't tested, giving you valuable insight to improve your test suite."
+  className="shadow-none"
+/>
+
+<Card
+  title="Integration tests"
+  description="Test the interaction between different modules or services to ensure everything works together as intended."
+  className="shadow-none"
+/>
+
+  <Card title="E2E tests" description="Simulate real user scenarios across the entire stack with automated end-to-end test tools and examples." className="shadow-none" />
+</Cards>
+
+## Use like LEGO blocks
+
+The biggest advantage of Astra is its modularity. You can use the entire stack or just the parts you need. It's like LEGO blocks - you can build anything you want with it.
+
+If you don't need a specific feature, feel free to remove it without affecting the rest of the stack.
+
+This approach allows for:
+
+- **Easy feature integration** - plug new features into the kit with minimal changes.
+- **Simplified maintenance** - keep the codebase clean and maintainable.
+- **Core feature separation** - distinguish between core features and custom features.
+- **Additional modules** - easily add modules like billing, CMS, monitoring, logger, mailer, and more.
+
+## Scope of this documentation
+
+While building a SaaS application involves many moving parts, this documentation focuses specifically on Astra. For in-depth information on the underlying technologies, please refer to their respective official documentation.
+
+This documentation will guide you through configuring, running, and deploying the kit, and will provide helpful links to the official documentation of technologies where necessary.
+
+## `llms.txt`
+
+You can access the entire Astra documentation in Markdown format at [/llms.txt](/llms.txt). This can be used to ask any LLM (assuming it has a big enough context window) questions about the Astra based on the most up-to-date documentation.
+
+### Example usage
+
+For instance, to prompt an LLM with questions about the Astra:
+
+1. Copy the documentation contents from [/llms.txt](/llms.txt)
+2. Use the following prompt format:
+
+```
+Documentation:
+{paste documentation here}
+---
+Based on the above documentation, answer the following:
+{your question}
+```
+
+## Enjoy!
+
+This documentation is designed to be easy to follow and understand. If you have any questions or need help, feel free to reach out to us at [hello@astra.ai](mailto:hello@astra.ai).
+
+Explore new features, build amazing apps, and have fun! 🚀

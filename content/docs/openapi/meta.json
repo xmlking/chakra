@@ -1,0 +1,7 @@
+{
+  "title": "OpenAPI",
+  "description": "OpenAPI docs",
+  "root": true,
+  "icon": "Shapes",
+  "pages": ["index", "...(generated)"]
+}

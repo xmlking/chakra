@@ -1,0 +1,84 @@
+---
+url: /docs/web/database/overview
+title: Overview
+description: Get started with the database.
+---
+
+We're using [Drizzle ORM](https://orm.drizzle.team) to interact with the database. It basically adds a little layer of abstraction between our code and the database.
+
+> If you know SQL, you know Drizzle.
+
+For the database we're leveraging [PostgreSQL](https://www.postgresql.org), but you could use any other database that Drizzle ORM supports (basically any SQL database e.g. [MySQL](https://orm.drizzle.team/docs/get-started-mysql), [SQLite](https://orm.drizzle.team/docs/get-started-sqlite), etc.).
+
+<Callout title="Why Drizzle ORM?">
+  Drizzle ORM is a powerful tool that allows you to interact with the database in a type-safe
+  manner. It ships with **0** (!) dependencies and is designed to be fast and easy to use.
+</Callout>
+
+## Setup
+
+To start interacting with the database you first need to ensure that your database service instance is up and running.
+
+<Tabs items={["Local development", "Cloud instance"]}>
+  <Tab value="Local development">
+    For local development we recommend using the [Docker](https://hub.docker.com/_/postgres) container.
+
+    You can start the container with the following command:
+
+    ```bash
+    pnpm services:setup
+    ```
+
+    This will start all the services (including the database container) and initialize the database with the latest schema.
+
+    **Where is DATABASE\_URL?**
+
+    `DATABASE_URL` is a connection string that is used to connect to the database. When the command will finish it will be displayed in the console and setup to your environment variables.
+
+  </Tab>
+
+  <Tab value="Cloud instance">
+    You can also use a cloud instance of database (e.g. [Supabase](/docs/web/recipes/supabase), [Neon](https://neon.tech/), [Turso](https://turso.tech/), etc.), although it's not recommended for local development.
+
+    If you choose Supabase as your provider, follow the [Supabase recipe](/docs/web/recipes/supabase#configure-environment-variables) for details on configuring `DATABASE_URL` and running migrations.
+
+    **Where is DATABASE\_URL?**
+
+    It's available in your provider's project dashboard. You'll need to copy the connection string from there and add it to your `.env.local` file. The format will look something like:
+
+    * Neon: `postgresql://user:password@ep-xyz-123.region.aws.neon.tech/dbname`
+    * Turso: `libsql://your-db-xyz.turso.io`
+
+    Make sure to keep this URL secure and never commit it to version control.
+
+  </Tab>
+</Tabs>
+
+Then, you need to set `DATABASE_URL` environment variable in **root** `.env.local` file.
+
+```dotenv title=".env.local"
+# The database URL is used to connect to your database.
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+```
+
+You're ready to go! 🥳
+
+## Studio
+
+Astra provides you also with an interactive UI where you can explore your database and test queries called Studio.
+
+To run the Studio, you can use the following command:
+
+```bash
+pnpm with-env pnpm --filter @workspace/db db:studio
+```
+
+This will start the Studio on [https://local.drizzle.studio](https://local.drizzle.studio).
+
+![Drizzle Studio](./assets/db-studio.webp)
+
+## Next steps
+
+- [Update schema](/docs/web/database/schema) - learn about schema and how to update it.
+- [Generate & run migrations](/docs/web/database/migrations) - migrate your changes to the database.
+- [Initialize client](/docs/web/database/client) - initialize the database client and start interacting with the database.

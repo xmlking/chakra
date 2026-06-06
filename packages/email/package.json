@@ -1,0 +1,40 @@
+{
+  "name": "@workspace/email",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Email templates",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./emails/*.tsx",
+    "./env": "./env.ts"
+  },
+  "scripts": {
+    "build": "email build",
+    "clean": "git clean -xdf .react-email dist out node_modules",
+    "cli": "bunx email-sdk",
+    "dev": "email dev",
+    "export": "email export"
+  },
+  "dependencies": {
+    "@opencoredev/email-sdk": "catalog:",
+    "@vite-env/core": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-email": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@react-email/ui": "catalog:",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vite-env/cli": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
+  }
+}

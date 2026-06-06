@@ -1,0 +1,123 @@
+{
+  "search.exclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.readonlyInclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.watcherExclude": {
+    "**/.tanstack/**/*": true,
+    "**/routeTree.gen.ts": true,
+    "bun.lock": true
+  },
+  "files.exclude": {
+    ".git": true,
+    ".idea": true,
+    ".vite-hooks": true,
+    ".tanstack": true,
+
+    "**/.DS_Store": true,
+    "**/.swc": true,
+    "**/.vercel": true,
+    "**/*.js": {
+      "when": "$(basename).ts"
+    },
+    "**/*.js.map": {
+      "when": "$(basename)"
+    },
+    "**/node_modules": true
+  },
+  "files.associations": {
+    ".env*": "properties",
+    "*.css": "tailwindcss",
+    "*.mdx": "markdown",
+    "Makefile*": "makefile",
+    "project.code-workspace": "jsonc"
+  },
+  "files.autoSave": "onFocusChange",
+  "files.autoSaveDelay": 1000,
+
+  // use LF line endings
+  "files.eol": "\n",
+
+  // disable prettier, eslint, biome
+  "prettier.enable": false,
+  "eslint.enable": false,
+  "biome.enabled": false,
+  // enable oxlint + oxfmt
+  "oxc.enable": true,
+
+  // oxfmt via vite+
+  "oxc.fmt.configPath": "./vite.config.ts",
+
+  // vite+ for npm scripts
+  "npm.scriptRunner": "vp",
+
+  // AI Tools
+  "chat.useAgentSkills": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.oxc": "explicit"
+  },
+
+  // format on save and paste
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+
+  "explorer.autoRevealExclude": {
+    "**/.output": true,
+    "**/.swc": true,
+    "**/.tanstack": true,
+    "**/build": true,
+    "**/coverage": true,
+    "**/dist": true,
+    "**/node_modules": true
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    ".env": ".env*",
+    ".gitignore": ".gitattributes,.vercelignore",
+    "AGENTS.md": "CLAUDE.md",
+    "Dockerfile": "*.Dockerfile,Dockerfile.*,compose*.yml,.dockerignore",
+    "flake.nix": "flake.lock",
+    "package.json": ".npmrc,bun.lock,bunfig.toml",
+    "README.md": "DEVELOPERS.md,CHANGELOG.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,LICENSE",
+    "tsconfig.json": "tsconfig.*.json",
+    "vite.config.*": "vitest.*"
+  },
+  "explorer.sortOrder": "type",
+
+  // TypeScript (Native Preview) > Use Tsgo
+  "js/ts.experimental.useTsgo": true,
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+  "json.schemaDownload.enable": true,
+  "json.schemaDownload.trustedDomains": {
+    "https://inlang.com/schema/": true,
+    "https://ui.shadcn.com/": true
+  },
+
+  "tailwindCSS.classFunctions": ["cva", "cx", "cn"],
+  "tailwindCSS.experimental.configFile": {
+    "packages/ui/src/styles/globals.css": "packages/ui/src/styles/**",
+    "packages/ui/src/styles/themes.css": "packages/ui/src/styles/**"
+  }
+}

@@ -1,0 +1,4 @@
+.react-email
+out
+dist
+node_modules

@@ -1,0 +1,75 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+dist
+dist-ssr
+build
+.output
+.react-email
+.nitro
+.vercel
+.wrangler
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+!.env.local.example
+!.env.production.example
+!.env.test.example
+!.env.vault
+
+# Editor directories and files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/mcp.json
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Misc
+.DS_Store
+*.pem
+.cache
+.tanstack
+worker-configuration.d.ts
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+**/.nyc_output
+**/coverage/
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+**/playwright/.auth/
+
+# AI agents
+.claude/worktrees/
+.claude/settings.local.json
+
+# Project
+TODO/
+**/*.db
+packages/db/src/schema/copy_me_auth.ts
+infra/traefik/acme.json

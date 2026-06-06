@@ -1,0 +1,40 @@
+{
+  "name": "@workspace/auth",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Better-Auth module",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts",
+    "./env": "./env.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf dist test-results coverage node_modules",
+    "generate-schema": "bunx @better-auth/cli@latest generate --config src/index.ts --output ../db/src/schema/copy_me_auth.ts -y",
+    "postinstall": "vite-env types && vite-env generate",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "catalog:",
+    "@better-auth/drizzle-adapter": "catalog:",
+    "@better-auth/oauth-provider": "catalog:",
+    "@better-auth/passkey": "catalog:",
+    "@better-auth/stripe": "catalog:",
+    "@vite-env/core": "catalog:",
+    "@workspace/db": "workspace:*",
+    "@workspace/email": "workspace:*",
+    "@workspace/shared": "workspace:*",
+    "better-auth": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@vite-env/cli": "catalog:"
+  },
+  "peerDependencies": {
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
+  }
+}

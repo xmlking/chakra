@@ -1,0 +1,37 @@
+---
+url: /docs/web/configuration/app
+title: App configuration
+description: Learn how to setup the overall settings of your app.
+---
+
+The application configuration is set at `apps/web/src/config/app.ts`. This configuration stores some overall variables for your application.
+
+This allows you to host multiple apps in the same monorepo, as every application defines its own configuration.
+
+The recommendation is to **not update this directly** - instead, please define the environment variables and override the default behavior. The configuration is strongly typed so you can use it safely accross your codebase - it'll be validated at build time.
+
+```ts title="apps/web/src/config/app.ts"
+import env from "env.config";
+
+export const appConfig = {
+  name: env.NEXT_PUBLIC_PRODUCT_NAME,
+  url: env.NEXT_PUBLIC_URL,
+  locale: env.NEXT_PUBLIC_DEFAULT_LOCALE,
+  theme: {
+    mode: env.NEXT_PUBLIC_THEME_MODE,
+    color: env.NEXT_PUBLIC_THEME_COLOR,
+  },
+} as const;
+```
+
+For example, to set the product name and default locale, you'd update the following variables:
+
+```dotenv title=".env.local"
+NEXT_PUBLIC_PRODUCT_NAME="Astra"
+NEXT_PUBLIC_DEFAULT_LOCALE="en"
+```
+
+<Callout type="warn" title="Do NOT use process.env!">
+  Do NOT use `process.env` to get the values of the variables. Variables accessed this way are not
+  validated at build time, and thus the wrong variable can be used in production.
+</Callout>

@@ -1,0 +1,14 @@
+{
+  "title": "Installation",
+  "pages": [
+    "clone",
+    "editor-setup",
+    "development",
+    "conventions",
+    "commands",
+    "structure",
+    "update",
+    "dependencies",
+    "vibe-coding"
+  ]
+}

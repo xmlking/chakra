@@ -1,0 +1,48 @@
+{
+  "name": "@workspace/db",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Drizzle database module",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*.ts",
+    "./env": "./env.ts"
+  },
+  "scripts": {
+    "check": "drizzle-kit check",
+    "clean": "git clean -xdf .drizzle dist test-results coverage node_modules",
+    "drop": "drizzle-kit drop",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "postinstall": "vite-env types && vite-env generate",
+    "pull": "drizzle-kit pull",
+    "push": "drizzle-kit push",
+    "seed": "DB_SEEDING=true bun scripts/seed.ts",
+    "studio": "drizzle-kit studio",
+    "typecheck": "tsgo --noEmit",
+    "up": "drizzle-kit up"
+  },
+  "dependencies": {
+    "@vite-env/core": "catalog:",
+    "@workspace/shared": "workspace:*",
+    "better-result": "catalog:",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@better-auth/utils": "0.4.1",
+    "@noble/hashes": "2.2.0",
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "@vite-env/cli": "catalog:",
+    "drizzle-kit": "catalog:",
+    "drizzle-seed": "catalog:"
+  },
+  "peerDependencies": {
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
+  }
+}

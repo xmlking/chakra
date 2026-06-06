@@ -1,0 +1,100 @@
+---
+url: /docs/web/installation/update
+title: Updating codebase
+description: Learn how to update your codebase to the latest version.
+---
+
+If you've been following along with our previous guides, you should already have a Git repository set up for your project, with an `upstream` remote pointing to the original repository.
+
+Updating your project involves fetching the latest changes from the `upstream` remote and merging them into your project. Let's dive into the steps!
+
+<Steps>
+  <Step>
+    ## Stash changes
+
+    <Callout title="Don't have changes?">
+      If you don't have any changes to stash, you can skip this step and proceed with the update process.
+
+      Alternatively, you can [commit](https://git-scm.com/docs/git-commit) your changes.
+    </Callout>
+
+    If you have any uncommitted changes, stash them before proceeding. It will allow you to avoid any conflicts that may arise during the update process.
+
+    ```bash
+    git stash
+    ```
+
+    This command will save your changes in a temporary location, allowing you to retrieve them later. Once you're done updating, you can apply the stash to your working directory.
+
+    ```bash
+    git stash apply
+    ```
+
+  </Step>
+
+  <Step>
+    ## Pull changes
+
+    Pull the latest changes from the `upstream` remote.
+
+    ```bash
+    git pull upstream main
+    ```
+
+    When prompted the first time, please opt for merging instead of rebasing.
+
+    Don't forget to run `pnpm i` in case there are any updates in the dependencies.
+
+  </Step>
+
+  <Step>
+    ## Resolve conflicts
+
+    If there are any conflicts during the merge, Git will notify you. You can resolve them by opening the conflicting files in your code editor and making the necessary changes.
+
+    <Callout title="Conflicts in pnpm-lock.yaml?">
+      If you find conflicts in the `pnpm-lock.yaml file`, accept either of the two changes (avoid manual edits), then run:
+
+      ```bash
+      pnpm i
+      ```
+
+      Your lock file will now reflect both your changes and the updates from the upstream repository.
+    </Callout>
+
+  </Step>
+
+  <Step>
+    ## Run a health check
+
+    After resolving the conflicts, it's time to test your project to ensure everything is working as expected. Run your project locally and navigate through the various features to verify that everything is functioning correctly.
+
+    For a quick health check, you can run:
+
+    ```bash
+    pnpm lint
+    pnpm typecheck
+
+    ```
+
+    If everything looks good, you're all set! Your project is now up to date with the latest changes from the `upstream` repository.
+
+  </Step>
+
+  <Step>
+    ## Commit and push
+
+    Once everything is working fine, don't forget to commit your changes using:
+
+    ```bash
+    git commit -m "<your-commit-message>"
+    ```
+
+    and push them to your remote repository with:
+
+    ```bash
+    git push origin <your-branch-name>
+    ```
+
+  </Step>
+</Steps>

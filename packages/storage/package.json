@@ -1,0 +1,35 @@
+{
+  "name": "@workspace/storage",
+  "version": "0.0.0",
+  "private": true,
+  "description": "unified storage provider",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./env": "./env.ts"
+  },
+  "scripts": {
+    "clean": "git clean -xdf dist test-results coverage node_modules",
+    "postinstall": "vite-env types && vite-env generate",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@vite-env/core": "catalog:",
+    "@workspace/shared": "workspace:*",
+    "files-sdk": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/node": "catalog:",
+    "@vite-env/cli": "catalog:"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-presigned-post": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
+    "@better-upload/server": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "typescript": "catalog:"
+  }
+}

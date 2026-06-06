@@ -1,0 +1,22 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "about_page": "About page",
+  "buttons_add": "Add",
+  "buttons_back": "Back",
+  "buttons_create": "Create",
+  "buttons_delte": "Delete",
+  "buttons_edit": "Edit",
+  "buttons_logout": "Logout",
+  "buttons_remove": "Remove",
+  "buttons_reset": "Reset",
+  "buttons_save": "Save",
+  "buttons_search": "Search",
+  "buttons_submit": "Submit",
+  "buttons_update": "Update",
+  "current_locale": "Current locale: {locale}",
+  "example_message": "Welcome to your i18n app.",
+  "greeting": "Hello {name}!",
+  "home_page": "Home page",
+  "language_label": "Language",
+  "learn_router": "Learn Paraglide JS"
+}

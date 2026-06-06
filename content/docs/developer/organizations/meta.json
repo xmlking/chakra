@@ -1,0 +1,4 @@
+{
+  "title": "Organizations/Teams",
+  "pages": ["overview", "data-model", "active-organization", "rbac", "invitations"]
+}
