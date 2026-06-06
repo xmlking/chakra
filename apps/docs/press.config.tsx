@@ -19,6 +19,7 @@ import { imagePlugin } from "fumapress/plugins/image/vercel";
 import { llmsPlugin } from "fumapress/plugins/llms.txt";
 // import { githubFeedbackPlugin } from "@fumapress/feedback/github";
 import { openapiPlugin } from "fumapress/plugins/openapi";
+import { sitemapPlugin } from "fumapress/plugins/sitemap";
 import { takumiPlugin } from "fumapress/plugins/takumi";
 import { BookIcon, RssIcon } from "lucide-react";
 
@@ -35,6 +36,7 @@ export const openapi = createOpenAPI({
 
 const config = defineConfig({
   mode: "static",
+  // renderMode: "static",
   content: {
     docs: docs.toFumadocsSource({
       baseDir: "docs",
@@ -122,6 +124,8 @@ const config = defineConfig({
     flexsearchPlugin(),
     llmsPlugin(),
     takumiPlugin(),
+    sitemapPlugin(),
+    // linkValidationPlugin(), // FIXME
     openapiPlugin({
       server: openapi,
       ClientAPIPage,
