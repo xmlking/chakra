@@ -49,4 +49,4 @@ jobs:
       - name: 📣 Announce Documentation Deployment
         run: |
           echo "📚 Documentation deployed successfully!"
-          echo "🌐 URL: https://docs.chakra.ai"
+          echo "🌐 URL: https://xmlking.github.io/chakra/"

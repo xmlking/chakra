@@ -51,7 +51,7 @@ const config = defineConfig({
   },
   site: {
     name: "Chakra",
-    baseUrl: import.meta.env.DEV ? "http://localhost:3000" : "https://docs.astra.dev",
+    baseUrl: import.meta.env.DEV ? "http://localhost:3000" : "https://xmlking.github.io/chakra/",
     git: {
       user: "xmlking",
       branch: "main",
