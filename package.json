@@ -25,7 +25,7 @@
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "clean": "git clean -xdf coverage node_modules",
+    "clean": "git clean -xdf vite-env.d.ts coverage node_modules",
     "prepare": "vp config",
     "ready": "vp check && vp test && vp run -r build"
   },

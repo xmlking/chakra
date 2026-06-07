@@ -14,7 +14,7 @@
   "scripts": {
     "build": "vp build",
     "check": "vite-env check && vp check",
-    "clean": "git clean -xdf .output .tanstack test-results coverage node_modules",
+    "clean": "git clean -xdf vite-env.d.ts .output .tanstack test-results coverage node_modules",
     "dev": "vp dev",
     "postinstall": "vite-env types && vite-env generate",
     "preview": "vp preview"

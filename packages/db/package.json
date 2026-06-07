@@ -11,7 +11,7 @@
   },
   "scripts": {
     "check": "drizzle-kit check",
-    "clean": "git clean -xdf .drizzle dist test-results coverage node_modules",
+    "clean": "git clean -xdf vite-env.d.ts .drizzle dist test-results coverage node_modules",
     "drop": "drizzle-kit drop",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",

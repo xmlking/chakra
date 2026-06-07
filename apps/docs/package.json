@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "waku build",
-    "clean": "git clean -xdf .output .tanstack .source dist test-results coverage node_modules",
+    "clean": "git clean -xdf vite-env.d.ts .output .tanstack .source dist test-results coverage node_modules",
     "dev": "waku dev",
     "postinstall": "vite-env types && vite-env generate && fumadocs-mdx",
     "start": "waku start",
