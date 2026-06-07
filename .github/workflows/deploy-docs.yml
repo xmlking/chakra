@@ -40,7 +40,7 @@ jobs:
       - name: 📤 Upload artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: apps/docs/dist
+          path: apps/docs/dist/public
 
       - name: 🌐 Deploy to GitHub Pages
         id: deployment
