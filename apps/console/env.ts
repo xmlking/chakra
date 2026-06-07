@@ -1,4 +1,5 @@
 import { defineEnv } from "@vite-env/core";
+import { preset as auth } from "@workspace/auth/env";
 import { preset as db } from "@workspace/db/env";
 import { preset as email } from "@workspace/email/env";
 import { z } from "zod";
@@ -11,7 +12,7 @@ import { z } from "zod";
  * to regenerate: `.env.example`,  `vite-env.d.ts` files.
  */
 export default defineEnv({
-  presets: [db, email],
+  presets: [db, email, auth],
   server: {
     CONTACT_EMAIL: z.email(),
   },

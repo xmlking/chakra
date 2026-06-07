@@ -70,6 +70,7 @@ lerna-debug.log*
 
 # Project
 TODO/
+**/vite-env.d.ts
 **/*.db
 packages/db/src/schema/copy_me_auth.ts
 infra/traefik/acme.json

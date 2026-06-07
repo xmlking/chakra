@@ -30,7 +30,8 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
-    "@vite-env/cli": "catalog:"
+    "@vite-env/cli": "catalog:",
+    "uuid": "catalog:"
   },
   "peerDependencies": {
     "@typescript/native-preview": "catalog:",

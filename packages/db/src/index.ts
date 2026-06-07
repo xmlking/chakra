@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
-// import { env } from "virtual:env/server";
+import { env } from "virtual:env/server";
 
 import * as relations from "./relations";
 // oxlint-disable-next-line react-doctor/no-barrel-import
@@ -11,8 +11,7 @@ import * as schema from "./schema";
 // const pool = db.$client;
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // connectionString: env.DATABASE_URL,
+  connectionString: env.DATABASE_URL,
   min: 10,
   max: 10,
   // ssl: true,

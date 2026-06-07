@@ -38,6 +38,7 @@
     "@tanstack/react-table-devtools": "catalog:",
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
+    "@workspace/auth": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/email": "workspace:*",
     "@workspace/i18n": "workspace:*",

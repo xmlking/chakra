@@ -2,11 +2,16 @@ import { drizzleAdapter } from "@better-auth/drizzle-adapter";
 import { db } from "@workspace/db";
 import { betterAuth } from "better-auth";
 import { captcha, testUtils } from "better-auth/plugins";
-// import { env } from "virtual:env/server";
+import { env } from "virtual:env/server";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
-  baseURL: "http://localhost:3000/",
+  advanced: {
+    database: {
+      generateId: false, // 👈 Tells Better Auth to let the database handle IDs
+    },
+  },
+  baseURL: env.VITE_BETTER_AUTH_URL,
   emailAndPassword: { enabled: true },
   plugins: [
     captcha({

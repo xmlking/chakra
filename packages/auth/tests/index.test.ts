@@ -1,4 +1,5 @@
 import type { TestHelpers } from "better-auth/plugins";
+import { v7 as uuidv7 } from "uuid";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
 import { auth } from "../src";
@@ -8,7 +9,7 @@ import { auth } from "../src";
  * plugin helpers (factories/login/headers/cookies/db cleanup).
  */
 // oxlint-disable-next-line vitest/no-disabled-tests
-describe.skip("auth (better-auth + testUtils plugin)", () => {
+describe("auth (better-auth + testUtils plugin)", () => {
   let test: TestHelpers;
   const createdUserIds: string[] = [];
 
@@ -31,7 +32,7 @@ describe.skip("auth (better-auth + testUtils plugin)", () => {
   });
 
   it("creates an authenticated session for a saved user (getAuthHeaders + getSession)", async () => {
-    const user = test.createUser();
+    const user = test.createUser({ id: uuidv7() });
     const saved = await test.saveUser(user);
     createdUserIds.push(saved.id);
 
@@ -44,8 +45,8 @@ describe.skip("auth (better-auth + testUtils plugin)", () => {
 
   it("login() returns session + headers and getSession honors those headers", async () => {
     const user = test.createUser({
+      id: uuidv7(),
       email: `login-${Date.now()}@example.com`,
-      password: "SumoDemo123!",
       name: "Login User",
     });
     const saved = await test.saveUser(user);
@@ -60,7 +61,7 @@ describe.skip("auth (better-auth + testUtils plugin)", () => {
   });
 
   it("getCookies() returns cookies that can be injected into a browser context (shape sanity check)", async () => {
-    const user = test.createUser({ email: `cookies-${Date.now()}@example.com` });
+    const user = test.createUser({ id: uuidv7(), email: `cookies-${Date.now()}@example.com` });
     const saved = await test.saveUser(user);
     createdUserIds.push(saved.id);
 

@@ -1,3 +1,4 @@
+import ViteEnv from "@vite-env/core/plugin";
 import {
   RECOMMENDED_RULES,
   TANSTACK_QUERY_RULES,
@@ -119,6 +120,7 @@ export default defineConfig({
     exclude: ["**/.react-email/*"],
     projects: [
       {
+        plugins: [ViteEnv({ configFile: "apps/console/env.ts" })],
         test: {
           name: "server",
           include: ["**/{src,tests}/**/*.{test,spec}.ts"],
