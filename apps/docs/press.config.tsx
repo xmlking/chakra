@@ -36,7 +36,6 @@ export const openapi = createOpenAPI({
 
 const config = defineConfig({
   mode: "static",
-  // renderMode: "static",
   content: {
     docs: docs.toFumadocsSource({
       baseDir: "docs",
