@@ -11,7 +11,7 @@
   },
   "scripts": {
     "clean": "git clean -xdf dist test-results coverage node_modules",
-    "generate-schema": "bunx @better-auth/cli@latest generate --config src/index.ts --output ../db/src/schema/copy_me_auth.ts -y",
+    "generate-schema": "bun x auth@latest generate --config src/index.ts --output ../db/src/schema/copy_me_auth.ts -y",
     "postinstall": "vite-env types && vite-env generate",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
@@ -20,7 +20,6 @@
     "@better-auth/drizzle-adapter": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:",
-    "@better-auth/stripe": "catalog:",
     "@vite-env/core": "catalog:",
     "@workspace/db": "workspace:*",
     "@workspace/email": "workspace:*",

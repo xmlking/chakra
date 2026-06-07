@@ -1,12 +1,19 @@
+import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { db } from "@workspace/db";
 import { betterAuth } from "better-auth";
-import { captcha } from "better-auth/plugins";
-import { env } from "virtual:env/server";
+import { captcha, testUtils } from "better-auth/plugins";
+// import { env } from "virtual:env/server";
 
 export const auth = betterAuth({
+  database: drizzleAdapter(db, { provider: "pg" }),
+  baseURL: "http://localhost:3000/",
+  emailAndPassword: { enabled: true },
   plugins: [
     captcha({
       provider: "cloudflare-turnstile", // or google-recaptcha, hcaptcha, captchafox
-      secretKey: env.TURNSTILE_SECRET_KEY,
+      // secretKey: env.TURNSTILE_SECRET_KEY,
+      secretKey: process.env.TURNSTILE_SECRET_KEY!,
     }),
+    ...(process.env.VITEST === "true" ? [testUtils()] : []),
   ],
 });

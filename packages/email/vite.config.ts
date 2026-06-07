@@ -2,6 +2,7 @@ import ViteEnv from "@vite-env/core/plugin";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
+  envDir: "../..", // HINT: use workspace root .env files
   plugins: [ViteEnv()],
   build: {
     ssr: true,

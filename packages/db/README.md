@@ -7,11 +7,11 @@
 - Run the unit tests:
 
 ```bash
-vp test
+vp test packages/db
 ```
 
 - Build the library:
 
 ```bash
-vp pack
+vp build packages/db
 ```

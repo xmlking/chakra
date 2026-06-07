@@ -1,5 +1,5 @@
 import { pgEnum } from "drizzle-orm/pg-core";
-import { createSelectSchema } from "drizzle-orm/zod";
+import { createSelectSchema } from "drizzle-zod";
 import type { z } from "zod";
 
 // ------------------ language ----------------------

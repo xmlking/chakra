@@ -39,7 +39,7 @@ export function isIsoDateString(value: string): boolean {
 if (import.meta.vitest) {
   /**
    * in-source testing
-   * RUN: turbo run @repo/utils#test
+   * RUN: vp test -t "test helpers"
    */
   const { it, expect } = import.meta.vitest;
 
