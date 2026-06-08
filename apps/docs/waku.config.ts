@@ -7,6 +7,7 @@ import { defineConfig } from "waku/config";
 export default defineConfig({
   vite: {
     resolve: {
+      base: "/chakra/",
       tsconfigPaths: true,
       // Content MDX lives outside this package (../../content/docs) and the
       // isolated bun linker keeps react only in apps/docs/node_modules.
