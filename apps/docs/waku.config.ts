@@ -5,8 +5,8 @@ import press from "fumapress/vite";
 import { defineConfig } from "waku/config";
 
 export default defineConfig({
+  basePath: "/chakra/",
   vite: {
-    base: "/chakra/",
     resolve: {
       tsconfigPaths: true,
       // Content MDX lives outside this package (../../content/docs) and the

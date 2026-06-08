@@ -1,7 +1,6 @@
 ---
 title: Vercel
 description: "The architecture of a monorepo deployed to Vercel"
-date: "2025-12-27T19:25:51.367Z"
 ---
 
 ## Overview
@@ -74,7 +73,7 @@ vercel link --repo --yes --scope astra --token $VERCEL_TOKEN
 ```
 
 > [!NOTE]
-> We also need to `vercel link` in `apps/console` as `turborepo` is not detected by `vercel-toolbar` yet.  
+> We also need to `vercel link` in `apps/console` as `turborepo` is not detected by `vercel-toolbar` yet.
 > this will generate files in `apps/console/.vercel`
 
 ```shell
