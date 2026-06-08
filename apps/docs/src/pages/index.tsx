@@ -2,11 +2,8 @@ import { Badge } from "@workspace/ui/components/shadcn/badge";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/shadcn/card";
 // oxlint-disable react-doctor/jsx-pascal-case
-import { Image } from "fumapress/image";
 import { Database, Plug, Zap, Lock, Shuffle, Globe, Star } from "lucide-react";
 import { Link } from "waku";
-
-import BannerImage from "./image.png";
 
 // oxlint-disable-next-line import/no-default-export
 export default function Page() {
@@ -73,10 +70,10 @@ function Hero() {
         </p>
       </div>
 
-      <Image
+      <img
         alt="banner"
-        src={BannerImage}
-        width={500}
+        src="banner.png"
+        width="500"
         className="max-lg:-mt-36"
         fetchPriority="high"
       />
