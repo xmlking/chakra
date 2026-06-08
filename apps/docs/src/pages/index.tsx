@@ -17,7 +17,6 @@ export default function Page() {
         property="description"
         content="One API to read & write database, for your next library."
       />
-      <base href="https://github.com/xmlking/chakra/" />
       <Hero />
       <Features />
       <CTA />
