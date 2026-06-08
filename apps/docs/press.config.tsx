@@ -38,13 +38,13 @@ const config = defineConfig({
   mode: "static",
   content: {
     docs: docs.toFumadocsSource({
-      baseDir: "docs",
+      baseDir: "chakra/docs",
     }),
     blog: blog.toFumadocsSource({
-      baseDir: "blog",
+      baseDir: "chakra/blog",
     }),
     openapi: await openapi.staticSource({
-      baseDir: "docs/openapi/(generated)",
+      baseDir: "chakra/docs/openapi/(generated)",
     }),
   },
   loaderOptions: {
@@ -52,7 +52,9 @@ const config = defineConfig({
   },
   site: {
     name: "Chakra",
-    baseUrl: import.meta.env.DEV ? "http://localhost:3000" : "https://xmlking.github.io/chakra/",
+    baseUrl: import.meta.env.DEV
+      ? "http://localhost:3000/chakra/"
+      : "https://xmlking.github.io/chakra/",
     git: {
       user: "xmlking",
       branch: "main",
@@ -160,7 +162,7 @@ const config = defineConfig({
               /> */}
               <img
                 alt="logo"
-                src="/chakra2.svg"
+                src="/chakra/chakra2.svg"
                 width={64}
                 height={64}
                 className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"
@@ -204,13 +206,13 @@ export const HomeLayout = createHomeLayout<Ctx>({
   layoutProps: {
     links: [
       {
-        url: "/docs",
+        url: "/chakra/docs",
         text: "Documentation",
         icon: <BookIcon />,
         active: "nested-url",
       },
       {
-        url: "/blog",
+        url: "/chakra/blog",
         text: "Blog",
         icon: <RssIcon />,
         active: "nested-url",
