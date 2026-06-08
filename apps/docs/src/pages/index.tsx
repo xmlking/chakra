@@ -17,6 +17,7 @@ export default function Page() {
         property="description"
         content="One API to read & write database, for your next library."
       />
+      <base href="https://github.com/xmlking/chakra/" />
       <Hero />
       <Features />
       <CTA />
@@ -56,7 +57,7 @@ function Hero() {
             className="rounded-full bg-background text-sm tracking-normal normal-case"
             nativeButton={false}
             render={
-              <a href="https://github.com/xmlking/astra" target="_blank" rel="noreferrer noopener">
+              <a href="https://github.com/xmlking/chakra" target="_blank" rel="noreferrer noopener">
                 <Star className="mr-2 size-4 text-amber-300" />
                 Star on GitHub
               </a>
