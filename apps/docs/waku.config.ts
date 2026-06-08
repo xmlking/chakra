@@ -6,6 +6,7 @@ import { defineConfig } from "waku/config";
 
 export default defineConfig({
   vite: {
+    base: "/chakra/",
     resolve: {
       tsconfigPaths: true,
       // Content MDX lives outside this package (../../content/docs) and the
