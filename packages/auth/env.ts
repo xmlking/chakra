@@ -1,4 +1,6 @@
 import { defineEnv, type EnvPreset } from "@vite-env/core";
+import { preset as db } from "@workspace/db/env";
+import { preset as email } from "@workspace/email/env";
 import { z } from "zod";
 
 export const preset = {
@@ -25,5 +27,6 @@ export const preset = {
 } as const satisfies EnvPreset;
 
 export default defineEnv({
+  presets: [db, email],
   ...preset,
 });

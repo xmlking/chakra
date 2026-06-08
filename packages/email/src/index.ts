@@ -1,6 +1,7 @@
-import { createEmailClient } from "@opencoredev/email-sdk";
+import { createEmailClient, EmailMessage } from "@opencoredev/email-sdk";
 import { resend } from "@opencoredev/email-sdk/resend";
 import { smtp } from "@opencoredev/email-sdk/smtp";
+import { render } from "react-email";
 import { env } from "virtual:env/server";
 
 /**
@@ -45,6 +46,21 @@ export const email = createEmailClient({
     },
   },
 });
+
+export interface EmailMessageWithReact extends EmailMessage {
+  react?: React.ReactNode;
+}
+
+// Helper functions
+export async function sendMail(payload: EmailMessageWithReact): Promise<void> {
+  const html = payload.react ? await render(payload.react) : payload.html;
+  // console.info({ html });
+
+  await email.send({
+    ...payload,
+    html,
+  });
+}
 
 // Ref: https://email-sdk.dev/docs/reference/errors
 export {

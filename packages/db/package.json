@@ -18,7 +18,7 @@
     "postinstall": "vite-env types && vite-env generate",
     "pull": "drizzle-kit pull",
     "push": "drizzle-kit push",
-    "seed": "DB_SEEDING=true bun scripts/seed.ts",
+    "seed": "bun scripts/seed.ts",
     "studio": "drizzle-kit studio",
     "typecheck": "tsgo --noEmit",
     "up": "drizzle-kit up"

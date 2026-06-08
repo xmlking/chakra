@@ -15,3 +15,17 @@ vp test packages/db
 ```bash
 vp build packages/db
 ```
+
+> Generate and migrate DB schema
+
+```shell
+# `for first time`, generating schema, use `--name=init`
+vp run @workspace/db#generate --name=init
+# `for first time`, generate empty migration file
+# to write your own custom SQL functions/DDL
+vp run @workspace/db#generate --custom --name=extra
+#  Generate migrations for subsequent schema changes
+vp run @workspace/db#generate
+# Apply migrations to local database
+vp run @workspace/db#migrate
+```

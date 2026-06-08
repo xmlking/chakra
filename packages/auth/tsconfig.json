@@ -4,6 +4,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "isolatedModules": true,
+    "jsx": "react-jsx",
     "lib": ["ESNext"],
     "module": "ESNext",
     "moduleDetection": "force",

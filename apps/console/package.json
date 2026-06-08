@@ -43,6 +43,7 @@
     "@workspace/email": "workspace:*",
     "@workspace/i18n": "workspace:*",
     "@workspace/shared": "workspace:*",
+    "@workspace/storage": "workspace:*",
     "@workspace/ui": "workspace:*",
     "better-auth": "catalog:",
     "better-result": "catalog:",
