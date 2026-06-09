@@ -16,7 +16,7 @@
     "@fumapress/feedback": "0.5.4",
     "@lonik/themer": "^0.5.4",
     "@takumi-rs/core": "1.7.0",
-    "@thesvg/react": "3.0.10",
+    "@thesvg/react": "3.0.12",
     "@vite-env/core": "catalog:",
     "@workspace/i18n": "workspace:*",
     "@workspace/shared": "workspace:*",
