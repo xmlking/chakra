@@ -160,7 +160,7 @@ const config = defineConfig({
               /> */}
               <img
                 alt="logo"
-                src="chakra2.svg"
+                src="/chakra2.svg"
                 width={64}
                 height={64}
                 className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"

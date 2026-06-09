@@ -73,7 +73,7 @@ function Hero() {
       <img
         alt="banner"
         src="banner.png"
-        width="501"
+        width="500"
         className="max-lg:-mt-36"
         fetchPriority="high"
       />
