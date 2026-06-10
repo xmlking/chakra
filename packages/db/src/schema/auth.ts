@@ -172,7 +172,7 @@ export const oauthRefreshToken = pgTable(
     id: uuid("id")
       .default(sql`uuidv7()`)
       .primaryKey(),
-    token: text("token").notNull(),
+    token: text("token").notNull().unique(),
     clientId: text("client_id")
       .notNull()
       .references(() => oauthClient.clientId, { onDelete: "cascade" }),
@@ -183,6 +183,7 @@ export const oauthRefreshToken = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     referenceId: text("reference_id"),
+    resources: text("resources").array(),
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").notNull(),
     revoked: timestamp("revoked"),
@@ -211,6 +212,7 @@ export const oauthAccessToken = pgTable(
     }),
     userId: uuid("user_id").references(() => user.id, { onDelete: "cascade" }),
     referenceId: text("reference_id"),
+    resources: text("resources").array(),
     refreshId: uuid("refresh_id").references(() => oauthRefreshToken.id, {
       onDelete: "cascade",
     }),
@@ -237,6 +239,7 @@ export const oauthConsent = pgTable(
       .references(() => oauthClient.clientId, { onDelete: "cascade" }),
     userId: uuid("user_id").references(() => user.id, { onDelete: "cascade" }),
     referenceId: text("reference_id"),
+    resources: text("resources").array(),
     scopes: text("scopes").array().notNull(),
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at").notNull(),

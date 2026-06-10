@@ -1,5 +1,5 @@
 {
-  "id": "005d8e6e-069c-4f80-ab17-923fb817cbf9",
+  "id": "7a0ac2d2-bc2d-4253-9ebe-72b8d2ede289",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -715,6 +715,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "resources": {
+          "name": "resources",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
         "refresh_id": {
           "name": "refresh_id",
           "type": "uuid",
@@ -1144,6 +1150,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "resources": {
+          "name": "resources",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
         "scopes": {
           "name": "scopes",
           "type": "text[]",
@@ -1270,6 +1282,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "resources": {
+          "name": "resources",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
         "expires_at": {
           "name": "expires_at",
           "type": "timestamp",
@@ -1390,7 +1408,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "oauth_refresh_token_token_unique": {
+          "name": "oauth_refresh_token_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

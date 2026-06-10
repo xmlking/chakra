@@ -54,8 +54,7 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg" }),
   advanced: {
     database: {
-      // generateId: "uuid",
-      generateId: false, // 👈 Tells Better Auth to let the database handle IDs
+      generateId: "uuid",
     },
     // crossSubDomainCookies: {
     //   enabled: isProduction(),

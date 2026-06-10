@@ -92,6 +92,7 @@ CREATE TABLE "oauth_access_token" (
 	"session_id" uuid,
 	"user_id" uuid,
 	"reference_id" text,
+	"resources" text[],
 	"refresh_id" uuid,
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp NOT NULL,
@@ -140,6 +141,7 @@ CREATE TABLE "oauth_consent" (
 	"client_id" text NOT NULL,
 	"user_id" uuid,
 	"reference_id" text,
+	"resources" text[],
 	"scopes" text[] NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL
@@ -152,11 +154,13 @@ CREATE TABLE "oauth_refresh_token" (
 	"session_id" uuid,
 	"user_id" uuid NOT NULL,
 	"reference_id" text,
+	"resources" text[],
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"revoked" timestamp,
 	"auth_time" timestamp,
-	"scopes" text[] NOT NULL
+	"scopes" text[] NOT NULL,
+	CONSTRAINT "oauth_refresh_token_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
 CREATE TABLE "organization" (
