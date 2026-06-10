@@ -95,6 +95,7 @@
     "@vitejs/plugin-react": "6.0.2",
     "@vitest/coverage-v8": "4.1.8",
     "@vitest/ui": "4.1.8",
+    "auth": "1.7.0-beta.4",
     "better-auth": "1.7.0-beta.4",
     "better-result": "2.9.2",
     "bumpp": "11.1.0",

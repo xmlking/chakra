@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-import { generateDrizzleSchema } from "@better-auth/cli/api";
+import { generateDrizzleSchema } from "auth/api";
 import { getAdapter } from "better-auth/db/adapter";
 
 import { auth } from "../src/index";

@@ -32,6 +32,7 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@vite-env/cli": "catalog:",
+    "auth": "catalog:",
     "uuid": "catalog:"
   },
   "peerDependencies": {
