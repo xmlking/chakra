@@ -19,8 +19,8 @@ vp build packages/db
 > Generate and migrate DB schema
 
 > [!NOTE]
-> if you get `We've found duplicated index name across public schema` error `generate` commands,
-> you have to remove generated `packages/db/src/schema/copy_me_auth.ts` file.
+> if you get `We've found duplicated index name across public schema` error for `generate` commands,
+> you have to remove generated file: `packages/db/src/schema/copy_me_auth.ts` and rerun.
 
 ```shell
 # `for first time`, generating schema, use `--name=init`
