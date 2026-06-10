@@ -1,9 +1,14 @@
 {
   "files": [],
   "references": [
+    { "path": "./packages/auth" },
+    { "path": "./packages/db" },
+    { "path": "./packages/email" },
+    { "path": "./packages/i18n" },
     { "path": "./packages/shared" },
+    { "path": "./packages/storage" },
     { "path": "./packages/ui" },
     { "path": "./apps/console" },
-    { "path": "./apps/web" }
+    { "path": "./apps/docs" }
   ]
 }

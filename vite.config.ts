@@ -33,7 +33,7 @@ const ignorePatterns = [
 ];
 export default defineConfig({
   staged: {
-    "*": "vp check --fix",
+    "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md,mdx}": "vp check --fix",
   },
   fmt: {
     sortPackageJson: {
