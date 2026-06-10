@@ -96,8 +96,8 @@ async function run() {
     organization: {
       columns: {
         id: f.default({ defaultValue: env.SHARED_ORGANIZATION_ID }),
-        name: f.default({ defaultValue: "Astra" }),
-        slug: f.default({ defaultValue: "astra-inc" }),
+        name: f.default({ defaultValue: "Chakra" }),
+        slug: f.default({ defaultValue: "chakra-inc" }),
         logo: f.default({ defaultValue: null }),
         metadata: f.default({ defaultValue: null }),
       },

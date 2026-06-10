@@ -96,7 +96,13 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ["apps/*/src/router.tsx", "apps/*/src/server.ts", "*.config.ts", "env.ts"],
+        files: [
+          "apps/*/src/router.tsx",
+          "apps/*/src/server.ts",
+          "*.config.ts",
+          "*.config.ts",
+          "env.ts",
+        ],
         rules: {
           "no-default-export": "off",
         },

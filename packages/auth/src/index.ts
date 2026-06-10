@@ -46,7 +46,7 @@ const trustedOrigins = [
 ];
 
 if (import.meta.env.DEV) {
-  trustedOrigins.push("http://localhost:3000", "http://*.traefik.me:3000");
+  trustedOrigins.push("http://localhost:3000", "https://console-127-0-0-1.nip.io");
 }
 
 export const auth = betterAuth({
@@ -154,6 +154,7 @@ export const auth = betterAuth({
           clientId: env.VITE_GOOGLE_CLIENT_ID,
           clientSecret: env.GOOGLE_CLIENT_SECRET,
           scope: ["openid", "email", "profile"],
+          // requireEmailVerification: true, // TODO in beta-5
         },
       }),
   },

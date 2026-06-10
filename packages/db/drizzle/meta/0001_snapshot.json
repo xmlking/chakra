@@ -1,6 +1,6 @@
 {
-  "id": "617f2a6f-9268-4121-a128-7e13e6d5233f",
-  "prevId": "7a0ac2d2-bc2d-4253-9ebe-72b8d2ede289",
+  "id": "585f4629-8d4f-4531-bdc8-7c9769e47c95",
+  "prevId": "145278a7-d401-4945-af22-bbacdf0ee836",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -2188,8 +2188,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "organizationId": {
-          "name": "organizationId",
+        "organization_id": {
+          "name": "organization_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -2200,27 +2200,27 @@
           "primaryKey": false,
           "notNull": false
         },
-        "createdAt": {
-          "name": "createdAt",
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
         },
-        "updatedAt": {
-          "name": "updatedAt",
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
-        "createdBy": {
-          "name": "createdBy",
+        "created_by": {
+          "name": "created_by",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "updatedBy": {
-          "name": "updatedBy",
+        "updated_by": {
+          "name": "updated_by",
           "type": "uuid",
           "primaryKey": false,
           "notNull": false
@@ -2249,11 +2249,11 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "settings_organizationId_organization_id_fk": {
-          "name": "settings_organizationId_organization_id_fk",
+        "settings_organization_id_organization_id_fk": {
+          "name": "settings_organization_id_organization_id_fk",
           "tableFrom": "settings",
           "columnsFrom": [
-            "organizationId"
+            "organization_id"
           ],
           "tableTo": "organization",
           "columnsTo": [
@@ -2264,11 +2264,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "settings_key_organizationId_pk": {
-          "name": "settings_key_organizationId_pk",
+        "settings_key_organization_id_pk": {
+          "name": "settings_key_organization_id_pk",
           "columns": [
             "key",
-            "organizationId"
+            "organization_id"
           ]
         }
       },

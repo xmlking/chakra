@@ -1,0 +1,24 @@
+# Homelab Docker Compose - Modular Orchestrator
+# This file includes all service modules for unified deployment
+#
+# Usage:
+#   Full stack:       docker compose up -d
+#   Specific module:  docker compose -f compose/database.yml -f compose/storage.yml up -d
+#
+# Modules:
+#   - base.yml:       Networks and volumes (always required)
+#   - core.yml:       Nginx, Homepage, Portainer, Uptime-Kuma, What's Up Docker, FileBrowser
+#   - auth.yml:       Forward Auth middleware
+#   - database.yml:   PostgreSQL, Redis etc
+#   - storage.yml:    MinIO object storage
+#   - monitoring.yml: Prometheus, Grafana, Loki, Alertmanager, Netdata, Promtail, etc.
+#   - apps.yml:       n8n, Paperless-ngx, Nextcloud
+#   - broker.yml:     QueenMQ, NATS, etc.
+
+include:
+  # - path: infra/compose/base.yml
+  # - path: infra/compose/core.yml
+  # - path: infra/compose/auth.yml
+  - path: infra/compose/database.yml
+  - path: infra/compose/storage.yml
+  # - path: infra/compose/broker.yml

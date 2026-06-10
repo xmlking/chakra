@@ -1,0 +1,56 @@
+# Database Services
+# Postgres, redis, mongo, clickhouse, etc.
+
+services:
+  ###########################################################################
+  # postgres database with pgvector
+  # docker compose exec -it postgres psql -U postgres -d postgres
+  # psql -U postgres -d postgres -h localhost
+  # Commands:  \l , \c postgres ,  \dn, \du, \dt, \df, \dv, \d+ account
+  ###########################################################################
+  postgres:
+    image: timescale/timescaledb:latest-pg18
+    hostname: postgres
+    container_name: postgres
+    restart: unless-stopped
+    command: |
+      postgres
+      -c wal_level=logical
+      -c max_wal_senders=10
+      -c max_replication_slots=10
+      -c max_connections=200
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -q"]
+      interval: 60s
+      start_period: 1m
+      start_interval: 10s
+      timeout: 15s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: volume
+        source: pg_data
+        target: /var/lib/postgresql
+        read_only: false
+      - ../postgres/init-database.sh:/docker-entrypoint-initdb.d/init-data.sh:Z
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+        reservations:
+          memory: 256M
+          cpus: "0.25"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  pg_data:

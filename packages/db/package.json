@@ -12,16 +12,16 @@
   "scripts": {
     "check": "drizzle-kit check",
     "clean": "git clean -xdf vite-env.d.ts .drizzle dist test-results coverage node_modules",
-    "drop": "drizzle-kit drop",
-    "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate",
+    "drop": "dotenv-run -f ../../.env -v -- drizzle-kit drop",
+    "generate": "dotenv-run -f ../../.env -v -- drizzle-kit generate --config=drizzle-tools.config.ts",
+    "migrate": "dotenv-run -f ../../.env -v -- drizzle-kit migrate --config=drizzle-tools.config.ts",
     "postinstall": "vite-env types && vite-env generate",
-    "pull": "drizzle-kit pull",
-    "push": "drizzle-kit push",
-    "seed": "bun scripts/seed.ts",
-    "studio": "drizzle-kit studio",
+    "pull": "dotenv-run -f ../../.env -v -- drizzle-kit pull --config=drizzle-tools.config.ts",
+    "push": "dotenv-run -f ../../.env -v -- drizzle-kit push --config=drizzle-tools.config.ts",
+    "seed": "bun x vite-node@latest scripts/seed.ts",
+    "studio": "dotenv-run -f ../../.env -v -- drizzle-kit studio --config=drizzle-tools.config.ts",
     "typecheck": "tsgo --noEmit",
-    "up": "drizzle-kit up"
+    "up": "dotenv-run -f ../../.env -v -- drizzle-kit up --config=drizzle-tools.config.ts"
   },
   "dependencies": {
     "@vite-env/core": "catalog:",

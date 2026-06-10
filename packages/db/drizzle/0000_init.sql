@@ -254,16 +254,16 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 CREATE TABLE "settings" (
 	"key" text NOT NULL,
-	"organizationId" uuid NOT NULL,
+	"organization_id" uuid NOT NULL,
 	"documentation" text,
-	"createdAt" timestamp DEFAULT now() NOT NULL,
-	"updatedAt" timestamp,
-	"createdBy" uuid NOT NULL,
-	"updatedBy" uuid,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"created_by" uuid NOT NULL,
+	"updated_by" uuid,
 	"value" jsonb NOT NULL,
 	"type" "setting_type" DEFAULT 'org' NOT NULL,
 	"secret" boolean DEFAULT false NOT NULL,
-	CONSTRAINT "settings_key_organizationId_pk" PRIMARY KEY("key","organizationId"),
+	CONSTRAINT "settings_key_organization_id_pk" PRIMARY KEY("key","organization_id"),
 	CONSTRAINT "settings_key_check" CHECK ("settings"."key" ~ '^[A-Z]+(_[A-Z]+)*$')
 );
 --> statement-breakpoint
@@ -288,7 +288,7 @@ ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("
 ALTER TABLE "team" ADD CONSTRAINT "team_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "team_member" ADD CONSTRAINT "team_member_team_id_team_id_fk" FOREIGN KEY ("team_id") REFERENCES "public"."team"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "team_member" ADD CONSTRAINT "team_member_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "settings" ADD CONSTRAINT "settings_organizationId_organization_id_fk" FOREIGN KEY ("organizationId") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "settings" ADD CONSTRAINT "settings_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "apikey_configId_idx" ON "apikey" USING btree ("config_id");--> statement-breakpoint
 CREATE INDEX "apikey_referenceId_idx" ON "apikey" USING btree ("reference_id");--> statement-breakpoint

@@ -5,14 +5,13 @@ import { defineConfig } from "drizzle-kit";
  * See {@link https://orm.drizzle.team/docs/drizzle-config-file}
  * See {@link https://orm.drizzle.team/llms.txt}
  */
-import { env } from "virtual:env/server";
 
 export default defineConfig({
   out: "./drizzle",
   schema: "./src/schema",
   dialect: "postgresql",
   dbCredentials: {
-    url: env.DATABASE_URL,
+    url: process.env.DATABASE_URL!,
   },
   casing: "snake_case",
   verbose: true,

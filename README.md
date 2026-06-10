@@ -41,14 +41,14 @@ Open the URL printed in the terminal (Vite’s default is usually `http://localh
 > [!TIP]
 > Pass a folder to **built-in** Vite commands when you want to target one app:
 
-| Command               | Purpose                                                          |
-| --------------------- | ---------------------------------------------------------------- |
-| `vp dev apps/web`     | Start the dev server (web) with HMR                              |
-| `vp build apps/web`   | Production build (web)                                           |
-| `vp preview apps/web` | Preview the production build locally (web)                       |
-| `vp check`            | Format, lint, and type-check (fix with `--fix` where applicable) |
-| `vp test`             | Run tests                                                        |
-| `vp help`             | List built-in commands and options                               |
+| Command                   | Purpose                                                          |
+| ------------------------- | ---------------------------------------------------------------- |
+| `vp dev apps/console`     | Start the dev server (console) with HMR                          |
+| `vp build apps/console`   | Production build (console)                                       |
+| `vp preview apps/console` | Preview the production build locally (console)                   |
+| `vp check`                | Format, lint, and type-check (fix with `--fix` where applicable) |
+| `vp test`                 | Run tests                                                        |
+| `vp help`                 | List built-in commands and options                               |
 
 `package.json` scripts (`dev`, `build`, `check`, `test`, …) delegate to these same `vp` entry points.
 
@@ -83,13 +83,36 @@ vp check
 vp check --fix
 ```
 
+## Run
+
+### Docker Services
+
+Your local database is managed by [Docker Compose](./compose.yml)
+
+```shell
+# Start database
+docker compose up
+
+# Stop database after use.
+docker compose down
+
+# (Danger) you can remove all data and reset database with:
+docker compose down -v
+```
+
+Start `console` App in dev mode
+
+```shell
+vp dev apps/console
+```
+
 ## Deploy with Nitro
 
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp build apps/web
-vp preview apps/web
+vp build apps/console
+vp preview apps/console
 ```
 
 The build output is a self-contained Node server. To deploy, push the `.output` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
