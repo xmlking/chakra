@@ -1,4 +1,4 @@
-import { createEmailClient, EmailMessage } from "@opencoredev/email-sdk";
+import { createEmailClient, type EmailMessage } from "@opencoredev/email-sdk";
 import { resend } from "@opencoredev/email-sdk/resend";
 import { smtp } from "@opencoredev/email-sdk/smtp";
 import { render } from "react-email";
@@ -64,7 +64,7 @@ export async function sendMail(payload: EmailMessageWithReact): Promise<void> {
 
 // Ref: https://email-sdk.dev/docs/reference/errors
 export {
-  EmailMessage,
+  type EmailMessage,
   EmailValidationError,
   EmailProviderNotFoundError,
   EmailProviderError,

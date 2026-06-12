@@ -23,6 +23,7 @@ import {
   organization,
   testUtils,
 } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { env } from "virtual:env/server";
 
 import { additionalUserFields } from "./additional-fields";
@@ -39,9 +40,9 @@ const trustedOrigins = [
   "exp://",
   /* Needed only for Apple ID authentication */
   "https://appleid.apple.com",
-  "https://astra.ai",
-  "https://www.astra.ai",
-  "https://app.astra.ai",
+  "https://chakra.ai",
+  "https://www.chakra.ai",
+  "https://app.chakra.ai",
   "https://astra-console.vercel.app/",
 ];
 
@@ -63,6 +64,7 @@ export const auth = betterAuth({
   },
   experimental: { joins: true },
   telemetry: { enabled: false },
+  secret: env.BETTER_AUTH_SECRET,
   baseURL: env.VITE_BETTER_AUTH_URL,
   databaseHooks: {
     session: {
@@ -372,6 +374,7 @@ export const auth = betterAuth({
       secretKey: env.TURNSTILE_SECRET_KEY,
     }),
     ...(process.env.VITEST === "true" ? [testUtils()] : []),
+    tanstackStartCookies(), // make sure this is the last plugin in the array
   ],
   trustedOrigins,
   session: {

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "waku build",
     "clean": "git clean -xdf vite-env.d.ts .output .tanstack .source dist test-results coverage node_modules",
-    "dev": "waku dev",
+    "dev": "waku dev --port=3001",
     "postinstall": "vite-env types && vite-env generate && fumadocs-mdx",
     "start": "waku start",
     "types:check": "fumadocs-mdx && tsc --noEmit"

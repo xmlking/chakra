@@ -15,7 +15,7 @@ declare const __GIT_TAG__: string;
 declare const __GIT_SHA__: string;
 declare const __GIT_TIME__: string;
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/(public)/")({
   staticData: {
     // breadcrumb: "Home",
     breadcrumb: ["Root", "Home"],
@@ -24,11 +24,11 @@ export const Route = createFileRoute("/")({
     // breadcrumb: ({ search }: { search: StepsSearchParams }) =>
     //   search.step ? ["Steps", `${search.step}`] : "Steps",
   },
-  component: App,
+  component: HomeRoute,
 });
 
 // oxlint-disable-next-line react/only-export-components
-function App() {
+function HomeRoute() {
   return (
     <Card className="max-w-sm">
       <CardHeader>

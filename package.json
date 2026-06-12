@@ -34,7 +34,7 @@
     "@vite-env/core": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
-    "oxlint-plugin-react-doctor": "0.4.2",
+    "oxlint-plugin-react-doctor": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:",
     "vitest-browser-react": "catalog:"
@@ -114,7 +114,7 @@
     "nuqs": "2.8.9",
     "oxfmt": "0.50.0",
     "oxlint": "1.65.0",
-    "oxlint-plugin-react-doctor": "0.2.6",
+    "oxlint-plugin-react-doctor": "0.4.2",
     "oxlint-tsgolint": "0.22.1",
     "pg": "8.21.0",
     "react": "19.2.7",

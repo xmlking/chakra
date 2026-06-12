@@ -90,7 +90,8 @@ export default defineConfig({
       "react/only-export-components": [
         "warn",
         {
-          allowExportNames: ["Route"],
+          allowExportNames: ["Route", "loader", "meta", "links", "headers", "action"],
+          customHOCs: ["createFileRoute", "createLazyFileRoute", "createRootRouteWithContext"],
         },
       ],
     },
@@ -105,6 +106,12 @@ export default defineConfig({
         ],
         rules: {
           "no-default-export": "off",
+        },
+      },
+      {
+        files: ["apps/*/src/routes/**/*.{ts,tsx}"],
+        rules: {
+          "react-doctor/only-export-components": "off",
         },
       },
     ],
