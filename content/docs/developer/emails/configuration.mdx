@@ -263,7 +263,7 @@ We'll go through the process of adding a new template, as it requires a few step
     Next up, we need to create a file with the template itself. We'll create an `welcome.tsx` file in `packages/email/src/templates` directory.
 
     ```tsx title="welcome.tsx"
-    import { Heading, Preview, Text } from "@react-email/components";
+    import { Heading, Preview, Text } from "react-email";
 
     import { Button } from "../_components/button";
     import { Layout } from "../_components/layout/layout";
@@ -344,7 +344,7 @@ The translation system [uses the same i18n setup](/docs/web/internationalization
 Here's how you can implement translations in your email templates:
 
 ```tsx
-import { Heading, Preview, Text } from "@react-email/components";
+import { Heading, Preview, Text } from "react-email";
 
 import { getTranslation } from "@workspace/i18n/server";
 

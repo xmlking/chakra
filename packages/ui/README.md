@@ -18,8 +18,10 @@ To `add/update` **shadcn** `components`, run the following commands:
 
 ```shell
 cd packages/ui
-# SHADCN Component
+# SHADCN Components
 bunx --bun shadcn@latest add --all --overwrite
+# better-auth-ui Components
+bunx shadcn@latest add https://better-auth-ui.com/r/all.json
 # AI Elements (optional)
 bunx --bun shadcn@latest add @ai-elements/all
 # better-upload (optional)
@@ -61,7 +63,7 @@ bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/image-placeholder.json
 # creatable-combobox - base-ui based https://flowkit-ui.vzkiss.com/docs
 bunx --bun shadcn@latest add -p src/components/flowkit-ui @flowkit-ui/creatable-combobox
-#  Extend UI components for document viewers for PDF, DOCX, XLSX, and CSV
+#  Extend UI components for document viewers for PDF, DOCX, XLSX, and CSV (optional)
 bunx --bun shadcn@latest add -p src/components/extend @extend/pdf-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/docx-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/schema-builder
