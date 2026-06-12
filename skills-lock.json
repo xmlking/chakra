@@ -7,6 +7,12 @@
       "skillPath": "drizzle-orm/SKILL.md",
       "computedHash": "0199722e34a82bc74260ad426368df74e3f56a0993e85bdad5fa658b706d5cc5"
     },
+    "improve": {
+      "source": "shadcn/improve",
+      "sourceType": "github",
+      "skillPath": "skills/improve/SKILL.md",
+      "computedHash": "431adaf38132005b32cacb952313f18b4c03ee98ee4c5859bad323156a48bb02"
+    },
     "vite-env": {
       "source": "pyyupsk/skills",
       "sourceType": "github",
