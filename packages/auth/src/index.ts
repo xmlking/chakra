@@ -156,7 +156,7 @@ export const auth = betterAuth({
           clientId: env.VITE_GOOGLE_CLIENT_ID,
           clientSecret: env.GOOGLE_CLIENT_SECRET,
           scope: ["openid", "email", "profile"],
-          // requireEmailVerification: true, // TODO in beta-5
+          requireEmailVerification: true,
         },
       }),
   },

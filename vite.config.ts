@@ -21,7 +21,6 @@ const ignorePatterns = [
   "**/src/routeTree.gen.ts",
   "packages/db/drizzle/**",
   "apps/console/src/lib/gen/**",
-  "apps/web/src/components/ui/**",
   "packages/ui/src/components/**",
   "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
@@ -125,7 +124,6 @@ export default defineConfig({
       include: ["src/**/*.{ts,tsx}"],
       exclude: [
         "**/{src,tests}/**/*.{test,spec,stories}.{ts,tsx}",
-        "apps/web/src/icons/**",
         "packages/ui/src/components/**",
         "packages/email/.react-email/**",
       ],
@@ -170,8 +168,8 @@ export default defineConfig({
   run: {
     cache: true,
     tasks: {
-      "web:dev": {
-        command: "vp dev apps/web",
+      "docs:dev": {
+        command: "vp dev apps/docs",
         dependsOn: ["@workspace/i18n#build"],
       },
     },

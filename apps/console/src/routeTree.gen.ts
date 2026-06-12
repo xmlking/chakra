@@ -13,6 +13,7 @@ import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
@@ -35,6 +36,11 @@ const appRouteRoute = appRouteRouteImport.update({
 const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicI18nRoute = publicI18nRouteImport.update({
+  id: '/i18n',
+  path: '/i18n',
   getParentRoute: () => publicRouteRoute,
 } as any)
 const publicAboutRoute = publicAboutRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/about': typeof publicAboutRoute
+  '/i18n': typeof publicI18nRoute
   '/': typeof publicIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/about': typeof publicAboutRoute
+  '/i18n': typeof publicI18nRoute
   '/': typeof publicIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -96,6 +104,7 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/(public)/about': typeof publicAboutRoute
+  '/(public)/i18n': typeof publicI18nRoute
   '/(public)/': typeof publicIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/about'
+    | '/i18n'
     | '/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/about'
+    | '/i18n'
     | '/'
     | '/api/auth/$'
   id:
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/(auth)/login'
     | '/(auth)/register'
     | '/(public)/about'
+    | '/(public)/i18n'
     | '/(public)/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -167,6 +179,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/i18n': {
+      id: '/(public)/i18n'
+      path: '/i18n'
+      fullPath: '/i18n'
+      preLoaderRoute: typeof publicI18nRouteImport
       parentRoute: typeof publicRouteRoute
     }
     '/(public)/about': {
@@ -244,11 +263,13 @@ const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
 
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
+  publicI18nRoute: typeof publicI18nRoute
   publicIndexRoute: typeof publicIndexRoute
 }
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
+  publicI18nRoute: publicI18nRoute,
   publicIndexRoute: publicIndexRoute,
 }
 

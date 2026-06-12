@@ -1,12 +1,11 @@
+import logo from "/logo.svg";
 import { createFileRoute } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import { m } from "@workspace/i18n/messages";
 
 import { LocaleSwitcher } from "#components/locale-switcher";
 
-import logo from "../../assets/logo.svg";
-
-export const Route = createFileRoute("/demo/i18n")({
+export const Route = createFileRoute("/(public)/i18n")({
   component: App,
 });
 
