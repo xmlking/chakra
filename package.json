@@ -40,6 +40,7 @@
     "vitest-browser-react": "catalog:"
   },
   "overrides": {
+    "kysely": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
@@ -62,6 +63,7 @@
     "@inlang/cli": "3.1.11",
     "@inlang/paraglide-js": "2.18.2",
     "@lonik/themer": "0.5.4",
+    "kysely": "0.28.17",
     "@opencoredev/email-sdk": "0.6.1",
     "@playwright/test": "1.60.0",
     "@react-email/ui": "6.5.0",
@@ -135,6 +137,7 @@
     "vitest-browser-react": "2.2.0",
     "workflow": "4.3.1",
     "zod": "4.4.3",
+    "zod-compiler": "1.5.0",
     "zustand": "5.0.14"
   }
 }
