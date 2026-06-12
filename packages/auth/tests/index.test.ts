@@ -7,8 +7,9 @@ import { auth } from "../src";
 /**
  * These are integration tests against Better Auth server APIs using the testUtils()
  * plugin helpers (factories/login/headers/cookies/db cleanup).
+ * Please make sure database is running for this test
  */
-describe("auth (better-auth + testUtils plugin)", () => {
+describe.skipIf(process.env.CI)("auth (better-auth + testUtils plugin)", () => {
   let test: TestHelpers;
   const createdUserIds: string[] = [];
 
