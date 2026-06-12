@@ -13,7 +13,10 @@ export default defineConfig({
       // isolated bun linker keeps react only in apps/docs/node_modules.
       // dedupe makes react/jsx-runtime resolve from the app root so the
       // compiled MDX (mode: "static") can be bundled.
-      dedupe: ["react", "react-dom", "lucide-react", "@thesvg/react", "fumadocs-ui"],
+      // @fuma-translate/react ships "use client" modules and is imported by
+      // bare specifier from virtual:vite-rsc/client-references, so it must
+      // resolve from the app root (and be a direct dependency below).
+      dedupe: ["react", "react-dom", "lucide-react", "@thesvg/react", "fumadocs-ui", "@fuma-translate/react"],
     },
     // @takumi-rs/core is a native napi module (used by takumiPlugin for OG
     // images). Keep it external in the server-side environments so its loader

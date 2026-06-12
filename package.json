@@ -90,7 +90,7 @@
     "@types/pg": "8.20.0",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@typescript/native-preview": "7.0.0-dev.20260611.2",
+    "@typescript/native-preview": "7.0.0-dev.20260612.1",
     "@unpic/react": "1.0.2",
     "@vite-env/cli": "0.5.2",
     "@vite-env/core": "0.5.2",
@@ -111,7 +111,7 @@
     "envin": "1.2.0",
     "files-sdk": "1.8.0",
     "hucre": "0.6.1",
-    "lucide-react": "1.17.0",
+    "lucide-react": "1.18.0",
     "nitro": "3.0.260610-beta",
     "nuqs": "2.8.9",
     "oxfmt": "0.50.0",
@@ -137,7 +137,7 @@
     "vitest-browser-react": "2.2.0",
     "workflow": "4.4.0",
     "zod": "4.4.3",
-    "zod-compiler": "1.5.0",
+    "zod-compiler": "1.6.0",
     "zustand": "5.0.14"
   }
 }
