@@ -19,6 +19,6 @@ export default defineEnv({
   },
   client: {
     VITE_APP_NAME: z.string().min(3),
-    VITE_CONSOLE_URL: z.url(),
+    VITE_APP_URL: z.url(),
   },
 });

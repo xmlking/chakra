@@ -1,4 +1,4 @@
-# Console
+# WebApp
 
 Welcome to your new TanStack Start app!
 
@@ -7,7 +7,7 @@ Welcome to your new TanStack Start app!
 To run this application:
 
 ```shell
-vp dev apps/console
+vp dev apps/web
 ```
 
 ## Building For Production
@@ -15,7 +15,7 @@ vp dev apps/console
 To build this application for production:
 
 ```shell
-vp build apps/console
+vp build apps/web
 ```
 
 ## Testing
@@ -55,9 +55,9 @@ If you prefer not to use Tailwind CSS:
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp build apps/console
-vp preview apps/console
-vp deploy apps/console
+vp build apps/web
+vp preview apps/web
+vp deploy apps/web
 ```
 
 The build output is a self-contained Node server. To deploy, push the `.output` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
