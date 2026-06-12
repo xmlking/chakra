@@ -101,7 +101,7 @@ InviteUserEmail.PreviewProps = {
   invitedByEmail: "sumo@demo.com",
   teamName: "goteam",
   teamImage: "/static/vercel-user.png",
-  inviteLink: `${process.env.VITE_CONSOLE_URL}/invite`,
+  inviteLink: `${process.env.VITE_APP_URL}/invite`,
 } as BetterAuthInviteUserEmailProps;
 
 export { InviteUserEmail };

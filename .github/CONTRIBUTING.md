@@ -58,7 +58,7 @@ git checkout -b fix/your-bug-fix
 
 ```bash
 # Development mode (auto-rebuild)
-vp build apps/console --watch
+vp build apps/web --watch
 ```
 
 ### 3. Code Quality Checks

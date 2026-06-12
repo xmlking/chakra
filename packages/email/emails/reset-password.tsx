@@ -63,7 +63,7 @@ const ResetPasswordEmail = ({ username, resetLink }: BetterAuthResetPasswordEmai
 
 ResetPasswordEmail.PreviewProps = {
   username: "sumo",
-  resetLink: `${process.env.VITE_CONSOLE_URL}/invite`,
+  resetLink: `${process.env.VITE_APP_URL}/invite`,
 } as BetterAuthResetPasswordEmailProps;
 
 export { ResetPasswordEmail };

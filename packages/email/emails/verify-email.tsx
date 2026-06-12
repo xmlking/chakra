@@ -70,7 +70,7 @@ const VerifyEmail = ({ url, userName }: VerifyEmailProps) => (
 
 VerifyEmail.PreviewProps = {
   userName: "Sumo",
-  url: `${process.env.VITE_CONSOLE_URL}/verify`,
+  url: `${process.env.VITE_APP_URL}/verify`,
 } as VerifyEmailProps;
 
 export { VerifyEmail };

@@ -8,7 +8,7 @@
     { "path": "./packages/shared" },
     { "path": "./packages/storage" },
     { "path": "./packages/ui" },
-    { "path": "./apps/console" },
+    { "path": "./apps/web" },
     { "path": "./apps/docs" }
   ]
 }

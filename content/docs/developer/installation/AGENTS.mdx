@@ -51,12 +51,12 @@ description: Standards and best practices for working with AI agents in the code
 ## Development Workflow
 
 - Make sure you DO NOT CREATE ANY debug and test FILES IN ./ ROOT DIRECTORY. Only use files in /temps or apps/web/app/tests/ or /scripts.
-- Make sure you run `turbo run console#dev` and check the app console to see if there are any errors before starting to work on anothers task. fix it first.
+- Make sure you run `turbo run web#dev` and check the app console to see if there are any errors before starting to work on anothers task. fix it first.
 - Plan first, then implement. For substantial changes, request maintainer feedback on the plan before coding.
 - **REQUIRED**: Run `turbo run fix` to auto-fix formatting issues with dprint
 - **NEVER commit changes yourself** - DO NOT execute `git commit` unless you have my approval
 - Run `turbo run check` (oxlint) for comprehensive error checking
-- Run `turbo run console#build` to verify compilation before major changes
+- Run `turbo run web#build` to verify compilation before major changes
 - Test core functionality after significant changes
 
 ## Deployment

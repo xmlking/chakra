@@ -4,7 +4,7 @@
 
 ## Usage
 
-```tsx title="apps/console/src/actions/files.tsx"
+```tsx title="apps/web/src/actions/files.tsx"
 import { files, type FilesError } from "@workspace/storage";
 
 // Upload

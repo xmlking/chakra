@@ -20,7 +20,7 @@ const ignorePatterns = [
   "**/vite-env.d.ts",
   "**/src/routeTree.gen.ts",
   "packages/db/drizzle/**",
-  "apps/console/src/lib/gen/**",
+  "apps/web/src/lib/gen/**",
   "packages/ui/src/components/**",
   "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
@@ -44,7 +44,7 @@ export default defineConfig({
       order: "asc",
     },
     sortTailwindcss: {
-      // stylesheet: "./apps/console/src/app/globals.css",
+      // stylesheet: "./apps/web/src/app/globals.css",
       stylesheet: "./packages/ui/src/styles/globals.css",
       attributes: ["class", "className"],
       functions: ["clsx", "cn"],
@@ -131,7 +131,7 @@ export default defineConfig({
     exclude: ["**/.react-email/*"],
     projects: [
       {
-        plugins: [ViteEnv({ configFile: "apps/console/env.ts" })],
+        plugins: [ViteEnv({ configFile: "apps/web/env.ts" })],
         test: {
           name: "server",
           include: ["**/{src,tests}/**/*.{test,spec}.ts"],

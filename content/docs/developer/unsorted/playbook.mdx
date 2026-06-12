@@ -17,7 +17,7 @@ The init command allows you to initialize Better Auth in your project iterativel
 This will generate `auth-client.ts` , `auth.ts` and add dependencies.
 
 ```shell
-cd apps/console
+cd apps/web
 bunx @better-auth/cli@latest init
 ```
 
@@ -29,7 +29,7 @@ Generate better auth database schema for [Drizzle ORL](https://orm.drizzle.team/
 
 ```shell
 cd packages/db
-dotenv-run -v -- bunx @better-auth/cli generate --config ../../apps/console/src/lib/auth.ts --output src/schema/auth.ts
+dotenv-run -v -- bunx @better-auth/cli generate --config ../../apps/web/src/lib/auth.ts --output src/schema/auth.ts
 ```
 
 ## React Email
@@ -43,7 +43,7 @@ Let's talk about the packages we just installed:
 - **@react-email/render**: For converting react js based templates to an html string.
 
 ```shell
-cd apps/console
+cd apps/web
 bun add react-email -D -E
 bun add resend @react-email/components  @react-email/render -E
 ```

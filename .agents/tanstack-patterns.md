@@ -4,8 +4,8 @@
 
 ## Route Group Conventions
 
-- Protected routes live under `apps/console/src/routes/_auth/**`, enforced by `beforeLoad` in the `_auth` layout (`apps/console/src/routes/_auth/route.tsx`).
-- Guest-only routes live under `apps/console/src/routes/_guest/**`, enforced by `beforeLoad` in the `_guest` layout (`apps/console/src/routes/_guest/route.tsx`).
+- Protected routes live under `apps/web/src/routes/_auth/**`, enforced by `beforeLoad` in the `_auth` layout (`apps/web/src/routes/_auth/route.tsx`).
+- Guest-only routes live under `apps/web/src/routes/_guest/**`, enforced by `beforeLoad` in the `_guest` layout (`apps/web/src/routes/_guest/route.tsx`).
 - Auth-specific route guard behavior and middleware rules are documented in `.agents/auth.md`.
 
 ## Data Fetching

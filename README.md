@@ -31,7 +31,7 @@ bunx playwright install --with-deps chromium
 git clone https://github.com/xmlking/chakra.git
 cd chakra
 vp install
-vp dev apps/console
+vp dev apps/web
 ```
 
 Open the URL printed in the terminal (Vite’s default is usually `http://localhost:3000`).
@@ -41,14 +41,14 @@ Open the URL printed in the terminal (Vite’s default is usually `http://localh
 > [!TIP]
 > Pass a folder to **built-in** Vite commands when you want to target one app:
 
-| Command                   | Purpose                                                          |
-| ------------------------- | ---------------------------------------------------------------- |
-| `vp dev apps/console`     | Start the dev server (console) with HMR                          |
-| `vp build apps/console`   | Production build (console)                                       |
-| `vp preview apps/console` | Preview the production build locally (console)                   |
-| `vp check`                | Format, lint, and type-check (fix with `--fix` where applicable) |
-| `vp test`                 | Run tests                                                        |
-| `vp help`                 | List built-in commands and options                               |
+| Command               | Purpose                                                          |
+| --------------------- | ---------------------------------------------------------------- |
+| `vp dev apps/web`     | Start the dev server (web) with HMR                              |
+| `vp build apps/web`   | Production build (web)                                           |
+| `vp preview apps/web` | Preview the production build locally (web)                       |
+| `vp check`            | Format, lint, and type-check (fix with `--fix` where applicable) |
+| `vp test`             | Run tests                                                        |
+| `vp help`             | List built-in commands and options                               |
 
 `package.json` scripts (`dev`, `build`, `check`, `test`, …) delegate to these same `vp` entry points.
 
@@ -100,10 +100,10 @@ docker compose down
 docker compose down -v
 ```
 
-Start `console` App in dev mode
+Start `web` App in dev mode
 
 ```shell
-vp dev apps/console
+vp dev apps/web
 ```
 
 ## Deploy with Nitro
@@ -111,8 +111,8 @@ vp dev apps/console
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp build apps/console
-vp preview apps/console
+vp build apps/web
+vp preview apps/web
 ```
 
 The build output is a self-contained Node server. To deploy, push the `.output` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.

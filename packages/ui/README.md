@@ -93,20 +93,20 @@ To `add` **[Shadcn](https://ui.shadcn.com/blocks)** `blocks`and
 **[MagicUI](https://magicui.design/docs/installation)** `blocks`, run the following commands:
 
 ```shell
-# add shadcn blocks to `apps/console`
-bunx --bun shadcn@latest add sidebar-07 -c apps/console
-bunx --bun shadcn@latest add login-03 -c apps/console
-bunx --bun shadcn@latest add calendar-05 -c apps/console
-bunx --bun shadcn@latest add charts-01 -c apps/console
-# add Magic UI blocks to `apps/console`
-bunx --bun shadcn@latest add @magicui/cool-mode @magicui/confetti  @magicui/particles -c apps/console
-bunx --bun shadcn@latest add @magicui/video-text @magicui/morphing-text @magicui/spinning-text -c apps/console
-bunx --bun shadcn@latest add @magicui/grid-pattern @magicui/interactive-grid-pattern -c apps/console
-# update blocks in `apps/console` to latest version
-bunx --bun shadcn@latest add @magicui/video-text -c apps/console --overwrite
-# add [AI Tools Registry](https://ai-tools-registry.vercel.app/) blocks to `apps/console`
-bunx --bun shadcn@latest add @ai-tools/weather -c apps/console
-bunx --bun shadcn@latest add @ai-tools/calculator -c apps/console
+# add shadcn blocks to `apps/web`
+bunx --bun shadcn@latest add sidebar-07 -c apps/web
+bunx --bun shadcn@latest add login-03 -c apps/web
+bunx --bun shadcn@latest add calendar-05 -c apps/web
+bunx --bun shadcn@latest add charts-01 -c apps/web
+# add Magic UI blocks to `apps/web`
+bunx --bun shadcn@latest add @magicui/cool-mode @magicui/confetti  @magicui/particles -c apps/web
+bunx --bun shadcn@latest add @magicui/video-text @magicui/morphing-text @magicui/spinning-text -c apps/web
+bunx --bun shadcn@latest add @magicui/grid-pattern @magicui/interactive-grid-pattern -c apps/web
+# update blocks in `apps/web` to latest version
+bunx --bun shadcn@latest add @magicui/video-text -c apps/web --overwrite
+# add [AI Tools Registry](https://ai-tools-registry.vercel.app/) blocks to `apps/web`
+bunx --bun shadcn@latest add @ai-tools/weather -c apps/web
+bunx --bun shadcn@latest add @ai-tools/calculator -c apps/web
 ```
 
 ### Initial setup
@@ -134,7 +134,7 @@ Generate `shadcn/ui` forms from `Zod` schemas
 Usage of [shadcn-zod-form](https://github.com/ilyichv/shadcn-zod-form) CLI
 
 ```shell
-cd apps/console
+cd apps/web
 bunx shadcn-zod-form@latest init # first time
 bunx shadcn-zod-form@latest generate ./path/to/zod/schema.ts
 # example

@@ -35,5 +35,5 @@ authors = [{ username = "xmlking", signature = "Sumanth Chinthagunta" }]
 [bump_profiles]
 
 [monorepo.packages]
-console = { path = "apps/console" }
+web = { path = "apps/web" }
 docs = { path = "apps/docs" }

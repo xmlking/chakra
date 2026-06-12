@@ -51,7 +51,7 @@ if (import.meta.env.DEV) {
 }
 
 export const auth = betterAuth({
-  appName: "Console",
+  appName: "Chakra",
   database: drizzleAdapter(db, { provider: "pg" }),
   advanced: {
     database: {

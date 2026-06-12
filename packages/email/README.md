@@ -27,7 +27,7 @@ We use [Email SDK](https://email-sdk.dev/) to send transactional emails which in
 
 Resend and React Email play nicely together. For example, here's how you can send a transactional email using a React email template:
 
-```tsx title="apps/console/src/actions/contact.tsx"
+```tsx title="apps/web/src/actions/contact.tsx"
 import { email } from "@workspace/email";
 import { VercelInviteUserEmail } from "@workspace/email/vercel-invite-user";
 import { render } from "react-email";
