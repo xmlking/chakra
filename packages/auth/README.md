@@ -18,6 +18,9 @@ bunx @better-auth/cli@latest generate --config packages/auth/src/index.ts --outp
 
 Tests
 
+> [!IMPORTANT]
+> database should be up for tests. start: `docker compose up`
+
 ```shell
 vp test packages/auth
 ```
