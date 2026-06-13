@@ -69,5 +69,4 @@ ResetPasswordEmail.PreviewProps = {
 export { ResetPasswordEmail };
 export type { BetterAuthResetPasswordEmailProps };
 
-// oxlint-disable-next-line import/no-default-export
 export default ResetPasswordEmail;

@@ -122,5 +122,4 @@ const code = {
   color: "#333",
 };
 
-// oxlint-disable-next-line import/no-default-export
 export default NotionMagicLinkEmail;

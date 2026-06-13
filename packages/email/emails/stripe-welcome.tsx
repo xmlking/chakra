@@ -131,5 +131,4 @@ const footer = {
   lineHeight: "16px",
 };
 
-// oxlint-disable-next-line import/no-default-export
 export default StripeWelcomeEmail;

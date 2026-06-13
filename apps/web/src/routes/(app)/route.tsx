@@ -1,19 +1,31 @@
+import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
+import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
+import { auth } from "@workspace/auth";
+import { authClient } from "@workspace/auth/client";
 
 import { AppHeader } from "#components/navigation/app-header";
 import { AppSidebar } from "#components/navigation/app-sidebar";
-import { getSession } from "#lib/auth.functions";
 
 export const Route = createFileRoute("/(app)")({
-  beforeLoad: async ({ location }) => {
-    const session = await getSession();
+  async beforeLoad({ context: { queryClient }, location }) {
+    const ensureSession = createIsomorphicFn()
+      .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
+      // @ts-ignore
+      .client(() => ensureSessionClient(queryClient, authClient));
+
+    const session = await ensureSession();
+
     if (!session) {
       throw redirect({
-        to: "/login",
-        search: { redirect: location.href },
+        to: "/auth/$path",
+        params: { path: "sign-in" },
+        search: { redirectTo: location.href },
       });
     }
-    return { user: session.user };
+    return { session };
   },
 
   component: AppLayout,

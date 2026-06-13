@@ -23,7 +23,8 @@ const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-])
 export function Providers({ children }: { children: ReactNode }) {
   const router = useRouter();
   const navigate = useNavigate();
-  const { slug } = useParams({ strict: false });
+  const params = useParams({ strict: false, shouldThrow: false });
+  const slug = params?.slug;
 
   return (
     <ThemeProvider defaultTheme="system" enableSystem>

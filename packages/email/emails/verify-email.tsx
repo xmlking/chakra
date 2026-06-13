@@ -76,5 +76,4 @@ VerifyEmail.PreviewProps = {
 export { VerifyEmail };
 export type { VerifyEmailProps };
 
-// oxlint-disable-next-line import/no-default-export
 export default VerifyEmail;

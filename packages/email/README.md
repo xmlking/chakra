@@ -109,3 +109,20 @@ bun run --filter @workspace/email cli send \
   --text "It works" \
   --dry-run
 ```
+
+## Add better-auth email templates
+
+To `add/update` **better-auth-ui** email `templates`, run the following commands:
+
+```shell
+cd packages/email
+# better-auth-ui email templates
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/email-verification-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/magic-link-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/reset-password-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/password-changed-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/email-changed-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/otp-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/new-device-email.json
+bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/organization-invitation-email.json
+```

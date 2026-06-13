@@ -138,5 +138,4 @@ const footer = {
   textTransform: "uppercase" as const,
 };
 
-// oxlint-disable-next-line import/no-default-export
 export default PlaidVerifyIdentityEmail;

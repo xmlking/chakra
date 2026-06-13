@@ -6,7 +6,7 @@ import { and, db } from "@workspace/db";
 import { getFirstMembership } from "@workspace/db/queries";
 import { sendMail } from "@workspace/email";
 import { InviteUserEmail } from "@workspace/email/invitation";
-// import { MagicLink } from "@workspace/email/magic-link";
+import { MagicLinkEmail } from "@workspace/email/magic-link";
 import { ResetPasswordEmail } from "@workspace/email/reset-password";
 import { VerifyEmail } from "@workspace/email/verify-email";
 import { betterAuth } from "better-auth";
@@ -247,25 +247,21 @@ export const auth = betterAuth({
     multiSession(),
     magicLink({
       expiresIn: MAGIC_LINK_EXPIRES_SECONDS,
-      // oxlint-disable-next-line no-unused-vars : TODO
       sendMagicLink: async ({ email, url }) => {
-        // await sendMail({
-        //   from,
-        //   to: email,
-        //   subject: "Sign in to Better Auth UI",
-        //   // text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
-        //   react:         <MagicLinkEmail
-        //     url={url}
-        //     appName="Better Auth UI"
-        //     email={email}
-        //     expirationMinutes={MAGIC_LINK_EXPIRES_SECONDS / 60}
-        //     poweredBy
-        //   />
-        // })
+        await sendMail({
+          from,
+          to: email,
+          subject: "Sign in to Better Auth UI",
+          text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
+          react: MagicLinkEmail({
+            url,
+            appName: "Better Auth UI",
+            email,
+            expirationMinutes: MAGIC_LINK_EXPIRES_SECONDS / 60,
+            poweredBy: true,
+          }),
+        });
       },
-      //   sendMagicLink: async ({ email, url }) => {
-
-      //   }
     }),
     organization({
       // schema: {

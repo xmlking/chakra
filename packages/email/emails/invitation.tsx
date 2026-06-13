@@ -107,5 +107,4 @@ InviteUserEmail.PreviewProps = {
 export { InviteUserEmail };
 export type { BetterAuthInviteUserEmailProps };
 
-// oxlint-disable-next-line import/no-default-export
 export default InviteUserEmail;

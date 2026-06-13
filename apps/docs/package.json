@@ -15,7 +15,7 @@
     "@base-ui/react": "1.5.0",
     "@fumapress/feedback": "0.6.1",
     "@lonik/themer": "^0.5.4",
-    "@takumi-rs/core": "1.8.4",
+    "@takumi-rs/core": "1.8.5",
     "@thesvg/react": "3.0.15",
     "@vite-env/core": "catalog:",
     "@workspace/i18n": "workspace:*",

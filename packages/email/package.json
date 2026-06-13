@@ -4,6 +4,11 @@
   "private": true,
   "description": "Email templates",
   "type": "module",
+  "imports": {
+    "#components/*": "./src/components/*.tsx",
+    "#hooks/*": "./src/hooks/*.ts",
+    "#lib/*": "./src/lib/*.ts"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./*": "./emails/*.tsx",
@@ -20,6 +25,7 @@
   "dependencies": {
     "@opencoredev/email-sdk": "catalog:",
     "@vite-env/core": "catalog:",
+    "@workspace/ui": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-email": "catalog:",

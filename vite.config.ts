@@ -113,6 +113,12 @@ export default defineConfig({
           "react-doctor/only-export-components": "off",
         },
       },
+      {
+        files: ["packages/email/emails/**/*.tsx"],
+        rules: {
+          "import/no-default-export": "off",
+        },
+      },
     ],
     ignorePatterns,
   },

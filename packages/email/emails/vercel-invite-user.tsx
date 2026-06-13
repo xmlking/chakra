@@ -129,5 +129,4 @@ VercelInviteUserEmail.PreviewProps = {
   inviteFromLocation: "São Paulo, Brazil",
 } as VercelInviteUserEmailProps;
 
-// oxlint-disable-next-line import/no-default-export
 export default VercelInviteUserEmail;
