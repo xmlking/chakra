@@ -20,6 +20,8 @@
     "preview": "vp preview"
   },
   "dependencies": {
+    "@better-auth-ui/core": "catalog:",
+    "@better-auth-ui/react": "catalog:",
     "@lonik/themer": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/react-devtools": "catalog:",

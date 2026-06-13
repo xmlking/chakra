@@ -15,11 +15,11 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
-import { Route as authRegisterRouteImport } from './routes/(auth)/register'
-import { Route as authLoginRouteImport } from './routes/(auth)/login'
-import { Route as appSettingsRouteImport } from './routes/(app)/settings'
 import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as authAuthPathRouteImport } from './routes/(auth)/auth/$path'
+import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
+import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/organization/$slug/$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
@@ -48,21 +48,6 @@ const publicAboutRoute = publicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const authRegisterRoute = authRegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => authRouteRoute,
-} as any)
-const authLoginRoute = authLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => authRouteRoute,
-} as any)
-const appSettingsRoute = appSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => appRouteRoute,
-} as any)
 const appDashboardRoute = appDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -73,26 +58,41 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const authAuthPathRoute = authAuthPathRouteImport.update({
+  id: '/auth/$path',
+  path: '/auth/$path',
+  getParentRoute: () => authRouteRoute,
+} as any)
+const appSettingsPathRoute = appSettingsPathRouteImport.update({
+  id: '/settings/$path',
+  path: '/settings/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
+  id: '/organization/$slug/$path',
+  path: '/organization/$slug/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard': typeof appDashboardRoute
-  '/settings': typeof appSettingsRoute
-  '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
   '/': typeof publicIndexRoute
+  '/settings/$path': typeof appSettingsPathRoute
+  '/auth/$path': typeof authAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesByTo {
   '/dashboard': typeof appDashboardRoute
-  '/settings': typeof appSettingsRoute
-  '/login': typeof authLoginRoute
-  '/register': typeof authRegisterRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
   '/': typeof publicIndexRoute
+  '/settings/$path': typeof appSettingsPathRoute
+  '/auth/$path': typeof authAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -100,48 +100,48 @@ export interface FileRoutesById {
   '/(auth)': typeof authRouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
   '/(app)/dashboard': typeof appDashboardRoute
-  '/(app)/settings': typeof appSettingsRoute
-  '/(auth)/login': typeof authLoginRoute
-  '/(auth)/register': typeof authRegisterRoute
   '/(public)/about': typeof publicAboutRoute
   '/(public)/i18n': typeof publicI18nRoute
   '/(public)/': typeof publicIndexRoute
+  '/(app)/settings/$path': typeof appSettingsPathRoute
+  '/(auth)/auth/$path': typeof authAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(app)/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/dashboard'
-    | '/settings'
-    | '/login'
-    | '/register'
     | '/about'
     | '/i18n'
     | '/'
+    | '/settings/$path'
+    | '/auth/$path'
     | '/api/auth/$'
+    | '/organization/$slug/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard'
-    | '/settings'
-    | '/login'
-    | '/register'
     | '/about'
     | '/i18n'
     | '/'
+    | '/settings/$path'
+    | '/auth/$path'
     | '/api/auth/$'
+    | '/organization/$slug/$path'
   id:
     | '__root__'
     | '/(app)'
     | '/(auth)'
     | '/(public)'
     | '/(app)/dashboard'
-    | '/(app)/settings'
-    | '/(auth)/login'
-    | '/(auth)/register'
     | '/(public)/about'
     | '/(public)/i18n'
     | '/(public)/'
+    | '/(app)/settings/$path'
+    | '/(auth)/auth/$path'
     | '/api/auth/$'
+    | '/(app)/organization/$slug/$path'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,27 +195,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAboutRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/(auth)/register': {
-      id: '/(auth)/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof authRegisterRouteImport
-      parentRoute: typeof authRouteRoute
-    }
-    '/(auth)/login': {
-      id: '/(auth)/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof authLoginRouteImport
-      parentRoute: typeof authRouteRoute
-    }
-    '/(app)/settings': {
-      id: '/(app)/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof appSettingsRouteImport
-      parentRoute: typeof appRouteRoute
-    }
     '/(app)/dashboard': {
       id: '/(app)/dashboard'
       path: '/dashboard'
@@ -230,17 +209,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(auth)/auth/$path': {
+      id: '/(auth)/auth/$path'
+      path: '/auth/$path'
+      fullPath: '/auth/$path'
+      preLoaderRoute: typeof authAuthPathRouteImport
+      parentRoute: typeof authRouteRoute
+    }
+    '/(app)/settings/$path': {
+      id: '/(app)/settings/$path'
+      path: '/settings/$path'
+      fullPath: '/settings/$path'
+      preLoaderRoute: typeof appSettingsPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/organization/$slug/$path': {
+      id: '/(app)/organization/$slug/$path'
+      path: '/organization/$slug/$path'
+      fullPath: '/organization/$slug/$path'
+      preLoaderRoute: typeof appOrganizationSlugPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
   appDashboardRoute: typeof appDashboardRoute
-  appSettingsRoute: typeof appSettingsRoute
+  appSettingsPathRoute: typeof appSettingsPathRoute
+  appOrganizationSlugPathRoute: typeof appOrganizationSlugPathRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDashboardRoute: appDashboardRoute,
-  appSettingsRoute: appSettingsRoute,
+  appSettingsPathRoute: appSettingsPathRoute,
+  appOrganizationSlugPathRoute: appOrganizationSlugPathRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
@@ -248,13 +250,11 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 )
 
 interface authRouteRouteChildren {
-  authLoginRoute: typeof authLoginRoute
-  authRegisterRoute: typeof authRegisterRoute
+  authAuthPathRoute: typeof authAuthPathRoute
 }
 
 const authRouteRouteChildren: authRouteRouteChildren = {
-  authLoginRoute: authLoginRoute,
-  authRegisterRoute: authRegisterRoute,
+  authAuthPathRoute: authAuthPathRoute,
 }
 
 const authRouteRouteWithChildren = authRouteRoute._addFileChildren(

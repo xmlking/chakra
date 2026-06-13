@@ -1,13 +1,25 @@
+import { viewPaths } from "@better-auth-ui/core";
 import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
 import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
+import { Settings } from "@workspace/ui/components/auth/settings/settings";
+import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 
-export const Route = createFileRoute("/(app)/dashboard")({
-  async beforeLoad({ context: { queryClient }, location }) {
+const validSettingsPaths = [
+  ...Object.values(viewPaths.settings),
+  ...Object.values(organizationPlugin().viewPaths.settings),
+];
+
+export const Route = createFileRoute("/(app)/settings/$path")({
+  async beforeLoad({ params: { path }, context: { queryClient }, location }) {
+    if (!validSettingsPaths.includes(path)) {
+      throw notFound();
+    }
+
     const ensureSession = createIsomorphicFn()
       .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
       // @ts-ignore
@@ -25,19 +37,15 @@ export const Route = createFileRoute("/(app)/dashboard")({
 
     return { session };
   },
-  component: Dashboard,
+  component: SettingsPage,
 });
 
-function Dashboard() {
-  const { session } = Route.useRouteContext();
+function SettingsPage() {
+  const { path } = Route.useParams();
 
   return (
-    <div className="my-auto flex flex-col items-center">
-      <h1 className="text-2xl">Hello, {session.user.email}</h1>
-
-      <Link to="/auth/$path" params={{ path: "sign-out" }}>
-        Sign Out
-      </Link>
+    <div className="mx-auto w-full max-w-3xl p-4 md:p-6">
+      <Settings path={path} />
     </div>
   );
 }

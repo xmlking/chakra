@@ -17,6 +17,7 @@ import {
   // haveIBeenPwned,
   jwt,
   lastLoginMethod,
+  magicLink,
   multiSession,
   oneTap,
   openAPI,
@@ -29,6 +30,7 @@ import { env } from "virtual:env/server";
 import { additionalUserFields } from "./additional-fields";
 import { ac, roles } from "./permissions";
 
+const MAGIC_LINK_EXPIRES_SECONDS = 300;
 const from = env.EMAIL_FROM;
 // const to = env.EMAIL_TO || "";
 const adminUserIds = env.BETTER_AUTH_ADMINS as unknown as string[];
@@ -243,6 +245,28 @@ export const auth = betterAuth({
       },
     }),
     multiSession(),
+    magicLink({
+      expiresIn: MAGIC_LINK_EXPIRES_SECONDS,
+      // oxlint-disable-next-line no-unused-vars : TODO
+      sendMagicLink: async ({ email, url }) => {
+        // await sendMail({
+        //   from,
+        //   to: email,
+        //   subject: "Sign in to Better Auth UI",
+        //   // text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
+        //   react:         <MagicLinkEmail
+        //     url={url}
+        //     appName="Better Auth UI"
+        //     email={email}
+        //     expirationMinutes={MAGIC_LINK_EXPIRES_SECONDS / 60}
+        //     poweredBy
+        //   />
+        // })
+      },
+      //   sendMagicLink: async ({ email, url }) => {
+
+      //   }
+    }),
     organization({
       // schema: {
       //   organization: {
@@ -315,7 +339,7 @@ export const auth = betterAuth({
      */
     apiKey([
       {
-        configId: "user-keys",
+        configId: "default",
         references: "user", // Default - owned by users
         enableSessionForAPIKeys: true, // Required for getSession to work with API Keys
         enableMetadata: true,
@@ -337,7 +361,7 @@ export const auth = betterAuth({
         },
       },
       {
-        configId: "org-keys",
+        configId: "organization",
         references: "organization", // Owned by organizations
         // enableSessionForAPIKeys: true, // Required for getSession to work with API Keys
         enableMetadata: true,
