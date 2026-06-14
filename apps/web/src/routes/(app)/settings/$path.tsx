@@ -37,6 +37,9 @@ export const Route = createFileRoute("/(app)/settings/$path")({
 
     return { session };
   },
+  head: () => ({
+    meta: [{ title: "Settings | Chakra" }],
+  }),
   component: SettingsPage,
 });
 

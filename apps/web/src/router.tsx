@@ -26,8 +26,12 @@ export function getRouter() {
 
     scrollRestoration: true,
     scrollRestorationBehavior: "smooth",
+    defaultViewTransition: true,
     defaultPreload: "intent",
     defaultPreloadStaleTime: 0,
+    // defaultPreloadStaleTime: 30_000,
+    // defaultPendingMs: 0,
+    // defaultPendingMinMs: 300,
     defaultPendingComponent: DefaultLoading,
     defaultNotFoundComponent: DefaultNotFound,
     defaultErrorComponent: DefaultError,

@@ -6,6 +6,8 @@ import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
 
+import { DashboardSkeleton } from "#features/dashboard/dashboard-skeleton.tsx";
+
 export const Route = createFileRoute("/(app)/dashboard")({
   async beforeLoad({ context: { queryClient }, location }) {
     const ensureSession = createIsomorphicFn()
@@ -25,7 +27,11 @@ export const Route = createFileRoute("/(app)/dashboard")({
 
     return { session };
   },
+  head: () => ({
+    meta: [{ title: "Dashboard | Chakra" }],
+  }),
   component: Dashboard,
+  pendingComponent: DashboardSkeleton,
 });
 
 function Dashboard() {

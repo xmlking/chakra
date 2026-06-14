@@ -1,3 +1,4 @@
+import { viewPaths } from "@better-auth-ui/core";
 import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
 import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
@@ -8,6 +9,7 @@ import { authClient } from "@workspace/auth/client";
 
 import { AppHeader } from "#components/navigation/app-header";
 import { AppSidebar } from "#components/navigation/app-sidebar";
+import { safeRedirect } from "#features/auth/safe-redirect.ts";
 
 export const Route = createFileRoute("/(app)")({
   async beforeLoad({ context: { queryClient }, location }) {
@@ -18,11 +20,13 @@ export const Route = createFileRoute("/(app)")({
 
     const session = await ensureSession();
 
+    const redirectTarget = safeRedirect(location.href);
     if (!session) {
       throw redirect({
         to: "/auth/$path",
-        params: { path: "sign-in" },
-        search: { redirectTo: location.href },
+        replace: true,
+        params: { path: viewPaths.auth.signIn },
+        search: { redirectTo: redirectTarget },
       });
     }
     return { session };
