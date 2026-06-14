@@ -8,7 +8,16 @@
     "resolvePackageJsonImports": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "ES2022"
+    "target": "ES2022",
+
+    /* package.json #imports — mirror here for tsgo/oxlint-tsgolint wildcard support */
+    "paths": {
+      "#components/*": ["./src/components/*.tsx"],
+      "#hooks/*": ["./src/hooks/*.ts"],
+      "#lib/*": ["./src/lib/*.ts"],
+      "#lib/auth/organization-plugin": ["./src/lib/auth/organization-plugin.tsx"],
+      "#types/*": ["./src/types/*.ts"]
+    }
   },
   "exclude": ["node_modules", "dist"],
   "include": ["src/**/*.ts", "src/**/*.tsx"]

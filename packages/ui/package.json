@@ -11,7 +11,8 @@
     "#components/*": "./src/components/*.tsx",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
-    "#lib/auth/organization-plugin": "./src/lib/auth/organization-plugin.tsx"
+    "#lib/auth/organization-plugin": "./src/lib/auth/organization-plugin.tsx",
+    "#types/*": "./src/types/*.ts"
   },
   "exports": {
     "./blocks/*": "./src/blocks/*.tsx",

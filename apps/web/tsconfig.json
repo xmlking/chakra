@@ -14,6 +14,16 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
+    /* package.json #imports — mirror here for tsgo/oxlint-tsgolint wildcard support */
+    "paths": {
+      "#features/*": ["./src/features/*"],
+      "#components/*": ["./src/components/*.tsx"],
+      "#config/*": ["./src/config/*"],
+      "#hooks/*": ["./src/hooks/*.ts"],
+      "#lib/*": ["./src/lib/*.ts"],
+      "#types/*": ["./src/types/*.ts"]
+    },
+
     /* Linting */
     "skipLibCheck": true,
     "strict": true,

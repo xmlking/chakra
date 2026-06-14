@@ -5,7 +5,7 @@ import { Auth } from "@workspace/ui/components/auth/auth";
 import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { z } from "zod";
 
-import { safeRedirect } from "#features/auth/safe-redirect.ts";
+import { safeRedirect } from "#features/auth/safe-redirect";
 
 const validAuthPathSegments = new Set([
   ...Object.values(viewPaths.auth),

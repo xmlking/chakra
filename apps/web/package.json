@@ -6,7 +6,7 @@
   "imports": {
     "#features/*": "./src/features/*",
     "#components/*": "./src/components/*.tsx",
-    "#config/*": "./src/config/*.ts",
+    "#config/*": "./src/config/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
     "#types/*": "./src/types/*.ts"
