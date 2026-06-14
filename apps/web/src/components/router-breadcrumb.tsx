@@ -56,9 +56,7 @@ export function RouterBreadcrumb() {
                 {isLast ? (
                   <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink>
-                    <Link to={crumb.path}>{crumb.label}</Link>
-                  </BreadcrumbLink>
+                  <BreadcrumbLink render={<Link to={crumb.path} />}>{crumb.label}</BreadcrumbLink>
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}
