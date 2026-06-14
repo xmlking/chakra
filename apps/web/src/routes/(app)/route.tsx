@@ -9,7 +9,7 @@ import { authClient } from "@workspace/auth/client";
 
 import { AppHeader } from "#components/navigation/app-header";
 import { AppSidebar } from "#components/navigation/app-sidebar";
-import { safeRedirect } from "#features/auth/safe-redirect.ts";
+import { safeRedirect } from "#features/auth/safe-redirect";
 
 export const Route = createFileRoute("/(app)")({
   async beforeLoad({ context: { queryClient }, location }) {

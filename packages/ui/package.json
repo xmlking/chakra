@@ -10,8 +10,7 @@
   "imports": {
     "#components/*": "./src/components/*.tsx",
     "#hooks/*": "./src/hooks/*.ts",
-    "#lib/*": "./src/lib/*.ts",
-    "#lib/auth/organization-plugin": "./src/lib/auth/organization-plugin.tsx",
+    "#lib/*": "./src/lib/*",
     "#types/*": "./src/types/*.ts"
   },
   "exports": {
@@ -19,10 +18,9 @@
     "./components/*": "./src/components/*.tsx",
     "./globals.css": "./src/styles/globals.css",
     "./hooks/*": "./src/hooks/*.ts",
-    "./lib/*": "./src/lib/*.ts",
     "./lib/auth/organization-plugin": "./src/lib/auth/organization-plugin.tsx",
-    "./styles/*": "./src/styles/*",
-    "./templates/*": "./src/templates/*"
+    "./lib/*": "./src/lib/*.ts",
+    "./styles/*": "./src/styles/*"
   },
   "scripts": {
     "clean": "git clean -xdf dist test-results coverage node_modules",
