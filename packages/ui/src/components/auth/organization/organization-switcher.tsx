@@ -13,7 +13,7 @@ import {
   PlusCircle,
   Settings as SettingsIcon
 } from "lucide-react"
-import { type ReactNode, useState } from "react"
+import { type ReactElement, useState } from "react"
 
 import { Button } from "#components/shadcn/button"
 import {
@@ -34,7 +34,7 @@ export type OrganizationSwitcherProps = {
   className?: string
   align?: "center" | "end" | "start"
   sideOffset?: number
-  trigger?: ReactNode
+  trigger?: ReactElement
   hideCreate?: boolean
   hidePersonal?: boolean
   hideSettings?: boolean
@@ -111,7 +111,7 @@ export function OrganizationSwitcher({
     <>
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         {trigger ? (
-          <DropdownMenuTrigger>{trigger}</DropdownMenuTrigger>
+          <DropdownMenuTrigger render={trigger} />
         ) : (
           <DropdownMenuTrigger render={<Button variant="ghost" className={cn("h-auto px-2 py-2 text-left", className)} disabled={!session || isPending} />}>{isPending ? (
                                       <OrganizationView isPending hideRole hideSlug={hideSlug} />

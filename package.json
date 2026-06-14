@@ -66,6 +66,7 @@
     "@inlang/paraglide-js": "2.19.0",
     "@lonik/themer": "0.5.4",
     "kysely": "0.28.17",
+    "@marsidev/react-turnstile": "1.5.3",
     "@opencoredev/email-sdk": "0.6.1",
     "@playwright/test": "1.60.0",
     "@react-email/ui": "6.6.0",

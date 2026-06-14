@@ -12,13 +12,13 @@ export const navigation = [
     icon: Bot,
   },
   {
-    title: "Organizations",
-    to: "/organizations",
+    title: "Organization",
+    to: "/organization/chakra-inc/settings",
     icon: Building2,
   },
   {
     title: "Settings",
-    to: "/settings",
+    to: "/settings/account",
     icon: Settings,
   },
 ];
