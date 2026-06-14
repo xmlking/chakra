@@ -1,3 +1,4 @@
+import { captchaPlugin } from "@better-auth-ui/react/plugins";
 import { ThemeProvider, useTheme } from "@lonik/themer";
 import { Link, useRouter, useParams, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
@@ -16,6 +17,7 @@ import { Suspense, type ReactNode } from "react";
 import env from "virtual:env/client";
 
 import { MetaTheme } from "#components/meta-theme";
+import { TurnstileWidget } from "#components/turnstile-widget";
 import { WelcomeToast } from "#components/welcome-toast";
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
@@ -97,6 +99,7 @@ export function Providers({ children }: { children: ReactNode }) {
             organizationPlugin({
               slug: slug ?? null,
             }),
+            captchaPlugin({ render: TurnstileWidget }),
           ]}
           Link={Link}
         >

@@ -131,33 +131,35 @@ export function UserButton({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className={cn(size === "icon" && "rounded-full")}
-      >
-        {size === "icon" ? (
+      {size === "icon" ? (
+        <DropdownMenuTrigger className="rounded-full">
           <UserAvatar className={className} />
-        ) : (
-          <Button
-            variant={variant}
-            className={cn("py-2.5 h-auto font-normal", className)}
-            size="lg"
-          >
-            {session || sessionPending || settingActiveSession ? (
-              <UserView isPending={!!settingActiveSession} />
-            ) : (
-              <>
-                <UserAvatar />
+        </DropdownMenuTrigger>
+      ) : (
+        <DropdownMenuTrigger
+          render={
+            <Button
+              variant={variant}
+              className={cn("py-2.5 h-auto font-normal", className)}
+              size="lg"
+            />
+          }
+        >
+          {session || sessionPending || settingActiveSession ? (
+            <UserView isPending={!!settingActiveSession} />
+          ) : (
+            <>
+              <UserAvatar />
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  {localization.auth.account}
-                </div>
-              </>
-            )}
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                {localization.auth.account}
+              </div>
+            </>
+          )}
 
-            <ChevronsUpDown className="ml-auto size-4" />
-          </Button>
-        )}
-      </DropdownMenuTrigger>
+          <ChevronsUpDown className="ml-auto size-4" />
+        </DropdownMenuTrigger>
+      )}
 
       <DropdownMenuContent
         className="w-[--radix-dropdown-menu-trigger-width] min-w-40 md:min-w-56 max-w-[48svw]"

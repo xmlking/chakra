@@ -17,10 +17,12 @@ export function MobileNav() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation">
-          <Menu className="size-5" />
-        </Button>
+      <DialogTrigger
+        render={
+          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation" />
+        }
+      >
+        <Menu className="size-5" />
       </DialogTrigger>
 
       <DialogContent className="fixed inset-y-0 left-0 h-screen w-72 max-w-[85vw] rounded-none border-r p-0">

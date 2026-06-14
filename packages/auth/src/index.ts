@@ -392,6 +392,12 @@ export const auth = betterAuth({
     captcha({
       provider: "cloudflare-turnstile", // or google-recaptcha, hcaptcha, captchafox
       secretKey: env.TURNSTILE_SECRET_KEY,
+      endpoints: [
+        "/sign-up/email",
+        "/sign-in/email",
+        "/sign-in/username",
+        "/request-password-reset",
+      ],
     }),
     ...(process.env.VITEST === "true" ? [testUtils()] : []),
     tanstackStartCookies(), // make sure this is the last plugin in the array
