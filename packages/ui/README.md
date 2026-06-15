@@ -22,6 +22,12 @@ cd packages/ui
 bunx --bun shadcn@latest add --all --overwrite
 # better-auth-ui Components
 bunx shadcn@latest add https://better-auth-ui.com/r/all.json
+
+# Install the complete theme system with all 40+ themes:
+bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/vite/theme-system.json
+# Install Individual Themes (optional)
+bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-catppuccin.json
+
 # AI Elements (optional)
 bunx --bun shadcn@latest add @ai-elements/all
 # better-upload (optional)
