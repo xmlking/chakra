@@ -14,7 +14,8 @@
     "paths": {
       "#components/*": ["./src/components/*.tsx"],
       "#hooks/*": ["./src/hooks/*.ts"],
-      "#lib/*": ["./src/lib/*"],
+      "#lib/auth/organization-plugin": ["./src/lib/auth/organization-plugin.tsx"],
+      "#lib/*": ["./src/lib/*.ts"],
       "#types/*": ["./src/types/*.ts"]
     }
   },

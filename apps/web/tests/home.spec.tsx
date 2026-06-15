@@ -1,5 +1,5 @@
-import { useTheme, type UseThemeProps } from "@lonik/themer";
 import { useHydrated } from "@tanstack/react-router";
+import { useTheme, type UseThemeProps } from "next-themes";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 
@@ -10,7 +10,7 @@ beforeEach(() => {
   vi.stubGlobal("__GIT_TIME__", new Date().toISOString());
 });
 
-vi.mock("@lonik/themer", () => ({
+vi.mock("next-themes", () => ({
   useTheme: vi.fn<typeof useTheme>(() => ({
     theme: "system",
     setTheme: vi.fn<UseThemeProps["setTheme"]>(),
