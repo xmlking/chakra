@@ -27,91 +27,95 @@ describe("ThemeSwitcher", () => {
     vi.restoreAllMocks();
   });
 
-  it("renders system theme by default", async () => {
+  it("renders light variant", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: undefined,
+      theme: "default-light",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark"],
     });
 
     const screen = await render(<ThemeSwitcher />);
 
     await expect
-      .element(screen.getByRole("button", { name: /theme: system/i }))
+      .element(screen.getByRole("button", { name: /theme: default-light/i }))
       .toBeInTheDocument();
   });
 
-  it("renders light theme", async () => {
+  it("renders dark variant", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: "light",
+      theme: "default-dark",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark"],
     });
 
     const screen = await render(<ThemeSwitcher />);
 
-    await expect.element(screen.getByRole("button", { name: /theme: light/i })).toBeInTheDocument();
+    await expect
+      .element(screen.getByRole("button", { name: /theme: default-dark/i }))
+      .toBeInTheDocument();
   });
 
-  it("renders dark theme", async () => {
+  it("toggles *-light to *-dark on click", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: "dark",
+      theme: "default-light",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
-    });
-
-    const screen = await render(<ThemeSwitcher />);
-
-    await expect.element(screen.getByRole("button", { name: /theme: dark/i })).toBeInTheDocument();
-  });
-
-  it("cycles from system -> light", async () => {
-    vi.mocked(useTheme).mockReturnValue({
-      theme: "system",
-      setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark"],
     });
 
     const screen = await render(<ThemeSwitcher />);
 
     await userEvent.click(screen.getByRole("button"));
 
-    expect(mockSetTheme).toHaveBeenCalledWith("light");
+    expect(mockSetTheme).toHaveBeenCalledWith("default-dark");
   });
 
-  it("cycles from light -> dark", async () => {
+  it("toggles *-dark to *-light on click", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: "light",
+      theme: "default-dark",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark"],
     });
 
     const screen = await render(<ThemeSwitcher />);
 
     await userEvent.click(screen.getByRole("button"));
 
-    expect(mockSetTheme).toHaveBeenCalledWith("dark");
+    expect(mockSetTheme).toHaveBeenCalledWith("default-light");
   });
 
-  it("cycles from dark -> system", async () => {
+  it("toggles custom *-dark theme to *-light", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: "dark",
+      theme: "ocean-dark",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark", "ocean-dark", "ocean-light"],
     });
 
     const screen = await render(<ThemeSwitcher />);
 
     await userEvent.click(screen.getByRole("button"));
 
-    expect(mockSetTheme).toHaveBeenCalledWith("system");
+    expect(mockSetTheme).toHaveBeenCalledWith("ocean-light");
+  });
+
+  it("toggles custom *-light theme to *-dark", async () => {
+    vi.mocked(useTheme).mockReturnValue({
+      theme: "ocean-light",
+      setTheme: mockSetTheme,
+      themes: ["default-light", "default-dark", "ocean-dark", "ocean-light"],
+    });
+
+    const screen = await render(<ThemeSwitcher />);
+
+    await userEvent.click(screen.getByRole("button"));
+
+    expect(mockSetTheme).toHaveBeenCalledWith("ocean-dark");
   });
 
   it("does not render icon when not hydrated", async () => {
     vi.mocked(useTheme).mockReturnValue({
-      theme: "light",
+      theme: "default-light",
       setTheme: mockSetTheme,
-      themes: ["system", "light", "dark"],
+      themes: ["default-light", "default-dark"],
     });
 
     vi.mocked(useHydrated).mockReturnValue(false);
