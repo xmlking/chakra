@@ -1,6 +1,6 @@
-import { useTheme } from "@lonik/themer";
 import { useHydrated } from "@tanstack/react-router";
 import { MoonIcon, SunIcon, SunMoonIcon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const themeOrder = ["system", "light", "dark"] as const;
 type ThemeValue = (typeof themeOrder)[number];
