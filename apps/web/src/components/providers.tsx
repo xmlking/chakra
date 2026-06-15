@@ -1,5 +1,4 @@
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { ThemeProvider, useTheme } from "@lonik/themer";
 import { Link, useRouter, useParams, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
@@ -13,6 +12,7 @@ import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
 import { themePlugin } from "@workspace/ui/lib/auth/theme-plugin";
 import { usernamePlugin } from "@workspace/ui/lib/auth/username-plugin";
+import { ThemeProvider, useTheme } from "next-themes";
 import { Suspense, type ReactNode } from "react";
 import env from "virtual:env/client";
 
