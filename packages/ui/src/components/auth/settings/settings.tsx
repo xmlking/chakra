@@ -69,14 +69,14 @@ export function Settings({ className, view, path, hideNav }: SettingsProps) {
     >
       <div className={cn(hideNav && "hidden")}>
         <TabsList aria-label={localization.settings.settings}>
-          <TabsTrigger value="account" render={<Link href={`${basePaths.settings}/${viewPaths.settings.account}`} className="gap-1" />}><User2 className="text-muted-foreground" />{localization.settings.account}</TabsTrigger>
+          <TabsTrigger value="account" nativeButton={false} render={<Link href={`${basePaths.settings}/${viewPaths.settings.account}`} className="gap-1" />}><User2 className="text-muted-foreground" />{localization.settings.account}</TabsTrigger>
 
-          <TabsTrigger value="security" render={<Link href={`${basePaths.settings}/${viewPaths.settings.security}`} className="gap-1" />}><Shield className="text-muted-foreground" />{localization.settings.security}</TabsTrigger>
+          <TabsTrigger value="security" nativeButton={false} render={<Link href={`${basePaths.settings}/${viewPaths.settings.security}`} className="gap-1" />}><Shield className="text-muted-foreground" />{localization.settings.security}</TabsTrigger>
 
           {plugins.flatMap(
             (plugin) =>
               plugin.settingsTabs?.map((settingsTab, index) => (
-                <TabsTrigger key={`${plugin.id}-${index.toString()}`} value={settingsTab.view} render={<Link href={`${basePaths.settings}/${plugin.viewPaths?.settings?.[settingsTab.view]}`} className="gap-1" />}>{settingsTab.label}</TabsTrigger>
+                <TabsTrigger key={`${plugin.id}-${index.toString()}`} value={settingsTab.view} nativeButton={false} render={<Link href={`${basePaths.settings}/${plugin.viewPaths?.settings?.[settingsTab.view]}`} className="gap-1" />}>{settingsTab.label}</TabsTrigger>
               )) ?? []
           )}
         </TabsList>
