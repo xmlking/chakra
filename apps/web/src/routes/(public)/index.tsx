@@ -8,7 +8,6 @@ import {
 } from "@workspace/ui/components/shadcn/card";
 
 import { ThemeSwitcher } from "#components/theme-switcher";
-import { ThemeToggle } from "#components/theme-toggle";
 
 declare const __APP_VERSION__: string;
 declare const __GIT_TAG__: string;
@@ -33,7 +32,7 @@ function HomeRoute() {
     <Card className="max-w-sm">
       <CardHeader>
         <CardTitle>
-          Project Overview <ThemeSwitcher /> <ThemeToggle />
+          Project Overview <ThemeSwitcher />
         </CardTitle>
         <CardDescription>
           Track progress and recent activity for your TanStack Start app.

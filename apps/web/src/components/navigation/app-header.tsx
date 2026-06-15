@@ -1,8 +1,8 @@
 import { Button } from "@workspace/ui/components/shadcn/button";
+import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { Bell, Search } from "lucide-react";
 
 import { MobileNav } from "#components/navigation/mobile-nav";
-import { ThemeSwitcher } from "#components/theme-switcher";
 
 export function AppHeader() {
   return (
