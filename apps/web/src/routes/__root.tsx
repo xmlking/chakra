@@ -76,6 +76,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang={getLocale()} suppressHydrationWarning>
       <head>
         <HeadContent />
+        {/* Inline script to prevent FOUC - runs before CSS/React */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const stored = localStorage.getItem('theme');
+                if (stored) {
+                  document.documentElement.setAttribute('data-theme', stored);
+                } else {
+                  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  document.documentElement.setAttribute('data-theme', isDark ? 'default-dark' : 'default-light');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
         <RouterBreadcrumb />
