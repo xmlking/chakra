@@ -1,5 +1,6 @@
 "use client";
-import { useTheme } from "@lonik/themer";
+
+import { useTheme } from "next-themes";
 import { use, useEffect, useId, useState } from "react";
 
 export function Mermaid({ chart }: { chart: string }) {

@@ -1,5 +1,5 @@
-import { useTheme, type UseThemeProps } from "@lonik/themer";
 import { useHydrated } from "@tanstack/react-router";
+import { useTheme, type UseThemeProps } from "next-themes";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
@@ -8,7 +8,7 @@ import { ThemeSwitcher } from "./theme-switcher.tsx";
 
 const mockSetTheme = vi.fn<UseThemeProps["setTheme"]>();
 
-vi.mock("@lonik/themer", () => ({
+vi.mock("next-themes", () => ({
   useTheme: vi.fn<typeof useTheme>(),
 }));
 

@@ -22,7 +22,6 @@
   "dependencies": {
     "@better-auth-ui/core": "catalog:",
     "@better-auth-ui/react": "catalog:",
-    "@lonik/themer": "catalog:",
     "@marsidev/react-turnstile": "catalog:",
     "@tanstack/match-sorter-utils": "catalog:",
     "@tanstack/react-devtools": "catalog:",
@@ -54,6 +53,7 @@
     "files-sdk": "catalog:",
     "hucre": "catalog:",
     "lucide-react": "catalog:",
+    "next-themes": "catalog:",
     "pg": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
