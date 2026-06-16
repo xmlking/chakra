@@ -6,7 +6,11 @@ export function AppSidebar() {
   return (
     <aside className="hidden border-r lg:flex lg:w-64 lg:flex-col">
       <div className="flex h-16 items-center border-b px-6">
-        <h1 className="font-semibold">Astra</h1>
+        <h1 className="font-semibold">
+          <Link to="/" className="flex items-center">
+            <span className="text-lg font-bold tracking-tight">Chakra</span>
+          </Link>
+        </h1>
       </div>
 
       <nav className="flex-1 p-3">

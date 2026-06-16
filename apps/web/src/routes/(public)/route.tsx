@@ -1,17 +1,20 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
+import { HomeFooter } from "#components/layout/home-footer";
+import { HomeHeader } from "#components/layout/home-header";
+
 export const Route = createFileRoute("/(public)")({
-  component: PublicLayout,
+  component: HomeLayout,
 });
 
-function PublicLayout() {
+function HomeLayout() {
   return (
     <div>
-      <header>Marketing Nav</header>
+      <HomeHeader />
       <main>
         <Outlet />
       </main>
-      <footer>Footer</footer>
+      <HomeFooter />
     </div>
   );
 }

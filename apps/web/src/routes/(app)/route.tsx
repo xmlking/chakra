@@ -7,8 +7,8 @@ import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
 
-import { AppHeader } from "#components/navigation/app-header";
-import { AppSidebar } from "#components/navigation/app-sidebar";
+import { AppHeader } from "#components/layout/app-header";
+import { AppSidebar } from "#components/layout/app-sidebar";
 import { safeRedirect } from "#features/auth/safe-redirect";
 
 export const Route = createFileRoute("/(app)")({

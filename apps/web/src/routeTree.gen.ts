@@ -10,23 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
-import { Route as authRouteRouteImport } from './routes/(auth)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as authAuthPathRouteImport } from './routes/(auth)/auth/$path'
+import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
 import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
 import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/organization/$slug/$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const authRouteRoute = authRouteRouteImport.update({
-  id: '/(auth)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appRouteRoute = appRouteRouteImport.update({
@@ -36,6 +32,11 @@ const appRouteRoute = appRouteRouteImport.update({
 const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicThemeRoute = publicThemeRouteImport.update({
+  id: '/theme',
+  path: '/theme',
   getParentRoute: () => publicRouteRoute,
 } as any)
 const publicI18nRoute = publicI18nRouteImport.update({
@@ -58,10 +59,10 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authAuthPathRoute = authAuthPathRouteImport.update({
+const publicAuthPathRoute = publicAuthPathRouteImport.update({
   id: '/auth/$path',
   path: '/auth/$path',
-  getParentRoute: () => authRouteRoute,
+  getParentRoute: () => publicRouteRoute,
 } as any)
 const appSettingsPathRoute = appSettingsPathRouteImport.update({
   id: '/settings/$path',
@@ -78,9 +79,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof appDashboardRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
+  '/theme': typeof publicThemeRoute
   '/': typeof publicIndexRoute
   '/settings/$path': typeof appSettingsPathRoute
-  '/auth/$path': typeof authAuthPathRoute
+  '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
@@ -88,23 +90,24 @@ export interface FileRoutesByTo {
   '/dashboard': typeof appDashboardRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
+  '/theme': typeof publicThemeRoute
   '/': typeof publicIndexRoute
   '/settings/$path': typeof appSettingsPathRoute
-  '/auth/$path': typeof authAuthPathRoute
+  '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
-  '/(auth)': typeof authRouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
   '/(app)/dashboard': typeof appDashboardRoute
   '/(public)/about': typeof publicAboutRoute
   '/(public)/i18n': typeof publicI18nRoute
+  '/(public)/theme': typeof publicThemeRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/settings/$path': typeof appSettingsPathRoute
-  '/(auth)/auth/$path': typeof authAuthPathRoute
+  '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/(app)/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
@@ -114,6 +117,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/about'
     | '/i18n'
+    | '/theme'
     | '/'
     | '/settings/$path'
     | '/auth/$path'
@@ -124,6 +128,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/about'
     | '/i18n'
+    | '/theme'
     | '/'
     | '/settings/$path'
     | '/auth/$path'
@@ -132,21 +137,20 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/(app)'
-    | '/(auth)'
     | '/(public)'
     | '/(app)/dashboard'
     | '/(public)/about'
     | '/(public)/i18n'
+    | '/(public)/theme'
     | '/(public)/'
     | '/(app)/settings/$path'
-    | '/(auth)/auth/$path'
+    | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/(app)/organization/$slug/$path'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
-  authRouteRoute: typeof authRouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -158,13 +162,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(auth)': {
-      id: '/(auth)'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof authRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)': {
@@ -179,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/theme': {
+      id: '/(public)/theme'
+      path: '/theme'
+      fullPath: '/theme'
+      preLoaderRoute: typeof publicThemeRouteImport
       parentRoute: typeof publicRouteRoute
     }
     '/(public)/i18n': {
@@ -209,12 +213,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(auth)/auth/$path': {
-      id: '/(auth)/auth/$path'
+    '/(public)/auth/$path': {
+      id: '/(public)/auth/$path'
       path: '/auth/$path'
       fullPath: '/auth/$path'
-      preLoaderRoute: typeof authAuthPathRouteImport
-      parentRoute: typeof authRouteRoute
+      preLoaderRoute: typeof publicAuthPathRouteImport
+      parentRoute: typeof publicRouteRoute
     }
     '/(app)/settings/$path': {
       id: '/(app)/settings/$path'
@@ -249,28 +253,20 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
   appRouteRouteChildren,
 )
 
-interface authRouteRouteChildren {
-  authAuthPathRoute: typeof authAuthPathRoute
-}
-
-const authRouteRouteChildren: authRouteRouteChildren = {
-  authAuthPathRoute: authAuthPathRoute,
-}
-
-const authRouteRouteWithChildren = authRouteRoute._addFileChildren(
-  authRouteRouteChildren,
-)
-
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
   publicI18nRoute: typeof publicI18nRoute
+  publicThemeRoute: typeof publicThemeRoute
   publicIndexRoute: typeof publicIndexRoute
+  publicAuthPathRoute: typeof publicAuthPathRoute
 }
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
   publicI18nRoute: publicI18nRoute,
+  publicThemeRoute: publicThemeRoute,
   publicIndexRoute: publicIndexRoute,
+  publicAuthPathRoute: publicAuthPathRoute,
 }
 
 const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
@@ -279,7 +275,6 @@ const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
-  authRouteRoute: authRouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

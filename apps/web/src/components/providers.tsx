@@ -19,7 +19,6 @@ import env from "virtual:env/client";
 
 import { MetaTheme } from "#components/meta-theme";
 import { TurnstileWidget } from "#components/turnstile-widget";
-import { WelcomeToast } from "#components/welcome-toast";
 
 const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
 
@@ -116,7 +115,6 @@ export function Providers({ children }: { children: ReactNode }) {
             richColors
             toastOptions={{ style: { width: "fit-content" } }}
           />
-          <WelcomeToast />
         </Suspense>
       </TooltipProvider>
     </ThemeProvider>

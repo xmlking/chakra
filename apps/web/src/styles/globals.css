@@ -1,24 +1,12 @@
 @import "@repo/ui/styles/globals.css";
-@import "@repo/ui/styles/themes.css";
 
 @source "../**/*.{ts,tsx}";
 
+/* used for fixed width vs flex layout switch */
+@custom-variant fixed (&:is(.layout-fixed *));
 @theme inline {
   --breakpoint-3xl: 1600px;
   --breakpoint-4xl: 2000px;
-  /* --font-sans: var(--font-bricolage-grotesque); */
-  /* --font-sans: var(--font-montserrat); */
-  /* --font-mono: var(--font-geist-mono); */
-}
-
-@layer base {
-  body {
-    @apply bg-background font-sans text-foreground;
-  }
-}
-
-@utility theme-container {
-  @apply font-sans;
 }
 
 @utility container-wrapper {
@@ -29,6 +17,10 @@
   @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
 }
 
-html {
-  scroll-behavior: smooth;
+/* Grid pattern for themes hero sections */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
 }

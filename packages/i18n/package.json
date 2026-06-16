@@ -16,7 +16,7 @@
     "build": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --emit-ts-declarations",
     "clean": "git clean -xdf vite-env.d.ts dist out src/paraglide project.inlang/cache node_modules",
     "dev": "paraglide-js compile --watch --project ./project.inlang --outdir ./src/paraglide --emit-ts-declarations",
-    "postinstall": "paraglide-js compile && echo 'done'",
+    "postinstall": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide --emit-ts-declarations",
     "translate": "inlang machine translate --project ./project.inlang",
     "validate": "inlang validate --project ./project.inlang"
   },
