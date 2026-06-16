@@ -29,10 +29,13 @@ export function ThemeCard({ name, title, primaryLight, primaryDark, fontSans }: 
 
   return (
     <>
-      <button
-        type="button"
+      <div
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role react-doctor/prefer-tag-over-role
+        role="button"
+        tabIndex={0}
         suppressHydrationWarning
         onClick={handleApply}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleApply()}
         className={cn(
           "group relative flex cursor-pointer flex-col rounded-xl border bg-card p-4 transition-all duration-200",
           "hover:border-primary/50 hover:shadow-lg",
@@ -109,7 +112,7 @@ export function ThemeCard({ name, title, primaryLight, primaryDark, fontSans }: 
             </div>
           </div>
         </div>
-      </button>
+      </div>
     </>
   );
 }
