@@ -17,6 +17,7 @@ export function HomeHeader() {
           <Button
             variant="ghost"
             size="sm"
+            nativeButton={false}
             render={
               <a
                 href="https://xmlking.github.io/chakra/"
@@ -33,6 +34,7 @@ export function HomeHeader() {
           <Button
             variant="ghost"
             size="sm"
+            nativeButton={false}
             render={
               <a
                 href="https://github.com/xmlking/chakra"
