@@ -3,6 +3,7 @@ import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { Bell, Search } from "lucide-react";
 
 import { MobileNav } from "#components/layout/mobile-nav";
+import { ThemeSwitcher as ThemeSwitcherMini } from "#components/theme-switcher";
 
 export function AppHeader() {
   return (
@@ -26,6 +27,7 @@ export function AppHeader() {
       </Button>
 
       <div className="flex items-center gap-2">
+        <ThemeSwitcherMini />
         <ThemeSwitcher />
         {/* <UserMenu /> */}
       </div>

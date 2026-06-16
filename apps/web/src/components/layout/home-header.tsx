@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { Separator } from "@workspace/ui/components/shadcn/separator";
+// import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
+
+import { ThemeSwitcher as ThemeSwitcherMini } from "#components/theme-switcher";
 
 export function HomeHeader() {
   return (
@@ -47,8 +49,9 @@ export function HomeHeader() {
             <span className="hidden sm:inline">GitHub</span>
           </Button>
 
-          <Separator orientation="vertical" className="mx-1 h-6" />
+          {/* <Separator orientation="vertical" className="mx-1 h-6" /> */}
 
+          <ThemeSwitcherMini />
           <ThemeSwitcher />
         </nav>
       </div>
