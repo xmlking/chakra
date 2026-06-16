@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 export function HomeFooter() {
   return (
     <footer className="border-t bg-muted/30">
@@ -7,17 +9,19 @@ export function HomeFooter() {
             <span>
               Powered by{" "}
               <a
-                href="https://tweakcn.com"
+                href="https://tanstack.com/start/latest"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-medium text-foreground transition-colors hover:text-primary"
               >
-                tweakcn
+                TanStack Start
               </a>
             </span>
           </div>
 
           <div className="flex items-center gap-6 text-sm">
+            <Link to="/about">About</Link>
+            <Link to="/i18n">i18n</Link>
             <a
               href="https://github.com/xmlking/chakra"
               target="_blank"
@@ -34,15 +38,6 @@ export function HomeFooter() {
               className="text-muted-foreground transition-colors hover:text-foreground"
             >
               Docs
-            </a>
-
-            <a
-              href="https://ui.shadcn.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground transition-colors hover:text-foreground"
-            >
-              shadcn/ui
             </a>
           </div>
         </div>
