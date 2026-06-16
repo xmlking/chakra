@@ -4,6 +4,7 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { getLocale } from "@workspace/i18n/runtime";
+import { LazyMotion, domAnimation } from "motion/react";
 
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
 import { siteConfig } from "#config/site.config";
@@ -78,6 +79,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
         {/* Inline script to prevent FOUC - runs before CSS/React */}
         <script
+          // oxlint-disable-next-line react-doctor/no-danger
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -96,7 +98,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <RouterBreadcrumb />
 
-        {children}
+        <LazyMotion features={domAnimation}>{children}</LazyMotion>
         <TanStackDevtools
           config={{
             position: "bottom-right",

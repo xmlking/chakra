@@ -24,7 +24,7 @@ const authSearchSchema = z.object({
   redirectTo: z.string().optional(),
 });
 
-export const Route = createFileRoute("/(auth)/auth/$path")({
+export const Route = createFileRoute("/(public)/auth/$path")({
   validateSearch: (search: Record<string, unknown>) => authSearchSchema.parse(search),
   ssr: false,
   async beforeLoad({ params: { path }, search }) {

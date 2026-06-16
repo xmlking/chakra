@@ -9,6 +9,9 @@
 @source "../../../components/**/*.{ts,tsx}";
 @source "../**/*.{ts,tsx}";
 
+/* The tweakcn-theme-picker version extends Tailwind's dark: variant to support multiple theme systems, not just the standard .dark class.*/
+@custom-variant dark (&:is(.dark *), &:is([data-theme$="-dark"] *));
+
 /* ==========================================================================
    Flash Prevention - Fallback CSS Variables
 
@@ -107,8 +110,6 @@
 /* Theme imports AFTER fallbacks - themes override the fallbacks above */
 @import "./themes/index.css";
 
-@custom-variant dark (&:is(.dark *), &:is([data-theme$="-dark"] *));
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -172,11 +173,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
-    }
+  }
 }
 
 /* Smooth theme transitions */

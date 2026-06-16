@@ -21,5 +21,8 @@
     "lib": "#lib",
     "hooks": "#hooks"
   },
-  "registries": {}
+  "registries": {
+    "@better-upload": "https://better-upload.com/r/{name}.json",
+    "@better-auth-ui": "https://better-auth-ui.com/r/{name}.json"
+  }
 }

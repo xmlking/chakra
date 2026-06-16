@@ -113,6 +113,7 @@
     "drizzle-zod": "0.8.3",
     "envin": "1.2.0",
     "files-sdk": "1.8.0",
+    "motion": "12.40.0",
     "hucre": "0.6.1",
     "lucide-react": "1.18.0",
     "nitro": "3.0.260610-beta",
