@@ -16,9 +16,6 @@ interface MyRouterContext {
   // TODO https://github.com/masrurimz/shadcn-tanstack-start-landing-page/tree/main
   //  user: Awaited<ReturnType<typeof getUserFn>>;
 }
-
-// const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
-
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
     // Other redirect strategies are possible; see
@@ -61,6 +58,11 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico" },
     ],
+    scripts: [
+      {
+        children: `(function(){var s=localStorage.getItem('theme');if(s){document.documentElement.setAttribute('data-theme',s);}else{var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',d?'default-dark':'default-light');}})();`,
+      },
+    ],
   }),
   notFoundComponent: () => (
     <main className="container mx-auto p-4 pt-16">
@@ -77,23 +79,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang={getLocale()} suppressHydrationWarning>
       <head>
         <HeadContent />
-        {/* Inline script to prevent FOUC - runs before CSS/React */}
-        <script
-          // oxlint-disable-next-line react-doctor/no-danger
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                const stored = localStorage.getItem('theme');
-                if (stored) {
-                  document.documentElement.setAttribute('data-theme', stored);
-                } else {
-                  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  document.documentElement.setAttribute('data-theme', isDark ? 'default-dark' : 'default-light');
-                }
-              })();
-            `,
-          }}
-        />
       </head>
       <body>
         <RouterBreadcrumb />

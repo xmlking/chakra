@@ -30,8 +30,8 @@ export function ThemeSwitcher() {
     <button
       suppressHydrationWarning
       type="button"
-      aria-label={`Theme: ${currentTheme.name}. Click to switch theme`}
-      title={`Theme: ${currentTheme.name}`}
+      aria-label={`Theme: ${theme ?? currentTheme.name}. Click to switch theme`}
+      title={`Theme: ${theme ?? currentTheme.name}`}
       className="border-default-200 bg-default-50 text-default-500 hover:bg-default-100 inline-flex size-8 cursor-pointer items-center justify-center rounded-md border"
       onClick={toggleMode}
     >
