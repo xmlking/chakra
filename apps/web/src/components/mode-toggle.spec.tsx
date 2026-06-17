@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
 
-import { ThemeSwitcher } from "./theme-switcher.tsx";
+import { ModeToggle } from "./mode-toggle.tsx";
 
 const mockSetTheme = vi.fn<UseThemeProps["setTheme"]>();
 
@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-router", () => ({
   useHydrated: vi.fn<typeof useHydrated>(),
 }));
 
-describe("ThemeSwitcher", () => {
+describe("ModeToggle", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
@@ -34,7 +34,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await expect
       .element(screen.getByRole("button", { name: /theme: default-light/i }))
@@ -48,7 +48,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await expect
       .element(screen.getByRole("button", { name: /theme: default-dark/i }))
@@ -62,7 +62,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await userEvent.click(screen.getByRole("button"));
 
@@ -76,7 +76,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await userEvent.click(screen.getByRole("button"));
 
@@ -90,7 +90,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark", "ocean-dark", "ocean-light"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await userEvent.click(screen.getByRole("button"));
 
@@ -104,7 +104,7 @@ describe("ThemeSwitcher", () => {
       themes: ["default-light", "default-dark", "ocean-dark", "ocean-light"],
     });
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await userEvent.click(screen.getByRole("button"));
 
@@ -120,7 +120,7 @@ describe("ThemeSwitcher", () => {
 
     vi.mocked(useHydrated).mockReturnValue(false);
 
-    const screen = await render(<ThemeSwitcher />);
+    const screen = await render(<ModeToggle />);
 
     await expect.element(screen.getByRole("button")).toBeInTheDocument();
 

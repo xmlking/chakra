@@ -3,7 +3,7 @@ import { Button } from "@workspace/ui/components/shadcn/button";
 // import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 
-import { ThemeSwitcher as ThemeSwitcherMini } from "#components/theme-switcher";
+import { ModeToggle } from "#components/mode-toggle";
 
 export function HomeHeader() {
   return (
@@ -51,7 +51,7 @@ export function HomeHeader() {
 
           {/* <Separator orientation="vertical" className="mx-1 h-6" /> */}
 
-          <ThemeSwitcherMini />
+          <ModeToggle />
           <ThemeSwitcher />
         </nav>
       </div>

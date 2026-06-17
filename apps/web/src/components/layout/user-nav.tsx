@@ -21,7 +21,7 @@ import {
   UserIcon,
 } from "lucide-react";
 
-import { ThemeSwitcher } from "#components/theme-switcher";
+import { ModeToggle } from "#components/mode-toggle";
 
 export function UserNav() {
   const { authClient } = useAuth();
@@ -136,7 +136,7 @@ export function UserNav() {
             <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
               Theme
             </span>
-            <ThemeSwitcher />
+            <ModeToggle />
           </div>
 
           <DropdownMenuSeparator />
