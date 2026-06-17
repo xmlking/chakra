@@ -1,52 +1,60 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@workspace/ui/components/shadcn/button";
+import { ScrollArea } from "@workspace/ui/components/shadcn/scroll-area";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/shadcn/dialog";
-import { Menu } from "lucide-react";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@workspace/ui/components/shadcn/sheet";
+import { MenuIcon } from "lucide-react";
 import { useState } from "react";
 
-import { navigation } from "./nav-config";
+import { navGroups } from "#config/sidebar.config";
+
+import { CommandSearch } from "./command-search";
+import { NavGroupSection } from "./nav-group";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
 
+  function handleClose() {
+    setOpen(false);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger
         render={
-          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation" />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            aria-label="Open navigation menu"
+          />
         }
       >
-        <Menu className="size-5" />
-      </DialogTrigger>
+        <MenuIcon className="size-5" />
+      </SheetTrigger>
 
-      <DialogContent className="fixed inset-y-0 left-0 h-screen w-72 max-w-[85vw] rounded-none border-r p-0">
-        <DialogHeader className="border-b px-6 py-4">
-          <DialogTitle>Astra</DialogTitle>
-        </DialogHeader>
+      <SheetContent side="left" className="w-72 p-0" showCloseButton={false}>
+        <SheetHeader className="h-16 flex-row items-center justify-between border-b px-4 py-0">
+          <SheetTitle render={<Link to="/" onClick={handleClose} />}>Chakra</SheetTitle>
+        </SheetHeader>
 
-        <nav className="flex flex-col gap-1 p-3">
-          {navigation.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={() => setOpen(false)}
-              activeProps={{
-                className: "bg-accent text-accent-foreground",
-              }}
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent"
-            >
-              <item.icon className="size-4 shrink-0" />
-              <span>{item.title}</span>
-            </Link>
-          ))}
-        </nav>
-      </DialogContent>
-    </Dialog>
+        <div className="px-3 py-2">
+          <CommandSearch />
+        </div>
+
+        <ScrollArea className="flex-1 px-3 py-2">
+          <nav aria-label="Mobile navigation" className="flex flex-col gap-4">
+            {navGroups.map((group) => (
+              <NavGroupSection key={group.label} group={group} onItemClick={handleClose} />
+            ))}
+          </nav>
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 }

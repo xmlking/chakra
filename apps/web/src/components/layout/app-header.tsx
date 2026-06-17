@@ -1,32 +1,32 @@
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
-import { Bell, Search } from "lucide-react";
+import { BellIcon } from "lucide-react";
 
-import { MobileNav } from "#components/layout/mobile-nav";
+import { RouterBreadcrumb } from "#components/router-breadcrumb";
 import { ThemeSwitcher as ThemeSwitcherMini } from "#components/theme-switcher";
+
+import { MobileNav } from "./mobile-nav";
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center border-b bg-background px-4">
-      <MobileNav />
+    <header
+      className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur-sm"
+      aria-label="Application header"
+    >
+      {/* Left: mobile sidebar trigger + breadcrumbs */}
+      <div className="flex flex-1 items-center gap-2 overflow-hidden">
+        <MobileNav />
 
-      <div className="flex-1">
-        <div className="relative max-w-md">
-          <Search className="absolute top-3 left-3 size-4 text-muted-foreground" />
-
-          <input
-            aria-label="Search"
-            placeholder="Search..."
-            className="h-10 w-full rounded-md border bg-background pr-4 pl-10 text-sm"
-          />
-        </div>
+        <nav aria-label="Breadcrumb" className="hidden min-w-0 sm:block">
+          <RouterBreadcrumb />
+        </nav>
       </div>
 
-      <Button size="icon" variant="ghost">
-        <Bell />
-      </Button>
-
-      <div className="flex items-center gap-2">
+      {/* Right: notifications, theme switcher */}
+      <div className="flex shrink-0 items-center gap-1">
+        <Button size="icon" variant="ghost" aria-label="Notifications">
+          <BellIcon className="size-4" />
+        </Button>
         <ThemeSwitcherMini />
         <ThemeSwitcher />
         {/* <UserMenu /> */}
