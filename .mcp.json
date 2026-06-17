@@ -1,5 +1,5 @@
 {
-  "servers": {
+  "mcpServers": {
     "better-auth": {
       "type": "http",
       "url": "https://mcp.better-auth.com/mcp"
