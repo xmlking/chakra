@@ -2,8 +2,8 @@ import { Button } from "@workspace/ui/components/shadcn/button";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { BellIcon } from "lucide-react";
 
+import { ModeToggle } from "#components/mode-toggle";
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
-import { ThemeSwitcher as ThemeSwitcherMini } from "#components/theme-switcher";
 
 import { MobileNav } from "./mobile-nav";
 
@@ -27,7 +27,7 @@ export function AppHeader() {
         <Button size="icon" variant="ghost" aria-label="Notifications">
           <BellIcon className="size-4" />
         </Button>
-        <ThemeSwitcherMini />
+        <ModeToggle />
         <ThemeSwitcher />
         {/* <UserMenu /> */}
       </div>
