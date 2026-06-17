@@ -57,11 +57,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico" },
     ],
-    scripts: [
-      {
-        children: `(function(){var s=localStorage.getItem('theme');if(s){document.documentElement.setAttribute('data-theme',s);}else{var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',d?'default-dark':'default-light');}})();`,
-      },
-    ],
   }),
   notFoundComponent: () => (
     <main className="container mx-auto p-4 pt-16">

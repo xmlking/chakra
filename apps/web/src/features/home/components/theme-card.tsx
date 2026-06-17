@@ -1,9 +1,9 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/shadcn/button";
+import { useTheme } from "@workspace/ui/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
 import { Check, Code2 } from "lucide-react";
-import { useTheme } from "next-themes";
 
 interface ThemeCardProps {
   name: string;

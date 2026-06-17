@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { Button } from "#components/shadcn/button";
 import { ScrollArea } from "#components/shadcn/scroll-area";
 import { cn } from "#lib/utils";
-import { useTheme } from "next-themes";
+import { useTheme } from "#components/theme-provider";
 
 // Helper to get current color theme and mode from theme string like "catppuccin-dark"
 function parseTheme(theme: string | undefined): {

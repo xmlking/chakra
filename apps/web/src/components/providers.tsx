@@ -5,6 +5,7 @@ import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster } from "@workspace/ui/components/shadcn/sonner";
 import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
+import { useTheme } from "@workspace/ui/components/theme-provider";
 import { apiKeyPlugin } from "@workspace/ui/lib/auth/api-key-plugin";
 import { deleteUserPlugin } from "@workspace/ui/lib/auth/delete-user-plugin";
 import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
@@ -13,7 +14,6 @@ import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
 import { themePlugin } from "@workspace/ui/lib/auth/theme-plugin";
 import { usernamePlugin } from "@workspace/ui/lib/auth/username-plugin";
-import { useTheme } from "next-themes";
 import { Suspense, type ReactNode } from "react";
 import env from "virtual:env/client";
 
@@ -29,7 +29,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const slug = params?.slug;
 
   return (
-    <ThemeProvider>
+    <ThemeProvider storageKey="theme" defaultTheme="default-light">
       <TooltipProvider>
         <AuthProvider
           // @ts-ignore : FIXME

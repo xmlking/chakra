@@ -1,9 +1,9 @@
 import { useHydrated } from "@tanstack/react-router";
+import { useTheme } from "@workspace/ui/components/theme-provider";
 import { themes } from "@workspace/ui/lib/themes-config";
 import { MoonIcon, SunIcon } from "lucide-react";
-import { useTheme } from "next-themes";
 
-export function ThemeSwitcher() {
+export function ModeToggle() {
   const { theme, setTheme } = useTheme();
 
   const isDark = theme?.endsWith("-dark");
