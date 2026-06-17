@@ -1,121 +1,103 @@
+import {
+  BarChart3Icon,
+  BotIcon,
+  Building2Icon,
+  ClipboardListIcon,
+  CpuIcon,
+  LayoutDashboardIcon,
+  Link2Icon,
+  ShieldCheckIcon,
+  SettingsIcon,
+  UsersIcon,
+} from "lucide-react";
+
 import type { NavGroup } from "#types/index";
 
-/**
- * Navigation configuration
- *
- * This configuration is used for both the sidebar navigation and Cmd+K bar.
- * Items are organized into groups, each rendered with a SidebarGroupLabel.
- */
 export const navGroups: NavGroup[] = [
   {
-    label: "Overview",
+    label: "Platform",
     items: [
       {
         title: "Dashboard",
-        url: "/dashboard/overview",
-        // icon: "dashboard",
-        isActive: false,
+        url: "/dashboard",
+        icon: LayoutDashboardIcon,
         shortcut: ["d", "d"],
+        isActive: false,
         items: [],
       },
       {
-        title: "Product",
-        url: "/dashboard/product",
-        // icon: "product",
-        shortcut: ["p", "p"],
+        title: "Analytics",
+        url: "#",
+        icon: BarChart3Icon,
         isActive: false,
         items: [],
       },
+      {
+        title: "Agents",
+        url: "#",
+        icon: BotIcon,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Devices",
+        url: "#",
+        icon: CpuIcon,
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Policies",
+        url: "#",
+        icon: ShieldCheckIcon,
+        isActive: false,
+        items: [],
+      },
+    ],
+  },
+  {
+    label: "Management",
+    items: [
       {
         title: "Users",
-        url: "/dashboard/users",
-        // icon: "teams",
-        shortcut: ["u", "u"],
+        url: "#",
+        icon: UsersIcon,
         isActive: false,
         items: [],
       },
       {
-        title: "Kanban",
-        url: "/dashboard/kanban",
-        // icon: "kanban",
-        shortcut: ["k", "k"],
-        isActive: false,
-        items: [],
-      },
-      {
-        title: "Chat",
-        url: "/dashboard/chat",
-        // icon: "chat",
-        shortcut: ["c", "c"],
+        title: "Organizations",
+        url: "/organization/chakra-inc/settings",
+        icon: Building2Icon,
         isActive: false,
         items: [],
       },
     ],
   },
   {
-    label: "Elements",
+    label: "Configuration",
     items: [
       {
-        title: "Forms",
-        url: "#",
-        // icon: "forms",
-        isActive: true,
-        items: [
-          {
-            title: "Basic Form",
-            url: "/dashboard/forms/basic",
-            // icon: "forms",
-            shortcut: ["f", "f"],
-          },
-          {
-            title: "Multi-Step Form",
-            url: "/dashboard/forms/multi-step",
-            // icon: "forms",
-          },
-          {
-            title: "Sheet & Dialog",
-            url: "/dashboard/forms/sheet-form",
-            // icon: "forms",
-          },
-          {
-            title: "Advanced Patterns",
-            url: "/dashboard/forms/advanced",
-            // icon: "forms",
-          },
-        ],
-      },
-      {
-        title: "React Query",
-        url: "/dashboard/react-query",
-        // icon: "code",
+        title: "Settings",
+        url: "/settings/account",
+        icon: SettingsIcon,
+        shortcut: ["s", "s"],
         isActive: false,
         items: [],
       },
       {
-        title: "Icons",
-        url: "/dashboard/elements/icons",
-        // icon: "palette",
+        title: "Integrations",
+        url: "#",
+        icon: Link2Icon,
         isActive: false,
         items: [],
       },
-    ],
-  },
-  {
-    label: "",
-    items: [
       {
-        title: "Account",
+        title: "Audit Logs",
         url: "#",
-        // icon: "account",
-        isActive: true,
-        items: [
-          {
-            title: "Notifications",
-            url: "/dashboard/notifications",
-            // icon: "notification",
-            shortcut: ["n", "n"],
-          },
-        ],
+        icon: ClipboardListIcon,
+        isActive: false,
+        items: [],
       },
     ],
   },

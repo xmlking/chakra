@@ -1,33 +1,39 @@
-import { Link } from "@tanstack/react-router";
+import { OrganizationSwitcher } from "@workspace/ui/components/auth/organization/organization-switcher";
+import { ScrollArea } from "@workspace/ui/components/shadcn/scroll-area";
 
-import { navigation } from "./nav-config";
+import { navGroups } from "#config/sidebar.config";
+
+import { CommandSearch } from "./command-search";
+import { NavGroupSection } from "./nav-group";
+import { UserNav } from "./user-nav";
 
 export function AppSidebar() {
   return (
-    <aside className="hidden border-r lg:flex lg:w-64 lg:flex-col">
-      <div className="flex h-16 items-center border-b px-6">
-        <h1 className="font-semibold">
-          <Link to="/" className="flex items-center">
-            <span className="text-lg font-bold tracking-tight">Chakra</span>
-          </Link>
-        </h1>
+    <aside
+      aria-label="Application sidebar"
+      className="hidden w-64 shrink-0 flex-col border-r bg-background lg:flex"
+    >
+      {/* Top: org switcher */}
+      <div className="flex h-16 shrink-0 items-center border-b px-3">
+        <OrganizationSwitcher className="w-full" align="start" />
       </div>
 
-      <nav className="flex-1 p-3">
-        {navigation.map((item) => (
-          <Link
-            key={item.to}
-            to={item.to}
-            activeProps={{
-              className: "bg-accent text-accent-foreground",
-            }}
-            className="flex items-center gap-3 rounded-md px-3 py-2"
-          >
-            <item.icon className="size-4" />
-            {item.title}
-          </Link>
-        ))}
-      </nav>
+      {/* Search */}
+      <div className="shrink-0 px-3 py-2">
+        <CommandSearch />
+      </div>
+
+      {/* Navigation */}
+      <ScrollArea className="flex-1 px-3 py-2">
+        <nav aria-label="Main navigation" className="flex flex-col gap-4">
+          {navGroups.map((group) => (
+            <NavGroupSection key={group.label} group={group} />
+          ))}
+        </nav>
+      </ScrollArea>
+
+      {/* Bottom: user menu */}
+      <UserNav />
     </aside>
   );
 }
