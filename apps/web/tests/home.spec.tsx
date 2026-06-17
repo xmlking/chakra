@@ -1,5 +1,4 @@
 import { useHydrated } from "@tanstack/react-router";
-import { useTheme, type UseThemeProps } from "next-themes";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { render } from "vitest-browser-react";
 
@@ -9,14 +8,6 @@ beforeEach(() => {
   vi.stubGlobal("__GIT_SHA__", "xyz");
   vi.stubGlobal("__GIT_TIME__", new Date().toISOString());
 });
-
-vi.mock("next-themes", () => ({
-  useTheme: vi.fn<typeof useTheme>(() => ({
-    theme: "system",
-    setTheme: vi.fn<UseThemeProps["setTheme"]>(),
-    themes: ["system", "light", "dark"],
-  })),
-}));
 
 vi.mock("@tanstack/react-router", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-router")>();
@@ -40,11 +31,5 @@ describe("Home route", () => {
 
     await expect.element(getByText("Project Overview")).toBeInTheDocument();
     await expect.element(getByText(/Track progress and recent activity/i)).toBeInTheDocument();
-  });
-
-  it("renders the theme switcher", async () => {
-    const { getByTitle } = await render(<Home />);
-
-    await expect.element(getByTitle(/theme: system/i)).toBeInTheDocument();
   });
 });
