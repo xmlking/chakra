@@ -13,10 +13,8 @@ import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { multiSessionPlugin } from "@workspace/ui/lib/auth/multi-session-plugin";
 import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
-import { themePlugin } from "@workspace/ui/lib/auth/theme-plugin";
 import { usernamePlugin } from "@workspace/ui/lib/auth/username-plugin";
 import { domAnimation, LazyMotion, MotionConfig } from "motion/react";
-import { useTheme } from "next-themes";
 import { Suspense, type ReactNode } from "react";
 import env from "virtual:env/client";
 
@@ -98,7 +96,7 @@ export function Providers({ children }: { children: ReactNode }) {
                 magicLinkPlugin(),
                 passkeyPlugin(),
                 apiKeyPlugin({ organization: true }),
-                themePlugin({ useTheme }),
+                // themePlugin({ useTheme }), // NOTE: we use tweakcn switcher
                 multiSessionPlugin(),
                 deleteUserPlugin(),
                 organizationPlugin({
