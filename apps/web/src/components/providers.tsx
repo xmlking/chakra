@@ -106,7 +106,7 @@ export function Providers({ children }: { children: ReactNode }) {
                 }),
                 captchaPlugin({ render: TurnstileWidget }),
               ]}
-              Link={Link}
+              Link={({ href, ...props }) => <Link to={href} {...props} />}
             >
               {children}
             </AuthProvider>
