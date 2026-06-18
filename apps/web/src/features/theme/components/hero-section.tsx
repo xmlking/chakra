@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";
 
-import { ThemeSwitcherPreview } from "#features/home/components/theme-switcher-preview";
+import { ThemeSwitcherPreview } from "#features/theme/components/theme-switcher-preview";
 
 const REGISTRY_URL = "https://tweakcn-picker.vercel.app/r/nextjs/theme-system.json";
 
@@ -80,7 +80,7 @@ export function HeroSection() {
   return (
     <section className="relative overflow-hidden border-b bg-gradient-to-b from-muted/50 to-background">
       <div className="bg-grid-pattern pointer-events-none absolute inset-0 opacity-[0.02]" />
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="mb-12 flex flex-col items-center text-center">
           <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             43+ themes

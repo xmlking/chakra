@@ -12,13 +12,15 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
-import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
+import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
 import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
+import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
 import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/organization/$slug/$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
@@ -32,6 +34,11 @@ const appRouteRoute = appRouteRouteImport.update({
 const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicVersionRoute = publicVersionRouteImport.update({
+  id: '/version',
+  path: '/version',
   getParentRoute: () => publicRouteRoute,
 } as any)
 const publicThemeRoute = publicThemeRouteImport.update({
@@ -49,9 +56,9 @@ const publicAboutRoute = publicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const appDashboardRoute = appDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => appRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -69,6 +76,11 @@ const appSettingsPathRoute = appSettingsPathRouteImport.update({
   path: '/settings/$path',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appDashboardPageRoute = appDashboardPageRouteImport.update({
+  id: '/dashboard/$page',
+  path: '/dashboard/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
   id: '/organization/$slug/$path',
   path: '/organization/$slug/$path',
@@ -76,76 +88,88 @@ const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof appDashboardRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
+  '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
+  '/dashboard/$page': typeof appDashboardPageRoute
   '/settings/$path': typeof appSettingsPathRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/dashboard/': typeof appDashboardIndexRoute
   '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof appDashboardRoute
   '/about': typeof publicAboutRoute
   '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
+  '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
+  '/dashboard/$page': typeof appDashboardPageRoute
   '/settings/$path': typeof appSettingsPathRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/dashboard': typeof appDashboardIndexRoute
   '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
-  '/(app)/dashboard': typeof appDashboardRoute
   '/(public)/about': typeof publicAboutRoute
   '/(public)/i18n': typeof publicI18nRoute
   '/(public)/theme': typeof publicThemeRoute
+  '/(public)/version': typeof publicVersionRoute
   '/(public)/': typeof publicIndexRoute
+  '/(app)/dashboard/$page': typeof appDashboardPageRoute
   '/(app)/settings/$path': typeof appSettingsPathRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/dashboard'
     | '/about'
     | '/i18n'
     | '/theme'
+    | '/version'
     | '/'
+    | '/dashboard/$page'
     | '/settings/$path'
     | '/auth/$path'
     | '/api/auth/$'
+    | '/dashboard/'
     | '/organization/$slug/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/dashboard'
     | '/about'
     | '/i18n'
     | '/theme'
+    | '/version'
     | '/'
+    | '/dashboard/$page'
     | '/settings/$path'
     | '/auth/$path'
     | '/api/auth/$'
+    | '/dashboard'
     | '/organization/$slug/$path'
   id:
     | '__root__'
     | '/(app)'
     | '/(public)'
-    | '/(app)/dashboard'
     | '/(public)/about'
     | '/(public)/i18n'
     | '/(public)/theme'
+    | '/(public)/version'
     | '/(public)/'
+    | '/(app)/dashboard/$page'
     | '/(app)/settings/$path'
     | '/(public)/auth/$path'
     | '/api/auth/$'
+    | '/(app)/dashboard/'
     | '/(app)/organization/$slug/$path'
   fileRoutesById: FileRoutesById
 }
@@ -178,6 +202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }
+    '/(public)/version': {
+      id: '/(public)/version'
+      path: '/version'
+      fullPath: '/version'
+      preLoaderRoute: typeof publicVersionRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
     '/(public)/theme': {
       id: '/(public)/theme'
       path: '/theme'
@@ -199,11 +230,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAboutRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
+    '/(app)/dashboard/': {
+      id: '/(app)/dashboard/'
       path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardRouteImport
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/api/auth/$': {
@@ -227,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appSettingsPathRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/dashboard/$page': {
+      id: '/(app)/dashboard/$page'
+      path: '/dashboard/$page'
+      fullPath: '/dashboard/$page'
+      preLoaderRoute: typeof appDashboardPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/organization/$slug/$path': {
       id: '/(app)/organization/$slug/$path'
       path: '/organization/$slug/$path'
@@ -238,14 +276,16 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
-  appDashboardRoute: typeof appDashboardRoute
+  appDashboardPageRoute: typeof appDashboardPageRoute
   appSettingsPathRoute: typeof appSettingsPathRoute
+  appDashboardIndexRoute: typeof appDashboardIndexRoute
   appOrganizationSlugPathRoute: typeof appOrganizationSlugPathRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appDashboardRoute: appDashboardRoute,
+  appDashboardPageRoute: appDashboardPageRoute,
   appSettingsPathRoute: appSettingsPathRoute,
+  appDashboardIndexRoute: appDashboardIndexRoute,
   appOrganizationSlugPathRoute: appOrganizationSlugPathRoute,
 }
 
@@ -257,6 +297,7 @@ interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
   publicI18nRoute: typeof publicI18nRoute
   publicThemeRoute: typeof publicThemeRoute
+  publicVersionRoute: typeof publicVersionRoute
   publicIndexRoute: typeof publicIndexRoute
   publicAuthPathRoute: typeof publicAuthPathRoute
 }
@@ -265,6 +306,7 @@ const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
   publicI18nRoute: publicI18nRoute,
   publicThemeRoute: publicThemeRoute,
+  publicVersionRoute: publicVersionRoute,
   publicIndexRoute: publicIndexRoute,
   publicAuthPathRoute: publicAuthPathRoute,
 }
