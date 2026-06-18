@@ -15,7 +15,7 @@ const config = defineConfig({
     zodCompiler(),
     ViteEnv(),
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
+    nitro({ rollupConfig: { external: [/^@sentry\//, "motion"] } }),
     tailwindcss(),
     tanstackStart(),
     viteReact(),
