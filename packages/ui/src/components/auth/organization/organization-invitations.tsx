@@ -10,7 +10,7 @@ import { ChevronUp, Filter, Search, X } from "lucide-react"
 import { type ComponentProps, type ReactNode, useMemo, useState } from "react"
 
 import { Badge } from "#components/shadcn/badge"
-import { Button } from "#components/shadcn/button"
+import { buttonVariants } from "#components/shadcn/button"
 import { Card } from "#components/shadcn/card"
 import {
   DropdownMenu,
@@ -148,7 +148,14 @@ export function OrganizationInvitations({
           </InputGroup>
 
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={isPending} />}><Filter />{organizationLocalization.role}</DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+              disabled={isPending}
+            >
+              <Filter />
+
+              {organizationLocalization.role}
+            </DropdownMenuTrigger>
 
             <DropdownMenuContent align="start">
               <DropdownMenuRadioGroup
@@ -169,7 +176,14 @@ export function OrganizationInvitations({
           </DropdownMenu>
 
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={isPending} />}><Filter />{organizationLocalization.status}</DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+              disabled={isPending}
+            >
+              <Filter />
+
+              {organizationLocalization.status}
+            </DropdownMenuTrigger>
 
             <DropdownMenuContent align="start">
               <DropdownMenuRadioGroup

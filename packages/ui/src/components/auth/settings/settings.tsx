@@ -28,7 +28,7 @@ export type SettingsProps = {
  * @returns A JSX element rendering the settings layout and the selected settings panel
  */
 export function Settings({ className, view, path, hideNav }: SettingsProps) {
-  const { authClient, basePaths, localization, viewPaths, plugins, Link } =
+  const { authClient, basePaths, localization, viewPaths, plugins, navigate } =
     useAuth()
   useAuthenticate(authClient)
 
@@ -69,14 +69,49 @@ export function Settings({ className, view, path, hideNav }: SettingsProps) {
     >
       <div className={cn(hideNav && "hidden")}>
         <TabsList aria-label={localization.settings.settings}>
-          <TabsTrigger value="account" nativeButton={false} render={<Link href={`${basePaths.settings}/${viewPaths.settings.account}`} className="gap-1" />}><User2 className="text-muted-foreground" />{localization.settings.account}</TabsTrigger>
+          <TabsTrigger
+            value="account"
+            className="gap-1"
+            onClick={() =>
+              navigate({
+                to: `${basePaths.settings}/${viewPaths.settings.account}`
+              })
+            }
+          >
+            <User2 className="text-muted-foreground" />
 
-          <TabsTrigger value="security" nativeButton={false} render={<Link href={`${basePaths.settings}/${viewPaths.settings.security}`} className="gap-1" />}><Shield className="text-muted-foreground" />{localization.settings.security}</TabsTrigger>
+            {localization.settings.account}
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="security"
+            className="gap-1"
+            onClick={() =>
+              navigate({
+                to: `${basePaths.settings}/${viewPaths.settings.security}`
+              })
+            }
+          >
+            <Shield className="text-muted-foreground" />
+
+            {localization.settings.security}
+          </TabsTrigger>
 
           {plugins.flatMap(
             (plugin) =>
               plugin.settingsTabs?.map((settingsTab, index) => (
-                <TabsTrigger key={`${plugin.id}-${index.toString()}`} value={settingsTab.view} nativeButton={false} render={<Link href={`${basePaths.settings}/${plugin.viewPaths?.settings?.[settingsTab.view]}`} className="gap-1" />}>{settingsTab.label}</TabsTrigger>
+                <TabsTrigger
+                  key={`${plugin.id}-${index.toString()}`}
+                  value={settingsTab.view}
+                  className="gap-1"
+                  onClick={() =>
+                    navigate({
+                      to: `${basePaths.settings}/${plugin.viewPaths?.settings?.[settingsTab.view]}`
+                    })
+                  }
+                >
+                  {settingsTab.label}
+                </TabsTrigger>
               )) ?? []
           )}
         </TabsList>

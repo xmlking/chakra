@@ -32,7 +32,7 @@ export function SwitchAccountSubmenuItem({
   return (
     <DropdownMenuItem
       disabled={isPending}
-      onSelect={() =>
+      onClick={() =>
         setActiveSession({ sessionToken: deviceSession.session.token })
       }
     >

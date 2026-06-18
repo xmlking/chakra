@@ -148,7 +148,7 @@ export function InviteMemberDialog({
 
               <Select
                 value={role}
-                onValueChange={setRole}
+                onValueChange={(value) => setRole(value ?? "")}
                 disabled={isInviting}
               >
                 <SelectTrigger id="invite-member-role" className="w-full">
