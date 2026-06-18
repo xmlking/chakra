@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "imports": {
-    "#features/*": "./src/features/*",
     "#components/*": "./src/components/*.tsx",
     "#config/*": "./src/config/*",
+    "#features/*": "./src/features/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
     "#types/*": "./src/types/*.ts"
@@ -52,6 +52,7 @@
     "date-fns": "catalog:",
     "files-sdk": "catalog:",
     "hucre": "catalog:",
+    "kbar": "catalog:",
     "lucide-react": "catalog:",
     "motion": "catalog:",
     "next-themes": "catalog:",

@@ -6,7 +6,9 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
+import { SidebarInset, SidebarProvider } from "@workspace/ui/components/shadcn/sidebar";
 
+import { KBar } from "#components/kbar/index";
 import { AppHeader } from "#components/layout/app-header";
 import { AppSidebar } from "#components/layout/app-sidebar";
 import { safeRedirect } from "#features/auth/safe-redirect";
@@ -37,14 +39,14 @@ export const Route = createFileRoute("/(app)")({
 
 function AppLayout() {
   return (
-    <div className="flex min-h-screen">
-      <AppSidebar />
-      <div className="flex flex-1 flex-col">
-        <AppHeader />
-        <main>
+    <KBar>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <AppHeader />
           <Outlet />
-        </main>
-      </div>
-    </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </KBar>
   );
 }
