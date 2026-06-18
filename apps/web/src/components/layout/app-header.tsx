@@ -1,3 +1,4 @@
+import { UserButton } from "@workspace/ui/components/auth/user/user-button";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
@@ -31,6 +32,7 @@ export function AppHeader() {
         </Button>
         {/* <ModeToggle /> */}
         <ThemeSwitcher />
+        <UserButton size="icon" align="end" />
         {/* <UserMenu /> */}
       </div>
     </header>
