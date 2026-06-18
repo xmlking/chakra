@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from "#components/shadcn/alert-dialog"
-import { Button } from "#components/shadcn/button"
+import { Button, buttonVariants } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { Field, FieldError } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
@@ -103,7 +103,14 @@ export function DeleteAccount({ className }: DeleteAccountProps) {
         </div>
 
         <AlertDialog open={confirmOpen} onOpenChange={handleDialogOpenChange}>
-          <AlertDialogTrigger render={<Button variant="destructive" size="sm" disabled={!accounts} />}>{deleteUserLocalization.deleteAccount}</AlertDialogTrigger>
+          <AlertDialogTrigger
+            className={cn(
+              buttonVariants({ variant: "destructive", size: "sm" })
+            )}
+            disabled={!accounts}
+          >
+            {deleteUserLocalization.deleteAccount}
+          </AlertDialogTrigger>
 
           <AlertDialogContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">

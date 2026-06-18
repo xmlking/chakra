@@ -14,7 +14,7 @@ import { ChevronUp, Filter, Search, X } from "lucide-react"
 import { type ComponentProps, type ReactNode, useMemo, useState } from "react"
 
 import { Badge } from "#components/shadcn/badge"
-import { Button } from "#components/shadcn/button"
+import { Button, buttonVariants } from "#components/shadcn/button"
 import { Card } from "#components/shadcn/card"
 import {
   DropdownMenu,
@@ -175,7 +175,14 @@ export function OrganizationMembers({
           </InputGroup>
 
           <DropdownMenu>
-            <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={isPending} />}><Filter />{organizationLocalization.role}</DropdownMenuTrigger>
+            <DropdownMenuTrigger
+              className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+              disabled={isPending}
+            >
+              <Filter />
+
+              {organizationLocalization.role}
+            </DropdownMenuTrigger>
 
             <DropdownMenuContent align="start">
               <DropdownMenuRadioGroup

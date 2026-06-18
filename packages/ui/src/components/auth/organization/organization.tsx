@@ -40,7 +40,7 @@ export function Organization({
     throw new Error("[Better Auth UI] Either `view` or `path` must be provided")
   }
 
-  const { authClient, basePaths, localization, navigate, Link } = useAuth()
+  const { authClient, basePaths, localization, navigate } = useAuth()
   useAuthenticate(authClient)
 
   const {
@@ -98,17 +98,37 @@ export function Organization({
     >
       <div className={cn(hideNav && "hidden")}>
         <TabsList aria-label={localization.settings.settings}>
-          <TabsTrigger value="settings" render={<Link href={
-                                  slug
-                                    ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.settings}`
-                                    : `${basePaths.organization}/${organizationViewPaths.organization.settings}`
-                                } className="gap-1" />}><SettingsIcon className="text-muted-foreground" />{localization.settings.settings}</TabsTrigger>
+          <TabsTrigger
+            value="settings"
+            className="gap-1"
+            onClick={() =>
+              navigate({
+                to: slug
+                  ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.settings}`
+                  : `${basePaths.organization}/${organizationViewPaths.organization.settings}`
+              })
+            }
+          >
+            <SettingsIcon className="text-muted-foreground" />
 
-          <TabsTrigger value="people" render={<Link href={
-                                  slug
-                                    ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.people}`
-                                    : `${basePaths.organization}/${organizationViewPaths.organization.people}`
-                                } className="gap-1" />}><UserIcon className="text-muted-foreground" />{organizationLocalization.people}</TabsTrigger>
+            {localization.settings.settings}
+          </TabsTrigger>
+
+          <TabsTrigger
+            value="people"
+            className="gap-1"
+            onClick={() =>
+              navigate({
+                to: slug
+                  ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.people}`
+                  : `${basePaths.organization}/${organizationViewPaths.organization.people}`
+              })
+            }
+          >
+            <UserIcon className="text-muted-foreground" />
+
+            {organizationLocalization.people}
+          </TabsTrigger>
         </TabsList>
       </div>
 

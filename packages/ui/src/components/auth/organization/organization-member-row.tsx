@@ -11,7 +11,7 @@ import { LogOut, Pencil, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
 
-import { Button } from "#components/shadcn/button"
+import { Button, buttonVariants } from "#components/shadcn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ import {
 import { Spinner } from "#components/shadcn/spinner"
 import { TableCell, TableRow } from "#components/shadcn/table"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { cn } from "#lib/utils"
 import { UserView } from "../user/user-view"
 import { LeaveOrganizationDialog } from "./leave-organization-dialog"
 import { OrganizationMemberRowSkeleton } from "./organization-member-row-skeleton"
@@ -87,14 +88,23 @@ export function OrganizationMemberRow({
         <div className="flex items-center justify-end gap-1">
           {hasUpdatePermission?.success && (
             <DropdownMenu>
-              <DropdownMenuTrigger render={<Button size="icon" variant="ghost" className="size-8" disabled={isUpdatingRole} aria-label={organizationLocalization.changeMemberRole} />}>{isUpdatingRole ? <Spinner /> : <Pencil />}</DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                className={cn(
+                  buttonVariants({ size: "icon", variant: "ghost" }),
+                  "size-8"
+                )}
+                disabled={isUpdatingRole}
+                aria-label={organizationLocalization.changeMemberRole}
+              >
+                {isUpdatingRole ? <Spinner /> : <Pencil />}
+              </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
                 {assignableRoles.map(([role, label]) => (
                   <DropdownMenuItem
                     key={role}
                     disabled={member.role === role}
-                    onSelect={() =>
+                    onClick={() =>
                       updateMemberRole({ memberId: member.id, role })
                     }
                   >
