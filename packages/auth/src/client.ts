@@ -6,6 +6,7 @@ import {
   deviceAuthorizationClient,
   inferAdditionalFields,
   lastLoginMethodClient,
+  magicLinkClient,
   multiSessionClient,
   oneTapClient,
   organizationClient,
@@ -61,6 +62,7 @@ export const authClient = createAuthClient({
       // },
     }),
     multiSessionClient(),
+    magicLinkClient(),
     inferAdditionalFields<typeof auth>({
       user: additionalUserFields,
     }),

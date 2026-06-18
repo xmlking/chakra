@@ -18,7 +18,7 @@
     "build": "email build",
     "clean": "git clean -xdf vite-env.d.ts .react-email dist out node_modules",
     "cli": "bunx email-sdk",
-    "dev": "email dev",
+    "dev": "email dev --port 3010",
     "export": "email export",
     "postinstall": "vite-env types && vite-env generate"
   },
