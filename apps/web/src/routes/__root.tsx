@@ -4,20 +4,12 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { getLocale } from "@workspace/i18n/runtime";
-import { type ReactNode, Suspense, lazy } from "react";
 
 import { siteConfig } from "#config/site.config";
 
 import appCss from "@workspace/ui/globals.css?url";
 // import appCss from "../styles/app.css?url";
 
-const LazyMotionWrapper = lazy(() =>
-  import("motion/react").then(({ LazyMotion, domAnimation }) => ({
-    default: ({ children }: { children: ReactNode }) => (
-      <LazyMotion features={domAnimation}>{children}</LazyMotion>
-    ),
-  })),
-);
 interface MyRouterContext {
   queryClient: QueryClient;
   // TODO https://github.com/masrurimz/shadcn-tanstack-start-landing-page/tree/main
@@ -88,9 +80,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <Suspense fallback={children}>
-          <LazyMotionWrapper>{children}</LazyMotionWrapper>
-        </Suspense>
+        {children}
         <TanStackDevtools
           config={{
             position: "bottom-right",
