@@ -1,4 +1,4 @@
-@import "@repo/ui/styles/globals.css";
+@import "@workspace/ui/styles/globals.css";
 
 @source "../**/*.{ts,tsx}";
 
@@ -17,7 +17,7 @@
   @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
 }
 
-/* Grid pattern for themes hero sections */
+/* Grid pattern for themes's hero sections */
 .bg-grid-pattern {
   background-image:
     linear-gradient(to right, currentColor 1px, transparent 1px),
