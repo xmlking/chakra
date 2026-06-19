@@ -7,7 +7,7 @@ import {
   KBarSearch,
   type Action,
 } from "kbar";
-import { MoonIcon, SunIcon, MonitorIcon } from "lucide-react";
+import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { navGroups } from "#config/sidebar.config";
@@ -45,31 +45,22 @@ export function KBar({ children }: { children: React.ReactNode }) {
 
     const themeActions: Action[] = [
       {
-        id: "theme-light",
+        id: "default-light",
         name: "Light",
         keywords: "theme light mode appearance",
         section: "Theme",
         subtitle: "Switch to light mode",
         icon: <SunIcon className="size-4" />,
-        perform: () => setTheme("light"),
+        perform: () => setTheme("default-light"),
       },
       {
-        id: "theme-dark",
+        id: "default-dark",
         name: "Dark",
         keywords: "theme dark mode appearance",
         section: "Theme",
         subtitle: "Switch to dark mode",
         icon: <MoonIcon className="size-4" />,
-        perform: () => setTheme("dark"),
-      },
-      {
-        id: "theme-system",
-        name: "System",
-        keywords: "theme system mode appearance auto",
-        section: "Theme",
-        subtitle: "Match your system preference",
-        icon: <MonitorIcon className="size-4" />,
-        perform: () => setTheme("system"),
+        perform: () => setTheme("default-dark"),
       },
     ];
 

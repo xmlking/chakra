@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { Button, buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
+import { cn } from "@workspace/ui/lib/utils";
 import { ArrowRightIcon, BoxIcon, MenuIcon } from "lucide-react";
 
 // import { ModeToggle } from "#components/mode-toggle";
@@ -39,18 +40,20 @@ export function LandingHeader() {
         <div className="flex items-center gap-2">
           {/* <ModeToggle /> */}
           <ThemeSwitcher />
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hidden sm:inline-flex"
-            render={<Link to="/dashboard" />}
+          <Link
+            to="/auth/$path"
+            params={{ path: "sign-in" }}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" }),
+              "hidden sm:inline-flex",
+            )}
           >
             Sign in
-          </Button>
-          <Button size="sm" render={<Link to="/dashboard" />}>
+          </Link>
+          <Link to="/dashboard" className={buttonVariants({ size: "sm" })}>
             Open app
             <ArrowRightIcon data-icon="inline-end" />
-          </Button>
+          </Link>
           <Button variant="ghost" size="icon" className="md:hidden">
             <MenuIcon />
             <span className="sr-only">Open menu</span>
