@@ -81,10 +81,12 @@ export function SignUp({
         setConfirmPassword("")
         resetFetchOptions()
       },
-      onSuccess: () => {
+      onSuccess: (_data, { email }) => {
         if (emailAndPassword?.requireEmailVerification) {
-          toast.success(localization.auth.verifyYourEmail)
-          navigate({ to: `${basePaths.auth}/${viewPaths.auth.signIn}` })
+          sessionStorage.setItem("better-auth-ui.verify-email", email)
+          navigate({
+            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
+          })
         } else {
           navigate({ to: redirectTo })
         }
