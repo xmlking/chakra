@@ -4,6 +4,7 @@ import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/serv
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
+import { getCookie } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/shadcn/sidebar";
@@ -12,6 +13,8 @@ import { KBar } from "#components/kbar/index";
 import { AppHeader } from "#components/layout/app-header";
 import { AppSidebar } from "#components/layout/app-sidebar";
 import { safeRedirect } from "#features/auth/safe-redirect";
+
+const SIDEBAR_COOKIE_NAME = "sidebar_state";
 
 export const Route = createFileRoute("/(app)")({
   async beforeLoad({ context: { queryClient }, location }) {
@@ -31,16 +34,24 @@ export const Route = createFileRoute("/(app)")({
         search: { redirectTo: redirectTarget },
       });
     }
-    return { session };
+
+    const isSidebarOpen = createIsomorphicFn()
+      .server(async () => getCookie(SIDEBAR_COOKIE_NAME) === "true")
+      .client(async () => (await cookieStore.get(SIDEBAR_COOKIE_NAME))?.value === "true");
+
+    const defaultOpen = await isSidebarOpen();
+    return { session, defaultOpen };
   },
 
   component: AppLayout,
 });
 
 function AppLayout() {
+  const { defaultOpen } = Route.useRouteContext();
+
   return (
     <KBar>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
         <SidebarInset>
           <AppHeader />

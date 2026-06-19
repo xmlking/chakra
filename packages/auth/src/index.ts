@@ -193,7 +193,7 @@ export const auth = betterAuth({
           return {
             sub: user.id,
             name: user.name,
-            roles: ["read-write", user.role], // for QueenMQ need `read-only` or `read-write` or `admin` roles
+            roles: ["write-only", user.role], // for QueenMQ need `read-only` or `write-only` or `read-write` or `admin` roles
             banned: user.banned,
             email: user.email,
             emailVerified: user.emailVerified,
