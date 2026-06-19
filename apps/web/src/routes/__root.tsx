@@ -7,8 +7,8 @@ import { getLocale } from "@workspace/i18n/runtime";
 
 import { siteConfig } from "#config/site.config";
 
-import appCss from "@workspace/ui/globals.css?url";
-// import appCss from "../styles/app.css?url";
+// import appCss from "@workspace/ui/globals.css?url";
+import appCss from "../styles.css?url";
 
 interface MyRouterContext {
   queryClient: QueryClient;

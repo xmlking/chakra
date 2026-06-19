@@ -129,7 +129,11 @@ bunx --bun shadcn@latest init --src-dir sidebar-07
 Use the `apply` command to apply a `preset` to an existing project.
 
 ```shell
-bunx --bun shadcn@latest apply a2r6bw
+cd packages/ui
+# Use one of the available presets: nova, vega, maia, lyra, mira, luma, sera, rhea
+bunx --bun shadcn@latest apply --preset nova -c apps/web
+# or use custom shared preset
+bunx --bun shadcn@latest apply a2r6bw -c apps/web
 # to decode a preset
 bunx --bun shadcn@latest preset decode b5owWMfJ8l
 # Use preset resolve in an existing project to see the preset that matches your current configuration.
