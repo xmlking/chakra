@@ -39,6 +39,7 @@ export function Providers({ children }: { children: ReactNode }) {
               authClient={authClient}
               redirectTo="/dashboard"
               socialProviders={["github", "google"]}
+              emailAndPassword={{ requireEmailVerification: true }}
               navigate={navigate}
               captcha={{
                 provider: "cloudflare-turnstile",
