@@ -1,5 +1,5 @@
 {
-  "id": "145278a7-d401-4945-af22-bbacdf0ee836",
+  "id": "ba1c9ab6-5ca1-4266-b7d5-9a1c19f6eb5f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -63,9 +63,9 @@
           "primaryKey": false,
           "notNull": false
         },
-        "scope": {
-          "name": "scope",
-          "type": "text",
+        "granted_scopes": {
+          "name": "granted_scopes",
+          "type": "text[]",
           "primaryKey": false,
           "notNull": false
         },
@@ -739,6 +739,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "revoked": {
+          "name": "revoked",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
         "scopes": {
           "name": "scopes",
           "type": "text[]",
@@ -1014,6 +1020,18 @@
           "primaryKey": false,
           "notNull": false
         },
+        "backchannel_logout_uri": {
+          "name": "backchannel_logout_uri",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "backchannel_logout_session_required": {
+          "name": "backchannel_logout_session_required",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
         "token_endpoint_auth_method": {
           "name": "token_endpoint_auth_method",
           "type": "text",
@@ -1117,6 +1135,32 @@
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.oauth_client_assertion": {
+      "name": "oauth_client_assertion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "pg_catalog.gen_random_uuid()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

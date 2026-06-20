@@ -13,7 +13,7 @@ CREATE TABLE "account" (
 	"id_token" text,
 	"access_token_expires_at" timestamp,
 	"refresh_token_expires_at" timestamp,
-	"scope" text,
+	"granted_scopes" text[],
 	"password" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL
@@ -96,6 +96,7 @@ CREATE TABLE "oauth_access_token" (
 	"refresh_id" uuid,
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp NOT NULL,
+	"revoked" timestamp,
 	"scopes" text[] NOT NULL,
 	CONSTRAINT "oauth_access_token_token_unique" UNIQUE("token")
 );
@@ -123,6 +124,8 @@ CREATE TABLE "oauth_client" (
 	"software_statement" text,
 	"redirect_uris" text[] NOT NULL,
 	"post_logout_redirect_uris" text[],
+	"backchannel_logout_uri" text,
+	"backchannel_logout_session_required" boolean,
 	"token_endpoint_auth_method" text,
 	"jwks" text,
 	"jwks_uri" text,
@@ -134,6 +137,11 @@ CREATE TABLE "oauth_client" (
 	"reference_id" text,
 	"metadata" jsonb,
 	CONSTRAINT "oauth_client_client_id_unique" UNIQUE("client_id")
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_client_assertion" (
+	"id" uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid() NOT NULL,
+	"expires_at" timestamp NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "oauth_consent" (

@@ -4,12 +4,8 @@ import { auth } from "@workspace/auth";
 export const Route = createFileRoute("/api/auth/$")({
   server: {
     handlers: {
-      GET: async ({ request }: { request: Request }) => {
-        return await auth.handler(request);
-      },
-      POST: async ({ request }: { request: Request }) => {
-        return await auth.handler(request);
-      },
+      GET: ({ request }) => auth.handler(request),
+      POST: ({ request }) => auth.handler(request),
     },
   },
 });
