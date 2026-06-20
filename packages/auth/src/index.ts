@@ -255,7 +255,7 @@ export const auth = betterAuth({
           text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
           react: MagicLinkEmail({
             url,
-            appName: "Better Auth UI",
+            appName: "Chakra AI",
             email,
             expirationMinutes: MAGIC_LINK_EXPIRES_SECONDS / 60,
             poweredBy: true,

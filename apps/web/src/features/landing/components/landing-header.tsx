@@ -1,5 +1,7 @@
+import { useAuth, useSession } from "@better-auth-ui/react";
 import { Link } from "@tanstack/react-router";
 import { Button, buttonVariants } from "@workspace/ui/components/shadcn/button";
+import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { cn } from "@workspace/ui/lib/utils";
 import { ArrowRightIcon, BoxIcon, MenuIcon } from "lucide-react";
@@ -15,6 +17,9 @@ const navLinks = [
 ];
 
 export function LandingHeader() {
+  const { authClient } = useAuth();
+  const { data: session, isPending: sessionPending } = useSession(authClient);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
@@ -40,16 +45,31 @@ export function LandingHeader() {
         <div className="flex items-center gap-2">
           {/* <ModeToggle /> */}
           <ThemeSwitcher />
-          <Link
-            to="/auth/$path"
-            params={{ path: "sign-in" }}
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "hidden sm:inline-flex",
-            )}
-          >
-            Sign in
-          </Link>
+          {sessionPending ? (
+            <Skeleton className="h-6 w-18" />
+          ) : session ? (
+            <Link
+              to="/auth/$path"
+              params={{ path: "sign-out" }}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "hidden sm:inline-flex",
+              )}
+            >
+              Sign Out
+            </Link>
+          ) : (
+            <Link
+              to="/auth/$path"
+              params={{ path: "sign-in" }}
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "hidden sm:inline-flex",
+              )}
+            >
+              Sign in
+            </Link>
+          )}
           <Link to="/dashboard" className={buttonVariants({ size: "sm" })}>
             Open app
             <ArrowRightIcon data-icon="inline-end" />

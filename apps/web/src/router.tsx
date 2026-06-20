@@ -5,7 +5,6 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { DefaultError } from "#components/default-error";
 import { DefaultLoading } from "#components/default-loading";
 import { DefaultNotFound } from "#components/default-notfound";
-import { Providers } from "#components/providers";
 import type { BreadcrumbValue } from "#components/router-breadcrumb";
 
 import { routeTree } from "./routeTree.gen";
@@ -35,9 +34,6 @@ export function getRouter() {
     defaultPendingComponent: DefaultLoading,
     defaultNotFoundComponent: DefaultNotFound,
     defaultErrorComponent: DefaultError,
-    InnerWrap: ({ children }) => {
-      return <Providers>{children}</Providers>;
-    },
   });
 
   setupRouterSsrQueryIntegration({

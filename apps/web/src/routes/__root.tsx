@@ -5,6 +5,7 @@ import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { getLocale } from "@workspace/i18n/runtime";
 
+import { Providers } from "#components/providers";
 import { siteConfig } from "#config/site.config";
 
 // import appCss from "@workspace/ui/globals.css?url";
@@ -63,12 +64,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       },
     ],
   }),
-  notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
-    </main>
-  ),
   shellComponent: RootDocument,
 });
 
@@ -80,7 +75,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body className="antialiased">
-        {children}
+        <Providers>{children}</Providers>
         <TanStackDevtools
           config={{
             position: "bottom-right",

@@ -1,11 +1,8 @@
 import { viewPaths } from "@better-auth-ui/core";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { authClient } from "@workspace/auth/client";
 import { Auth } from "@workspace/ui/components/auth/auth";
 import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { z } from "zod";
-
-import { safeRedirect } from "#features/auth/safe-redirect";
 
 const validAuthPathSegments = new Set([
   ...Object.values(viewPaths.auth),
@@ -26,24 +23,9 @@ const authSearchSchema = z.object({
 
 export const Route = createFileRoute("/(public)/auth/$path")({
   validateSearch: (search: Record<string, unknown>) => authSearchSchema.parse(search),
-  ssr: false,
-  async beforeLoad({ params: { path }, search }) {
+  beforeLoad({ params: { path } }) {
     if (!validAuthPathSegments.has(path)) {
       throw redirect({ to: "/" });
-    }
-
-    const { data: session } = await authClient.getSession();
-
-    if (path === viewPaths.auth.signOut && !session) {
-      throw redirect({
-        params: { path: viewPaths.auth.signIn },
-        replace: true,
-        to: "/auth/$path",
-      });
-    }
-
-    if (path !== viewPaths.auth.signOut && session) {
-      throw redirect({ replace: true, to: safeRedirect(search.redirectTo) });
     }
   },
   head: ({ params }) => ({
@@ -56,7 +38,7 @@ function AuthPage() {
   const { path } = Route.useParams();
 
   return (
-    <div className="my-auto flex justify-center p-4 md:p-6">
+    <div className="mx-auto flex justify-center p-4 md:p-6">
       <Auth path={path} />
     </div>
   );

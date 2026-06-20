@@ -1,7 +1,7 @@
-"use client";
+// "use client";
 
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { Link, useRouter, useParams, useNavigate } from "@tanstack/react-router";
+import { Link, useParams, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster } from "@workspace/ui/components/shadcn/sonner";
@@ -13,21 +13,15 @@ import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { multiSessionPlugin } from "@workspace/ui/lib/auth/multi-session-plugin";
 import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
-import { usernamePlugin } from "@workspace/ui/lib/auth/username-plugin";
 import { domAnimation, LazyMotion, MotionConfig } from "motion/react";
 import { Suspense, type ReactNode } from "react";
-import env from "virtual:env/client";
 
 import { MetaTheme } from "#components/meta-theme";
 import { TurnstileWidget } from "#components/turnstile-widget";
 
-const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
-
 export function Providers({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const navigate = useNavigate();
-  const params = useParams({ strict: false, shouldThrow: false });
-  const slug = params?.slug;
+  const { slug } = useParams({ strict: false });
 
   return (
     <ThemeProvider>
@@ -39,69 +33,38 @@ export function Providers({ children }: { children: ReactNode }) {
               authClient={authClient}
               redirectTo="/dashboard"
               socialProviders={["github", "google"]}
-              emailAndPassword={{ requireEmailVerification: true }}
-              navigate={navigate}
-              captcha={{
-                provider: "cloudflare-turnstile",
-                siteKey: env.VITE_TURNSTILE_SITE_KEY,
-              }}
-              credentials={{
-                passwordValidation: {
-                  minLength: 8,
-                  maxLength: 64,
-                  regex: PASSWORD_REGEX,
-                },
+              emailAndPassword={{
+                requireEmailVerification: true,
                 confirmPassword: true,
                 rememberMe: true,
               }}
-              deleteUser={{
-                verification: true,
-              }}
-              emailVerification
-              gravatar
-              multiSession
-              oneTap
-              onSessionChange={async () => {
-                // Clear router cache (protected routes)
-                await router.invalidate(); // Triggers a re-render and re-runs route loaders
-              }}
-              optimistic
-              organization={{
-                logo: true,
-                apiKey: true,
-                personalPath: "/",
-                customRoles: [{ role: "billing", label: "Billing" }],
-                viewPaths: {
-                  SETTINGS: "settings",
-                  MEMBERS: "members",
-                  TEAMS: "teams",
-                  API_KEYS: "api-keys",
-                },
-              }}
-              passkey
-              // @ts-ignore : FIXME
-              replace={(href) => navigate({ href, replace: true })}
-              teams={{
-                enabled: true,
-                customRoles: [{ role: "billing", label: "Billing" }],
-                colors: {
-                  count: 5,
-                  prefix: "team",
-                },
-              }}
+              navigate={navigate}
               plugins={[
-                usernamePlugin({
-                  maxUsernameLength: 8,
-                  minUsernameLength: 64,
-                }),
                 magicLinkPlugin(),
                 passkeyPlugin(),
                 apiKeyPlugin({ organization: true }),
                 // themePlugin({ useTheme }), // NOTE: we use tweakcn switcher
-                multiSessionPlugin(),
+                multiSessionPlugin({
+                  // Override any of the plugin's localization strings.
+                  localization: {
+                    switchAccount: "Switch Account",
+                    addAccount: "Add Account",
+                    manageAccounts: "Manage Accounts",
+                  },
+                }),
                 deleteUserPlugin(),
                 organizationPlugin({
                   slug: slug ?? null,
+                  // Override path segments (defaults shown).
+                  viewPaths: {
+                    settings: { organizations: "organizations" },
+                    organization: { settings: "settings", people: "people" },
+                  },
+                  localization: {
+                    createOrganization: "Create Organization",
+                  },
+                  // Add labels for custom server roles without redefining built-ins.
+                  additionalRoles: { billing: "Billing" },
                 }),
                 captchaPlugin({ render: TurnstileWidget }),
               ]}

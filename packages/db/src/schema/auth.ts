@@ -72,7 +72,7 @@ export const account = pgTable(
     idToken: text("id_token"),
     accessTokenExpiresAt: timestamp("access_token_expires_at"),
     refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-    scope: text("scope"),
+    grantedScopes: text("granted_scopes").array(),
     password: text("password"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -152,6 +152,8 @@ export const oauthClient = pgTable(
     softwareStatement: text("software_statement"),
     redirectUris: text("redirect_uris").array().notNull(),
     postLogoutRedirectUris: text("post_logout_redirect_uris").array(),
+    backchannelLogoutUri: text("backchannel_logout_uri"),
+    backchannelLogoutSessionRequired: boolean("backchannel_logout_session_required"),
     tokenEndpointAuthMethod: text("token_endpoint_auth_method"),
     jwks: text("jwks"),
     jwksUri: text("jwks_uri"),
@@ -218,6 +220,7 @@ export const oauthAccessToken = pgTable(
     }),
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").notNull(),
+    revoked: timestamp("revoked"),
     scopes: text("scopes").array().notNull(),
   },
   (table) => [
@@ -249,6 +252,13 @@ export const oauthConsent = pgTable(
     index("oauthConsent_userId_idx").on(table.userId),
   ],
 );
+
+export const oauthClientAssertion = pgTable("oauth_client_assertion", {
+  id: uuid("id")
+    .default(sql`pg_catalog.gen_random_uuid()`)
+    .primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+});
 
 export const organization = pgTable(
   "organization",

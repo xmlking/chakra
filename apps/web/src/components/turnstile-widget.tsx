@@ -1,5 +1,6 @@
 import type { CaptchaRenderProps } from "@better-auth-ui/react/plugins";
 import { type TurnstileInstance, Turnstile } from "@marsidev/react-turnstile";
+import { useTheme } from "next-themes";
 import { useEffect, useRef } from "react";
 import env from "virtual:env/client";
 
@@ -11,6 +12,8 @@ export function TurnstileWidget({ setToken, clearToken, setReset }: CaptchaRende
     return () => setReset(null);
   }, [setReset]);
 
+  const { theme } = useTheme();
+
   return (
     <Turnstile
       ref={ref}
@@ -18,7 +21,7 @@ export function TurnstileWidget({ setToken, clearToken, setReset }: CaptchaRende
       onSuccess={setToken}
       onError={clearToken}
       onExpire={clearToken}
-      options={{ size: "flexible" }}
+      options={{ size: "flexible", theme: theme?.endsWith("-dark") ? "dark" : "light" }}
     />
   );
 }
