@@ -14,7 +14,6 @@ import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
-import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -44,11 +43,6 @@ const publicVersionRoute = publicVersionRouteImport.update({
 const publicThemeRoute = publicThemeRouteImport.update({
   id: '/theme',
   path: '/theme',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const publicI18nRoute = publicI18nRouteImport.update({
-  id: '/i18n',
-  path: '/i18n',
   getParentRoute: () => publicRouteRoute,
 } as any)
 const publicAboutRoute = publicAboutRouteImport.update({
@@ -89,7 +83,6 @@ const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/about': typeof publicAboutRoute
-  '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
@@ -102,7 +95,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/about': typeof publicAboutRoute
-  '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
@@ -118,7 +110,6 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
   '/(public)/about': typeof publicAboutRoute
-  '/(public)/i18n': typeof publicI18nRoute
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/version': typeof publicVersionRoute
   '/(public)/': typeof publicIndexRoute
@@ -133,7 +124,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/about'
-    | '/i18n'
     | '/theme'
     | '/version'
     | '/'
@@ -146,7 +136,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/about'
-    | '/i18n'
     | '/theme'
     | '/version'
     | '/'
@@ -161,7 +150,6 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(public)'
     | '/(public)/about'
-    | '/(public)/i18n'
     | '/(public)/theme'
     | '/(public)/version'
     | '/(public)/'
@@ -214,13 +202,6 @@ declare module '@tanstack/react-router' {
       path: '/theme'
       fullPath: '/theme'
       preLoaderRoute: typeof publicThemeRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(public)/i18n': {
-      id: '/(public)/i18n'
-      path: '/i18n'
-      fullPath: '/i18n'
-      preLoaderRoute: typeof publicI18nRouteImport
       parentRoute: typeof publicRouteRoute
     }
     '/(public)/about': {
@@ -295,7 +276,6 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
 
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
-  publicI18nRoute: typeof publicI18nRoute
   publicThemeRoute: typeof publicThemeRoute
   publicVersionRoute: typeof publicVersionRoute
   publicIndexRoute: typeof publicIndexRoute
@@ -304,7 +284,6 @@ interface publicRouteRouteChildren {
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
-  publicI18nRoute: publicI18nRoute,
   publicThemeRoute: publicThemeRoute,
   publicVersionRoute: publicVersionRoute,
   publicIndexRoute: publicIndexRoute,

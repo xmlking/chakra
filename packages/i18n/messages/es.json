@@ -1,0 +1,22 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "about_page": "Página Acerca de",
+  "buttons_add": "Agregar",
+  "buttons_back": "Atrás",
+  "buttons_create": "Crear",
+  "buttons_delte": "Eliminar",
+  "buttons_edit": "Editar",
+  "buttons_logout": "Cerrar sesión",
+  "buttons_remove": "Quitar",
+  "buttons_reset": "Restablecer",
+  "buttons_save": "Guardar",
+  "buttons_search": "Buscar",
+  "buttons_submit": "Enviar",
+  "buttons_update": "Actualizar",
+  "current_locale": "Idioma actual: {locale}",
+  "example_message": "Bienvenido a tu aplicación internacionalizada.",
+  "greeting": "¡Hola, {name}!",
+  "home_page": "Página principal",
+  "language_label": "Idioma",
+  "learn_router": "Aprender Paraglide JS"
+}
