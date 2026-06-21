@@ -5,6 +5,8 @@ import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { BellIcon } from "lucide-react";
 
+import { LayoutToggle } from "#components/layout-toggle";
+import { LocaleSwitcher } from "#components/locale-switcher";
 // import { ModeToggle } from "#components/mode-toggle";
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
 
@@ -26,6 +28,8 @@ export function AppHeader() {
 
       {/* Right  */}
       <div className="ml-auto flex items-center gap-2">
+        <LocaleSwitcher />
+        <LayoutToggle className="hidden lg:flex" />
         <Button variant="ghost" size="icon" aria-label="Notifications">
           <BellIcon />
           <span className="sr-only">Notifications</span>
