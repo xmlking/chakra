@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DashboardContent } from "#features/dashboard/dashboard-content";
+import { DashboardContent } from "#features/dashboard/dashboard-content2";
 import { DashboardSkeleton } from "#features/dashboard/dashboard-skeleton";
 
-export const Route = createFileRoute("/(app)/dashboard/")({
+export const Route = createFileRoute("/(app2)/dashboard2")({
   staticData: {
     breadcrumb: "Overview",
     // breadcrumb: ["Root", "Dashboard"],

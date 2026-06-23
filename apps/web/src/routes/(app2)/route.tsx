@@ -9,13 +9,13 @@ import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/shadcn/sidebar";
 
-import { AppHeader } from "#components/layout/app-header";
+import { AppHeader } from "#components/layout/app-header2";
 import { AppSidebar } from "#components/layout/app-sidebar";
 import { safeRedirect } from "#features/auth/safe-redirect";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 
-export const Route = createFileRoute("/(app)")({
+export const Route = createFileRoute("/(app2)")({
   async beforeLoad({ context: { queryClient }, location }) {
     const ensureSession = createIsomorphicFn()
       .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
@@ -56,11 +56,11 @@ function AppLayout() {
         {
           // "--sidebar-width": "calc(var(--spacing) * 72)",
           "--sidebar-width-icon": "calc(var(--spacing) * 12)",
-          "--header-height": "calc(var(--spacing) * 12)",
+          "--header-height": "calc(var(--spacing) * 16)",
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" collapsible="icon" /* collapsible="offcanvas" */ />
+      <AppSidebar collapsible="icon" /* collapsible="offcanvas" */ />
       <SidebarInset>
         <AppHeader />
         <Outlet />

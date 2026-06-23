@@ -40,7 +40,7 @@ export interface NavItem {
 }
 
 export interface NavGroup {
-  label: string;
+  label?: string;
   items: NavItem[];
 }
 
