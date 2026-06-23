@@ -42,6 +42,8 @@
     "@tanstack/react-pacer": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
+    "@tanstack/react-table": "catalog:",
+    "@tanstack/react-virtual": "catalog:",
     "better-auth": "catalog:",
     "bowser": "^2.14.1",
     "class-variance-authority": "0.7.1",

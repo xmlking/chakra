@@ -39,8 +39,8 @@ bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/pas
 # kibo-ui (optional)
 bunx --bun shadcn@latest add @kibo-ui/gantt
 # reui data-grid
-bunx --bun shadcn@latest add -p src/components/reui @reui/data-grid
-bunx --bun shadcn@latest add -p src/components/reui @reui/filters
+bunx --bun shadcn@latest add @reui/data-grid
+bunx --bun shadcn@latest add @reui/filters
 # reui kanban (optional)
 bunx --bun shadcn@latest add -p src/components/reui @reui/kanban
 # reui combobox (optional)
