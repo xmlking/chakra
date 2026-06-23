@@ -22,7 +22,7 @@ const ignorePatterns = [
   "packages/db/drizzle/**",
   "apps/web/src/lib/gen/**",
   "packages/ui/src/components/**",
-  "!packages/ui/src/components/form/**",
+  // "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
   "packages/ui/src/styles/**",
   "apps/docs/waku.config.ts",
