@@ -244,7 +244,7 @@ The `bun dev` command runs multiple processes concurrently:
 Open your browser and check out:
 
 - **Frontend**: `http://localhost:5173` — Your React app with TanStack Router
-- **Database GUI**: Run `bun --filter @repo/db studio` to explore your database
+- **Database GUI**: Run `bun --filter @workspace/db studio` to explore your database
 
 ### 3. Make It Yours
 
@@ -261,18 +261,18 @@ The template uses Cloudflare D1 (SQLite) with Drizzle ORM. To set up your databa
 
 ```bash
 # Generate the initial schema
-bun --filter @repo/db generate
+bun --filter @workspace/db generate
 
 # Apply migrations to your local database
-bun --filter @repo/db push
+bun --filter @workspace/db push
 
 # (Optional) Seed with sample data
-bun --filter @repo/db seed
+bun --filter @workspace/db seed
 ```
 
 <Callout title="Database GUI" type="idea">
 
-Want to explore your data visually? Run `bun --filter @repo/db studio` to open Drizzle Studio in your browser.
+Want to explore your data visually? Run `bun --filter @workspace/db studio` to open Drizzle Studio in your browser.
 
 </Callout>
 
@@ -316,14 +316,14 @@ bun lint
 ```
 
 <Callout title="Type Checking" type="info">
-  TypeScript checking happens automatically in your editor. For CI/CD, run `bun --filter @repo/api
-  build` to verify types.
+  TypeScript checking happens automatically in your editor. For CI/CD, run `bun --filter
+  @workspace/api build` to verify types.
 </Callout>
 
 ### 💡 Hot Tips for Development
 
 - **API Types**: After modifying tRPC routes, types auto-generate — no manual sync needed
-- **Database Changes**: Edit `db/schema/`, then run `bun --filter @repo/db generate` and `push`
+- **Database Changes**: Edit `db/schema/`, then run `bun --filter @workspace/db generate` and `push`
 - **Component Library**: ShadCN UI components are ready to use — check `apps/web/components/ui`
 - **State Management**: Global state lives in `apps/web/lib/store.ts` using Jotai
 
@@ -367,7 +367,7 @@ bun wrangler d1 migrations apply YOUR_DATABASE --env=production
 </Callout>
 
 <Callout title="Build Errors" type="info">
-  If TypeScript complains, try `bun --filter @repo/api build` first. This regenerates type
+  If TypeScript complains, try `bun --filter @workspace/api build` first. This regenerates type
   definitions.
 </Callout>
 

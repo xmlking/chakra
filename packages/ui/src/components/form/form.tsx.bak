@@ -1,0 +1,25 @@
+import  {useCallback }   from "react";
+import { useFormContext } from "./context";
+
+export function FormRoot({ children, ...props }: React.ComponentProps<"form">) {
+  const form = useFormContext();
+
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      form.handleSubmit();
+    },
+    [form],
+  );
+
+  return (
+    <form
+      id={form.formId}
+      onSubmit={handleSubmit}
+      {...props}
+    >
+      {children}
+    </form>
+  );
+}

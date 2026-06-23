@@ -45,7 +45,7 @@ For production emails, you need to verify your domain:
 To send an email, you can use the `resend` object, which is imported from the `@workspace/email` package:
 
 ```tsx title="apps/web/app/contact/actions/contact.tsx"
-import { resend } from "@repo/email";
+import { resend } from "@workspace/email";
 
 await resend.emails.send({
   from: env.EMAIL_FROM,
@@ -61,8 +61,8 @@ await resend.emails.send({
 Resend and React Email play nicely together. For example, here's how you can send a transactional email using a React email template:
 
 ```tsx title="apps/web/src/actions/contact.tsx"
-import { resend } from "@repo/email";
-import { ContactTemplate } from "@repo/email/templates/contact";
+import { resend } from "@workspace/email";
+import { ContactTemplate } from "@workspace/email/templates/contact";
 
 await resend.emails.send({
   from: "sender@acme.com",
