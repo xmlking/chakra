@@ -90,6 +90,7 @@
     "@tanstack/react-store": "0.11.0",
     "@tanstack/react-table": "8.21.3",
     "@tanstack/react-table-devtools": "8.21.3",
+    "@tanstack/react-virtual": "3.14.3",
     "@thesvg/react": "3.0.10",
     "@types/bun": "1.3.14",
     "@types/node": "26.0.0",
