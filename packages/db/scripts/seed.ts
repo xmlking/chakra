@@ -67,7 +67,7 @@ async function run() {
           defaultValue: env.BETTER_AUTH_ADMIN_EMAIL as string,
         }),
         emailVerified: f.default({ defaultValue: true }),
-        image: f.default({ defaultValue: "/avatars/shadcn.png" }),
+        image: f.default({ defaultValue: "/avatars/shadcn.jpg" }),
         lastLoginMethod: f.default({ defaultValue: "email" }),
         stripeCustomerId: f.string({ isUnique: true }),
         role: f.default({ defaultValue: "admin" }),

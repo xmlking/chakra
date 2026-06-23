@@ -1,0 +1,426 @@
+---
+title: UI Guidelines
+description: UI design guidelines and conventions.
+---
+
+Modern SaaS starters
+
+## Recommended Stack
+
+### Frontend
+
+- TanStack Start
+- TanStack Router
+- TanStack Query
+- TanStack Table
+- TanStack Form
+- React 19
+- Tailwind v4
+- shadcn/ui
+- Base UI (base-nova)
+- Paraglide JS
+
+### Backend
+
+- TanStack Start server functions
+- Better Auth
+- Better Auth Organizations Plugin
+- Drizzle ORM
+- PostgreSQL
+
+### State
+
+- Zustand only for UI state
+
+  - sidebar collapsed
+  - command palette
+  - table preferences
+  - theme
+  - active organization cache
+
+Everything else should live in TanStack Query.
+
+---
+
+# Monorepo Layout
+
+```text
+apps/
+└── web/
+
+packages/
+├── auth/
+├── db/
+├── i18n/
+├── ui/
+├── config/
+├── types/
+└── sdk/
+
+turbo.json
+package.json
+bun.lock
+```
+
+---
+
+# Apps
+
+```text
+apps/web
+├── src
+│   ├── app
+│   ├── routes
+│   ├── widgets
+│   ├── features
+│   ├── entities
+│   ├── shared
+│   └── pages
+```
+
+---
+
+# Route Structure
+
+```text
+routes
+
+/
+├── index.tsx
+
+/auth
+├── login.tsx
+├── register.tsx
+
+/dashboard
+├── index.tsx
+
+/settings
+├── profile.tsx
+├── billing.tsx
+├── team.tsx
+
+/organizations
+├── index.tsx
+├── [slug].tsx
+
+/projects
+├── index.tsx
+├── [id].tsx
+```
+
+---
+
+# FSD Structure
+
+```text
+src
+
+app/
+pages/
+widgets/
+features/
+entities/
+shared/
+```
+
+---
+
+# Dashboard Layout
+
+Hybrid:
+
+- dashboard-01 shell
+- sidebar-07 collapse behavior
+
+```text
+
+┌──────────────────────────────────────────────────────────┐
+│ Sidebar (sidebar-07) │ Sticky Header                     │
+│                      ├──────────────────────────────-────┤
+│ Org Switcher         │ Breadcrumbs                       │
+│ Search (CMDK)        │                                   │
+│                      ├───────────────────────────────-───┤
+│ Main Navigation      │ Dashboard Content                 │
+│ Projects             │                                   │
+│ Settings             │                                   │
+│                      │                                   │
+│                      │                                   │
+│──────────────────────│                                   │
+│ User Menu            │                                   │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+# Widgets
+
+```text
+widgets/
+
+app-sidebar/
+dashboard-header/
+user-nav/
+org-switcher/
+breadcrumbs/
+command-menu/
+```
+
+---
+
+# Better Auth
+
+Package:
+
+```text
+packages/auth
+```
+
+```ts
+auth/
+├── server.ts
+├── client.ts
+├── organizations.ts
+├── permissions.ts
+└── session.ts
+```
+
+Providers:
+
+- Email/Password
+- Google
+- GitHub
+
+Organizations plugin enabled.
+
+---
+
+# Drizzle Package
+
+```text
+packages/db
+```
+
+```text
+schema/
+
+users.ts
+organizations.ts
+members.ts
+invitations.ts
+
+projects.ts
+settings.ts
+
+audit-log.ts
+```
+
+---
+
+# Organization Model
+
+```text
+Organization
+ ├── Members
+ ├── Invitations
+ ├── Roles
+ ├── Settings
+ └── Projects
+```
+
+---
+
+# RBAC
+
+```ts
+owner;
+admin;
+manager;
+member;
+viewer;
+```
+
+stored via Better Auth organization roles.
+
+---
+
+# Sidebar Config
+
+```ts
+export const navGroups = [
+  {
+    title: "Platform",
+    items: [],
+  },
+  {
+    title: "Management",
+    items: [],
+  },
+  {
+    title: "Settings",
+    items: [],
+  },
+];
+```
+
+---
+
+# TanStack Query
+
+Entity driven.
+
+```text
+entities/
+
+project/
+├── api/
+├── hooks/
+├── queries/
+├── table/
+└── types/
+```
+
+Example:
+
+```ts
+useProjectsQuery();
+useProjectQuery(id);
+```
+
+---
+
+# TanStack Table
+
+```text
+entities/project/table
+```
+
+Contains:
+
+```ts
+project - columns.tsx;
+project - table.tsx;
+```
+
+Supports:
+
+- sorting
+- filtering
+- column visibility
+- row selection
+- server pagination
+
+---
+
+# TanStack Form
+
+```text
+features/project-form
+```
+
+Contains:
+
+```text
+create-project-form.tsx
+edit-project-form.tsx
+```
+
+Using:
+
+```ts
+zod v4
+tanstack form
+```
+
+---
+
+# Landing Page
+
+Sections:
+
+```text
+Hero
+Features
+Testimonials
+Pricing
+FAQ
+CTA
+Footer
+```
+
+Navigation:
+
+```text
+Features
+Pricing
+Docs
+Blog
+Login
+Get Started
+```
+
+---
+
+# Zustand Stores
+
+```text
+shared/store
+
+sidebar-store.ts
+theme-store.ts
+command-store.ts
+organization-store.ts
+```
+
+Avoid business data here.
+
+---
+
+# i18n
+
+Package:
+
+```text
+packages/i18n
+```
+
+Using:
+
+```bash
+bun add @inlang/paraglide-js
+```
+
+Locales:
+
+```text
+en
+es
+fr
+de
+```
+
+Route-aware language switcher.
+
+---
+
+# Packages/UI
+
+```text
+packages/ui
+```
+
+Contains:
+
+```text
+components/
+hooks/
+icons/
+providers/
+```
+
+Installed via:
+
+- shadcn/ui
+- base-nova
+
+Shared across future apps.

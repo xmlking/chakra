@@ -40,8 +40,18 @@ export function RouterBreadcrumb() {
     }));
   });
 
+  console.log(breadcrumbs);
+
   if (breadcrumbs.length === 0) {
-    return null;
+    return (
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    );
   }
 
   return (
@@ -53,8 +63,12 @@ export function RouterBreadcrumb() {
           return (
             <Fragment key={`${crumb.path}-${index}`}>
               <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
                 {isLast ? (
-                  <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                  <BreadcrumbPage className="capitalize">{crumb.label}</BreadcrumbPage>
                 ) : (
                   <BreadcrumbLink render={<Link to={crumb.path} />}>{crumb.label}</BreadcrumbLink>
                 )}

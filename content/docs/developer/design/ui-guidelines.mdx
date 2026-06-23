@@ -2,3 +2,239 @@
 title: UI Guidelines
 description: UI design guidelines and conventions.
 ---
+
+## Dashboard Layout
+
+A good approach is to **combine the layout structure from `dashboard-01` with the sidebar behavior from `sidebar-07`**.
+
+### What each block gives you
+
+#### `dashboard-01`
+
+Provides:
+
+- Application shell
+- Header
+- Content area
+- Responsive sidebar layout
+- Breadcrumbs
+- Search
+- Dashboard cards and tables
+
+#### `sidebar-07`
+
+Provides:
+
+- Collapsible sidebar
+- Icon-only collapsed mode
+- Better organization switcher
+- User menu at bottom
+- Nested navigation groups
+- Mobile sheet support
+
+---
+
+### Recommended Hybrid Layout
+
+```text
+
+┌──────────────────────────────────────────────────────────┐
+│ Sidebar (sidebar-07) │ Sticky Header                     │
+│                      ├──────────────────────────────-────┤
+│ Org Switcher         │ Breadcrumbs                       │
+│ Search (CMDK)        │                                   │
+│                      ├───────────────────────────────-───┤
+│ Main Navigation      │ Dashboard Content                 │
+│ Projects             │                                   │
+│ Settings             │                                   │
+│                      │                                   │
+│                      │                                   │
+│──────────────────────│                                   │
+│ User Menu            │                                   │
+└──────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Sidebar Structure
+
+```tsx
+<AppSidebar>
+  <SidebarHeader>
+    <OrgSwitcher />
+    <SidebarSearch />
+  </SidebarHeader>
+
+  <SidebarContent>
+    <NavMain />
+    <NavProjects />
+    <NavSecondary />
+  </SidebarContent>
+
+  <SidebarFooter>
+    <UserNav />
+  </SidebarFooter>
+</AppSidebar>
+```
+
+Use:
+
+```tsx
+collapsible = "icon";
+```
+
+from `sidebar-07`.
+
+---
+
+### Header Structure
+
+```tsx
+<header className="sticky top-0 z-50 border-b bg-background">
+  <SidebarTrigger />
+
+  <Breadcrumbs />
+
+  <div className="ml-auto flex items-center gap-2">
+    <ThemeSwitcher />
+    <LocaleSwitcher />
+    <Notifications />
+  </div>
+</header>
+```
+
+---
+
+### TanStack Start Folder Structure
+
+```text
+src/
+├── components/
+│   ├── layout/
+│   │   ├── dashboard-layout.tsx
+│   │   ├── app-sidebar.tsx
+│   │   ├── dashboard-header.tsx
+│   │   ├── nav-main.tsx
+│   │   ├── nav-projects.tsx
+│   │   ├── nav-user.tsx
+│   │   └── org-switcher.tsx
+│   │
+│   └── sidebar.config.ts
+│
+├── routes/
+│   ├── _dashboard.tsx
+│   ├── dashboard/
+│   ├── settings/
+│   └── projects/
+```
+
+---
+
+### Sidebar Config
+
+Instead of hardcoding navigation:
+
+```ts
+export const navGroups = [
+  {
+    label: "Platform",
+    items: [
+      {
+        title: "Dashboard",
+        to: "/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
+        title: "Projects",
+        to: "/projects",
+        icon: FolderKanban,
+      },
+    ],
+  },
+  {
+    label: "Administration",
+    items: [
+      {
+        title: "Users",
+        to: "/users",
+        icon: Users,
+      },
+      {
+        title: "Settings",
+        to: "/settings",
+        icon: Settings,
+      },
+    ],
+  },
+];
+```
+
+Then render dynamically.
+
+---
+
+### CMDK Search in Sidebar
+
+Instead of the search input from `dashboard-01`, put a command launcher in the sidebar header:
+
+```tsx
+<CommandDialog />
+
+<Button
+  variant="outline"
+  className="w-full justify-start"
+>
+  <SearchIcon />
+  Search...
+</Button>
+```
+
+Shortcut:
+
+```tsx
+⌘K
+```
+
+or
+
+```tsx
+Ctrl + K;
+```
+
+---
+
+### Sticky Header + Scrollable Content
+
+```tsx
+<div className="flex h-screen overflow-hidden">
+  <AppSidebar />
+
+  <SidebarInset>
+    <DashboardHeader />
+
+    <main className="flex-1 overflow-auto p-6">
+      <Outlet />
+    </main>
+  </SidebarInset>
+</div>
+```
+
+This is the pattern used in `sidebar-07` and works well with TanStack Start.
+
+---
+
+### If building from scratch today
+
+I'd use:
+
+- Sidebar architecture from `sidebar-07`
+- Header/content shell from `dashboard-01`
+- CMDK search in sidebar header
+- Organization switcher at top
+- User menu in sidebar footer
+- `collapsible="icon"`
+- Navigation driven by `sidebar.config.ts`
+- TanStack Router `Link`/`createLink`
+- Shadcn Base-Sera style components
+
+This produces a much cleaner SaaS dashboard than using `dashboard-01` unchanged, while keeping the icon-collapse behavior users expect from products like Linear, Vercel, and GitHub.

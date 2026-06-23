@@ -10,13 +10,19 @@ import {
   Link2Icon,
   ClipboardListIcon,
   Building2Icon,
+  Settings2Icon,
+  BookOpenIcon,
+  BotIcon,
+  TerminalSquareIcon,
+  DatabaseIcon,
+  FileChartColumnIcon,
+  FileIcon,
 } from "lucide-react";
 
 import type { NavGroup } from "#types/index";
 
 export const navGroups: NavGroup[] = [
   {
-    label: "Platform",
     items: [
       {
         title: "Overview",
@@ -27,7 +33,7 @@ export const navGroups: NavGroup[] = [
       {
         title: "Projects",
         url: "/dashboard/projects",
-        icon: FolderKanbanIcon,
+        icon: FolderKanbanIcon, // FolderIcon
         shortcut: ["g", "p"],
       },
       { title: "Inbox", url: "/dashboard/inbox", icon: InboxIcon },
@@ -36,7 +42,98 @@ export const navGroups: NavGroup[] = [
         title: "Analytics",
         url: "/dashboard/analytics",
         icon: BarChart3Icon,
+        // icon: ChartBarIcon,
         shortcut: ["g", "a"],
+      },
+    ],
+  },
+  {
+    label: "Platform",
+    items: [
+      {
+        title: "Playground",
+        url: "#",
+        icon: TerminalSquareIcon,
+        isActive: true,
+        items: [
+          {
+            title: "History",
+            url: "#",
+          },
+          {
+            title: "Starred",
+            url: "#",
+          },
+          {
+            title: "Settings",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Models",
+        url: "#",
+        icon: BotIcon,
+        items: [
+          {
+            title: "Genesis",
+            url: "#",
+          },
+          {
+            title: "Explorer",
+            url: "#",
+          },
+          {
+            title: "Quantum",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Documentation",
+        url: "#",
+        icon: BookOpenIcon,
+        items: [
+          {
+            title: "Introduction",
+            url: "#",
+          },
+          {
+            title: "Get Started",
+            url: "#",
+          },
+          {
+            title: "Tutorials",
+            url: "#",
+          },
+          {
+            title: "Changelog",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Settings",
+        url: "#",
+        icon: Settings2Icon,
+        items: [
+          {
+            title: "General",
+            url: "#",
+          },
+          {
+            title: "Team",
+            url: "#",
+          },
+          {
+            title: "Billing",
+            url: "#",
+          },
+          {
+            title: "Limits",
+            url: "#",
+          },
+        ],
       },
     ],
   },
@@ -87,15 +184,32 @@ export const navGroups: NavGroup[] = [
     ],
   },
   {
-    label: "Resources",
+    // label: "Resources",
     items: [
-      {
-        title: "Documentation",
-        url: "/dashboard/docs",
-        icon: FileTextIcon,
-      },
+      { title: "Documentation", url: "/dashboard/docs", icon: FileTextIcon },
       { title: "Settings", url: "/dashboard/settings", icon: SettingsIcon },
       { title: "Support", url: "/dashboard/support", icon: LifeBuoyIcon },
     ],
   },
 ];
+
+export const documents: NavGroup = {
+  // label: "",
+  items: [
+    {
+      title: "Data Library",
+      url: "#",
+      icon: DatabaseIcon,
+    },
+    {
+      title: "Reports",
+      url: "#",
+      icon: FileChartColumnIcon,
+    },
+    {
+      title: "Word Assistant",
+      url: "#",
+      icon: FileIcon,
+    },
+  ],
+};

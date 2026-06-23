@@ -10,11 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
+import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
@@ -24,6 +26,10 @@ import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/orga
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const app2RouteRoute = app2RouteRouteImport.update({
+  id: '/(app2)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appRouteRoute = appRouteRouteImport.update({
@@ -49,6 +55,11 @@ const publicAboutRoute = publicAboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => publicRouteRoute,
+} as any)
+const app2Dashboard2Route = app2Dashboard2RouteImport.update({
+  id: '/dashboard2',
+  path: '/dashboard2',
+  getParentRoute: () => app2RouteRoute,
 } as any)
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   id: '/dashboard/',
@@ -82,6 +93,7 @@ const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
@@ -94,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesByTo {
+  '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
@@ -108,7 +121,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
+  '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
+  '/(app2)/dashboard2': typeof app2Dashboard2Route
   '/(public)/about': typeof publicAboutRoute
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/version': typeof publicVersionRoute
@@ -123,6 +138,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/dashboard2'
     | '/about'
     | '/theme'
     | '/version'
@@ -135,6 +151,7 @@ export interface FileRouteTypes {
     | '/organization/$slug/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/dashboard2'
     | '/about'
     | '/theme'
     | '/version'
@@ -148,7 +165,9 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/(app)'
+    | '/(app2)'
     | '/(public)'
+    | '/(app2)/dashboard2'
     | '/(public)/about'
     | '/(public)/theme'
     | '/(public)/version'
@@ -163,6 +182,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
+  app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -174,6 +194,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app2)': {
+      id: '/(app2)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof app2RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)': {
@@ -210,6 +237,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about'
       preLoaderRoute: typeof publicAboutRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/(app2)/dashboard2': {
+      id: '/(app2)/dashboard2'
+      path: '/dashboard2'
+      fullPath: '/dashboard2'
+      preLoaderRoute: typeof app2Dashboard2RouteImport
+      parentRoute: typeof app2RouteRoute
     }
     '/(app)/dashboard/': {
       id: '/(app)/dashboard/'
@@ -274,6 +308,18 @@ const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
   appRouteRouteChildren,
 )
 
+interface app2RouteRouteChildren {
+  app2Dashboard2Route: typeof app2Dashboard2Route
+}
+
+const app2RouteRouteChildren: app2RouteRouteChildren = {
+  app2Dashboard2Route: app2Dashboard2Route,
+}
+
+const app2RouteRouteWithChildren = app2RouteRoute._addFileChildren(
+  app2RouteRouteChildren,
+)
+
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
   publicThemeRoute: typeof publicThemeRoute
@@ -296,6 +342,7 @@ const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
+  app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

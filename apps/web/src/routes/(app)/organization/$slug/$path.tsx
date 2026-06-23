@@ -40,8 +40,10 @@ function OrganizationPage() {
   const { path } = Route.useParams();
 
   return (
-    <div className="mx-auto w-full max-w-3xl p-4 md:p-6">
-      <Organization path={path} />
+    <div className="container-wrapper">
+      <div className="mx-auto w-full max-w-3xl p-4 md:p-6">
+        <Organization path={path} />
+      </div>
     </div>
   );
 }

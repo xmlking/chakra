@@ -10,6 +10,8 @@ import {
 } from "@workspace/ui/components/shadcn/empty";
 import { ConstructionIcon } from "lucide-react";
 
+import { DashboardSkeleton } from "#features/dashboard/dashboard-skeleton.tsx";
+
 export const Route = createFileRoute("/(app)/dashboard/$page")({
   staticData: {
     // breadcrumb: "Overview",
@@ -20,6 +22,7 @@ export const Route = createFileRoute("/(app)/dashboard/$page")({
     //   search.step ? ["Steps", `${search.step}`] : "Steps",
   },
   component: DashboardPlaceholder,
+  pendingComponent: DashboardSkeleton,
 });
 
 function titleCase(value: string) {
