@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { ArrowRightIcon } from "lucide-react";
 
 const stats = [
@@ -29,10 +29,10 @@ export function CtaSection() {
           <p className="max-w-md leading-relaxed text-pretty text-primary-foreground/80">
             Join thousands of teams already building their best work on Acme.
           </p>
-          <Button size="lg" variant="secondary" render={<Link to="/dashboard" />}>
+          <Link to="/dashboard" className={buttonVariants({ size: "lg", variant: "secondary" })}>
             Open the dashboard
             <ArrowRightIcon data-icon="inline-end" />
-          </Button>
+          </Link>
         </div>
       </div>
     </section>
