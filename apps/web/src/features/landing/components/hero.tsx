@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/shadcn/badge";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { Button, buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { ArrowRightIcon, StarIcon } from "lucide-react";
 
 export function Hero() {
@@ -22,10 +22,10 @@ export function Hero() {
         </p>
 
         <div className="flex flex-col items-center gap-3 sm:flex-row">
-          <Button size="lg" render={<Link to="/dashboard" />}>
+          <Link to="/dashboard" className={buttonVariants({ size: "lg" })}>
             Start for free
             <ArrowRightIcon data-icon="inline-end" />
-          </Button>
+          </Link>
           <Button variant="outline" size="lg">
             Book a demo
           </Button>
