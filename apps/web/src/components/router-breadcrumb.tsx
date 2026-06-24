@@ -40,8 +40,6 @@ export function RouterBreadcrumb() {
     }));
   });
 
-  console.log(breadcrumbs);
-
   if (breadcrumbs.length === 0) {
     return (
       <Breadcrumb>
