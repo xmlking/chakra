@@ -69,7 +69,7 @@ const config = defineConfig({
             href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+          <link rel="icon" href="/chakra/favicon.ico" type="image/x-icon" />
         </>
       );
     },
@@ -160,7 +160,7 @@ const config = defineConfig({
               /> */}
               <img
                 alt="logo"
-                src="/chakra2.svg"
+                src="/chakra/chakra2.svg"
                 width="64"
                 height="64"
                 className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"

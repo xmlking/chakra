@@ -1,9 +1,11 @@
 import { Badge } from "@workspace/ui/components/shadcn/badge";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/shadcn/card";
 // oxlint-disable react-doctor/jsx-pascal-case
 import { Database, Plug, Zap, Lock, Shuffle, Globe, Star } from "lucide-react";
 import { Link } from "waku";
+
+import { cn } from "@/lib/utils";
 
 // oxlint-disable-next-line import/no-default-export
 export default function Page() {
@@ -41,24 +43,28 @@ function Hero() {
           Evaluate, score, and optimize your agents with expert guidance on the path to production.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3 max-lg:justify-center">
-          <Button
-            size="lg"
-            className="rounded-full text-sm tracking-normal normal-case"
-            nativeButton={false}
-            render={<Link to="/docs">Read the Docs</Link>}
-          />
-          <Button
-            size="lg"
-            variant="outline"
-            className="rounded-full bg-background text-sm tracking-normal normal-case"
-            nativeButton={false}
-            render={
-              <a href="https://github.com/xmlking/chakra" target="_blank" rel="noreferrer noopener">
-                <Star className="mr-2 size-4 text-amber-300" />
-                Star on GitHub
-              </a>
-            }
-          />
+          <Link
+            to="/docs"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "rounded-full text-sm tracking-normal normal-case",
+            )}
+          >
+            Read the Docs
+          </Link>
+
+          <a
+            href="https://github.com/xmlking/chakra"
+            className={cn(
+              buttonVariants({ size: "lg", variant: "outline" }),
+              "rounded-full bg-background text-sm tracking-normal normal-case",
+            )}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <Star className="mr-2 size-4 text-amber-300" />
+            Star on GitHub
+          </a>
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
@@ -168,18 +174,24 @@ function CTA() {
         Implement FumaDB in minutes. Migrate slowly, or switch drivers instantly.
       </p>
       <div className="mt-6 flex flex-wrap gap-2">
-        <Button
-          className="rounded-full text-sm font-semibold tracking-normal normal-case"
-          nativeButton={false}
-          render={<Link to="/docs/openapi">Get Started</Link>}
-        />
-
-        <Button
-          variant="outline"
-          className="rounded-full bg-background text-sm font-semibold tracking-normal normal-case"
-          nativeButton={false}
-          render={<Link to="/docs">Learn More</Link>}
-        />
+        <Link
+          to="/docs/openapi"
+          className={cn(
+            buttonVariants({}),
+            "rounded-full text-sm font-semibold tracking-normal normal-case",
+          )}
+        >
+          Get Started
+        </Link>
+        <Link
+          to="/docs"
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "rounded-full bg-background text-sm font-semibold tracking-normal normal-case",
+          )}
+        >
+          Learn More
+        </Link>
       </div>
     </section>
   );
