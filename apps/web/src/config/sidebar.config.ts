@@ -17,6 +17,7 @@ import {
   DatabaseIcon,
   FileChartColumnIcon,
   FileIcon,
+  HomeIcon,
 } from "lucide-react";
 
 import type { NavGroup } from "#types/index";
@@ -24,6 +25,12 @@ import type { NavGroup } from "#types/index";
 export const navGroups: NavGroup[] = [
   {
     items: [
+      {
+        title: "Home",
+        url: "/",
+        icon: HomeIcon,
+        shortcut: ["g", "h"],
+      },
       {
         title: "Overview",
         url: "/dashboard",

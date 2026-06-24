@@ -1,7 +1,7 @@
 // "use client";
 
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { Link, useParams, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster } from "@workspace/ui/components/shadcn/sonner";
@@ -23,7 +23,6 @@ import { KBar } from "./kbar";
 
 export function Providers({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const { slug } = useParams({ strict: false });
 
   return (
     <ThemeProvider>
@@ -57,7 +56,6 @@ export function Providers({ children }: { children: ReactNode }) {
                   }),
                   deleteUserPlugin(),
                   organizationPlugin({
-                    slug: slug ?? null,
                     // Override path segments (defaults shown).
                     viewPaths: {
                       settings: { organizations: "organizations" },

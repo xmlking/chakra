@@ -21,8 +21,8 @@ import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
 import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
+import { Route as appOrganizationPathRouteImport } from './routes/(app)/organization/$path'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
-import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/organization/$slug/$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
@@ -81,14 +81,14 @@ const appSettingsPathRoute = appSettingsPathRouteImport.update({
   path: '/settings/$path',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appOrganizationPathRoute = appOrganizationPathRouteImport.update({
+  id: '/organization/$path',
+  path: '/organization/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appDashboardPageRoute = appDashboardPageRouteImport.update({
   id: '/dashboard/$page',
   path: '/dashboard/$page',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
-  id: '/organization/$slug/$path',
-  path: '/organization/$slug/$path',
   getParentRoute: () => appRouteRoute,
 } as any)
 
@@ -99,11 +99,11 @@ export interface FileRoutesByFullPath {
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/organization/$path': typeof appOrganizationPathRoute
   '/settings/$path': typeof appSettingsPathRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard/': typeof appDashboardIndexRoute
-  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesByTo {
   '/dashboard2': typeof app2Dashboard2Route
@@ -112,11 +112,11 @@ export interface FileRoutesByTo {
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/organization/$path': typeof appOrganizationPathRoute
   '/settings/$path': typeof appSettingsPathRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof appDashboardIndexRoute
-  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -129,11 +129,11 @@ export interface FileRoutesById {
   '/(public)/version': typeof publicVersionRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
+  '/(app)/organization/$path': typeof appOrganizationPathRoute
   '/(app)/settings/$path': typeof appSettingsPathRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
-  '/(app)/organization/$slug/$path': typeof appOrganizationSlugPathRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -144,11 +144,11 @@ export interface FileRouteTypes {
     | '/version'
     | '/'
     | '/dashboard/$page'
+    | '/organization/$path'
     | '/settings/$path'
     | '/auth/$path'
     | '/api/auth/$'
     | '/dashboard/'
-    | '/organization/$slug/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard2'
@@ -157,11 +157,11 @@ export interface FileRouteTypes {
     | '/version'
     | '/'
     | '/dashboard/$page'
+    | '/organization/$path'
     | '/settings/$path'
     | '/auth/$path'
     | '/api/auth/$'
     | '/dashboard'
-    | '/organization/$slug/$path'
   id:
     | '__root__'
     | '/(app)'
@@ -173,11 +173,11 @@ export interface FileRouteTypes {
     | '/(public)/version'
     | '/(public)/'
     | '/(app)/dashboard/$page'
+    | '/(app)/organization/$path'
     | '/(app)/settings/$path'
     | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/(app)/dashboard/'
-    | '/(app)/organization/$slug/$path'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -273,6 +273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appSettingsPathRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/organization/$path': {
+      id: '/(app)/organization/$path'
+      path: '/organization/$path'
+      fullPath: '/organization/$path'
+      preLoaderRoute: typeof appOrganizationPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/dashboard/$page': {
       id: '/(app)/dashboard/$page'
       path: '/dashboard/$page'
@@ -280,28 +287,21 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardPageRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/organization/$slug/$path': {
-      id: '/(app)/organization/$slug/$path'
-      path: '/organization/$slug/$path'
-      fullPath: '/organization/$slug/$path'
-      preLoaderRoute: typeof appOrganizationSlugPathRouteImport
-      parentRoute: typeof appRouteRoute
-    }
   }
 }
 
 interface appRouteRouteChildren {
   appDashboardPageRoute: typeof appDashboardPageRoute
+  appOrganizationPathRoute: typeof appOrganizationPathRoute
   appSettingsPathRoute: typeof appSettingsPathRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
-  appOrganizationSlugPathRoute: typeof appOrganizationSlugPathRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDashboardPageRoute: appDashboardPageRoute,
+  appOrganizationPathRoute: appOrganizationPathRoute,
   appSettingsPathRoute: appSettingsPathRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
-  appOrganizationSlugPathRoute: appOrganizationSlugPathRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
