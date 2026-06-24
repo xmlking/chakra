@@ -1,10 +1,14 @@
+import { OrganizationSwitcher as OrganizationSwitcher2 } from "@workspace/ui/components/auth/organization/organization-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
   // SidebarRail,
 } from "@workspace/ui/components/shadcn/sidebar";
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import { GalleryVerticalEndIcon, BoxIcon, AudioWaveformIcon } from "lucide-react";
 import * as React from "react";
 
@@ -30,10 +34,21 @@ const user = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const isMobile = useIsMobile();
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
         <OrganizationSwitcher teams={teams} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <OrganizationSwitcher2
+              hideSlug={false}
+              className="flex w-full justify-between"
+              side={isMobile ? "bottom" : "right"}
+            />
+          </SidebarMenuItem>
+        </SidebarMenu>
         <SidebarSearch />
       </SidebarHeader>
       <SidebarContent>
