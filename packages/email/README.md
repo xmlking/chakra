@@ -98,10 +98,10 @@ vp run @workspace/email#cli --help
 ## Email-SDK CLI
 
 ```shell
-bun run --filter @workspace/email cli version
-bun run --filter @workspace/email cli doctor --adapter resend
+vp run @workspace/email#cli version
+vp run @workspace/email#cli doctor --adapter resend
 
-bun run --filter @workspace/email cli send \
+vp run @workspace/email#cli send \
   --adapter resend \
   --from "Acme <hello@acme.com>" \
   --to "user@example.com" \
