@@ -192,9 +192,6 @@ const config = defineConfig({
           layoutProps: {
             tree: pageTree,
           },
-          pageProps: {
-            tableOfContent: { style: "clerk" },
-          },
         };
       },
     }),
