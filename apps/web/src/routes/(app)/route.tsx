@@ -1,5 +1,9 @@
 import { viewPaths } from "@better-auth-ui/core";
-import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
+import {
+  ensureSession as ensureSessionClient,
+  useAuth,
+  useAuthenticate,
+} from "@better-auth-ui/react";
 import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
@@ -8,6 +12,7 @@ import { getCookie } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
 import { authClient } from "@workspace/auth/client";
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/shadcn/sidebar";
+import { Spinner } from "@workspace/ui/components/shadcn/spinner";
 
 import { AppHeader } from "#components/layout/app-header";
 import { AppSidebar } from "#components/layout/app-sidebar";
@@ -47,6 +52,18 @@ export const Route = createFileRoute("/(app)")({
 
 function AppLayout() {
   const { defaultOpen } = Route.useRouteContext();
+
+  // Reactive protection
+  // Alongside beforeLoad for server-rendered routes, as a second layer that keeps the UI in sync after the initial load.
+  const { authClient } = useAuth();
+  const { data: session } = useAuthenticate(authClient);
+  if (!session) {
+    return (
+      <div className="my-auto flex justify-center">
+        <Spinner color="current" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider

@@ -136,7 +136,7 @@ export function OrganizationSwitcher({
               />
             )}
 
-            <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
+            <ChevronsUpDown className="ml-auto" />
           </DropdownMenuTrigger>
         )}
 

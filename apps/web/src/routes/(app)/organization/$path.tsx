@@ -10,7 +10,7 @@ import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 
 const validOrganizationPaths = Object.values(organizationPlugin().viewPaths.organization);
 
-export const Route = createFileRoute("/(app)/organization/$slug/$path")({
+export const Route = createFileRoute("/(app)/organization/$path")({
   async beforeLoad({ params: { path }, context: { queryClient }, location }) {
     if (!validOrganizationPaths.includes(path)) {
       throw notFound();
