@@ -84,16 +84,31 @@ export function SignInUsername({
 
         resetFetchOptions()
       },
-      onSuccess: () => navigate({ to: redirectTo })
+      onSuccess: () => {
+        sessionStorage.removeItem("better-auth-ui.verify-email")
+        navigate({ to: redirectTo })
+      }
     })
 
   const { mutate: signInUsername, isPending: isSignInUsernamePending } =
     useSignInUsername(authClient as UsernameAuthClient, {
-      onError: () => {
+      onError: (error) => {
         setPassword("")
+
+        if (error.error?.code === "EMAIL_NOT_VERIFIED") {
+          sessionStorage.removeItem("better-auth-ui.verify-email")
+
+          navigate({
+            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
+          })
+        }
+
         resetFetchOptions()
       },
-      onSuccess: () => navigate({ to: redirectTo })
+      onSuccess: () => {
+        sessionStorage.removeItem("better-auth-ui.verify-email")
+        navigate({ to: redirectTo })
+      }
     })
 
   const signInMutating = useIsMutating({

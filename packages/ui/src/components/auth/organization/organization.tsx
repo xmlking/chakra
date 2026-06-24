@@ -46,7 +46,8 @@ export function Organization({
   const {
     localization: organizationLocalization,
     viewPaths: organizationViewPaths,
-    slug
+    slug,
+    slugPrefix
   } = useAuthPlugin(organizationPlugin)
 
   const { data: activeOrganization, isPending } = useActiveOrganization(
@@ -104,7 +105,7 @@ export function Organization({
             onClick={() =>
               navigate({
                 to: slug
-                  ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.settings}`
+                  ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.settings}`
                   : `${basePaths.organization}/${organizationViewPaths.organization.settings}`
               })
             }
@@ -120,7 +121,7 @@ export function Organization({
             onClick={() =>
               navigate({
                 to: slug
-                  ? `${basePaths.organization}/${slug}/${organizationViewPaths.organization.people}`
+                  ? `${basePaths.organization}/${slugPrefix}${slug}/${organizationViewPaths.organization.people}`
                   : `${basePaths.organization}/${organizationViewPaths.organization.people}`
               })
             }

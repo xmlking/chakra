@@ -39,9 +39,9 @@ function useIsHydrated() {
  * that is rate-limited by a cooldown timer.
  *
  * The target email is read from `sessionStorage` (set when sign-up or sign-in
- * redirects here); if none is stored the user is redirected back to sign-in.
- * The resend button is disabled while a cooldown is active and shows the
- * remaining seconds.
+ * redirects here); the OpenEmail/Resend controls are only shown when an email
+ * is stored. The resend button is disabled while a cooldown is active and shows
+ * the remaining seconds.
  *
  * @param className - Additional CSS classes applied to the card
  * @returns The verify-email card React element
@@ -52,7 +52,6 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
     basePaths,
     baseURL,
     localization,
-    navigate,
     redirectTo,
     viewPaths,
     Link
@@ -65,25 +64,18 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS)
 
   useEffect(() => {
-    const storedEmail = sessionStorage.getItem("better-auth-ui.verify-email")
-
-    if (!storedEmail) {
-      navigate({ to: `${basePaths.auth}/${viewPaths.auth.signIn}` })
-      return
-    }
-
-    setEmail(storedEmail)
-  }, [basePaths.auth, navigate, viewPaths.auth.signIn])
+    setEmail(sessionStorage.getItem("better-auth-ui.verify-email") ?? "")
+  }, [])
 
   useEffect(() => {
-    if (cooldown <= 0) return
+    if (cooldown <= 0 || !email) return
 
     const interval = setInterval(() => {
       setCooldown((current) => (current > 0 ? current - 1 : 0))
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [cooldown])
+  }, [cooldown, email])
 
   const { mutate: sendVerificationEmail, isPending } = useSendVerificationEmail(
     authClient,
@@ -111,30 +103,32 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
             {localization.auth.checkYourEmail}
           </FieldDescription>
 
-          <div className="flex flex-col gap-3">
-            <OpenEmailButton email={email} />
+          {email && (
+            <div className="flex flex-col gap-3">
+              <OpenEmailButton email={email} />
 
-            <Button
-              type="button"
-              variant="outline"
-              disabled={!email || isCoolingDown || isPending}
-              onClick={() =>
-                sendVerificationEmail({
-                  email,
-                  callbackURL: `${baseURL}${redirectTo}`
-                })
-              }
-            >
-              {isPending && <Spinner />}
+              <Button
+                type="button"
+                variant="outline"
+                disabled={!email || isCoolingDown || isPending}
+                onClick={() =>
+                  sendVerificationEmail({
+                    email,
+                    callbackURL: `${baseURL}${redirectTo}`
+                  })
+                }
+              >
+                {isPending && <Spinner />}
 
-              {isCoolingDown
-                ? localization.auth.resendIn.replace(
-                    "{{seconds}}",
-                    String(cooldown)
-                  )
-                : localization.auth.resend}
-            </Button>
-          </div>
+                {isCoolingDown
+                  ? localization.auth.resendIn.replace(
+                      "{{seconds}}",
+                      String(cooldown)
+                    )
+                  : localization.auth.resend}
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 items-center w-full mt-4">
