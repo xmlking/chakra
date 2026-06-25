@@ -55,6 +55,7 @@ export type UserButtonLink = {
 export type UserButtonProps = {
   className?: string
   align?: "center" | "end" | "start" | undefined
+  side?: "top" | "right" | "bottom" | "left"
   sideOffset?: number
   size?: "default" | "icon"
   variant?:
@@ -108,6 +109,7 @@ function renderUserLink(
 export function UserButton({
   className,
   align,
+  side,
   sideOffset,
   size = "default",
   variant = "ghost",
@@ -169,9 +171,10 @@ export function UserButton({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="min-w-40 md:min-w-56 max-w-[48svw]"
-        sideOffset={sideOffset}
         align={align}
+        side={side}
+        sideOffset={sideOffset}
+        className="min-w-40 md:min-w-56 max-w-[48svw]"
       >
         {session && (
           <>
