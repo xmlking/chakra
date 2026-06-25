@@ -31,6 +31,9 @@ export function Providers({ children }: { children: ReactNode }) {
           <KBar>
             <TooltipProvider>
               <AuthProvider
+                basePaths={{
+                  settings: "/user",
+                }}
                 // @ts-ignore : FIXME
                 authClient={authClient}
                 redirectTo="/dashboard"

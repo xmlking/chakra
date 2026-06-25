@@ -7,8 +7,6 @@ import {
   FileTextIcon,
   SettingsIcon,
   LifeBuoyIcon,
-  Link2Icon,
-  ClipboardListIcon,
   Building2Icon,
   Settings2Icon,
   BookOpenIcon,
@@ -18,6 +16,8 @@ import {
   FileChartColumnIcon,
   FileIcon,
   HomeIcon,
+  UserIcon,
+  LandmarkIcon,
 } from "lucide-react";
 
 import type { NavGroup } from "#types/index";
@@ -58,22 +58,22 @@ export const navGroups: NavGroup[] = [
     label: "Platform",
     items: [
       {
-        title: "Playground",
+        title: "Reports",
         url: "#",
         icon: TerminalSquareIcon,
         isActive: true,
         items: [
           {
             title: "History",
-            url: "#",
+            url: "/reports/history",
           },
           {
             title: "Starred",
-            url: "#",
+            url: "/reports/starred",
           },
           {
             title: "Settings",
-            url: "#",
+            url: "/reports/settings",
           },
         ],
       },
@@ -84,15 +84,39 @@ export const navGroups: NavGroup[] = [
         items: [
           {
             title: "Genesis",
-            url: "#",
+            url: "/models/genesis",
           },
           {
             title: "Explorer",
-            url: "#",
+            url: "/models/explorer",
           },
           {
             title: "Quantum",
-            url: "#",
+            url: "/models/quantum",
+          },
+        ],
+      },
+
+      {
+        title: "Settings",
+        url: "#",
+        icon: Settings2Icon,
+        items: [
+          {
+            title: "General",
+            url: "/settings/general",
+          },
+          {
+            title: "Team",
+            url: "/settings/team",
+          },
+          {
+            title: "Billing",
+            url: "/settings/billing",
+          },
+          {
+            title: "Limits",
+            url: "/settings/limits",
           },
         ],
       },
@@ -119,28 +143,25 @@ export const navGroups: NavGroup[] = [
           },
         ],
       },
+    ],
+  },
+  {
+    label: "Security",
+    items: [
       {
-        title: "Settings",
-        url: "#",
-        icon: Settings2Icon,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
-            url: "#",
-          },
-        ],
+        title: "User",
+        url: "/user/account",
+        icon: UserIcon,
+        shortcut: ["s", "s"],
+        isActive: false,
+        items: [],
+      },
+      {
+        title: "Organization",
+        url: "/organization/settings",
+        icon: LandmarkIcon,
+        isActive: false,
+        items: [],
       },
     ],
   },
@@ -149,47 +170,21 @@ export const navGroups: NavGroup[] = [
     items: [
       {
         title: "Users",
-        url: "#",
+        url: "/admin/users",
         icon: UsersIcon,
         isActive: false,
         items: [],
       },
       {
         title: "Organizations",
-        url: "/organization/chakra-inc/settings",
+        url: "/admin/organizations",
         icon: Building2Icon,
         isActive: false,
         items: [],
       },
     ],
   },
-  {
-    label: "Configuration",
-    items: [
-      {
-        title: "Settings",
-        url: "/settings/account",
-        icon: SettingsIcon,
-        shortcut: ["s", "s"],
-        isActive: false,
-        items: [],
-      },
-      {
-        title: "Integrations",
-        url: "#",
-        icon: Link2Icon,
-        isActive: false,
-        items: [],
-      },
-      {
-        title: "Audit Logs",
-        url: "#",
-        icon: ClipboardListIcon,
-        isActive: false,
-        items: [],
-      },
-    ],
-  },
+
   {
     // label: "Resources",
     items: [

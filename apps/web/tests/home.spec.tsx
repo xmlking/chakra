@@ -14,7 +14,11 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     useHydrated: vi.fn<typeof useHydrated>(() => true),
-    Link: ({ children, ...props }: any) => <a {...props}>{children}</a>,
+    Link: ({ children, to, ...props }: any) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
   };
 });
 

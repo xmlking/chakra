@@ -1,4 +1,4 @@
-import { useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import {
   Collapsible,
   CollapsibleContent,
@@ -50,7 +50,7 @@ export function NavGroup({
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton
                           isActive={pathname === item.url}
-                          render={<a href={subItem.url} aria-label={subItem.title} />}
+                          render={<Link to={subItem.url} aria-label={subItem.title} />}
                         >
                           <span>{subItem.title}</span>
                         </SidebarMenuSubButton>
@@ -67,7 +67,7 @@ export function NavGroup({
               <SidebarMenuButton
                 isActive={pathname === item.url}
                 tooltip={item.title}
-                render={<a href={item.url} aria-label={item.title} />}
+                render={<Link to={item.url} aria-label={item.title} />}
               >
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

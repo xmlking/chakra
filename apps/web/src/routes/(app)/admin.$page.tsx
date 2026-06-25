@@ -12,15 +12,9 @@ import { ConstructionIcon } from "lucide-react";
 
 import { DashboardSkeleton } from "#features/dashboard/dashboard-skeleton.tsx";
 
-export const Route = createFileRoute("/(app)/dashboard/$page")({
+export const Route = createFileRoute("/(app)/admin/$page")({
   staticData: {
-    // breadcrumb: "Overview",
-    // breadcrumb: ["Root", "Dashboard"],
-    // TODO: https://github.com/Balastrong/tanstack-router-demo/blob/main/src/routes/steps.tsx
-    breadcrumb: (match) => `${match.params.page}`,
-    // breadcrumb: (match) => ["dashboard", `${match.params.page}`],
-    // breadcrumb: ({ search }: { search: StepsSearchParams }) =>
-    //   search.step ? ["Steps", `${search.step}`] : "Steps",
+    breadcrumb: (match) => ["admin", `${match.params.page}`],
   },
   component: DashboardPlaceholder,
   pendingComponent: DashboardSkeleton,
@@ -31,7 +25,7 @@ function titleCase(value: string) {
 }
 
 function DashboardPlaceholder() {
-  const { page } = useParams({ from: "/(app)/dashboard/$page" });
+  const { page } = useParams({ from: "/(app)/admin/$page" });
   const title = titleCase(page);
 
   return (
