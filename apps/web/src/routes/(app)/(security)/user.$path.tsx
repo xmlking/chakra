@@ -14,7 +14,10 @@ const validSettingsPaths = [
   ...Object.values(organizationPlugin().viewPaths.settings),
 ];
 
-export const Route = createFileRoute("/(app)/settings/$path")({
+export const Route = createFileRoute("/(app)/(security)/user/$path")({
+  staticData: {
+    breadcrumb: (match) => ["user", `${match.params.path}`],
+  },
   async beforeLoad({ params: { path }, context: { queryClient }, location }) {
     if (!validSettingsPaths.includes(path)) {
       throw notFound();
@@ -38,12 +41,12 @@ export const Route = createFileRoute("/(app)/settings/$path")({
     return { session };
   },
   head: () => ({
-    meta: [{ title: "Settings | Chakra" }],
+    meta: [{ title: "User | Chakra" }],
   }),
-  component: SettingsPage,
+  component: UserPage,
 });
 
-function SettingsPage() {
+function UserPage() {
   const { path } = Route.useParams();
 
   return (

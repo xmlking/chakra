@@ -27,8 +27,7 @@ export function getRouter() {
     scrollRestorationBehavior: "smooth",
     defaultViewTransition: true,
     defaultPreload: "intent",
-    defaultPreloadStaleTime: 0,
-    // defaultPreloadStaleTime: 30_000,
+    defaultPreloadStaleTime: 1000 * 60 * 2, // Match staleTime to avoid refetch on preload
     // defaultPendingMs: 0,
     // defaultPendingMinMs: 300,
     defaultPendingComponent: DefaultLoading,

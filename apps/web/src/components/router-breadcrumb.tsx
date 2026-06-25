@@ -61,14 +61,12 @@ export function RouterBreadcrumb() {
           return (
             <Fragment key={`${crumb.path}-${index}`}>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage className="capitalize">{crumb.label}</BreadcrumbPage>
                 ) : (
-                  <BreadcrumbLink render={<Link to={crumb.path} />}>{crumb.label}</BreadcrumbLink>
+                  <BreadcrumbLink className="capitalize" render={<Link to={crumb.path} />}>
+                    {crumb.label}
+                  </BreadcrumbLink>
                 )}
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}

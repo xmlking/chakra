@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "@tanstack/react-router";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +32,7 @@ export function NavDocuments({
       <SidebarMenu>
         {group.items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton render={<a href={item.url} aria-label={item.title} />}>
+            <SidebarMenuButton render={<Link to={item.url} aria-label={item.title} />}>
               {item.icon && <item.icon />}
               <span>{item.title}</span>
             </SidebarMenuButton>

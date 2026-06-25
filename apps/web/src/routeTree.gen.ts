@@ -20,9 +20,12 @@ import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
-import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
-import { Route as appOrganizationPathRouteImport } from './routes/(app)/organization/$path'
+import { Route as appSettingsPageRouteImport } from './routes/(app)/settings.$page'
+import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
+import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
+import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
+import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
@@ -76,14 +79,14 @@ const publicAuthPathRoute = publicAuthPathRouteImport.update({
   path: '/auth/$path',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const appSettingsPathRoute = appSettingsPathRouteImport.update({
-  id: '/settings/$path',
-  path: '/settings/$path',
+const appSettingsPageRoute = appSettingsPageRouteImport.update({
+  id: '/settings/$page',
+  path: '/settings/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appOrganizationPathRoute = appOrganizationPathRouteImport.update({
-  id: '/organization/$path',
-  path: '/organization/$path',
+const appReportsPageRoute = appReportsPageRouteImport.update({
+  id: '/reports/$page',
+  path: '/reports/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appDashboardPageRoute = appDashboardPageRouteImport.update({
@@ -91,6 +94,22 @@ const appDashboardPageRoute = appDashboardPageRouteImport.update({
   path: '/dashboard/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appAdminPageRoute = appAdminPageRouteImport.update({
+  id: '/admin/$page',
+  path: '/admin/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
+  id: '/(security)/user/$path',
+  path: '/user/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appsecurityOrganizationPathRoute =
+  appsecurityOrganizationPathRouteImport.update({
+    id: '/(security)/organization/$path',
+    path: '/organization/$path',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/dashboard2': typeof app2Dashboard2Route
@@ -98,12 +117,15 @@ export interface FileRoutesByFullPath {
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
+  '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
-  '/organization/$path': typeof appOrganizationPathRoute
-  '/settings/$path': typeof appSettingsPathRoute
+  '/reports/$page': typeof appReportsPageRoute
+  '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard/': typeof appDashboardIndexRoute
+  '/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
   '/dashboard2': typeof app2Dashboard2Route
@@ -111,12 +133,15 @@ export interface FileRoutesByTo {
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
+  '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
-  '/organization/$path': typeof appOrganizationPathRoute
-  '/settings/$path': typeof appSettingsPathRoute
+  '/reports/$page': typeof appReportsPageRoute
+  '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/dashboard': typeof appDashboardIndexRoute
+  '/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -128,12 +153,15 @@ export interface FileRoutesById {
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/version': typeof publicVersionRoute
   '/(public)/': typeof publicIndexRoute
+  '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
-  '/(app)/organization/$path': typeof appOrganizationPathRoute
-  '/(app)/settings/$path': typeof appSettingsPathRoute
+  '/(app)/reports/$page': typeof appReportsPageRoute
+  '/(app)/settings/$page': typeof appSettingsPageRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/(app)/(security)/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -143,12 +171,15 @@ export interface FileRouteTypes {
     | '/theme'
     | '/version'
     | '/'
+    | '/admin/$page'
     | '/dashboard/$page'
-    | '/organization/$path'
-    | '/settings/$path'
+    | '/reports/$page'
+    | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
     | '/dashboard/'
+    | '/organization/$path'
+    | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/dashboard2'
@@ -156,12 +187,15 @@ export interface FileRouteTypes {
     | '/theme'
     | '/version'
     | '/'
+    | '/admin/$page'
     | '/dashboard/$page'
-    | '/organization/$path'
-    | '/settings/$path'
+    | '/reports/$page'
+    | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
     | '/dashboard'
+    | '/organization/$path'
+    | '/user/$path'
   id:
     | '__root__'
     | '/(app)'
@@ -172,12 +206,15 @@ export interface FileRouteTypes {
     | '/(public)/theme'
     | '/(public)/version'
     | '/(public)/'
+    | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
-    | '/(app)/organization/$path'
-    | '/(app)/settings/$path'
+    | '/(app)/reports/$page'
+    | '/(app)/settings/$page'
     | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/(app)/dashboard/'
+    | '/(app)/(security)/organization/$path'
+    | '/(app)/(security)/user/$path'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,18 +303,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAuthPathRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/(app)/settings/$path': {
-      id: '/(app)/settings/$path'
-      path: '/settings/$path'
-      fullPath: '/settings/$path'
-      preLoaderRoute: typeof appSettingsPathRouteImport
+    '/(app)/settings/$page': {
+      id: '/(app)/settings/$page'
+      path: '/settings/$page'
+      fullPath: '/settings/$page'
+      preLoaderRoute: typeof appSettingsPageRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/organization/$path': {
-      id: '/(app)/organization/$path'
-      path: '/organization/$path'
-      fullPath: '/organization/$path'
-      preLoaderRoute: typeof appOrganizationPathRouteImport
+    '/(app)/reports/$page': {
+      id: '/(app)/reports/$page'
+      path: '/reports/$page'
+      fullPath: '/reports/$page'
+      preLoaderRoute: typeof appReportsPageRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/$page': {
@@ -287,21 +324,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardPageRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/admin/$page': {
+      id: '/(app)/admin/$page'
+      path: '/admin/$page'
+      fullPath: '/admin/$page'
+      preLoaderRoute: typeof appAdminPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(security)/user/$path': {
+      id: '/(app)/(security)/user/$path'
+      path: '/user/$path'
+      fullPath: '/user/$path'
+      preLoaderRoute: typeof appsecurityUserPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(security)/organization/$path': {
+      id: '/(app)/(security)/organization/$path'
+      path: '/organization/$path'
+      fullPath: '/organization/$path'
+      preLoaderRoute: typeof appsecurityOrganizationPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
   }
 }
 
 interface appRouteRouteChildren {
+  appAdminPageRoute: typeof appAdminPageRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
-  appOrganizationPathRoute: typeof appOrganizationPathRoute
-  appSettingsPathRoute: typeof appSettingsPathRoute
+  appReportsPageRoute: typeof appReportsPageRoute
+  appSettingsPageRoute: typeof appSettingsPageRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
+  appsecurityUserPathRoute: typeof appsecurityUserPathRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appAdminPageRoute: appAdminPageRoute,
   appDashboardPageRoute: appDashboardPageRoute,
-  appOrganizationPathRoute: appOrganizationPathRoute,
-  appSettingsPathRoute: appSettingsPathRoute,
+  appReportsPageRoute: appReportsPageRoute,
+  appSettingsPageRoute: appSettingsPageRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
+  appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,
+  appsecurityUserPathRoute: appsecurityUserPathRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(

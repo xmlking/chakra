@@ -43,6 +43,6 @@ describe("i18n Messages", () => {
     expect(getLocale()).toBe("es");
 
     const result = m.greeting({ name: "Alice" });
-    expect(result).toBe("¡Hola Alice!"); // Assuming German is configured
+    expect(result).toBe("¡Hola, Alice!"); // Assuming German is configured
   });
 });

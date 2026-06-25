@@ -1,94 +1,167 @@
 "use client";
 
+import type { OrganizationAuthClient } from "@better-auth-ui/react";
+import {
+  useActiveOrganization,
+  useAuth,
+  useListOrganizations,
+  useSession,
+  useSetActiveOrganization,
+} from "@better-auth-ui/react";
+import { Link } from "@tanstack/react-router";
+import { CreateOrganizationDialog } from "@workspace/ui/components/auth/organization/create-organization-dialog";
+import { OrganizationView } from "@workspace/ui/components/auth/organization/organization-view";
+import { UserView } from "@workspace/ui/components/auth/user/user-view";
+import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/shadcn/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@workspace/ui/components/shadcn/sidebar";
-import { ChevronsUpDownIcon, PlusIcon, type LucideIcon } from "lucide-react";
-import * as React from "react";
+import { cn } from "@workspace/ui/lib/utils";
+import type { Organization } from "better-auth/client";
+import { ChevronsUpDownIcon, PlusCircle, Settings as SettingsIcon } from "lucide-react";
+import { useState } from "react";
+
+interface OrganizationSwitcherProps {
+  hideSlug?: boolean;
+  side?: "top" | "right" | "bottom" | "left";
+}
 
 export function OrganizationSwitcher({
-  teams,
-}: {
-  teams: {
-    name: string;
-    logo: LucideIcon;
-    plan: string;
-  }[];
-}) {
-  const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = React.useState(teams[0]);
-  if (!activeTeam) {
+  hideSlug = false,
+  side = "right",
+}: OrganizationSwitcherProps) {
+  const { authClient } = useAuth();
+  const { data: session, isPending: sessionPending } = useSession(authClient);
+
+  const { data: activeOrganization, isPending: activeOrganizationPending } = useActiveOrganization(
+    authClient as OrganizationAuthClient,
+  );
+
+  const { data: organizations, isPending: organizationsPending } = useListOrganizations(
+    authClient as OrganizationAuthClient,
+  );
+
+  const { mutate: setActiveOrganization, isPending: isSwitchingOrg } = useSetActiveOrganization(
+    authClient as OrganizationAuthClient,
+  );
+
+  const isPending =
+    sessionPending ||
+    (!!session && (organizationsPending || activeOrganizationPending)) ||
+    isSwitchingOrg;
+
+  const [createOpen, setCreateOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const otherOrganizations =
+    organizations?.filter((organization) => organization.id !== activeOrganization?.id) ?? [];
+
+  const hasOtherEntries = otherOrganizations.length > 0 || !!activeOrganization;
+
+  function handleSetActive(organization: Organization | null) {
+    setActiveOrganization({ organizationId: organization?.id ?? null });
+  }
+
+  if (!session) {
     return null;
   }
+
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <SidebarMenuButton
-                size="lg"
-                tooltip={activeTeam.name}
-                className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
-              />
-            }
-          >
-            <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <activeTeam.logo />
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{activeTeam.name}</span>
-              <span className="truncate text-xs">{activeTeam.plan}</span>
-            </div>
-            <ChevronsUpDownIcon className="ml-auto" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="min-w-56"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Teams</DropdownMenuLabel>
-              {teams.map((team, index) => (
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+            <DropdownMenuTrigger
+              render={
+                <SidebarMenuButton
+                  size="lg"
+                  disabled={isPending}
+                  className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+                />
+              }
+            >
+              {isPending || !session ? null : activeOrganization ? (
+                <OrganizationView hideRole hideSlug={hideSlug} />
+              ) : (
+                <UserView hideSubtitle />
+              )}
+              <ChevronsUpDownIcon className="ml-auto" />
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="min-w-56" align="start" side={side} sideOffset={4}>
+              {activeOrganization ? (
+                <div className="flex items-center justify-between gap-4 px-2 py-2">
+                  <OrganizationView
+                    hideRole
+                    hideSlug={hideSlug}
+                    organization={activeOrganization}
+                  />
+
+                  <Link
+                    to="/organization/$path"
+                    params={{ path: "settings" }}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                  >
+                    <SettingsIcon className="size-4 text-muted-foreground" />
+                  </Link>
+                </div>
+              ) : session?.user ? (
+                <div className="flex items-center justify-between gap-4 px-2 py-2">
+                  <UserView hideSubtitle />
+
+                  <Link
+                    to="/user/$path"
+                    params={{ path: "account" }}
+                    className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+                  >
+                    <SettingsIcon className="size-4 text-muted-foreground" />
+                  </Link>
+                </div>
+              ) : null}
+
+              <DropdownMenuSeparator />
+
+              {!!activeOrganization && (
+                <DropdownMenuItem onClick={() => handleSetActive(null)}>
+                  <UserView hideSubtitle />
+                </DropdownMenuItem>
+              )}
+
+              {otherOrganizations.map((organization) => (
                 <DropdownMenuItem
-                  key={team.name}
-                  onClick={() => setActiveTeam(team)}
-                  className="gap-2 p-2"
+                  key={organization.id}
+                  onClick={() => handleSetActive(organization)}
                 >
-                  <div className="flex size-6 items-center justify-center rounded-md border">
-                    <activeTeam.logo />
-                  </div>
-                  {team.name}
-                  <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                  <OrganizationView hideRole hideSlug={hideSlug} organization={organization} />
                 </DropdownMenuItem>
               ))}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="gap-2 p-2">
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <PlusIcon className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">Add team</div>
+
+              {hasOtherEntries && <DropdownMenuSeparator />}
+
+              <DropdownMenuItem
+                onClick={() => {
+                  setDropdownOpen(false);
+                  setCreateOpen(true);
+                }}
+              >
+                <PlusCircle className="size-4 text-muted-foreground" />
+                Create organization
               </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      <CreateOrganizationDialog open={createOpen} onOpenChange={setCreateOpen} />
+    </>
   );
 }

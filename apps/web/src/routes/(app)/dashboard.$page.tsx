@@ -18,6 +18,7 @@ export const Route = createFileRoute("/(app)/dashboard/$page")({
     // breadcrumb: ["Root", "Dashboard"],
     // TODO: https://github.com/Balastrong/tanstack-router-demo/blob/main/src/routes/steps.tsx
     breadcrumb: (match) => `${match.params.page}`,
+    // breadcrumb: (match) => ["dashboard", `${match.params.page}`],
     // breadcrumb: ({ search }: { search: StepsSearchParams }) =>
     //   search.step ? ["Steps", `${search.step}`] : "Steps",
   },
