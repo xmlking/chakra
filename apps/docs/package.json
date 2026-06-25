@@ -25,7 +25,7 @@
     "clsx": "catalog:",
     "fumadocs-core": "16.10.5",
     "fumadocs-mdx": "15.0.12",
-    "fumadocs-openapi": "11.0.3",
+    "fumadocs-openapi": "11.0.5",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.10.5",
     "fumapress": "0.6.2",
     "lucide-react": "catalog:",
