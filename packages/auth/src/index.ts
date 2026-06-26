@@ -209,7 +209,7 @@ export const auth = betterAuth({
       loginPage: "/auth/sign-in",
       consentPage: "/auth/consent",
       scopes: ["openid", "profile", "email", "offline_access"] as const,
-      // validAudiences: [env.API_SERVER_URL, `${env.API_SERVER_URL}/`],
+      // resources: [env.API_SERVER_URL, `${env.API_SERVER_URL}/`],
       accessTokenExpiresIn: 3600, // (1 hour)
       refreshTokenExpiresIn: 2592000, // (30 days)
       responseTypes: ["authorization_code", "refresh_token"] as const,
