@@ -4,7 +4,9 @@
 
 Update `better-auth` database schema, whenever auth config changed
 
-> will generate `packages/db/src/schema/copy_me_auth.ts`, very and copy it to `auth.ts`
+> will generate `packages/db/src/schema/copy_me_auth.ts`
+> Diff and copy it to `auth.ts`
+> We replace `pg_catalog.gen_random_uuid()` with `uuidv7()` in `packages/db/src/schema/copy_me_auth.ts` before copy to `auth.ts`
 
 ```shell
 vp run @workspace/auth#generate-schema

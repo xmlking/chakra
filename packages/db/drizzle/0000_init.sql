@@ -13,7 +13,7 @@ CREATE TABLE "account" (
 	"id_token" text,
 	"access_token_expires_at" timestamp,
 	"refresh_token_expires_at" timestamp,
-	"granted_scopes" text[],
+	"scope" text,
 	"password" text,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp NOT NULL
@@ -74,7 +74,9 @@ CREATE TABLE "jwks" (
 	"public_key" text NOT NULL,
 	"private_key" text NOT NULL,
 	"created_at" timestamp NOT NULL,
-	"expires_at" timestamp
+	"expires_at" timestamp,
+	"alg" text,
+	"crv" text
 );
 --> statement-breakpoint
 CREATE TABLE "member" (
@@ -92,11 +94,14 @@ CREATE TABLE "oauth_access_token" (
 	"session_id" uuid,
 	"user_id" uuid,
 	"reference_id" text,
+	"authorization_code_id" text,
 	"resources" text[],
+	"requested_user_info_claims" text[],
 	"refresh_id" uuid,
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"revoked" timestamp,
+	"confirmation" jsonb,
 	"scopes" text[] NOT NULL,
 	CONSTRAINT "oauth_access_token_token_unique" UNIQUE("token")
 );
@@ -134,14 +139,23 @@ CREATE TABLE "oauth_client" (
 	"public" boolean,
 	"type" text,
 	"require_pkce" boolean,
+	"dpop_bound_access_tokens" boolean DEFAULT false,
 	"reference_id" text,
 	"metadata" jsonb,
 	CONSTRAINT "oauth_client_client_id_unique" UNIQUE("client_id")
 );
 --> statement-breakpoint
 CREATE TABLE "oauth_client_assertion" (
-	"id" uuid PRIMARY KEY DEFAULT pg_catalog.gen_random_uuid() NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"expires_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_client_resource" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"client_id" text NOT NULL,
+	"resource_id" text NOT NULL,
+	"metadata" jsonb,
+	"created_at" timestamp
 );
 --> statement-breakpoint
 CREATE TABLE "oauth_consent" (
@@ -150,6 +164,7 @@ CREATE TABLE "oauth_consent" (
 	"user_id" uuid,
 	"reference_id" text,
 	"resources" text[],
+	"requested_user_info_claims" text[],
 	"scopes" text[] NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp NOT NULL
@@ -162,13 +177,38 @@ CREATE TABLE "oauth_refresh_token" (
 	"session_id" uuid,
 	"user_id" uuid NOT NULL,
 	"reference_id" text,
+	"authorization_code_id" text,
 	"resources" text[],
+	"requested_user_info_claims" text[],
 	"expires_at" timestamp NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"revoked" timestamp,
+	"rotated_at" timestamp,
+	"rotation_replay_response" text,
+	"rotation_replay_expires_at" timestamp,
 	"auth_time" timestamp,
+	"confirmation" jsonb,
 	"scopes" text[] NOT NULL,
 	CONSTRAINT "oauth_refresh_token_token_unique" UNIQUE("token")
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_resource" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
+	"identifier" text NOT NULL,
+	"name" text NOT NULL,
+	"access_token_ttl" integer,
+	"refresh_token_ttl" integer,
+	"signing_algorithm" text,
+	"signing_key_id" text,
+	"allowed_scopes" text[],
+	"custom_claims" jsonb,
+	"dpop_bound_access_tokens_required" boolean DEFAULT false,
+	"disabled" boolean DEFAULT false,
+	"created_at" timestamp,
+	"updated_at" timestamp,
+	"policy_version" integer DEFAULT 1,
+	"metadata" jsonb,
+	CONSTRAINT "oauth_resource_identifier_unique" UNIQUE("identifier")
 );
 --> statement-breakpoint
 CREATE TABLE "organization" (
@@ -222,6 +262,7 @@ CREATE TABLE "session" (
 CREATE TABLE "team" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"name" text NOT NULL,
+	"member_count" integer DEFAULT 0 NOT NULL,
 	"organization_id" uuid NOT NULL,
 	"created_at" timestamp NOT NULL,
 	"updated_at" timestamp
@@ -231,7 +272,9 @@ CREATE TABLE "team_member" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7() NOT NULL,
 	"team_id" uuid NOT NULL,
 	"user_id" uuid NOT NULL,
-	"created_at" timestamp
+	"membership_key" text,
+	"created_at" timestamp,
+	CONSTRAINT "team_member_membership_key_unique" UNIQUE("membership_key")
 );
 --> statement-breakpoint
 CREATE TABLE "user" (
@@ -285,6 +328,8 @@ ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_session_id_s
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_refresh_id_oauth_refresh_token_id_fk" FOREIGN KEY ("refresh_id") REFERENCES "public"."oauth_refresh_token"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_client" ADD CONSTRAINT "oauth_client_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "oauth_client_resource" ADD CONSTRAINT "oauth_client_resource_client_id_oauth_client_client_id_fk" FOREIGN KEY ("client_id") REFERENCES "public"."oauth_client"("client_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "oauth_client_resource" ADD CONSTRAINT "oauth_client_resource_resource_id_oauth_resource_identifier_fk" FOREIGN KEY ("resource_id") REFERENCES "public"."oauth_resource"("identifier") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_client_id_oauth_client_client_id_fk" FOREIGN KEY ("client_id") REFERENCES "public"."oauth_client"("client_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_client_id_oauth_client_client_id_fk" FOREIGN KEY ("client_id") REFERENCES "public"."oauth_client"("client_id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -308,13 +353,17 @@ CREATE INDEX "member_userId_idx" ON "member" USING btree ("user_id");--> stateme
 CREATE INDEX "oauthAccessToken_clientId_idx" ON "oauth_access_token" USING btree ("client_id");--> statement-breakpoint
 CREATE INDEX "oauthAccessToken_sessionId_idx" ON "oauth_access_token" USING btree ("session_id");--> statement-breakpoint
 CREATE INDEX "oauthAccessToken_userId_idx" ON "oauth_access_token" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_authorizationCodeId_idx" ON "oauth_access_token" USING btree ("authorization_code_id");--> statement-breakpoint
 CREATE INDEX "oauthAccessToken_refreshId_idx" ON "oauth_access_token" USING btree ("refresh_id");--> statement-breakpoint
 CREATE INDEX "oauthClient_userId_idx" ON "oauth_client" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthClientResource_clientId_idx" ON "oauth_client_resource" USING btree ("client_id");--> statement-breakpoint
+CREATE INDEX "oauthClientResource_resourceId_idx" ON "oauth_client_resource" USING btree ("resource_id");--> statement-breakpoint
 CREATE INDEX "oauthConsent_clientId_idx" ON "oauth_consent" USING btree ("client_id");--> statement-breakpoint
 CREATE INDEX "oauthConsent_userId_idx" ON "oauth_consent" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "oauthRefreshToken_clientId_idx" ON "oauth_refresh_token" USING btree ("client_id");--> statement-breakpoint
 CREATE INDEX "oauthRefreshToken_sessionId_idx" ON "oauth_refresh_token" USING btree ("session_id");--> statement-breakpoint
 CREATE INDEX "oauthRefreshToken_userId_idx" ON "oauth_refresh_token" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthRefreshToken_authorizationCodeId_idx" ON "oauth_refresh_token" USING btree ("authorization_code_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "organization_slug_uidx" ON "organization" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "organizationRole_organizationId_idx" ON "organization_role" USING btree ("organization_id");--> statement-breakpoint
 CREATE INDEX "organizationRole_role_idx" ON "organization_role" USING btree ("role");--> statement-breakpoint
