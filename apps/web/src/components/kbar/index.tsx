@@ -21,6 +21,7 @@ export function KBar({ children }: { children: React.ReactNode }) {
   // Navigation actions are generated from the shared sidebar nav config.
   const actions: Action[] = (() => {
     const navigateTo = async (url: string) => {
+      // @ts-ignore : FIXME
       await router.navigate({ to: url });
     };
 

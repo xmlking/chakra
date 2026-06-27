@@ -43,6 +43,7 @@ export function Providers({ children }: { children: ReactNode }) {
                   confirmPassword: true,
                   rememberMe: true,
                 }}
+                // @ts-ignore : FIXME
                 navigate={navigate}
                 plugins={[
                   magicLinkPlugin(),

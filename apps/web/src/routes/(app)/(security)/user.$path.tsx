@@ -1,11 +1,5 @@
 import { viewPaths } from "@better-auth-ui/core";
-import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
-import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
-import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "@workspace/auth";
-import { authClient } from "@workspace/auth/client";
 import { Settings } from "@workspace/ui/components/auth/settings/settings";
 import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 
@@ -18,17 +12,10 @@ export const Route = createFileRoute("/(app)/(security)/user/$path")({
   staticData: {
     breadcrumb: (match) => ["user", `${match.params.path}`],
   },
-  async beforeLoad({ params: { path }, context: { queryClient }, location }) {
+  async beforeLoad({ params: { path }, context: { session }, location }) {
     if (!validSettingsPaths.includes(path)) {
       throw notFound();
     }
-
-    const ensureSession = createIsomorphicFn()
-      .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
-      // @ts-ignore
-      .client(() => ensureSessionClient(queryClient, authClient));
-
-    const session = await ensureSession();
 
     if (!session) {
       throw redirect({

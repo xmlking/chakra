@@ -1,12 +1,7 @@
 import { viewPaths } from "@better-auth-ui/core";
-import { ensureSession as ensureSessionClient } from "@better-auth-ui/react";
-import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import { getCookie } from "@tanstack/react-start/server";
-import { auth } from "@workspace/auth";
-import { authClient } from "@workspace/auth/client";
 import { SidebarInset, SidebarProvider } from "@workspace/ui/components/shadcn/sidebar";
 
 import { AppHeader } from "#components/layout/app-header2";
@@ -16,14 +11,7 @@ import { safeRedirect } from "#features/auth/safe-redirect";
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 
 export const Route = createFileRoute("/(app2)")({
-  async beforeLoad({ context: { queryClient }, location }) {
-    const ensureSession = createIsomorphicFn()
-      .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
-      // @ts-ignore
-      .client(() => ensureSessionClient(queryClient, authClient));
-
-    const session = await ensureSession();
-
+  async beforeLoad({ context: { session }, location }) {
     const redirectTarget = safeRedirect(location.href);
     if (!session) {
       throw redirect({

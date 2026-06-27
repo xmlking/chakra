@@ -10,6 +10,7 @@ import { MagicLinkEmail } from "@workspace/email/magic-link";
 import { ResetPasswordEmail } from "@workspace/email/reset-password";
 import { VerifyEmail } from "@workspace/email/verify-email";
 import { betterAuth } from "better-auth";
+import type { BetterAuthPlugin } from "better-auth";
 import {
   admin,
   captcha,
@@ -401,7 +402,7 @@ export const auth = betterAuth({
     }),
     ...(process.env.VITEST === "true" ? [testUtils()] : []),
     tanstackStartCookies(), // make sure this is the last plugin in the array
-  ],
+  ] as BetterAuthPlugin[],
   trustedOrigins,
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days

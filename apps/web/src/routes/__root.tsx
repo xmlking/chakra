@@ -3,6 +3,7 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import type { Session } from "@workspace/auth/client";
 import { getLocale } from "@workspace/i18n/runtime";
 
 import { Providers } from "#components/providers";
@@ -15,6 +16,7 @@ interface MyRouterContext {
   queryClient: QueryClient;
   // TODO https://github.com/masrurimz/shadcn-tanstack-start-landing-page/tree/main
   //  user: Awaited<ReturnType<typeof getUserFn>>;
+  session: Session;
 }
 export const Route = createRootRouteWithContext<MyRouterContext>()({
   beforeLoad: async () => {
