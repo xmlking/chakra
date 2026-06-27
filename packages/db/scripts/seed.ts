@@ -74,7 +74,7 @@ async function run() {
         banned: f.default({ defaultValue: false }),
         banReason: f.default({ defaultValue: null }),
         banExpires: f.default({ defaultValue: null }),
-        lang: f.valuesFromArray({ values: ["en", "es", "de"] }),
+        lang: f.valuesFromArray({ values: ["en", "es"] }),
       },
       count: 1,
       with: {

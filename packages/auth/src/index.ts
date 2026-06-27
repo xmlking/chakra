@@ -1,5 +1,6 @@
 import { apiKey } from "@better-auth/api-key";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+// import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
 import { and, db } from "@workspace/db";
