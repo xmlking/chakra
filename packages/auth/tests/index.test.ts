@@ -14,7 +14,7 @@ describe.skipIf(process.env.CI)("auth (better-auth + testUtils plugin)", () => {
   const createdUserIds: string[] = [];
 
   beforeAll(async () => {
-    const ctx = await auth.$context;
+    const ctx = (await auth.$context) as unknown as { test: TestHelpers };
     test = ctx.test;
   });
 
