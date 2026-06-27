@@ -65,6 +65,7 @@
     "react-dom": "catalog:",
     "recharts": "catalog:",
     "sonner": "catalog:",
+    "tslib": "catalog:",
     "workflow": "catalog:",
     "zod": "catalog:",
     "zustand": "catalog:"
