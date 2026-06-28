@@ -2,13 +2,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { env } from "virtual:env/server";
 
-import * as relations from "./relations";
-// oxlint-disable-next-line react-doctor/no-barrel-import
-import * as schema from "./schema";
-
-// You can specify any property from the node-postgres connection options
-// Ref: https://orm.drizzle.team/docs/connect-overview
-// const pool = db.$client;
+import { relations } from "./relations";
+import { authRelations } from "./schema/auth";
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
@@ -18,9 +13,9 @@ const pool = new Pool({
 });
 export const db = drizzle({
   client: pool,
-  schema: { ...schema, ...relations },
-  casing: "snake_case",
+  relations: { ...relations, ...authRelations },
   logger: import.meta.env.DEV,
+  jit: true,
 });
 
 export * from "drizzle-orm";
