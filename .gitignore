@@ -24,6 +24,7 @@ build
 !.env.local.example
 !.env.production.example
 !.env.test.example
+!.env.docker.example
 !.env.vault
 
 # Editor directories and files

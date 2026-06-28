@@ -49,8 +49,8 @@ export default defineEnv({
     JWT_SECRET: z.string().min(32),
   },
   client: {
-    VITE_API_URL: z.url(),
-    VITE_APP_NAME: z.string().min(1),
+    VITE_WEB_URL: z.url(),
+    VITE_WEB_NAME: z.string().min(1),
   },
 });
 ```

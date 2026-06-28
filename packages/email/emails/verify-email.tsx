@@ -28,7 +28,7 @@ const VerifyEmail = ({ url, userName }: VerifyEmailProps) => (
         <Container className="mx-auto w-[500px]">
           <Section className="mt-[32px]">
             <Img
-              alt={process.env.VITE_APP_NAME}
+              alt={process.env.VITE_WEB_NAME}
               className="my-0 mr-auto"
               height="40"
               src="https://assets.vrite.io/6409e82d7dfc74cef7a72e0d/v0aihKNNJQGDAoYJN5Ml6.png"
@@ -36,7 +36,7 @@ const VerifyEmail = ({ url, userName }: VerifyEmailProps) => (
             />
           </Section>
           <Heading className="mx-0 mb-[12px] p-0 text-start text-[21px] font-bold">
-            Welcome to {process.env.VITE_APP_NAME}, {userName}!
+            Welcome to {process.env.VITE_WEB_NAME}, {userName}!
           </Heading>
           <Text className="text-[14px] leading-[22px]">
             Thanks for signing up! We're excited to have you as a user and can't wait to see what
@@ -58,10 +58,10 @@ const VerifyEmail = ({ url, userName }: VerifyEmailProps) => (
               {url}
             </Link>
             <Text>
-              If you didn't sign up for {process.env.VITE_APP_NAME}, you can ignore this email.
+              If you didn't sign up for {process.env.VITE_WEB_NAME}, you can ignore this email.
             </Text>
           </Section>
-          <Text className="my-0 text-[12px]">{process.env.VITE_APP_NAME} ©2026</Text>
+          <Text className="my-0 text-[12px]">{process.env.VITE_WEB_NAME} ©2026</Text>
         </Container>
       </Body>
     </Tailwind>
@@ -70,7 +70,7 @@ const VerifyEmail = ({ url, userName }: VerifyEmailProps) => (
 
 VerifyEmail.PreviewProps = {
   userName: "Sumo",
-  url: `${process.env.VITE_APP_URL}/verify`,
+  url: `${process.env.VITE_WEB_URL}/verify`,
 } as VerifyEmailProps;
 
 export { VerifyEmail };
