@@ -81,11 +81,11 @@ export function Providers({ children }: { children: ReactNode }) {
               <Suspense fallback={null}>
                 <Toaster
                   // HINT: without this, the toaster will not fit correctly
-                  className="flex justify-center"
-                  duration={10_000}
+                  // className="flex justify-center"
+                  // duration={10_000}
                   position="bottom-right"
                   richColors
-                  toastOptions={{ style: { width: "fit-content" } }}
+                  // toastOptions={{ style: { width: "fit-content" } }}
                 />
               </Suspense>
             </TooltipProvider>
