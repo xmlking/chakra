@@ -1,5 +1,7 @@
+// oxlint-disable react-doctor/no-multi-comp - Remove un-used comps
+import { m } from "@workspace/i18n/messages";
 import { getLocale, locales, setLocale } from "@workspace/i18n/runtime";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { Button, buttonVariants } from "@workspace/ui/components/shadcn/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,7 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/shadcn/select";
+import { cn } from "@workspace/ui/lib/utils";
+import { type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, Languages } from "lucide-react";
+
+type ButtonProps = VariantProps<typeof buttonVariants>;
+
+type LocaleSwitcherProps = {
+  size?: ButtonProps["size"];
+  variant?: ButtonProps["variant"];
+  className?: string;
+};
 
 const LOCALES = [
   {
@@ -32,14 +44,63 @@ const LOCALES = [
   flag: string;
 }>;
 
+/**
+ * Compact dashboard header switcher
+ */
+export function LocaleSwitcher({
+  size = "icon",
+  variant = "ghost",
+  className,
+}: LocaleSwitcherProps) {
+  const currentLocale = getLocale();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            aria-label="Switch language"
+            className={className}
+            size={size}
+            variant={variant}
+          />
+        }
+      >
+        <Languages aria-hidden="true" size={18} />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-44">
+        {locales.map((locale) => {
+          const isActive = locale === currentLocale;
+          return (
+            <DropdownMenuItem
+              key={locale}
+              className={cn(
+                "flex cursor-pointer items-center justify-between",
+                isActive && "bg-accent",
+              )}
+              onClick={() => setLocale(locale)}
+            >
+              <div className="flex items-center gap-2">
+                <span>{m.language_flag(undefined, { locale })}</span>
+                <span className="flex-1">{m.language_name(undefined, { locale })}</span>
+              </div>
+              {isActive && <Check aria-hidden="true" className="opacity-60" />}
+            </DropdownMenuItem>
+          );
+        })}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
 function getCurrentLocale() {
   return LOCALES.find((locale) => locale.code === getLocale()) ?? LOCALES[0];
 }
 
 /**
- * Compact dashboard header switcher
+ * Full dashboard header switcher
  */
-export function LocaleSwitcher() {
+export function LocaleSwitcherFull() {
   const currentLocale = getLocale();
   const current = getCurrentLocale();
 

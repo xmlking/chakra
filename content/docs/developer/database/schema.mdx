@@ -65,10 +65,10 @@ We're using a few native SQL utilities here, such as:
 
 What's more, Drizzle gives us the ability to export the TypeScript types for the table, which we can reuse e.g. for the API calls.
 
-Also, we can use the drizzle extension [drizzle-zod](https://orm.drizzle.team/docs/zod) to generate the Zod schemas for the table.
+Also, we can use the drizzle extension [drizzle-orm/zod](https://orm.drizzle.team/docs/zod) to generate the Zod schemas for the table.
 
 ```typescript title="customer.ts"
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-orm/zod";
 
 export const insertSubscriptionSchema = createInsertSchema(subscription);
 export const selectSubscriptionSchema = createSelectSchema(subscription);

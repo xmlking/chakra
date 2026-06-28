@@ -17,11 +17,14 @@ import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
+import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
+import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
 import { Route as appSettingsPageRouteImport } from './routes/(app)/settings.$page'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
+import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
 import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
@@ -64,10 +67,20 @@ const app2Dashboard2Route = app2Dashboard2RouteImport.update({
   path: '/dashboard2',
   getParentRoute: () => app2RouteRoute,
 } as any)
+const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
+  id: '/playground/',
+  path: '/playground/',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
   getParentRoute: () => appRouteRoute,
+} as any)
+const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
+  id: '/api/health/live',
+  path: '/api/health/live',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -87,6 +100,11 @@ const appSettingsPageRoute = appSettingsPageRouteImport.update({
 const appReportsPageRoute = appReportsPageRouteImport.update({
   id: '/reports/$page',
   path: '/reports/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
+  id: '/playground/error',
+  path: '/playground/error',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appDashboardPageRoute = appDashboardPageRouteImport.update({
@@ -119,11 +137,14 @@ export interface FileRoutesByFullPath {
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/error': typeof appPlaygroundErrorRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
   '/dashboard/': typeof appDashboardIndexRoute
+  '/playground/': typeof appPlaygroundIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
 }
@@ -135,11 +156,14 @@ export interface FileRoutesByTo {
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/error': typeof appPlaygroundErrorRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
   '/dashboard': typeof appDashboardIndexRoute
+  '/playground': typeof appPlaygroundIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
 }
@@ -155,11 +179,14 @@ export interface FileRoutesById {
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
+  '/(app)/playground/error': typeof appPlaygroundErrorRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
   '/(app)/settings/$page': typeof appSettingsPageRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/playground/': typeof appPlaygroundIndexRoute
   '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
   '/(app)/(security)/user/$path': typeof appsecurityUserPathRoute
 }
@@ -173,11 +200,14 @@ export interface FileRouteTypes {
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
+    | '/playground/error'
     | '/reports/$page'
     | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
+    | '/api/health/live'
     | '/dashboard/'
+    | '/playground/'
     | '/organization/$path'
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
@@ -189,11 +219,14 @@ export interface FileRouteTypes {
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
+    | '/playground/error'
     | '/reports/$page'
     | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
+    | '/api/health/live'
     | '/dashboard'
+    | '/playground'
     | '/organization/$path'
     | '/user/$path'
   id:
@@ -208,11 +241,14 @@ export interface FileRouteTypes {
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
+    | '/(app)/playground/error'
     | '/(app)/reports/$page'
     | '/(app)/settings/$page'
     | '/(public)/auth/$path'
     | '/api/auth/$'
+    | '/api/health/live'
     | '/(app)/dashboard/'
+    | '/(app)/playground/'
     | '/(app)/(security)/organization/$path'
     | '/(app)/(security)/user/$path'
   fileRoutesById: FileRoutesById
@@ -222,6 +258,7 @@ export interface RootRouteChildren {
   app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiHealthLiveRoute: typeof ApiHealthLiveRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -282,12 +319,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof app2Dashboard2RouteImport
       parentRoute: typeof app2RouteRoute
     }
+    '/(app)/playground/': {
+      id: '/(app)/playground/'
+      path: '/playground'
+      fullPath: '/playground/'
+      preLoaderRoute: typeof appPlaygroundIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/dashboard/': {
       id: '/(app)/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appRouteRoute
+    }
+    '/api/health/live': {
+      id: '/api/health/live'
+      path: '/api/health/live'
+      fullPath: '/api/health/live'
+      preLoaderRoute: typeof ApiHealthLiveRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -315,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/reports/$page'
       fullPath: '/reports/$page'
       preLoaderRoute: typeof appReportsPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/error': {
+      id: '/(app)/playground/error'
+      path: '/playground/error'
+      fullPath: '/playground/error'
+      preLoaderRoute: typeof appPlaygroundErrorRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/$page': {
@@ -351,9 +409,11 @@ declare module '@tanstack/react-router' {
 interface appRouteRouteChildren {
   appAdminPageRoute: typeof appAdminPageRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
+  appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
   appReportsPageRoute: typeof appReportsPageRoute
   appSettingsPageRoute: typeof appSettingsPageRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
   appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
   appsecurityUserPathRoute: typeof appsecurityUserPathRoute
 }
@@ -361,9 +421,11 @@ interface appRouteRouteChildren {
 const appRouteRouteChildren: appRouteRouteChildren = {
   appAdminPageRoute: appAdminPageRoute,
   appDashboardPageRoute: appDashboardPageRoute,
+  appPlaygroundErrorRoute: appPlaygroundErrorRoute,
   appReportsPageRoute: appReportsPageRoute,
   appSettingsPageRoute: appSettingsPageRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
+  appPlaygroundIndexRoute: appPlaygroundIndexRoute,
   appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,
   appsecurityUserPathRoute: appsecurityUserPathRoute,
 }
@@ -409,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiHealthLiveRoute: ApiHealthLiveRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

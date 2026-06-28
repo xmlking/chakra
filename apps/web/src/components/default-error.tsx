@@ -14,7 +14,7 @@ import { useEffect } from "react";
 
 import { getIsDev } from "#lib/helpers.isomorphic";
 
-export function DefaultError(props: ErrorComponentProps) {
+export function DefaultError({ error }: ErrorComponentProps) {
   const router = useRouter();
   const isRoot = useMatch({
     strict: false,
@@ -71,11 +71,9 @@ export function DefaultError(props: ErrorComponentProps) {
                 <AccordionContent>
                   <div className="rounded-md bg-muted p-4">
                     <h3 className="mb-2 font-semibold">Error Message:</h3>
-                    <p className="mb-4 text-sm">{props.error.message}</p>
+                    <p className="mb-4 text-sm">{error.message}</p>
                     <h3 className="mb-2 font-semibold">Stack Trace:</h3>
-                    <pre className="overflow-x-auto text-xs whitespace-pre-wrap">
-                      {props.error.stack}
-                    </pre>
+                    <pre className="overflow-x-auto text-xs whitespace-pre-wrap">{error.stack}</pre>
                   </div>
                 </AccordionContent>
               </AccordionItem>

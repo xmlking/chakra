@@ -18,5 +18,31 @@
   "greeting": "¡Hola, {name}!",
   "home_page": "Página principal",
   "language_label": "Idioma",
-  "learn_router": "Aprender Paraglide JS"
+  "language_name": "Español",
+  "language_flag": "🇪🇸",
+
+  "error_404__title": "404",
+  "error_404__description_line_1": "La página que buscas podría haber sido",
+  "error_404__description_line_2": "movida o no existir.",
+  "error_404__go_home": "Ir a inicio",
+  "error_500__title": "500",
+  "error_500__description_line_1": "Ha ocurrido un error inesperado.",
+  "error_500__description_line_2": "Por favor, intenta actualizar la página o vuelve a la página principal.",
+  "error_500__go_home": "Ir a inicio",
+  "error_500__try_again": "Intentar de nuevo",
+
+  "playground_page__refetch": "Volver a obtener",
+  "playground_page__image_optimization": "Optimización de imagen",
+  "playground_page__test_rpc": "Probar RPC",
+  "playground_page__api_status": "Estado de la API",
+  "playground_page__checking": "Comprobando...",
+  "playground_page__connected": "Conectado",
+  "playground_page__disconnected": "Desconectado",
+  "playground_page__background": "Fondo",
+  "playground_page__test_error_handling": "Probar manejo de errores",
+  "playground_page__test_toast": "Mostrar notificación",
+  "playground_page__test_toast_message": "¡Esto es una notificación de prueba!",
+  "playground_page__throw_error": "Provocar error",
+  "playground_page__visit_error_page": "Visitar página de error con carga lenta",
+  "playground_page__visit_not_found_page": "Visitar página no encontrada"
 }

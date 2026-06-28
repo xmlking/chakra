@@ -18,7 +18,7 @@ export default defineEnv({
     CONTACT_EMAIL: z.email(),
   },
   client: {
-    VITE_APP_NAME: z.string().min(3),
-    VITE_APP_URL: z.url(),
+    VITE_WEB_NAME: z.string().min(3),
+    VITE_WEB_URL: z.url(),
   },
 });
