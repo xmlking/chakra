@@ -43,7 +43,7 @@ const InviteUserEmail = ({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
               Join <strong>{invitedByUsername}</strong> on{" "}
-              <strong>{process.env.VITE_APP_NAME}.</strong>
+              <strong>{process.env.VITE_WEB_NAME}.</strong>
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">Hello there,</Text>
             <Text className="text-[14px] leading-[24px] text-black">
@@ -52,7 +52,7 @@ const InviteUserEmail = ({
                 {invitedByEmail}
               </Link>
               ) has invited you to the <strong>{teamName}</strong> team on{" "}
-              <strong>{process.env.VITE_APP_NAME}</strong>.
+              <strong>{process.env.VITE_WEB_NAME}</strong>.
             </Text>
             <Section>
               {teamImage ? (
@@ -101,7 +101,7 @@ InviteUserEmail.PreviewProps = {
   invitedByEmail: "sumo@demo.com",
   teamName: "goteam",
   teamImage: "/static/vercel-user.png",
-  inviteLink: `${process.env.VITE_APP_URL}/invite`,
+  inviteLink: `${process.env.VITE_WEB_URL}/invite`,
 } as BetterAuthInviteUserEmailProps;
 
 export { InviteUserEmail };
