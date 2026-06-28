@@ -36,7 +36,7 @@ Exports a frozen object containing only `VITE_`-prefixed variables. Safe for bro
 // Generated module shape
 export const env: Readonly<{
   VITE_API_URL: string;
-  VITE_APP_NAME: string;
+  VITE_WEB_NAME: string;
   VITE_DEBUG: boolean;
 }>;
 ```
@@ -50,8 +50,8 @@ Exports a frozen object containing all validated variables (server + client). Gu
 export const env: Readonly<{
   DATABASE_URL: string;
   JWT_SECRET: string;
-  VITE_API_URL: string;
-  VITE_APP_NAME: string;
+  VITE_WEB_URL: string;
+  VITE_WEB_NAME: string;
   VITE_DEBUG: boolean;
 }>;
 ```

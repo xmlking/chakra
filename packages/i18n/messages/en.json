@@ -18,5 +18,31 @@
   "greeting": "Hello {name}!",
   "home_page": "Home page",
   "language_label": "Language",
-  "learn_router": "Learn Paraglide JS"
+  "language_name": "English",
+  "language_flag": "🇺🇸",
+
+  "error_404__title": "404",
+  "error_404__description_line_1": "The page you're looking for might have been",
+  "error_404__description_line_2": "moved or doesn't exist.",
+  "error_404__go_home": "Go Home",
+  "error_500__title": "500",
+  "error_500__description_line_1": "An unexpected error has occurred.",
+  "error_500__description_line_2": "Please try refreshing the page, or go back home.",
+  "error_500__go_home": "Go Home",
+  "error_500__try_again": "Try Again",
+
+  "playground_page__refetch": "Refetch",
+  "playground_page__image_optimization": "Image Optimization",
+  "playground_page__test_rpc": "Test RPC",
+  "playground_page__api_status": "API Status",
+  "playground_page__checking": "Checking...",
+  "playground_page__connected": "Connected",
+  "playground_page__disconnected": "Disconnected",
+  "playground_page__background": "Background",
+  "playground_page__test_error_handling": "Test Error Handling",
+  "playground_page__test_toast": "Show Toast",
+  "playground_page__test_toast_message": "This is a test toast!",
+  "playground_page__throw_error": "Throw Error",
+  "playground_page__visit_error_page": "Visit Slow Loading Error Page",
+  "playground_page__visit_not_found_page": "Visit Not Found Page"
 }

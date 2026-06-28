@@ -78,26 +78,6 @@ export const navGroups: NavGroup[] = [
         ],
       },
       {
-        title: "Models",
-        url: "#",
-        icon: BotIcon,
-        items: [
-          {
-            title: "Genesis",
-            url: "/models/genesis",
-          },
-          {
-            title: "Explorer",
-            url: "/models/explorer",
-          },
-          {
-            title: "Quantum",
-            url: "/models/quantum",
-          },
-        ],
-      },
-
-      {
         title: "Settings",
         url: "#",
         icon: Settings2Icon,
@@ -105,6 +85,15 @@ export const navGroups: NavGroup[] = [
           {
             title: "General",
             url: "/settings/general",
+          },
+
+          {
+            title: "Feature Flags",
+            url: "/settings/feature-flags",
+          },
+          {
+            title: "Notifications",
+            url: "/settings/notifications",
           },
           {
             title: "Team",
@@ -117,6 +106,25 @@ export const navGroups: NavGroup[] = [
           {
             title: "Limits",
             url: "/settings/limits",
+          },
+        ],
+      },
+      {
+        title: "Playground",
+        url: "#",
+        icon: BotIcon, // BugIcon
+        items: [
+          {
+            title: "Playground",
+            url: "/playground",
+          },
+          {
+            title: "Error",
+            url: "/playground/error",
+          },
+          {
+            title: "Version",
+            url: "api/health/live",
           },
         ],
       },
