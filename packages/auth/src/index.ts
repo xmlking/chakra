@@ -1,10 +1,11 @@
 import { apiKey } from "@better-auth/api-key";
-import { drizzleAdapter } from "@better-auth/drizzle-adapter";
-// import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
+// import { drizzleAdapter } from "@better-auth/drizzle-adapter";
+import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
-import { and, db } from "@workspace/db";
+import { db } from "@workspace/db";
 import { getFirstMembership } from "@workspace/db/queries";
+import * as schema from "@workspace/db/schema/index";
 import { sendMail } from "@workspace/email";
 import { InviteUserEmail } from "@workspace/email/invitation";
 import { MagicLinkEmail } from "@workspace/email/magic-link";
@@ -56,7 +57,7 @@ if (import.meta.env.DEV) {
 
 export const auth = betterAuth({
   appName: "Chakra",
-  database: drizzleAdapter(db, { provider: "pg" }),
+  database: drizzleAdapter(db, { provider: "pg", schema }),
   advanced: {
     database: {
       generateId: "uuid",
@@ -186,9 +187,10 @@ export const auth = betterAuth({
       jwt: {
         definePayload: async ({ user, session }) => {
           const member = await db.query.member.findFirst({
-            // where: (mem, { eq }) => eq(mem.userId, user.id),
-            where: (mem, { eq }) =>
-              and(eq(mem.userId, user.id), eq(mem.organizationId, session.activeOrganizationId)),
+            where: {
+              userId: user.id,
+              organizationId: session.activeOrganizationId,
+            },
           });
 
           // Only include essential user information for API authentication

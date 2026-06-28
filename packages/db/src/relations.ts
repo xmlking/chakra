@@ -1,21 +1,24 @@
-import { relations } from "drizzle-orm/relations";
+import { defineRelations } from "drizzle-orm";
 
-import { member, organization } from "./schema/auth";
-import { settings } from "./schema/settings";
+// oxlint-disable-next-line react-doctor/no-barrel-import
+import * as schema from "./schema";
 
-export const settingsRelations = relations(settings, ({ one }) => ({
-  createdBy: one(member, {
-    fields: [settings.createdBy],
-    references: [member.id],
-    relationName: "settings_createdBy_member_id",
-  }),
-  organization: one(organization, {
-    fields: [settings.organizationId],
-    references: [organization.id],
-  }),
-  updatedBy: one(member, {
-    fields: [settings.updatedBy],
-    references: [member.id],
-    relationName: "settings_updatedBy_member_id",
-  }),
+export const relations = defineRelations(schema, (r) => ({
+  // TODO: Define your relations here
+  // https://orm.drizzle.team/docs/relations-v2
+
+  settings: {
+    creator: r.one.member({
+      from: r.settings.createdBy,
+      to: r.member.id,
+    }),
+    organization: r.one.organization({
+      from: r.settings.organizationId,
+      to: r.organization.id,
+    }),
+    updater: r.one.member({
+      from: r.settings.updatedBy,
+      to: r.member.id,
+    }),
+  },
 }));
