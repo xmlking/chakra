@@ -1,17 +1,16 @@
 "use client";
 
-import { ChevronDown, X } from "lucide-react";
+import { Check, CheckIcon, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 
 /**
  * Ref: https://reui.io/docs/combobox
  */
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
-import { Badge, BadgeButton } from "#components/shadcn/badge";
+import { Badge } from "#components/reui/badge";
 import { Button } from "#components/shadcn/button";
 import {
   Command,
-  CommandCheck,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -117,14 +116,14 @@ export function MultiSelectField({
                             </Avatar>
                           )}
                           <span className="font-medium">{option.label}</span>
-                          <BadgeButton
+                          <Button
                             onClick={(e) => {
                               e.stopPropagation();
                               remove(id);
                             }}
                           >
                             <X />
-                          </BadgeButton>
+                          </Button>
                         </Badge>
                       );
                     })}
@@ -183,7 +182,7 @@ export function MultiSelectField({
                         </span>
                       </span>
                       {selectedValues.includes(option.value) && !option.disabled && (
-                        <CommandCheck />
+                        <CheckIcon />
                       )}
                     </CommandItem>
                   ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { CheckIcon, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 import { Badge } from "#components/reui/badge";
@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
 import { Button } from "#components/shadcn/button";
 import {
   Command,
-  CommandCheck,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -142,7 +141,7 @@ export function SingleSelectField({
                           )}
                         </span>
                       </span>
-                      {selectedValue === option.value && !option.disabled && <CommandCheck />}
+                      {selectedValue === option.value && !option.disabled && <CheckIcon />}
                     </CommandItem>
                   ))}
                 </CommandGroup>
