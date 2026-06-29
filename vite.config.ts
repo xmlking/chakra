@@ -23,7 +23,7 @@ const ignorePatterns = [
   "apps/web/src/lib/gen/**",
   "packages/ui/src/components/**",
   // "!packages/ui/src/components/form/**",
-  "!packages/ui/src/components/sumo/**",
+  // "!packages/ui/src/components/sumo/**",
   "packages/ui/src/styles/**",
   "apps/docs/waku.config.ts",
   // "apps/docs/src/routes/__root.tsx",
