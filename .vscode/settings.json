@@ -1,17 +1,20 @@
 {
   "search.exclude": {
+    "**/dist/**/*": true,
     "**/.output/**/*": true,
     "**/.tanstack/**/*": true,
     "**/routeTree.gen.ts": true,
     "bun.lock": true
   },
   "files.readonlyInclude": {
+    "**/dist/**/*": true,
     "**/.output/**/*": true,
     "**/.tanstack/**/*": true,
     "**/routeTree.gen.ts": true,
     "bun.lock": true
   },
   "files.watcherExclude": {
+    "**/dist/**/*": true,
     "**/.output/**/*": true,
     "**/.tanstack/**/*": true,
     "**/routeTree.gen.ts": true,

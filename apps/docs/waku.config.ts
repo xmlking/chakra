@@ -5,8 +5,9 @@ import press from "fumapress/vite";
 import { defineConfig } from "waku/config";
 
 export default defineConfig({
-  basePath: "/chakra/",
+  basePath: import.meta.env.VITE_DOCS_BASE_PATH,
   vite: {
+    envDir: "../..", // HINT: use workspace root .env files
     resolve: {
       tsconfigPaths: true,
       // Content MDX lives outside this package (../../content/docs) and the
