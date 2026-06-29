@@ -15,7 +15,6 @@ import { HiddenField } from "./hidden-field";
 import { JSONField } from "./json-field";
 import { MultiSelectField } from "./multi-select-field";
 import { MultiSelectProField } from "./multi-select-pro-field";
-import { NaturalLanguageDateField } from "./natural-language-date-field";
 import { NumberField } from "./number-field";
 import { OTPField } from "./otp-field";
 import { PasswordField } from "./password-field";
@@ -52,7 +51,6 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     RatingField,
     ToggleGroupField,
     DateField,
-    NaturalLanguageDateField,
     DateTimeField,
     OTPField,
     CheckboxGroupField,
