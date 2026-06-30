@@ -119,6 +119,10 @@ export const navGroups: NavGroup[] = [
             url: "/playground",
           },
           {
+            title: "Workflow",
+            url: "/playground/workflow",
+          },
+          {
             title: "Error",
             url: "/playground/error",
           },
