@@ -39,7 +39,8 @@ export function Providers({ children }: { children: ReactNode }) {
                   // @ts-ignore : FIXME
                   authClient={authClient}
                   redirectTo="/dashboard"
-                  socialProviders={["github", "google"]}
+                  socialProviders={["github", "google" /*"microsoft"*/]}
+                  multipleAccountsPerProvider={false}
                   emailAndPassword={{
                     requireEmailVerification: true,
                     confirmPassword: true,

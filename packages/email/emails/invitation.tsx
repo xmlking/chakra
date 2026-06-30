@@ -20,6 +20,7 @@ interface BetterAuthInviteUserEmailProps {
   username?: string;
   invitedByUsername?: string;
   invitedByEmail?: string;
+  appName?: string;
   teamName?: string;
   teamImage?: string;
   inviteLink?: string;
@@ -29,6 +30,7 @@ const InviteUserEmail = ({
   username,
   invitedByUsername,
   invitedByEmail,
+  appName,
   teamName,
   teamImage,
   inviteLink,
@@ -42,8 +44,7 @@ const InviteUserEmail = ({
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Join <strong>{invitedByUsername}</strong> on{" "}
-              <strong>{process.env.VITE_WEB_NAME}.</strong>
+              Join <strong>{invitedByUsername}</strong> on <strong>{appName}.</strong>
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">Hello there,</Text>
             <Text className="text-[14px] leading-[24px] text-black">
@@ -52,7 +53,7 @@ const InviteUserEmail = ({
                 {invitedByEmail}
               </Link>
               ) has invited you to the <strong>{teamName}</strong> team on{" "}
-              <strong>{process.env.VITE_WEB_NAME}</strong>.
+              <strong>{appName}</strong>.
             </Text>
             <Section>
               {teamImage ? (
@@ -101,7 +102,7 @@ InviteUserEmail.PreviewProps = {
   invitedByEmail: "sumo@demo.com",
   teamName: "goteam",
   teamImage: "/static/vercel-user.png",
-  inviteLink: `${process.env.VITE_WEB_URL}/invite`,
+  inviteLink: "http://localhost:3000/invite",
 } as BetterAuthInviteUserEmailProps;
 
 export { InviteUserEmail };

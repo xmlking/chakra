@@ -1,7 +1,6 @@
 import process from "node:process";
 
 import { createFileRoute } from "@tanstack/react-router";
-import { env } from "virtual:env/server";
 
 declare const __APP_VERSION__: string;
 declare const __GIT_TAG__: string;
@@ -21,7 +20,6 @@ export const Route = createFileRoute("/api/health/live")({
           status: "healthy",
           timestamp: new Date().toISOString(),
           uptimeMs: Math.floor(process.uptime() * 1000),
-          url: env.VITE_WEB_URL,
         };
 
         return Response.json(body);
