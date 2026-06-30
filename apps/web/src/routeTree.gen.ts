@@ -25,6 +25,7 @@ import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path
 import { Route as appSettingsPageRouteImport } from './routes/(app)/settings.$page'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
 import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
+import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
 import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
@@ -108,6 +109,11 @@ const appPlaygroundWorkflowRoute = appPlaygroundWorkflowRouteImport.update({
   path: '/playground/workflow',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
+  id: '/playground/form-demo',
+  path: '/playground/form-demo',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
   id: '/playground/error',
   path: '/playground/error',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/form-demo': typeof appPlaygroundFormDemoRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/form-demo': typeof appPlaygroundFormDemoRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
   '/(app)/playground/error': typeof appPlaygroundErrorRoute
+  '/(app)/playground/form-demo': typeof appPlaygroundFormDemoRoute
   '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
   '/(app)/settings/$page': typeof appSettingsPageRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin/$page'
     | '/dashboard/$page'
     | '/playground/error'
+    | '/playground/form-demo'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin/$page'
     | '/dashboard/$page'
     | '/playground/error'
+    | '/playground/form-demo'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
     | '/(app)/playground/error'
+    | '/(app)/playground/form-demo'
     | '/(app)/playground/workflow'
     | '/(app)/reports/$page'
     | '/(app)/settings/$page'
@@ -387,6 +399,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appPlaygroundWorkflowRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/playground/form-demo': {
+      id: '/(app)/playground/form-demo'
+      path: '/playground/form-demo'
+      fullPath: '/playground/form-demo'
+      preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/playground/error': {
       id: '/(app)/playground/error'
       path: '/playground/error'
@@ -429,6 +448,7 @@ interface appRouteRouteChildren {
   appAdminPageRoute: typeof appAdminPageRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
+  appPlaygroundFormDemoRoute: typeof appPlaygroundFormDemoRoute
   appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
   appReportsPageRoute: typeof appReportsPageRoute
   appSettingsPageRoute: typeof appSettingsPageRoute
@@ -442,6 +462,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appAdminPageRoute: appAdminPageRoute,
   appDashboardPageRoute: appDashboardPageRoute,
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
+  appPlaygroundFormDemoRoute: appPlaygroundFormDemoRoute,
   appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
   appReportsPageRoute: appReportsPageRoute,
   appSettingsPageRoute: appSettingsPageRoute,

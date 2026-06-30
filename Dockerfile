@@ -35,10 +35,10 @@ FROM installer AS builder
 
 COPY . .
 
-ARG SOURCE_COMMIT VITE_SERVER_URL VITE_WEB_URL VITE_IMGPROXY_URL VITE_IMGPROXY_SIGNATURE DATABASE_URL BETTER_AUTH_SECRET
+ARG SOURCE_COMMIT VITE_SERVER_URL VITE_APP_URL VITE_IMGPROXY_URL VITE_IMGPROXY_SIGNATURE DATABASE_URL BETTER_AUTH_SECRET
 ENV SOURCE_COMMIT=${SOURCE_COMMIT} \
     VITE_SERVER_URL=${VITE_SERVER_URL} \
-    VITE_WEB_URL=${VITE_WEB_URL} \
+    VITE_APP_URL=${VITE_APP_URL} \
     VITE_IMGPROXY_URL=${VITE_IMGPROXY_URL} \
     VITE_IMGPROXY_SIGNATURE=${VITE_IMGPROXY_SIGNATURE} \
     DATABASE_URL=${DATABASE_URL} \
@@ -65,6 +65,6 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
-  CMD wget -qO- http://127.0.0.1:${PORT}$(echo ${VITE_WEB_URL} | sed 's|^http[s]*://[^/]*||' | sed 's|/$||')/_api/health/live || exit 1
+  CMD wget -qO- http://127.0.0.1:${PORT}$(echo ${VITE_APP_URL} | sed 's|^http[s]*://[^/]*||' | sed 's|/$||')/_api/health/live || exit 1
 
 CMD ["node", "/app/.output/server/index.mjs", "--hostname", "0.0.0.0"]

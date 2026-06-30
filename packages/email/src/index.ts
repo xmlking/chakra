@@ -20,10 +20,13 @@ export const email = createEmailClient({
     smtp({
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
-      auth: {
-        user: env.SMTP_USER!,
-        pass: env.SMTP_PASS!,
-      },
+      ...(env.SMTP_USER &&
+        env.SMTP_PASS && {
+          auth: {
+            user: env.SMTP_USER,
+            pass: env.SMTP_PASS,
+          },
+        }),
     }),
   ],
   retry: {

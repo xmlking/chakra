@@ -12,9 +12,9 @@ import * as schema from "./schema";
 
 const pool = new Pool({
   connectionString: env.DATABASE_URL,
-  min: 10,
-  max: 10,
-  // ssl: true,
+  min: env.DB_POOL_MIN,
+  max: env.DB_POOL_MAX,
+  ssl: env.DB_POOL_SSL,
 });
 export const db = drizzle({
   client: pool,
