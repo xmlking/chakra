@@ -33,7 +33,15 @@ bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-catppuccin.json
 bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-cyberpunk.json
 
 # AI Elements (optional)
-bunx --bun shadcn@latest add @ai-elements/all
+#bunx --bun shadcn@latest add @ai-elements/all
+# AI Elements Workflow Components for React Flow (optional)
+bunx --bun shadcn@latest add @ai-elements/canvas
+bunx --bun shadcn@latest add @ai-elements/connection
+bunx --bun shadcn@latest add @ai-elements/controls
+bunx --bun shadcn@latest add @ai-elements/edge
+bunx --bun shadcn@latest add @ai-elements/node
+bunx --bun shadcn@latest add @ai-elements/panel
+bunx --bun shadcn@latest add @ai-elements/toolbar
 # better-upload (optional)
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-button
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone
