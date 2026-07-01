@@ -364,7 +364,7 @@ export const auth = betterAuth({
           subject: `You're invited to ${data.organization.name}`,
           react: (
             <OrganizationInvitationEmail
-              url={`${baseURL}/settings/organizations`}
+              url={`${baseURL}/user/organizations`}
               email={data.email}
               inviterName={data.inviter.user.name}
               inviterEmail={data.inviter.user.email}
