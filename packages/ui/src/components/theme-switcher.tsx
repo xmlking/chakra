@@ -52,8 +52,21 @@ export function ThemeSwitcher() {
     setTheme(`${name}-${mode}`);
   };
 
+  // HINT: Run Named View Transitions
   const setMode = (newMode: "light" | "dark") => {
-    setTheme(`${colorTheme}-${newMode}`);
+    if (!document.startViewTransition) {
+      setTheme(`${colorTheme}-${newMode}`);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      document.documentElement.style.viewTransitionName = 'theme-switch';
+      setTheme(`${colorTheme}-${newMode}`);
+    });
+
+    requestAnimationFrame(() => {
+      document.documentElement.style.viewTransitionName = 'auto';
+    });
   };
 
   if (!mounted) {
@@ -70,7 +83,18 @@ export function ThemeSwitcher() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-9 w-9" />}>{isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}<span className="sr-only">Toggle theme</span></DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+          />
+        }
+      >
+        {isDark ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+        <span className="sr-only">Toggle theme</span>
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex items-center gap-2">

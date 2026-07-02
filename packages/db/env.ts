@@ -4,7 +4,9 @@ import { z } from "zod";
 export const preset = {
   server: {
     DATABASE_URL: z.url(),
-    DB_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(10),
+    DB_POOL_MIN: z.coerce.number().int().min(1).max(100).default(10),
+    DB_POOL_MAX: z.coerce.number().int().min(1).max(100).default(10),
+    DB_POOL_SSL: z.stringbool().default(false),
     BETTER_AUTH_ADMINS: z
       .string()
       .transform((s) => s.split(","))

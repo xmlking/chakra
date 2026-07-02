@@ -15,10 +15,11 @@ import { z } from "zod";
 export default defineEnv({
   presets: [db, email, auth, storage],
   server: {
-    CONTACT_EMAIL: z.email(),
+    SENTRY_AUTH_TOKEN: z.string().optional(),
+    SENTRY_ORG: z.string().optional(),
+    SENTRY_PROJECT: z.string().optional(),
   },
   client: {
-    VITE_WEB_NAME: z.string().min(3),
-    VITE_WEB_URL: z.url(),
+    VITE_FF_ENABLE_DARK_MODE: z.stringbool().default(false),
   },
 });

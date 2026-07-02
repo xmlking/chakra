@@ -1,4 +1,5 @@
 @import "@workspace/ui/styles/globals.css";
+/* @import "@workspace/ui/styles/transitions.css"; */
 
 @source "../**/*.{ts,tsx}";
 

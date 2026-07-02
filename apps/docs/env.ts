@@ -17,9 +17,15 @@ export default defineEnv({
     GITHUB_APP_WEBHOOK_SECRET: z.string().optional(),
   },
   client: {
-    VITE_WEB_NAME: z.string().min(3),
-    VITE_WEB_URL: z.url(),
+    VITE_APP_NAME: z.string().min(3),
+    VITE_APP_URL: z.url(),
     VITE_DOCS_URL: z.url(),
+    VITE_DOCS_BASE_PATH: z
+      .string()
+      .startsWith("/", {
+        message: "Base path must start with a forward slash",
+      })
+      .default("/"),
     VITE_DEBUG: z.stringbool().default(false),
     VITE_GITHUB_REPO: z.string().min(3),
     VITE_GITHUB_OWNER: z.string().min(3),
