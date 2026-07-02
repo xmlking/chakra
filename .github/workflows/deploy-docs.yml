@@ -35,6 +35,8 @@ jobs:
 
       - name: 🏗️ Build docs
         working-directory: apps/docs
+        env:
+          VITE_DOCS_BASE_PATH: "/chakra/"
         run: bun run build
 
       - name: 📤 Upload artifact

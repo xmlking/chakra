@@ -175,8 +175,12 @@ export default defineConfig({
     cache: true,
     tasks: {
       "docs:dev": {
-        command: "vp dev apps/docs",
-        dependsOn: ["@workspace/i18n#build"],
+        command: "vp run docs#dev",
+        dependsOn: [{ task: "build", from: ["dependencies", "devDependencies"] }],
+      },
+      "docs:build": {
+        command: "vp run docs#build",
+        dependsOn: [{ task: "build", from: ["dependencies", "devDependencies"] }],
       },
     },
   },

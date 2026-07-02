@@ -25,6 +25,7 @@ export function getRouter() {
 
     scrollRestoration: true,
     scrollRestorationBehavior: "smooth",
+    // This enables a default cross-fade animation for all route transitions.
     defaultViewTransition: true,
     defaultPreload: "intent",
     // IMPORTANT: Let TanStack Query handle data fetching & caching instead of TanStack Router, default options are found in createQueryClient()

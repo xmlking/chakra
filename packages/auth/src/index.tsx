@@ -7,10 +7,11 @@ import { db } from "@workspace/db";
 import { getFirstMembership } from "@workspace/db/queries";
 import * as schema from "@workspace/db/schema/index";
 import { sendMail } from "@workspace/email";
-import { InviteUserEmail } from "@workspace/email/invitation";
+import { EmailChangedEmail } from "@workspace/email/email-changed";
+import { EmailVerificationEmail } from "@workspace/email/email-verification";
 import { MagicLinkEmail } from "@workspace/email/magic-link";
+import { OrganizationInvitationEmail } from "@workspace/email/organization-invitation";
 import { ResetPasswordEmail } from "@workspace/email/reset-password";
-import { VerifyEmail } from "@workspace/email/verify-email";
 import { betterAuth } from "better-auth";
 import type { BetterAuthPlugin } from "better-auth";
 import {
@@ -55,8 +56,11 @@ if (import.meta.env.DEV) {
   trustedOrigins.push("http://localhost:3000", "https://console-127-0-0-1.nip.io");
 }
 
+const baseURL = env.VITE_BETTER_AUTH_URL;
+const appName = env.VITE_APP_NAME;
+
 export const auth = betterAuth({
-  appName: "Chakra",
+  appName,
   database: drizzleAdapter(db, { provider: "pg", schema }),
   advanced: {
     database: {
@@ -70,7 +74,7 @@ export const auth = betterAuth({
   experimental: { joins: true },
   telemetry: { enabled: false },
   secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.VITE_BETTER_AUTH_URL,
+  baseURL,
   databaseHooks: {
     session: {
       create: {
@@ -98,25 +102,43 @@ export const auth = betterAuth({
         from,
         to: user.email,
         subject: "Reset your password",
-        react: ResetPasswordEmail({
-          username: user.email,
-          resetLink: url,
-        }),
+        react: (
+          <ResetPasswordEmail
+            url={url}
+            appName={appName}
+            logoURL={{
+              light: `${baseURL}/favicon-96x96.png`,
+              dark: `${baseURL}/favicon-96x96-inverted.png`,
+            }}
+            email={user.email}
+            expirationMinutes={60}
+            darkMode={true}
+            poweredBy={true}
+          />
+        ),
       });
     },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      const userName = user.name || (user.email.split("@")[0] as string);
-
       await sendMail({
         from,
         to: user.email,
         subject: "Verify your email address",
-        react: VerifyEmail({
-          userName,
-          url,
-        }),
+        react: (
+          <EmailVerificationEmail
+            url={url}
+            appName={appName}
+            logoURL={{
+              light: `${baseURL}/favicon-96x96.png`,
+              dark: `${baseURL}/favicon-96x96-inverted.png`,
+            }}
+            email={user.email}
+            expirationMinutes={60}
+            darkMode={true}
+            poweredBy={true}
+          />
+        ),
       });
     },
     autoSignInAfterVerification: true,
@@ -132,6 +154,21 @@ export const auth = betterAuth({
           to: user.email, // Sent to the CURRENT email
           subject: "Approve email change",
           text: `Click the link to approve the change to ${newEmail}: ${url}`,
+          react: (
+            <EmailChangedEmail
+              oldEmail={user.email}
+              newEmail={newEmail}
+              appName={appName}
+              logoURL={{
+                light: `${baseURL}/favicon-96x96.png`,
+                dark: `${baseURL}/favicon-96x96-inverted.png`,
+              }}
+              supportEmail="support@example.com"
+              revertURL={url}
+              darkMode={true}
+              poweredBy={true}
+            />
+          ),
         });
       },
     },
@@ -142,7 +179,7 @@ export const auth = betterAuth({
   },
   account: {
     accountLinking: {
-      trustedProviders: ["google", "github"],
+      trustedProviders: ["github", "google", "microsoft"],
       allowDifferentEmails: true,
     },
   },
@@ -161,6 +198,16 @@ export const auth = betterAuth({
           clientId: env.VITE_GOOGLE_CLIENT_ID,
           clientSecret: env.GOOGLE_CLIENT_SECRET,
           scope: ["openid", "email", "profile"],
+          requireEmailVerification: true,
+        },
+      }),
+    ...(env.MICROSOFT_CLIENT_ID &&
+      env.MICROSOFT_CLIENT_SECRET &&
+      env.MICROSOFT_TENANT_ID && {
+        microsoft: {
+          clientId: env.MICROSOFT_CLIENT_ID,
+          clientSecret: env.MICROSOFT_CLIENT_SECRET,
+          tenantId: env.MICROSOFT_TENANT_ID,
           requireEmailVerification: true,
         },
       }),
@@ -255,15 +302,23 @@ export const auth = betterAuth({
         await sendMail({
           from,
           to: email,
-          subject: "Sign in to Better Auth UI",
+          subject: `Sign in to ${appName}`,
           text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
-          react: MagicLinkEmail({
-            url,
-            appName: "Chakra AI",
-            email,
-            expirationMinutes: MAGIC_LINK_EXPIRES_SECONDS / 60,
-            poweredBy: true,
-          }),
+
+          react: (
+            <MagicLinkEmail
+              url={url}
+              appName={appName}
+              logoURL={{
+                light: `${baseURL}/favicon-96x96.png`,
+                dark: `${baseURL}/favicon-96x96-inverted.png`,
+              }}
+              email={email}
+              expirationMinutes={MAGIC_LINK_EXPIRES_SECONDS / 60}
+              darkMode={true}
+              poweredBy={true}
+            />
+          ),
         });
       },
     }),
@@ -308,14 +363,26 @@ export const auth = betterAuth({
         await sendMail({
           from,
           to: data.email,
-          subject: "You've been invited to join an organization",
-          react: InviteUserEmail({
-            username: data.email,
-            invitedByUsername: data.inviter.user.name,
-            invitedByEmail: data.inviter.user.email,
-            teamName: data.organization.name,
-            inviteLink: `${env.VITE_BETTER_AUTH_URL}/auth/accept-invitation?invitationId=${data.id}`,
-          }),
+          subject: `You're invited to ${data.organization.name}`,
+          react: (
+            <OrganizationInvitationEmail
+              url={`${baseURL}/user/organizations`}
+              email={data.email}
+              inviterName={data.inviter.user.name}
+              inviterEmail={data.inviter.user.email}
+              organizationName={data.organization.name}
+              organizationLogoURL={data.organization.logo ?? undefined}
+              role={data.role}
+              appName={appName}
+              poweredBy={false}
+              logoURL={{
+                light: `${baseURL}/favicon-96x96.png`,
+                dark: `${baseURL}/favicon-96x96-inverted.png`,
+              }}
+              expirationHours={48}
+              darkMode={true}
+            />
+          ),
         });
       },
       // organizationCreation: {
