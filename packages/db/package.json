@@ -41,7 +41,9 @@
     "@types/pg": "catalog:",
     "@vite-env/cli": "catalog:",
     "drizzle-kit": "catalog:",
-    "drizzle-seed": "catalog:"
+    "drizzle-seed": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@typescript/native-preview": "catalog:",
