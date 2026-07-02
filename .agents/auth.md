@@ -2,17 +2,18 @@
 
 ## Auth Architecture
 
-- Better Auth config lives in `packages/auth/src/auth.ts`.
+- Better Auth config lives in `packages/auth/src/index.tsx`.
+- Better Auth UI components lives in `packages/ui/src/components/auth`.
 - Auth utilities are centralized in `packages/auth/src/tanstack/*`.
 - In components, prefer shared auth hooks (`useAuth`, `useAuthSuspense`) from `packages/auth/src/tanstack/hooks.ts`. These reuse the same auth data as the route loader.
 - For route loaders under `_auth`, prefer loader context user over duplicate auth fetches.
 
 ## Route Guards
 
-- Protected route layout is `apps/web/src/routes/_auth/route.tsx`.
-  - It enforces auth in `beforeLoad` using `ensureQueryData(authQueryOptions())`.
-  - It returns `{ user }`, which is available to all child route loaders via router context.
-- Guest-only route layout is `apps/web/src/routes/_guest/route.tsx`.
+- Protected route layout is `apps/web/src/routes/(app)/route.tsx`.
+  - It enforces auth in `beforeLoad` using `ensureSession()` isomorphic function.
+  - It returns `{ session }`, which is available to all child route loaders via router context.
+- Guest-only route layout is `apps/web/src/routes/(public)/route.tsx`.
   - It redirects authenticated users away from login/signup routes.
 
 ## Server Functions and Mutations
