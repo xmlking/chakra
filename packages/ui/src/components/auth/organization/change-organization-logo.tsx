@@ -10,7 +10,7 @@ import { Trash2, Upload } from "lucide-react"
 import { type ChangeEvent, useRef, useState } from "react"
 import { toast } from "sonner"
 
-import { Button } from "#components/shadcn/button"
+import { Button, buttonVariants } from "#components/shadcn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -140,10 +140,17 @@ export function ChangeOrganizationLogo({
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button type="button" disabled={!activeOrganization || isPending} size="sm" variant="secondary" />}>{isPending && <Spinner />}{organizationLocalization.changeLogo}</DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            className={cn(buttonVariants({ size: "sm", variant: "secondary" }))}
+            disabled={!activeOrganization || isPending}
+          >
+            {isPending && <Spinner />}
+
+            {organizationLocalization.changeLogo}
+          </DropdownMenuTrigger>
 
           <DropdownMenuContent align="start" className="min-w-fit">
-            <DropdownMenuItem onSelect={() => fileInputRef.current?.click()}>
+            <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
               <Upload className="text-muted-foreground" />
 
               {organizationLocalization.uploadLogo}
@@ -151,7 +158,7 @@ export function ChangeOrganizationLogo({
 
             <DropdownMenuItem
               disabled={!activeOrganization?.logo}
-              onSelect={handleDelete}
+              onClick={handleDelete}
               variant="destructive"
             >
               <Trash2 />

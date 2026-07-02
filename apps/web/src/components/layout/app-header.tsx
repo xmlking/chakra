@@ -1,35 +1,41 @@
+import { UserButton } from "@workspace/ui/components/auth/user/user-button";
 import { Button } from "@workspace/ui/components/shadcn/button";
+import { Separator } from "@workspace/ui/components/shadcn/separator";
+import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { BellIcon } from "lucide-react";
 
-import { ModeToggle } from "#components/mode-toggle";
+import { LayoutToggle } from "#components/layout-toggle";
+import { LocaleSwitcher } from "#components/locale-switcher";
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
-
-import { MobileNav } from "./mobile-nav";
 
 export function AppHeader() {
   return (
-    <header
-      className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur-sm"
-      aria-label="Application header"
-    >
-      {/* Left: mobile sidebar trigger + breadcrumbs */}
-      <div className="flex flex-1 items-center gap-2 overflow-hidden">
-        <MobileNav />
-
-        <nav aria-label="Breadcrumb" className="hidden min-w-0 sm:block">
+    // to make header sticky, added: `sticky top-0 z-50 bg-background rounded-t-xl`
+    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+      {/* Left */}
+      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 hidden h-4 md:block data-vertical:self-auto"
+        />
+        <nav aria-label="Breadcrumb" className="hidden md:block">
           <RouterBreadcrumb />
         </nav>
-      </div>
 
-      {/* Right: notifications, theme switcher */}
-      <div className="flex shrink-0 items-center gap-1">
-        <Button size="icon" variant="ghost" aria-label="Notifications">
-          <BellIcon className="size-4" />
-        </Button>
-        <ModeToggle />
-        <ThemeSwitcher />
-        {/* <UserMenu /> */}
+        {/* Right  */}
+        <div className="ml-auto flex items-center gap-2">
+          <LocaleSwitcher />
+          <LayoutToggle className="hidden lg:flex" />
+          {/* <ModeToggle /> */}
+          <ThemeSwitcher />
+          <Button variant="ghost" size="icon" aria-label="Notifications">
+            <BellIcon />
+            <span className="sr-only">Notifications</span>
+          </Button>
+          <UserButton size="icon" align="end" />
+        </div>
       </div>
     </header>
   );

@@ -50,7 +50,7 @@ Exports a frozen object containing all validated variables (server + client). Gu
 export const env: Readonly<{
   DATABASE_URL: string;
   JWT_SECRET: string;
-  VITE_API_URL: string;
+  VITE_APP_URL: string;
   VITE_APP_NAME: string;
   VITE_DEBUG: boolean;
 }>;

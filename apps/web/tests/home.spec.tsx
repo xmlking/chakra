@@ -14,6 +14,11 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   return {
     ...actual,
     useHydrated: vi.fn<typeof useHydrated>(() => true),
+    Link: ({ children, to, ...props }: any) => (
+      <a href={to} {...props}>
+        {children}
+      </a>
+    ),
   };
 });
 
@@ -26,10 +31,15 @@ describe("Home route", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the project overview card", async () => {
+  it("renders the hero section", async () => {
     const { getByText } = await render(<Home />);
 
-    await expect.element(getByText("Project Overview")).toBeInTheDocument();
-    await expect.element(getByText(/Track progress and recent activity/i)).toBeInTheDocument();
+    await expect.element(getByText(/Ship faster with one workspace/i)).toBeInTheDocument();
+  });
+
+  it("renders the features section", async () => {
+    const { getByText } = await render(<Home />);
+
+    await expect.element(getByText(/Everything your team needs to ship/i)).toBeInTheDocument();
   });
 });

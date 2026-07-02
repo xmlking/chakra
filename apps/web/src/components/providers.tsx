@@ -1,122 +1,102 @@
+// "use client";
+
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { Link, useRouter, useParams, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster } from "@workspace/ui/components/shadcn/sonner";
 import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
-import { useTheme } from "@workspace/ui/components/theme-provider";
 import { apiKeyPlugin } from "@workspace/ui/lib/auth/api-key-plugin";
 import { deleteUserPlugin } from "@workspace/ui/lib/auth/delete-user-plugin";
 import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { multiSessionPlugin } from "@workspace/ui/lib/auth/multi-session-plugin";
 import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
 import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
-import { themePlugin } from "@workspace/ui/lib/auth/theme-plugin";
-import { usernamePlugin } from "@workspace/ui/lib/auth/username-plugin";
+import { domAnimation, LazyMotion, MotionConfig } from "motion/react";
 import { Suspense, type ReactNode } from "react";
-import env from "virtual:env/client";
 
 import { MetaTheme } from "#components/meta-theme";
 import { TurnstileWidget } from "#components/turnstile-widget";
 
-const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
+import { KBar } from "./kbar";
+import { RouteProgressController, RouteProgressProvider } from "./layout/route-progress";
 
 export function Providers({ children }: { children: ReactNode }) {
-  const router = useRouter();
   const navigate = useNavigate();
-  const params = useParams({ strict: false, shouldThrow: false });
-  const slug = params?.slug;
 
   return (
-    <ThemeProvider storageKey="theme" defaultTheme="default-light">
-      <TooltipProvider>
-        <AuthProvider
-          // @ts-ignore : FIXME
-          authClient={authClient}
-          redirectTo="/dashboard"
-          socialProviders={["github", "google"]}
-          navigate={navigate}
-          captcha={{
-            provider: "cloudflare-turnstile",
-            siteKey: env.VITE_TURNSTILE_SITE_KEY,
-          }}
-          credentials={{
-            passwordValidation: {
-              minLength: 8,
-              maxLength: 64,
-              regex: PASSWORD_REGEX,
-            },
-            confirmPassword: true,
-            rememberMe: true,
-          }}
-          deleteUser={{
-            verification: true,
-          }}
-          emailVerification
-          gravatar
-          multiSession
-          oneTap
-          onSessionChange={async () => {
-            // Clear router cache (protected routes)
-            await router.invalidate(); // Triggers a re-render and re-runs route loaders
-          }}
-          optimistic
-          organization={{
-            logo: true,
-            apiKey: true,
-            personalPath: "/",
-            customRoles: [{ role: "billing", label: "Billing" }],
-            viewPaths: {
-              SETTINGS: "settings",
-              MEMBERS: "members",
-              TEAMS: "teams",
-              API_KEYS: "api-keys",
-            },
-          }}
-          passkey
-          // @ts-ignore : FIXME
-          replace={(href) => navigate({ href, replace: true })}
-          teams={{
-            enabled: true,
-            customRoles: [{ role: "billing", label: "Billing" }],
-            colors: {
-              count: 5,
-              prefix: "team",
-            },
-          }}
-          plugins={[
-            usernamePlugin({
-              maxUsernameLength: 8,
-              minUsernameLength: 64,
-            }),
-            magicLinkPlugin(),
-            passkeyPlugin(),
-            apiKeyPlugin({ organization: true }),
-            themePlugin({ useTheme }),
-            multiSessionPlugin(),
-            deleteUserPlugin(),
-            organizationPlugin({
-              slug: slug ?? null,
-            }),
-            captchaPlugin({ render: TurnstileWidget }),
-          ]}
-          Link={Link}
-        >
-          {children}
-        </AuthProvider>
-        <MetaTheme />
-        <Suspense fallback={null}>
-          <Toaster
-            // HINT: without this, the toaster will not fit correctly
-            className="flex justify-center"
-            duration={10_000}
-            position="bottom-right"
-            richColors
-            toastOptions={{ style: { width: "fit-content" } }}
-          />
-        </Suspense>
-      </TooltipProvider>
+    <ThemeProvider>
+      <LazyMotion strict features={domAnimation}>
+        <MotionConfig reducedMotion="user">
+          <RouteProgressProvider>
+            <KBar>
+              <TooltipProvider>
+                <AuthProvider
+                  basePaths={{
+                    settings: "/user",
+                  }}
+                  // @ts-ignore : FIXME
+                  authClient={authClient}
+                  redirectTo="/dashboard"
+                  socialProviders={["github", "google" /*"microsoft"*/]}
+                  multipleAccountsPerProvider={false}
+                  emailAndPassword={{
+                    requireEmailVerification: true,
+                    confirmPassword: true,
+                    rememberMe: true,
+                  }}
+                  // @ts-ignore : FIXME
+                  navigate={navigate}
+                  plugins={[
+                    magicLinkPlugin(),
+                    passkeyPlugin(),
+                    apiKeyPlugin({ organization: true }),
+                    // themePlugin({ useTheme }), // NOTE: we use tweakcn switcher
+                    multiSessionPlugin({
+                      // Override any of the plugin's localization strings.
+                      localization: {
+                        switchAccount: "Switch Account",
+                        addAccount: "Add Account",
+                        manageAccounts: "Manage Accounts",
+                      },
+                    }),
+                    deleteUserPlugin(),
+                    organizationPlugin({
+                      // Override path segments (defaults shown).
+                      viewPaths: {
+                        settings: { organizations: "organizations" },
+                        organization: { settings: "settings", people: "people" },
+                      },
+                      localization: {
+                        createOrganization: "Create Organization",
+                      },
+                      // Add labels for custom server roles without redefining built-ins.
+                      additionalRoles: { billing: "Billing" },
+                    }),
+                    captchaPlugin({ render: TurnstileWidget }),
+                  ]}
+                  Link={({ href, ...props }) => <Link to={href} {...props} />}
+                >
+                  <RouteProgressController />
+                  {children}
+                </AuthProvider>
+                <MetaTheme />
+                <Suspense fallback={null}>
+                  <Toaster
+                    // HINT: without this, the toaster will not fit correctly
+                    // className="flex justify-center"
+                    // duration={10_000}
+                    position="bottom-right"
+                    richColors
+                    // toastOptions={{ style: { width: "fit-content" } }}
+                  />
+                </Suspense>
+              </TooltipProvider>
+            </KBar>
+          </RouteProgressProvider>
+        </MotionConfig>
+      </LazyMotion>
     </ThemeProvider>
   );
 }

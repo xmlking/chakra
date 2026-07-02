@@ -9,7 +9,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      // theme={theme as ToasterProps["theme"]}
+      theme={theme?.endsWith("-dark") ? "dark" : "light" as ToasterProps["theme"]}
       className="toaster group"
       icons={{
         success: (

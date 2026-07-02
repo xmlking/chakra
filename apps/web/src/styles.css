@@ -1,0 +1,27 @@
+@import "@workspace/ui/styles/globals.css";
+/* @import "@workspace/ui/styles/transitions.css"; */
+
+@source "../**/*.{ts,tsx}";
+
+/* used for fixed width vs flex layout switch */
+@custom-variant fixed (&:is(.layout-fixed *));
+@theme inline {
+  --breakpoint-3xl: 1600px;
+  --breakpoint-4xl: 2000px;
+}
+
+@utility container-wrapper {
+  @apply 3xl:fixed:max-w-[calc(var(--breakpoint-2xl)+2rem)] mx-auto w-full p-4 sm:p-6;
+}
+
+@utility container {
+  @apply 3xl:max-w-screen-2xl mx-auto max-w-[1400px] px-4 lg:px-8;
+}
+
+/* Grid pattern for themes's hero sections */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, currentColor 1px, transparent 1px),
+    linear-gradient(to bottom, currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
+}

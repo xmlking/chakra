@@ -3,9 +3,8 @@ import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 
 import { DefaultError } from "#components/default-error";
-import { DefaultLoading } from "#components/default-loading";
+// import { DefaultLoading } from "#components/default-loading";
 import { DefaultNotFound } from "#components/default-notfound";
-import { Providers } from "#components/providers";
 import type { BreadcrumbValue } from "#components/router-breadcrumb";
 
 import { routeTree } from "./routeTree.gen";
@@ -26,18 +25,20 @@ export function getRouter() {
 
     scrollRestoration: true,
     scrollRestorationBehavior: "smooth",
+    // This enables a default cross-fade animation for all route transitions.
     defaultViewTransition: true,
     defaultPreload: "intent",
+    // IMPORTANT: Let TanStack Query handle data fetching & caching instead of TanStack Router, default options are found in createQueryClient()
+    // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
+    // This enables Route.loader logic to rerun on every navigation, so when fetching, use queryClient.ensureQueryData() to prevent unnecessary refetches and use cached data when available
     defaultPreloadStaleTime: 0,
-    // defaultPreloadStaleTime: 30_000,
+    // https://tanstack.com/router/latest/docs/guide/render-optimizations
+    defaultStructuralSharing: true,
     // defaultPendingMs: 0,
     // defaultPendingMinMs: 300,
-    defaultPendingComponent: DefaultLoading,
+    // defaultPendingComponent: DefaultLoading,
     defaultNotFoundComponent: DefaultNotFound,
     defaultErrorComponent: DefaultError,
-    InnerWrap: ({ children }) => {
-      return <Providers>{children}</Providers>;
-    },
   });
 
   setupRouterSsrQueryIntegration({

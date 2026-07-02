@@ -14,9 +14,9 @@ describe("i18n Messages", () => {
       expect(baseLocale).toBe("en");
     });
 
-    it("should support English and Dutch locales", () => {
+    it("should support English and Spanish locales", () => {
       expect(locales).toContain("en");
-      expect(locales).toContain("de");
+      expect(locales).toContain("es");
       expect(locales).toHaveLength(2);
     });
 
@@ -24,9 +24,9 @@ describe("i18n Messages", () => {
       expect(getLocale()).toBe("en");
     });
 
-    it("should switch to Dutch locale", async () => {
-      await setLocale("de", { reload: false });
-      expect(getLocale()).toBe("de");
+    it("should switch to Spanish locale", async () => {
+      await setLocale("es", { reload: false });
+      expect(getLocale()).toBe("es");
     });
   });
 
@@ -39,10 +39,10 @@ describe("i18n Messages", () => {
   });
 
   it("should support switching to another locale", async () => {
-    await setLocale("de");
-    expect(getLocale()).toBe("de");
+    await setLocale("es");
+    expect(getLocale()).toBe("es");
 
     const result = m.greeting({ name: "Alice" });
-    expect(result).toBe("Hallo Alice!"); // Assuming German is configured
+    expect(result).toBe("¡Hola, Alice!"); // Assuming German is configured
   });
 });

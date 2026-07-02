@@ -27,7 +27,7 @@ import { SwitchAccountSubmenuItem } from "./switch-account-submenu-item"
  * @returns The switch account submenu content as a JSX element
  */
 export function SwitchAccountSubmenuContent() {
-  const { authClient, basePaths, viewPaths, Link } = useAuth()
+  const { authClient, basePaths, viewPaths, navigate } = useAuth()
   const { localization: multiSessionLocalization } =
     useAuthPlugin(multiSessionPlugin)
   const { data: session } = useSession(authClient)
@@ -56,7 +56,15 @@ export function SwitchAccountSubmenuContent() {
 
       <DropdownMenuSeparator />
 
-      <DropdownMenuItem render={<Link href={`${basePaths.auth}/${viewPaths.auth.signIn}`} />}><CirclePlus className="text-muted-foreground" />{multiSessionLocalization.addAccount}</DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() =>
+          navigate({ to: `${basePaths.auth}/${viewPaths.auth.signIn}` })
+        }
+      >
+        <CirclePlus className="text-muted-foreground" />
+
+        {multiSessionLocalization.addAccount}
+      </DropdownMenuItem>
     </DropdownMenuSubContent>
   )
 }

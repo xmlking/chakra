@@ -1,6 +1,6 @@
 import { sql } from "drizzle-orm";
-import { check, pgTable, primaryKey } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
+import { check, primaryKey, snakeCase } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-orm/zod";
 import { z } from "zod";
 
 import { organization } from "./auth";
@@ -8,7 +8,7 @@ import { auditAtFields, auditByFields } from "./column";
 import { settingTypeEnum } from "./enum";
 
 // ------------------ entities -----------------------
-export const settings = pgTable(
+export const settings = snakeCase.table(
   "settings",
   (t) => ({
     key: t.text().notNull(),

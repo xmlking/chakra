@@ -6,6 +6,7 @@ import {
   deviceAuthorizationClient,
   inferAdditionalFields,
   lastLoginMethodClient,
+  magicLinkClient,
   multiSessionClient,
   oneTapClient,
   organizationClient,
@@ -23,6 +24,7 @@ export const authClient = createAuthClient({
     onSuccess: (ctx) => {
       const jwtToken = ctx.response.headers.get("set-auth-jwt");
       if (jwtToken) {
+        // oxlint-disable-next-line react-doctor/auth-token-in-web-storage : FIXME
         localStorage.setItem("jwtToken:v1", JSON.stringify(jwtToken));
       }
     },
@@ -61,6 +63,7 @@ export const authClient = createAuthClient({
       // },
     }),
     multiSessionClient(),
+    magicLinkClient(),
     inferAdditionalFields<typeof auth>({
       user: additionalUserFields,
     }),

@@ -20,6 +20,12 @@ export default defineEnv({
     VITE_APP_NAME: z.string().min(3),
     VITE_APP_URL: z.url(),
     VITE_DOCS_URL: z.url(),
+    VITE_DOCS_BASE_PATH: z
+      .string()
+      .startsWith("/", {
+        message: "Base path must start with a forward slash",
+      })
+      .default("/"),
     VITE_DEBUG: z.stringbool().default(false),
     VITE_GITHUB_REPO: z.string().min(3),
     VITE_GITHUB_OWNER: z.string().min(3),

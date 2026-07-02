@@ -16,6 +16,16 @@
 - [TypeScript conventions](.agents/typescript.md) - Casting rules, prefer type inference
 - [Workflow](.agents/workflow.md) - Workflow commands, validation approach
 
+## Important Development Notes
+
+- Bug fixes and new features MUST include tests
+  - For bug fixes: after confirming the reproducible behavior violates the intended contract, write a failing test first, then implement the fix
+- Update docs in `content/docs/developer` for Spec-Driven Development and ADRs
+- Ensure `vp check` passes before finishing
+- DO NOT COMMIT unless the user explicitly asks
+- Conventional Commits: `feat(scope):`, `fix(scope):`, `docs:`, `chore:`.
+- PRs target `main`
+
 <!-- intent-skills:start -->
 
 ## Skill Loading

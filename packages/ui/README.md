@@ -20,6 +20,9 @@ To `add/update` **shadcn** `components`, run the following commands:
 cd packages/ui
 # SHADCN Components
 bunx --bun shadcn@latest add --all --overwrite
+# Switch utils.ts from clsx + twMerge to [cnfast](https://github.com/aidenybai/cnfast)
+bunx --bun shadcn@latest add aidenybai/cnfast/cn
+
 # better-auth-ui Components
 bunx shadcn@latest add https://better-auth-ui.com/r/all.json
 
@@ -30,7 +33,15 @@ bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-catppuccin.json
 bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-cyberpunk.json
 
 # AI Elements (optional)
-bunx --bun shadcn@latest add @ai-elements/all
+#bunx --bun shadcn@latest add @ai-elements/all
+# AI Elements Workflow Components for React Flow (optional)
+bunx --bun shadcn@latest add @ai-elements/canvas
+bunx --bun shadcn@latest add @ai-elements/connection
+bunx --bun shadcn@latest add @ai-elements/controls
+bunx --bun shadcn@latest add @ai-elements/edge
+bunx --bun shadcn@latest add @ai-elements/node
+bunx --bun shadcn@latest add @ai-elements/panel
+bunx --bun shadcn@latest add @ai-elements/toolbar
 # better-upload (optional)
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-button
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone
@@ -39,21 +50,21 @@ bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/pas
 # kibo-ui (optional)
 bunx --bun shadcn@latest add @kibo-ui/gantt
 # reui data-grid
-bunx --bun shadcn@latest add -p src/components/reui @reui/data-grid
-bunx --bun shadcn@latest add -p src/components/reui @reui/filters
+bunx --bun shadcn@latest add @reui/data-grid
+bunx --bun shadcn@latest add @reui/filters
+bunx --bun shadcn@latest add @reui/rating
 # reui kanban (optional)
-bunx --bun shadcn@latest add -p src/components/reui @reui/kanban
+bunx --bun shadcn@latest add @reui/kanban
 # reui combobox (optional)
-bunx --bun shadcn@latest add -p src/components/reui @reui/combobox
+bunx --bun shadcn@latest add @reui/combobox
 # reui (base-ui) Async Search Autocomplete  (optional)
-bunx --bun shadcn@latest add -p src/components/reui @reui/base-autocomplete
-bunx --bun shadcn@latest add -p src/components/reui @reui/base-combobox
-bunx --bun shadcn@latest add -p src/components/reui @reui/rating
-bunx --bun shadcn@latest add -p src/components/reui @reui/stepper
-bunx --bun shadcn@latest add -p src/components/reui @reui/combobox-multiple-user
-bunx --bun shadcn@latest add -p src/components/reui @reui/combobox-multiple-expandable
+bunx --bun shadcn@latest add @reui/base-autocomplete
+bunx --bun shadcn@latest add @reui/base-combobox
+bunx --bun shadcn@latest add @reui/stepper
+bunx --bun shadcn@latest add @reui/combobox-multiple-user
+bunx --bun shadcn@latest add @reui/combobox-multiple-expandable
 # reui Video Text (optional)
-bunx --bun shadcn@latest add -p src/components/reui @reui/video-text
+bunx --bun shadcn@latest add @reui/video-text
 # diceui Action Bar, mask-input, listbox etc (optional)
 bun x shadcn@latest add -p src/components/diceui @diceui/action-bar
 bun x shadcn@latest add -p src/components/diceui @diceui/badge-overflow
@@ -129,7 +140,11 @@ bunx --bun shadcn@latest init --src-dir sidebar-07
 Use the `apply` command to apply a `preset` to an existing project.
 
 ```shell
-bunx --bun shadcn@latest apply a2r6bw
+cd packages/ui
+# Use one of the available presets: nova, vega, maia, lyra, mira, luma, sera, rhea
+bunx --bun shadcn@latest apply --preset nova -c apps/web
+# or use custom shared preset
+bunx --bun shadcn@latest apply a2r6bw -c apps/web
 # to decode a preset
 bunx --bun shadcn@latest preset decode b5owWMfJ8l
 # Use preset resolve in an existing project to see the preset that matches your current configuration.

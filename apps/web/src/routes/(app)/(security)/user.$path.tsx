@@ -1,0 +1,46 @@
+import { viewPaths } from "@better-auth-ui/core";
+import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
+import { Settings } from "@workspace/ui/components/auth/settings/settings";
+import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
+
+const validSettingsPaths = [
+  ...Object.values(viewPaths.settings),
+  ...Object.values(organizationPlugin().viewPaths.settings),
+];
+
+export const Route = createFileRoute("/(app)/(security)/user/$path")({
+  staticData: {
+    breadcrumb: (match) => ["user", `${match.params.path}`],
+  },
+  async beforeLoad({ params: { path }, context: { session }, location }) {
+    if (!validSettingsPaths.includes(path)) {
+      throw notFound();
+    }
+
+    if (!session) {
+      throw redirect({
+        to: "/auth/$path",
+        params: { path: "sign-in" },
+        search: { redirectTo: location.href },
+      });
+    }
+
+    return { session };
+  },
+  head: () => ({
+    meta: [{ title: "User | Chakra" }],
+  }),
+  component: UserPage,
+});
+
+function UserPage() {
+  const { path } = Route.useParams();
+
+  return (
+    <div className="container-wrapper">
+      <div className="mx-auto w-full max-w-3xl p-4 md:p-6">
+        <Settings path={path} />
+      </div>
+    </div>
+  );
+}

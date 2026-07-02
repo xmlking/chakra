@@ -4,7 +4,7 @@ import { Trash2, Upload } from "lucide-react"
 import { type ChangeEvent, useRef, useState } from "react"
 import { toast } from "sonner"
 import { UserAvatar } from "#components/auth/user/user-avatar"
-import { Button } from "#components/shadcn/button"
+import { Button, buttonVariants } from "#components/shadcn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import {
 import { Field } from "#components/shadcn/field"
 import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
+import { cn } from "#lib/utils"
 
 export type ChangeAvatarProps = {
   className?: string
@@ -109,7 +110,14 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
         </Button>
 
         <DropdownMenu>
-          <DropdownMenuTrigger render={<Button variant="secondary" size="sm" disabled={!session || isPending} />}>{isPending && <Spinner />}{localization.settings.changeAvatar}</DropdownMenuTrigger>
+          <DropdownMenuTrigger
+            className={cn(buttonVariants({ variant: "secondary", size: "sm" }))}
+            disabled={!session || isPending}
+          >
+            {isPending && <Spinner />}
+
+            {localization.settings.changeAvatar}
+          </DropdownMenuTrigger>
 
           <DropdownMenuContent className="min-w-fit">
             <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>

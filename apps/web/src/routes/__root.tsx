@@ -1,15 +1,18 @@
+import { a11yDevtoolsPlugin } from "@tanstack/devtools-a11y/react";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { getLocale } from "@workspace/i18n/runtime";
-import { LazyMotion, domAnimation } from "motion/react";
 
+import { Providers } from "#components/providers";
 import { siteConfig } from "#config/site.config";
 
-import appCss from "@workspace/ui/globals.css?url";
-// import appCss from "../styles/app.css?url";
+// import appCss from "@workspace/ui/globals.css?url";
+import appCss from "../styles.css?url";
+
 interface MyRouterContext {
   queryClient: QueryClient;
   // TODO https://github.com/masrurimz/shadcn-tanstack-start-landing-page/tree/main
@@ -58,12 +61,6 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: "icon", href: "/favicon.ico" },
     ],
   }),
-  notFoundComponent: () => (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>404</h1>
-      <p>The requested page could not be found.</p>
-    </main>
-  ),
   shellComponent: RootDocument,
 });
 
@@ -74,8 +71,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
       </head>
-      <body>
-        <LazyMotion features={domAnimation}>{children}</LazyMotion>
+      <body className="antialiased">
+        <Providers>{children}</Providers>
         <TanStackDevtools
           config={{
             position: "bottom-right",
@@ -90,6 +87,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               name: "Tanstack Router",
               render: <TanStackRouterDevtoolsPanel />,
             },
+            formDevtoolsPlugin(),
+            a11yDevtoolsPlugin(),
           ]}
         />
         <Scripts />

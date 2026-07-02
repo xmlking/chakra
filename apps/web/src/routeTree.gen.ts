@@ -10,19 +10,34 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
-import { Route as publicI18nRouteImport } from './routes/(public)/i18n'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
-import { Route as appDashboardRouteImport } from './routes/(app)/dashboard'
+import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
+import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
+import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
+import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
-import { Route as appSettingsPathRouteImport } from './routes/(app)/settings/$path'
-import { Route as appOrganizationSlugPathRouteImport } from './routes/(app)/organization/$slug/$path'
+import { Route as appSettingsPageRouteImport } from './routes/(app)/settings.$page'
+import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
+import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
+import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
+import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
+import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
+import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
+import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
+import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
 
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const app2RouteRoute = app2RouteRouteImport.update({
+  id: '/(app2)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appRouteRoute = appRouteRouteImport.update({
@@ -34,14 +49,14 @@ const publicIndexRoute = publicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => publicRouteRoute,
 } as any)
+const publicVersionRoute = publicVersionRouteImport.update({
+  id: '/version',
+  path: '/version',
+  getParentRoute: () => publicRouteRoute,
+} as any)
 const publicThemeRoute = publicThemeRouteImport.update({
   id: '/theme',
   path: '/theme',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const publicI18nRoute = publicI18nRouteImport.update({
-  id: '/i18n',
-  path: '/i18n',
   getParentRoute: () => publicRouteRoute,
 } as any)
 const publicAboutRoute = publicAboutRouteImport.update({
@@ -49,10 +64,25 @@ const publicAboutRoute = publicAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const appDashboardRoute = appDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const app2Dashboard2Route = app2Dashboard2RouteImport.update({
+  id: '/dashboard2',
+  path: '/dashboard2',
+  getParentRoute: () => app2RouteRoute,
+} as any)
+const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
+  id: '/playground/',
+  path: '/playground/',
   getParentRoute: () => appRouteRoute,
+} as any)
+const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
+  id: '/api/health/live',
+  path: '/api/health/live',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -64,95 +94,195 @@ const publicAuthPathRoute = publicAuthPathRouteImport.update({
   path: '/auth/$path',
   getParentRoute: () => publicRouteRoute,
 } as any)
-const appSettingsPathRoute = appSettingsPathRouteImport.update({
-  id: '/settings/$path',
-  path: '/settings/$path',
+const appSettingsPageRoute = appSettingsPageRouteImport.update({
+  id: '/settings/$page',
+  path: '/settings/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appOrganizationSlugPathRoute = appOrganizationSlugPathRouteImport.update({
-  id: '/organization/$slug/$path',
-  path: '/organization/$slug/$path',
+const appReportsPageRoute = appReportsPageRouteImport.update({
+  id: '/reports/$page',
+  path: '/reports/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundWorkflowRoute = appPlaygroundWorkflowRouteImport.update({
+  id: '/playground/workflow',
+  path: '/playground/workflow',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
+  id: '/playground/form-demo',
+  path: '/playground/form-demo',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
+  id: '/playground/error',
+  path: '/playground/error',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appDashboardPageRoute = appDashboardPageRouteImport.update({
+  id: '/dashboard/$page',
+  path: '/dashboard/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appAdminPageRoute = appAdminPageRouteImport.update({
+  id: '/admin/$page',
+  path: '/admin/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
+  id: '/(security)/user/$path',
+  path: '/user/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appsecurityOrganizationPathRoute =
+  appsecurityOrganizationPathRouteImport.update({
+    id: '/(security)/organization/$path',
+    path: '/organization/$path',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/dashboard': typeof appDashboardRoute
+  '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
-  '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
+  '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
-  '/settings/$path': typeof appSettingsPathRoute
+  '/admin/$page': typeof appAdminPageRoute
+  '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/workflow': typeof appPlaygroundWorkflowRoute
+  '/reports/$page': typeof appReportsPageRoute
+  '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
+  '/dashboard/': typeof appDashboardIndexRoute
+  '/playground/': typeof appPlaygroundIndexRoute
+  '/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
-  '/dashboard': typeof appDashboardRoute
+  '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
-  '/i18n': typeof publicI18nRoute
   '/theme': typeof publicThemeRoute
+  '/version': typeof publicVersionRoute
   '/': typeof publicIndexRoute
-  '/settings/$path': typeof appSettingsPathRoute
+  '/admin/$page': typeof appAdminPageRoute
+  '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/workflow': typeof appPlaygroundWorkflowRoute
+  '/reports/$page': typeof appReportsPageRoute
+  '/settings/$page': typeof appSettingsPageRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/organization/$slug/$path': typeof appOrganizationSlugPathRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
+  '/dashboard': typeof appDashboardIndexRoute
+  '/playground': typeof appPlaygroundIndexRoute
+  '/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/(app)': typeof appRouteRouteWithChildren
+  '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
-  '/(app)/dashboard': typeof appDashboardRoute
+  '/(app2)/dashboard2': typeof app2Dashboard2Route
   '/(public)/about': typeof publicAboutRoute
-  '/(public)/i18n': typeof publicI18nRoute
   '/(public)/theme': typeof publicThemeRoute
+  '/(public)/version': typeof publicVersionRoute
   '/(public)/': typeof publicIndexRoute
-  '/(app)/settings/$path': typeof appSettingsPathRoute
+  '/(app)/admin/$page': typeof appAdminPageRoute
+  '/(app)/dashboard/$page': typeof appDashboardPageRoute
+  '/(app)/playground/error': typeof appPlaygroundErrorRoute
+  '/(app)/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
+  '/(app)/reports/$page': typeof appReportsPageRoute
+  '/(app)/settings/$page': typeof appSettingsPageRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/(app)/organization/$slug/$path': typeof appOrganizationSlugPathRoute
+  '/api/health/live': typeof ApiHealthLiveRoute
+  '/(app)/dashboard/': typeof appDashboardIndexRoute
+  '/(app)/playground/': typeof appPlaygroundIndexRoute
+  '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
+  '/(app)/(security)/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/dashboard'
+    | '/dashboard2'
     | '/about'
-    | '/i18n'
     | '/theme'
+    | '/version'
     | '/'
-    | '/settings/$path'
+    | '/admin/$page'
+    | '/dashboard/$page'
+    | '/playground/error'
+    | '/playground/form-demo'
+    | '/playground/workflow'
+    | '/reports/$page'
+    | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
-    | '/organization/$slug/$path'
+    | '/api/health/live'
+    | '/dashboard/'
+    | '/playground/'
+    | '/organization/$path'
+    | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/dashboard'
+    | '/dashboard2'
     | '/about'
-    | '/i18n'
     | '/theme'
+    | '/version'
     | '/'
-    | '/settings/$path'
+    | '/admin/$page'
+    | '/dashboard/$page'
+    | '/playground/error'
+    | '/playground/form-demo'
+    | '/playground/workflow'
+    | '/reports/$page'
+    | '/settings/$page'
     | '/auth/$path'
     | '/api/auth/$'
-    | '/organization/$slug/$path'
+    | '/api/health/live'
+    | '/dashboard'
+    | '/playground'
+    | '/organization/$path'
+    | '/user/$path'
   id:
     | '__root__'
     | '/(app)'
+    | '/(app2)'
     | '/(public)'
-    | '/(app)/dashboard'
+    | '/(app2)/dashboard2'
     | '/(public)/about'
-    | '/(public)/i18n'
     | '/(public)/theme'
+    | '/(public)/version'
     | '/(public)/'
-    | '/(app)/settings/$path'
+    | '/(app)/admin/$page'
+    | '/(app)/dashboard/$page'
+    | '/(app)/playground/error'
+    | '/(app)/playground/form-demo'
+    | '/(app)/playground/workflow'
+    | '/(app)/reports/$page'
+    | '/(app)/settings/$page'
     | '/(public)/auth/$path'
     | '/api/auth/$'
-    | '/(app)/organization/$slug/$path'
+    | '/api/health/live'
+    | '/(app)/dashboard/'
+    | '/(app)/playground/'
+    | '/(app)/(security)/organization/$path'
+    | '/(app)/(security)/user/$path'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
+  app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiHealthLiveRoute: typeof ApiHealthLiveRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -162,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app2)': {
+      id: '/(app2)'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof app2RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)': {
@@ -178,18 +315,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
     }
+    '/(public)/version': {
+      id: '/(public)/version'
+      path: '/version'
+      fullPath: '/version'
+      preLoaderRoute: typeof publicVersionRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
     '/(public)/theme': {
       id: '/(public)/theme'
       path: '/theme'
       fullPath: '/theme'
       preLoaderRoute: typeof publicThemeRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(public)/i18n': {
-      id: '/(public)/i18n'
-      path: '/i18n'
-      fullPath: '/i18n'
-      preLoaderRoute: typeof publicI18nRouteImport
       parentRoute: typeof publicRouteRoute
     }
     '/(public)/about': {
@@ -199,12 +336,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAboutRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/(app)/dashboard': {
-      id: '/(app)/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof appDashboardRouteImport
+    '/(app2)/dashboard2': {
+      id: '/(app2)/dashboard2'
+      path: '/dashboard2'
+      fullPath: '/dashboard2'
+      preLoaderRoute: typeof app2Dashboard2RouteImport
+      parentRoute: typeof app2RouteRoute
+    }
+    '/(app)/playground/': {
+      id: '/(app)/playground/'
+      path: '/playground'
+      fullPath: '/playground/'
+      preLoaderRoute: typeof appPlaygroundIndexRouteImport
       parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/': {
+      id: '/(app)/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof appDashboardIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/api/health/live': {
+      id: '/api/health/live'
+      path: '/api/health/live'
+      fullPath: '/api/health/live'
+      preLoaderRoute: typeof ApiHealthLiveRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -220,51 +378,128 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAuthPathRouteImport
       parentRoute: typeof publicRouteRoute
     }
-    '/(app)/settings/$path': {
-      id: '/(app)/settings/$path'
-      path: '/settings/$path'
-      fullPath: '/settings/$path'
-      preLoaderRoute: typeof appSettingsPathRouteImport
+    '/(app)/settings/$page': {
+      id: '/(app)/settings/$page'
+      path: '/settings/$page'
+      fullPath: '/settings/$page'
+      preLoaderRoute: typeof appSettingsPageRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/organization/$slug/$path': {
-      id: '/(app)/organization/$slug/$path'
-      path: '/organization/$slug/$path'
-      fullPath: '/organization/$slug/$path'
-      preLoaderRoute: typeof appOrganizationSlugPathRouteImport
+    '/(app)/reports/$page': {
+      id: '/(app)/reports/$page'
+      path: '/reports/$page'
+      fullPath: '/reports/$page'
+      preLoaderRoute: typeof appReportsPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/workflow': {
+      id: '/(app)/playground/workflow'
+      path: '/playground/workflow'
+      fullPath: '/playground/workflow'
+      preLoaderRoute: typeof appPlaygroundWorkflowRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/form-demo': {
+      id: '/(app)/playground/form-demo'
+      path: '/playground/form-demo'
+      fullPath: '/playground/form-demo'
+      preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/error': {
+      id: '/(app)/playground/error'
+      path: '/playground/error'
+      fullPath: '/playground/error'
+      preLoaderRoute: typeof appPlaygroundErrorRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/dashboard/$page': {
+      id: '/(app)/dashboard/$page'
+      path: '/dashboard/$page'
+      fullPath: '/dashboard/$page'
+      preLoaderRoute: typeof appDashboardPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/admin/$page': {
+      id: '/(app)/admin/$page'
+      path: '/admin/$page'
+      fullPath: '/admin/$page'
+      preLoaderRoute: typeof appAdminPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(security)/user/$path': {
+      id: '/(app)/(security)/user/$path'
+      path: '/user/$path'
+      fullPath: '/user/$path'
+      preLoaderRoute: typeof appsecurityUserPathRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/(security)/organization/$path': {
+      id: '/(app)/(security)/organization/$path'
+      path: '/organization/$path'
+      fullPath: '/organization/$path'
+      preLoaderRoute: typeof appsecurityOrganizationPathRouteImport
       parentRoute: typeof appRouteRoute
     }
   }
 }
 
 interface appRouteRouteChildren {
-  appDashboardRoute: typeof appDashboardRoute
-  appSettingsPathRoute: typeof appSettingsPathRoute
-  appOrganizationSlugPathRoute: typeof appOrganizationSlugPathRoute
+  appAdminPageRoute: typeof appAdminPageRoute
+  appDashboardPageRoute: typeof appDashboardPageRoute
+  appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
+  appPlaygroundFormDemoRoute: typeof appPlaygroundFormDemoRoute
+  appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
+  appReportsPageRoute: typeof appReportsPageRoute
+  appSettingsPageRoute: typeof appSettingsPageRoute
+  appDashboardIndexRoute: typeof appDashboardIndexRoute
+  appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
+  appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
+  appsecurityUserPathRoute: typeof appsecurityUserPathRoute
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appDashboardRoute: appDashboardRoute,
-  appSettingsPathRoute: appSettingsPathRoute,
-  appOrganizationSlugPathRoute: appOrganizationSlugPathRoute,
+  appAdminPageRoute: appAdminPageRoute,
+  appDashboardPageRoute: appDashboardPageRoute,
+  appPlaygroundErrorRoute: appPlaygroundErrorRoute,
+  appPlaygroundFormDemoRoute: appPlaygroundFormDemoRoute,
+  appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
+  appReportsPageRoute: appReportsPageRoute,
+  appSettingsPageRoute: appSettingsPageRoute,
+  appDashboardIndexRoute: appDashboardIndexRoute,
+  appPlaygroundIndexRoute: appPlaygroundIndexRoute,
+  appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,
+  appsecurityUserPathRoute: appsecurityUserPathRoute,
 }
 
 const appRouteRouteWithChildren = appRouteRoute._addFileChildren(
   appRouteRouteChildren,
 )
 
+interface app2RouteRouteChildren {
+  app2Dashboard2Route: typeof app2Dashboard2Route
+}
+
+const app2RouteRouteChildren: app2RouteRouteChildren = {
+  app2Dashboard2Route: app2Dashboard2Route,
+}
+
+const app2RouteRouteWithChildren = app2RouteRoute._addFileChildren(
+  app2RouteRouteChildren,
+)
+
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
-  publicI18nRoute: typeof publicI18nRoute
   publicThemeRoute: typeof publicThemeRoute
+  publicVersionRoute: typeof publicVersionRoute
   publicIndexRoute: typeof publicIndexRoute
   publicAuthPathRoute: typeof publicAuthPathRoute
 }
 
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
-  publicI18nRoute: publicI18nRoute,
   publicThemeRoute: publicThemeRoute,
+  publicVersionRoute: publicVersionRoute,
   publicIndexRoute: publicIndexRoute,
   publicAuthPathRoute: publicAuthPathRoute,
 }
@@ -275,8 +510,10 @@ const publicRouteRouteWithChildren = publicRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
+  app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiHealthLiveRoute: ApiHealthLiveRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

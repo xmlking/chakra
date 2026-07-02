@@ -28,6 +28,8 @@ import { Mermaid } from "@/components/mdx/mermaid";
 
 import { blog, docs } from "./.source/server";
 
+const basePath = import.meta.env.VITE_DOCS_BASE_PATH as string;
+
 export const openapi = createOpenAPI({
   // path or URL to your OpenAPI spec.
   input: ["../../content/openapi.json"],
@@ -69,7 +71,7 @@ const config = defineConfig({
             href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+          <link rel="icon" href={`${basePath}favicon.ico`} type="image/x-icon" />
         </>
       );
     },
@@ -160,7 +162,7 @@ const config = defineConfig({
               /> */}
               <img
                 alt="logo"
-                src="/chakra2.svg"
+                src={`${basePath}chakra2.svg`}
                 width="64"
                 height="64"
                 className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"
@@ -191,9 +193,6 @@ const config = defineConfig({
         return {
           layoutProps: {
             tree: pageTree,
-          },
-          pageProps: {
-            tableOfContent: { style: "clerk" },
           },
         };
       },

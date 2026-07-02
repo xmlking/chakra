@@ -92,7 +92,7 @@ description: Standards and best practices for working with AI agents in the code
 ## Architecture
 
 - Turborepo monorepo: `apps/` and `packages/`
-- `@repo/ui` - shadcn components/hooks, `@repo/utils` - types/utils, `@repo/db` - drizzle schema and db, `@repo/email` for email utils and templates
+- `@workspace/ui` - shadcn components/hooks, `@workspace/utils` - types/utils, `@workspace/db` - drizzle schema and db, `@workspace/email` for email utils and templates
 - Use `'use client'` for client components
 
 ## Domain Knowledge
@@ -128,7 +128,7 @@ description: Standards and best practices for working with AI agents in the code
 - when try to install components, navigatete to ~/Developer/learn-by-doing/vtchat/packages/ui first, then use bunx
 - To install shadcn components, check example command: `npx shadcn@latest add label`
 - Use shadcn/ui components for UI elements
-- Use `@repo/ui` for shared UI components
+- Use `@workspace/ui` for shared UI components
 - Use lucide icons from `lucide-react`
 - Use Tailwind CSS for styling
 - Use `clsx` for conditional class names
@@ -137,7 +137,7 @@ description: Standards and best practices for working with AI agents in the code
 
 ## HTTP Client & API Requests
 
-- **Always use the centralized ky HTTP client**: `import { http } from '@repo/shared/lib/http-client'`
+- **Always use the centralized ky HTTP client**: `import { http } from '@workspace/shared/lib/http-client'`
 - **Never use fetch() directly** - bypasses security, error handling, and standardization
 - **Automatic JSON handling**: Methods return parsed JSON automatically
 - **Built-in error handling**: HTTP errors are handled consistently
@@ -165,14 +165,14 @@ const result = await http.post("/api/external", {
 ## Error Handling
 
 - Use `try/catch` for async operations
-- Use Pino logger from `@repo/shared/logger` for structured logging with automatic PII redaction
-- Use `toast` from `@repo/ui` for user notifications
+- Use Pino logger from `@workspace/shared/logger` for structured logging with automatic PII redaction
+- Use `toast` from `@workspace/ui` for user notifications
 - Use `ErrorBoundary` for catching errors in React components
 
 ## Logging
 
-- DO NOT USE console.log/error/warn\*\* - Always use Pino logger log.info/error/debug/warn (`@repo/shared/lib/logger`)
-- **Import**: `import { log } from '@repo/shared/lib/logger'` for basic logging (use `log` not `logger`)
+- DO NOT USE console.log/error/warn\*\* - Always use Pino logger log.info/error/debug/warn (`@workspace/shared/lib/logger`)
+- **Import**: `import { log } from '@workspace/shared/lib/logger'` for basic logging (use `log` not `logger`)
 - **Usage**: `log.info({ key: value }, 'message')`, `log.error({ error }, 'message')`
 - **Automatic PII redaction** for sensitive fields (apiKey, token, password, email, etc.)
 - **Structured logging** - Always pass metadata as first parameter, message as second

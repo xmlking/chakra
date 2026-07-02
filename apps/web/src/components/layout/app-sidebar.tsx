@@ -1,39 +1,90 @@
 import { OrganizationSwitcher } from "@workspace/ui/components/auth/organization/organization-switcher";
-import { ScrollArea } from "@workspace/ui/components/shadcn/scroll-area";
+import { UserButton } from "@workspace/ui/components/auth/user/user-button";
+import { DropdownMenuSeparator } from "@workspace/ui/components/shadcn/dropdown-menu";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuItem,
+  useSidebar,
+  // SidebarRail,
+} from "@workspace/ui/components/shadcn/sidebar";
+import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
+import { BellIcon, CircleUserRoundIcon, CreditCardIcon, SparklesIcon } from "lucide-react";
+import * as React from "react";
 
 import { navGroups } from "#config/sidebar.config";
 
-import { CommandSearch } from "./command-search";
-import { NavGroupSection } from "./nav-group";
-import { UserNav } from "./user-nav";
+// import { NavDocuments } from "./nav-documents"
+import { NavGroup } from "./nav-group";
+// import { NavUser } from "./nav-user";
+// import { OrganizationSwitcher } from "./organization-switcher";
+import { SidebarSearch } from "./sidebar-search";
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const isMobile = useIsMobile();
+  const sidebar = useSidebar();
+
   return (
-    <aside
-      aria-label="Application sidebar"
-      className="hidden w-64 shrink-0 flex-col border-r bg-background lg:flex"
-    >
-      {/* Top: org switcher */}
-      <div className="flex h-16 shrink-0 items-center border-b px-3">
-        <OrganizationSwitcher className="w-full" align="start" />
-      </div>
-
-      {/* Search */}
-      <div className="shrink-0 px-3 py-2">
-        <CommandSearch />
-      </div>
-
-      {/* Navigation */}
-      <ScrollArea className="flex-1 px-3 py-2">
-        <nav aria-label="Main navigation" className="flex flex-col gap-4">
-          {navGroups.map((group) => (
-            <NavGroupSection key={group.label} group={group} />
-          ))}
-        </nav>
-      </ScrollArea>
-
-      {/* Bottom: user menu */}
-      <UserNav />
-    </aside>
+    <Sidebar {...props}>
+      <SidebarHeader>
+        <OrganizationSwitcher hideSlug={false} side={isMobile ? "bottom" : "right"} />
+        <SidebarSearch />
+      </SidebarHeader>
+      <SidebarContent>
+        {navGroups.map((group, index) => (
+          <NavGroup
+            key={`${group.label}-${index}`}
+            group={group}
+            className={index === navGroups.length - 1 ? "mt-auto" : undefined}
+          />
+        ))}
+        {/* <NavDocuments group={documents} className="group-data-[collapsible=icon]:hidden"/> */}
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <UserButton
+              hideSettings
+              links={[
+                {
+                  href: "/upgrade-to-pro",
+                  label: "Upgrade to Pro",
+                  icon: <SparklesIcon />,
+                  visibility: "authenticated",
+                },
+                <DropdownMenuSeparator key="separator" />,
+                {
+                  href: "/user/account",
+                  label: "Account",
+                  icon: <CircleUserRoundIcon />,
+                  visibility: "authenticated",
+                },
+                {
+                  href: "#",
+                  label: "Billing",
+                  icon: <CreditCardIcon />,
+                  visibility: "authenticated",
+                },
+                {
+                  href: "#",
+                  label: "Notifications",
+                  icon: <BellIcon />,
+                  visibility: "authenticated",
+                },
+              ]}
+              className="flex w-full justify-between"
+              side={isMobile ? "top" : "right"}
+              size={sidebar.state === "collapsed" ? "icon" : "default"}
+              variant="ghost"
+            />
+          </SidebarMenuItem>
+        </SidebarMenu>
+        {/* <NavUser /> */}
+      </SidebarFooter>
+      {/* <SidebarRail /> */}
+    </Sidebar>
   );
 }

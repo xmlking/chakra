@@ -22,8 +22,8 @@ const ignorePatterns = [
   "packages/db/drizzle/**",
   "apps/web/src/lib/gen/**",
   "packages/ui/src/components/**",
-  "!packages/ui/src/components/form/**",
-  "!packages/ui/src/components/sumo/**",
+  // "!packages/ui/src/components/form/**",
+  // "!packages/ui/src/components/sumo/**",
   "packages/ui/src/styles/**",
   "apps/docs/waku.config.ts",
   // "apps/docs/src/routes/__root.tsx",
@@ -175,8 +175,12 @@ export default defineConfig({
     cache: true,
     tasks: {
       "docs:dev": {
-        command: "vp dev apps/docs",
-        dependsOn: ["@workspace/i18n#build"],
+        command: "vp run docs#dev",
+        dependsOn: [{ task: "build", from: ["dependencies", "devDependencies"] }],
+      },
+      "docs:build": {
+        command: "vp run docs#build",
+        dependsOn: [{ task: "build", from: ["dependencies", "devDependencies"] }],
       },
     },
   },
