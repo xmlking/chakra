@@ -22,7 +22,9 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
-    "@vite-env/cli": "catalog:"
+    "@vite-env/cli": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@aws-sdk/client-s3": "catalog:",

@@ -35,7 +35,9 @@
     "@types/react": "catalog:",
     "@vite-env/cli": "catalog:",
     "auth": "catalog:",
-    "uuid": "catalog:"
+    "uuid": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@typescript/native-preview": "catalog:",

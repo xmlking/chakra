@@ -26,7 +26,9 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "bumpp": "catalog:",
-    "vite-plus": "catalog:"
+    "vite": "catalog:",
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@typescript/native-preview": "catalog:",
