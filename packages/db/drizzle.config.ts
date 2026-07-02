@@ -9,12 +9,12 @@ import { env } from "virtual:env/server";
 
 export default defineConfig({
   out: "./drizzle",
-  schema: "./src/schema",
+  schema: "./src/schema/index.ts",
   dialect: "postgresql",
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  casing: "snake_case",
+  schemaFilter: ["public"],
   verbose: true,
   strict: true,
 });

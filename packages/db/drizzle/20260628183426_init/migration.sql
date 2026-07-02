@@ -1,0 +1,385 @@
+CREATE TYPE "lang" AS ENUM('en', 'es', 'de');--> statement-breakpoint
+CREATE TYPE "notification_type" AS ENUM('info', 'error', 'success', 'warning');--> statement-breakpoint
+CREATE TYPE "processStatus" AS ENUM('pending', 'processing', 'completed', 'failed');--> statement-breakpoint
+CREATE TYPE "setting_type" AS ENUM('user', 'org', 'system');--> statement-breakpoint
+CREATE TYPE "visibility" AS ENUM('public', 'private');--> statement-breakpoint
+CREATE TABLE "account" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" uuid NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "apikey" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"config_id" text DEFAULT 'default' NOT NULL,
+	"name" text,
+	"start" text,
+	"reference_id" text NOT NULL,
+	"prefix" text,
+	"key" text NOT NULL,
+	"refill_interval" integer,
+	"refill_amount" integer,
+	"last_refill_at" timestamp,
+	"enabled" boolean DEFAULT true,
+	"rate_limit_enabled" boolean DEFAULT true,
+	"rate_limit_time_window" integer DEFAULT 86400000,
+	"rate_limit_max" integer DEFAULT 10,
+	"request_count" integer DEFAULT 0,
+	"remaining" integer,
+	"last_request" timestamp,
+	"expires_at" timestamp,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	"permissions" text,
+	"metadata" text
+);
+--> statement-breakpoint
+CREATE TABLE "device_code" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"device_code" text NOT NULL,
+	"user_code" text NOT NULL,
+	"user_id" text,
+	"expires_at" timestamp NOT NULL,
+	"status" text NOT NULL,
+	"last_polled_at" timestamp,
+	"polling_interval" integer,
+	"client_id" text,
+	"scope" text
+);
+--> statement-breakpoint
+CREATE TABLE "invitation" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"organization_id" uuid NOT NULL,
+	"email" text NOT NULL,
+	"role" text,
+	"team_id" text,
+	"status" text DEFAULT 'pending' NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"inviter_id" uuid NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "jwks" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"public_key" text NOT NULL,
+	"private_key" text NOT NULL,
+	"created_at" timestamp NOT NULL,
+	"expires_at" timestamp,
+	"alg" text,
+	"crv" text
+);
+--> statement-breakpoint
+CREATE TABLE "member" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"organization_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"role" text DEFAULT 'member' NOT NULL,
+	"created_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_access_token" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"token" text UNIQUE,
+	"client_id" text NOT NULL,
+	"session_id" uuid,
+	"user_id" uuid,
+	"reference_id" text,
+	"authorization_code_id" text,
+	"resources" text[],
+	"requested_user_info_claims" text[],
+	"refresh_id" uuid,
+	"expires_at" timestamp,
+	"created_at" timestamp,
+	"revoked" timestamp,
+	"confirmation" jsonb,
+	"scopes" text[] NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_client" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"client_id" text NOT NULL UNIQUE,
+	"client_secret" text,
+	"disabled" boolean DEFAULT false,
+	"skip_consent" boolean,
+	"enable_end_session" boolean,
+	"subject_type" text,
+	"scopes" text[],
+	"user_id" uuid,
+	"created_at" timestamp,
+	"updated_at" timestamp,
+	"name" text,
+	"uri" text,
+	"icon" text,
+	"contacts" text[],
+	"tos" text,
+	"policy" text,
+	"software_id" text,
+	"software_version" text,
+	"software_statement" text,
+	"redirect_uris" text[] NOT NULL,
+	"post_logout_redirect_uris" text[],
+	"backchannel_logout_uri" text,
+	"backchannel_logout_session_required" boolean,
+	"token_endpoint_auth_method" text,
+	"jwks" text,
+	"jwks_uri" text,
+	"grant_types" text[],
+	"response_types" text[],
+	"public" boolean,
+	"type" text,
+	"require_pkce" boolean,
+	"dpop_bound_access_tokens" boolean DEFAULT false,
+	"reference_id" text,
+	"metadata" jsonb
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_client_assertion" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"expires_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_client_resource" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"client_id" text NOT NULL,
+	"resource_id" text NOT NULL,
+	"metadata" jsonb,
+	"created_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_consent" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"client_id" text NOT NULL,
+	"user_id" uuid,
+	"reference_id" text,
+	"resources" text[],
+	"requested_user_info_claims" text[],
+	"scopes" text[] NOT NULL,
+	"created_at" timestamp,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_refresh_token" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"token" text NOT NULL UNIQUE,
+	"client_id" text NOT NULL,
+	"session_id" uuid,
+	"user_id" uuid NOT NULL,
+	"reference_id" text,
+	"authorization_code_id" text,
+	"resources" text[],
+	"requested_user_info_claims" text[],
+	"expires_at" timestamp,
+	"created_at" timestamp,
+	"revoked" timestamp,
+	"rotated_at" timestamp,
+	"rotation_replay_response" text,
+	"rotation_replay_expires_at" timestamp,
+	"auth_time" timestamp,
+	"confirmation" jsonb,
+	"scopes" text[] NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "oauth_resource" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"identifier" text NOT NULL UNIQUE,
+	"name" text NOT NULL,
+	"access_token_ttl" integer,
+	"refresh_token_ttl" integer,
+	"signing_algorithm" text,
+	"signing_key_id" text,
+	"allowed_scopes" text[],
+	"custom_claims" jsonb,
+	"dpop_bound_access_tokens_required" boolean DEFAULT false,
+	"disabled" boolean DEFAULT false,
+	"created_at" timestamp,
+	"updated_at" timestamp,
+	"policy_version" integer DEFAULT 1,
+	"metadata" jsonb
+);
+--> statement-breakpoint
+CREATE TABLE "organization" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"name" text NOT NULL,
+	"slug" text NOT NULL UNIQUE,
+	"logo" text,
+	"created_at" timestamp NOT NULL,
+	"metadata" text
+);
+--> statement-breakpoint
+CREATE TABLE "organization_role" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"organization_id" uuid NOT NULL,
+	"role" text NOT NULL,
+	"permission" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "passkey" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"name" text,
+	"public_key" text NOT NULL,
+	"user_id" uuid NOT NULL,
+	"credential_id" text NOT NULL,
+	"counter" integer NOT NULL,
+	"device_type" text NOT NULL,
+	"backed_up" boolean NOT NULL,
+	"transports" text,
+	"created_at" timestamp,
+	"aaguid" text
+);
+--> statement-breakpoint
+CREATE TABLE "session" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"expires_at" timestamp NOT NULL,
+	"token" text NOT NULL UNIQUE,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	"ip_address" text,
+	"user_agent" text,
+	"user_id" uuid NOT NULL,
+	"active_organization_id" text,
+	"active_team_id" text,
+	"impersonated_by" text
+);
+--> statement-breakpoint
+CREATE TABLE "team" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"name" text NOT NULL,
+	"member_count" integer DEFAULT 0 NOT NULL,
+	"organization_id" uuid NOT NULL,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "team_member" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"team_id" uuid NOT NULL,
+	"user_id" uuid NOT NULL,
+	"membership_key" text UNIQUE,
+	"created_at" timestamp
+);
+--> statement-breakpoint
+CREATE TABLE "user" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"name" text NOT NULL,
+	"email" text NOT NULL UNIQUE,
+	"email_verified" boolean DEFAULT false NOT NULL,
+	"image" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"last_login_method" text,
+	"role" text,
+	"banned" boolean DEFAULT false,
+	"ban_reason" text,
+	"ban_expires" timestamp,
+	"lang" text DEFAULT 'en'
+);
+--> statement-breakpoint
+CREATE TABLE "verification" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"identifier" text NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "settings" (
+	"key" text,
+	"organization_id" uuid,
+	"documentation" text,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"created_by" uuid NOT NULL,
+	"updated_by" uuid,
+	"value" jsonb NOT NULL,
+	"type" "setting_type" DEFAULT 'org'::"setting_type" NOT NULL,
+	"secret" boolean DEFAULT false NOT NULL,
+	CONSTRAINT "settings_pkey" PRIMARY KEY("key","organization_id"),
+	CONSTRAINT "settings_key_check" CHECK ("key" ~ '^[A-Z]+(_[A-Z]+)*$')
+);
+--> statement-breakpoint
+CREATE TABLE "resources" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"content" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "embeddings" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"resource_id" uuid NOT NULL,
+	"content" text NOT NULL,
+	"embedding" vector(1536) NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX "account_userId_idx" ON "account" ("user_id");--> statement-breakpoint
+CREATE INDEX "apikey_configId_idx" ON "apikey" ("config_id");--> statement-breakpoint
+CREATE INDEX "apikey_referenceId_idx" ON "apikey" ("reference_id");--> statement-breakpoint
+CREATE INDEX "apikey_key_idx" ON "apikey" ("key");--> statement-breakpoint
+CREATE INDEX "invitation_organizationId_idx" ON "invitation" ("organization_id");--> statement-breakpoint
+CREATE INDEX "invitation_email_idx" ON "invitation" ("email");--> statement-breakpoint
+CREATE INDEX "member_organizationId_idx" ON "member" ("organization_id");--> statement-breakpoint
+CREATE INDEX "member_userId_idx" ON "member" ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_clientId_idx" ON "oauth_access_token" ("client_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_sessionId_idx" ON "oauth_access_token" ("session_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_userId_idx" ON "oauth_access_token" ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_authorizationCodeId_idx" ON "oauth_access_token" ("authorization_code_id");--> statement-breakpoint
+CREATE INDEX "oauthAccessToken_refreshId_idx" ON "oauth_access_token" ("refresh_id");--> statement-breakpoint
+CREATE INDEX "oauthClient_userId_idx" ON "oauth_client" ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthClientResource_clientId_idx" ON "oauth_client_resource" ("client_id");--> statement-breakpoint
+CREATE INDEX "oauthClientResource_resourceId_idx" ON "oauth_client_resource" ("resource_id");--> statement-breakpoint
+CREATE INDEX "oauthConsent_clientId_idx" ON "oauth_consent" ("client_id");--> statement-breakpoint
+CREATE INDEX "oauthConsent_userId_idx" ON "oauth_consent" ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthRefreshToken_clientId_idx" ON "oauth_refresh_token" ("client_id");--> statement-breakpoint
+CREATE INDEX "oauthRefreshToken_sessionId_idx" ON "oauth_refresh_token" ("session_id");--> statement-breakpoint
+CREATE INDEX "oauthRefreshToken_userId_idx" ON "oauth_refresh_token" ("user_id");--> statement-breakpoint
+CREATE INDEX "oauthRefreshToken_authorizationCodeId_idx" ON "oauth_refresh_token" ("authorization_code_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "organization_slug_uidx" ON "organization" ("slug");--> statement-breakpoint
+CREATE INDEX "organizationRole_organizationId_idx" ON "organization_role" ("organization_id");--> statement-breakpoint
+CREATE INDEX "organizationRole_role_idx" ON "organization_role" ("role");--> statement-breakpoint
+CREATE INDEX "passkey_userId_idx" ON "passkey" ("user_id");--> statement-breakpoint
+CREATE INDEX "passkey_credentialID_idx" ON "passkey" ("credential_id");--> statement-breakpoint
+CREATE INDEX "session_userId_idx" ON "session" ("user_id");--> statement-breakpoint
+CREATE INDEX "team_organizationId_idx" ON "team" ("organization_id");--> statement-breakpoint
+CREATE INDEX "teamMember_teamId_idx" ON "team_member" ("team_id");--> statement-breakpoint
+CREATE INDEX "teamMember_userId_idx" ON "team_member" ("user_id");--> statement-breakpoint
+CREATE INDEX "verification_identifier_idx" ON "verification" ("identifier");--> statement-breakpoint
+CREATE INDEX "embeddingIndex" ON "embeddings" USING hnsw ("embedding" vector_cosine_ops);--> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "invitation" ADD CONSTRAINT "invitation_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "invitation" ADD CONSTRAINT "invitation_inviter_id_user_id_fkey" FOREIGN KEY ("inviter_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "member" ADD CONSTRAINT "member_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "member" ADD CONSTRAINT "member_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
+ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_refresh_id_oauth_refresh_token_id_fkey" FOREIGN KEY ("refresh_id") REFERENCES "oauth_refresh_token"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_client" ADD CONSTRAINT "oauth_client_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_client_resource" ADD CONSTRAINT "oauth_client_resource_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_client_resource" ADD CONSTRAINT "oauth_client_resource_dn2L1gs9Dolm_fkey" FOREIGN KEY ("resource_id") REFERENCES "oauth_resource"("identifier") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_consent" ADD CONSTRAINT "oauth_consent_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
+ALTER TABLE "oauth_refresh_token" ADD CONSTRAINT "oauth_refresh_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "organization_role" ADD CONSTRAINT "organization_role_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "passkey" ADD CONSTRAINT "passkey_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "team" ADD CONSTRAINT "team_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "team_member" ADD CONSTRAINT "team_member_team_id_team_id_fkey" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "team_member" ADD CONSTRAINT "team_member_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "settings" ADD CONSTRAINT "settings_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "embeddings" ADD CONSTRAINT "embeddings_resource_id_resources_id_fkey" FOREIGN KEY ("resource_id") REFERENCES "resources"("id") ON DELETE CASCADE;
