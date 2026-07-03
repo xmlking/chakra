@@ -13,25 +13,47 @@ New to vibe coding - what’s the best setup today?
 # general syntax
 bunx skills@latest add <owner/repo>
 # add following skills as needed
-bunx skills@latest add vercel/ai
-bunx skills@latest add vercel/turborepo
+
+# shadcn UI skills
+bunx skills@latest add shadcn/ui --skill '*'
+# vercel agent-skills - A collection of skills for AI coding agents.
 bunx skills@latest add vercel-labs/agent-skills --skill '*'
-bunx skills@latest add vercel-labs/next-skills --skill '*'
 bunx skills@latest add vercel/workflow
+bunx skills@latest add vercel/ai
+# drizzle v1 skills
+bunx skills@latest add honra-io/drizzle-best-practices --skill '*'
+# postgres - Helps AI coding tools generate better PostgreSQL code.
+bunx skills@latest add https://github.com/timescale/pg-aiguide --skill '*'
+# better-auth skills
 bunx skills@latest add better-auth/skills --skill '*'
+
+# better-result - Lightweight Result type for TypeScript with generator-based composition.
 bunx skills@latest add dmmulroy/better-result
-bunx skills@latest add mastra-ai/skills
-bunx skills@latest add shadcn/ui
-bunx skills@latest add next-safe-action/skills --skill '*'
+# vite-env skills
+bunx skills@latest add https://github.com/pyyupsk/skills --skill vite-env
+
 # ask `Add a data table with filters to my project`
 bunx skills@latest add https://github.com/openstatushq/data-table-filters --skill data-table-filters
-# postgres
-bunx skills@latest add https://github.com/timescale/pg-aiguide --skill '*'
-# vite-env and drizzle skills
-bunx skills@latest add https://github.com/pyyupsk/skills --skill vite-env --skill drizzle-orm
+
+# AI Agents - mastra, eve
+bunx skills@latest add mastra-ai/skills
+bunx skills@latest add https://github.com/vercel/eve --skill eve
+```
+
+Developer workflow skills
+
+```shell
 # improve -  audits any codebase and writes implementation plans for other agents to execute
 bunx skills@latest add shadcn/improve
 ```
+
+For `reui` skills, we have to use shadcn cli
+
+```shell
+bunx --bun shadcn@latest add @reui/skills-cursor
+```
+
+## Update skills
 
 To update skills
 
@@ -39,8 +61,45 @@ To update skills
 bunx skills@latest update
 ```
 
+## Remove skills
+
+To remove a skill
+
+```shell
+bunx skills@latest remove -s [skill-name]
+# bunx skills@latest remove -s drizzle-orm
+```
+
 Generate `AGENTS.md` for [nextjs](https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals)
 
 ```shell
  bunx @next/codemod@canary agents-md
 ```
+
+## Usage
+
+to use `migrate-radix-to-base` skill, ask your coding agent:
+
+> migrate alert-dialog to base ui
+
+Or
+
+```shell
+/migrate-radix-to-base alert-dialog
+```
+
+### Workflow
+
+Developer workflow skills for **Spec Driven Development (SDD)**
+
+- [grill-me](https://www.aihero.dev/grill-with-docs): Align Before You Build — interviews you relentlessly about a plan or design, one question at a time, until you and the agent reach a shared understanding — and it writes the vocabulary and decisions down as you go.
+- [to-prd](https://www.aihero.dev/skills-to-prd): Turn Resolved Context Into a PRD - turns the current conversation context and codebase understanding into a product requirements document.
+- [to-issues](https://www.aihero.dev/skills-to-issues) - Break a PRD Into Vertical-Slice GitHub Issues
+- [tdd](https://www.aihero.dev/skills-tdd): Break a PRD Into Vertical-Slice GitHub Issues- builds a feature or fixes a bug test-first, one behaviour at a time, driving the code out through a red-green loop.
+- [improve-codebase-architecture](https://www.aihero.dev/skills-improve-codebase-architecture): Find Deepening Opportunities - Making Your Code Agent-Friendly
+- [handoff](https://www.aihero.dev/skills-handoff): Move Context Between Agent Sessions — Compact the current conversation into a handoff document so another agent can continue the work.
+
+## Reference
+
+- [5 Agent Skills I Use Every Day](https://www.aihero.dev/5-agent-skills-i-use-every-day)
+- All mattpocock's [skill](https://www.aihero.dev/skills)

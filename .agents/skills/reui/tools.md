@@ -1,6 +1,6 @@
 # ReUI MCP: full reference
 
-The ReUI MCP (`https://mcp.reui.io`, Streamable HTTP) is free - it needs no license and no auth header at all. It does **discovery + guidance** (search, inline APIs, page planning, validation) and never serves source code; the shadcn CLI does **installation**, and the license key lives only there (the `@reui` entry in `components.json`, backed by `.env.local`). Goal: from the user's intent to correct, themed, data-wired ReUI code in the **fewest tokens and calls**, with **no guessing**.
+The ReUI MCP (`https://mcp.reui.io`, Streamable HTTP) is free - it needs no license and no auth header at all. It does **discovery + guidance** (search, inline APIs, page planning, validation) and never serves source code; the shadcn CLI does **installation**, and the license key lives only there (the `@reui` entry in `components.json`, backed by `.env.local`). In this repo it is configured as `reui` for Claude Code (`.mcp.json`), Cursor (`.cursor/mcp.json`), and Codex (`.codex/config.toml`). Goal: from the user's intent to correct, themed, data-wired ReUI code in the **fewest tokens and calls**, with **no guessing**.
 
 ## Golden path (token-optimal - follow this order)
 
