@@ -5,7 +5,7 @@ import press from "fumapress/vite";
 import { defineConfig } from "waku/config";
 
 export default defineConfig({
-  basePath: import.meta.env.VITE_DOCS_BASE_PATH,
+  basePath: import.meta.env.VITE_DOCS_BASE_PATH || "/",
   vite: {
     envDir: "../..", // HINT: use workspace root .env files
     resolve: {
