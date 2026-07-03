@@ -8,7 +8,7 @@ The core ReUI loop. The MCP tells you what to install and gives you the API; the
 
 For everything else, call `search` with the user's intent. Pass structured hints whenever you can infer them - you are an LLM, so do the parsing the server cannot:
 
-- `type`: `"component"` (one of the 17 building blocks), `"example"` (a c-* use-case), `"block"` (a full page/section), `"icon"`.
+- `type`: `"component"` (one of the 17 building blocks), `"example"` (a c-\* use-case), `"block"` (a full page/section), `"icon"`.
 - `component`: the ReUI component the request implies (`"data-grid"`, `"kanban"`, ...).
 - `category`, `features` (e.g. `["sortable","pagination"]`), `free`.
 

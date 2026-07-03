@@ -125,6 +125,7 @@ export const auth = betterAuth({
         from,
         to: user.email,
         subject: "Verify your email address",
+        text: `Click the link to verify your email: ${url}`,
         react: (
           <EmailVerificationEmail
             url={url}
