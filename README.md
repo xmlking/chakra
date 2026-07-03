@@ -16,6 +16,10 @@ brew install vite-plus
 vp env off
 ```
 
+```shell
+bun add -g @dotenv-run/cli
+```
+
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
 
 ```shell
