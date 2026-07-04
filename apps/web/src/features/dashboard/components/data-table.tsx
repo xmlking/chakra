@@ -632,10 +632,11 @@ const chartConfig = {
     color: "var(--primary)",
   },
 } satisfies ChartConfig;
+
 function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
   const isMobile = useIsMobile();
   return (
-    <Drawer direction={isMobile ? "bottom" : "right"}>
+    <Drawer swipeDirection={isMobile ? "down" : "right"}>
       <DrawerTrigger className="w-fit px-0 text-left text-primary underline-offset-4 hover:underline">
         {item.header}
       </DrawerTrigger>
