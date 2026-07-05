@@ -55,8 +55,9 @@ export function SliderField({
         name={field.name}
         onBlur={field.handleBlur}
         onValueChange={(value) => {
-          if (value[0] !== undefined) {
-            field.handleChange(value[0]);
+          const numValue = Array.isArray(value) ? value[0] : value;
+          if (numValue !== undefined) {
+            field.handleChange(numValue);
           }
         }}
         step={step}

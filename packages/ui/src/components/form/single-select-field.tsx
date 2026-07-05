@@ -1,24 +1,18 @@
 "use client";
 
-import { CheckIcon, ChevronDown } from "lucide-react";
-import { useState } from "react";
-
-import { Badge } from "#components/reui/badge";
-/**
- * Ref: https://reui.io/docs/combobox
- */
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
 import { Button } from "#components/shadcn/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "#components/shadcn/command";
-import { Popover, PopoverContent, PopoverTrigger } from "#components/shadcn/popover";
-import { ScrollArea } from "#components/shadcn/scroll-area";
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxTrigger,
+  ComboboxValue,
+} from "#components/shadcn/combobox";
+import { Item, ItemContent, ItemDescription, ItemTitle } from "#components/shadcn/item";
 
 import { BaseField, type FieldControlProps } from "./base-field";
 import { useFieldContext } from "./context";
@@ -49,19 +43,8 @@ export function SingleSelectField({
 }: SingleSelectFieldProps) {
   const field = useFieldContext<string>();
 
-  const [open, setOpen] = useState(false);
-
-  const selectedValue = field.state.value ?? undefined;
-
-  const toggle = (selectedValue: string) => {
-    if (field.state.value === selectedValue) {
-      field.handleChange("");
-    } else {
-      field.handleChange(selectedValue);
-    }
-    setOpen(false);
-    return;
-  };
+  const selectedValue = field.state.value ?? "";
+  const selectedOption = options.find((o) => o.value === selectedValue);
 
   return (
     <BaseField
@@ -71,85 +54,66 @@ export function SingleSelectField({
       tooltip={tooltip}
       tooltipSide={tooltipSide}
     >
-      <Popover onOpenChange={setOpen} open={open}>
-        <PopoverTrigger
+      <Combobox
+        items={options}
+        defaultValue={selectedOption}
+        itemToStringValue={(option: SingleSelectOption) => option.label}
+        disabled={disabled}
+        onValueChange={(option) => {
+          field.handleChange(option?.value ?? "");
+        }}
+      >
+        <ComboboxTrigger
           render={
             <Button
-              aria-expanded={open}
-              autoHeight={true}
-              className="relative w-full p-1"
-              disabled={disabled}
-              mode="input"
-              role="combobox"
               variant="outline"
-            >
-              <div className="flex flex-wrap items-center gap-1 pe-2.5">
-                {selectedValue?.length ? (
-                  options
-                    .filter((o) => o.value === selectedValue)
-                    .map((option) => (
-                      <Badge className="gap-1.5" key={option.value} variant="outline">
-                        {option.image && (
-                          <Avatar className="size-4">
-                            <AvatarImage
-                              alt={option.label}
-                              src={option.image || "/avatars/placeholder.svg"}
-                            />
-                            <AvatarFallback className="text-xs">{option.label[0]}</AvatarFallback>
-                          </Avatar>
-                        )}
-                        <span className="font-medium">{option.label}</span>
-                      </Badge>
-                    ))
-                ) : (
-                  <span className="px-2.5 text-muted-foreground">{placeholder}</span>
-                )}
-              </div>
-
-              <ChevronDown className="absolute end-3 top-2" />
-            </Button>
+              className="w-full justify-between font-normal"
+              disabled={disabled}
+            />
           }
-        />
+        >
+          <ComboboxValue>
+            {(option: SingleSelectOption | null) =>
+              option ? (
+                <span className="flex items-center gap-2">
+                  {option.image && (
+                    <Avatar className="size-5">
+                      <AvatarImage src={option.image} alt={option.label} />
+                      <AvatarFallback>{option.label[0]}</AvatarFallback>
+                    </Avatar>
+                  )}
+                  <span>{option.label}</span>
+                </span>
+              ) : (
+                <span className="text-muted-foreground">{placeholder}</span>
+              )
+            }
+          </ComboboxValue>
+        </ComboboxTrigger>
 
-        <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
-          <Command>
-            <CommandInput placeholder="Search..." />
-            <CommandList>
-              <ScrollArea viewportClassName="max-h-[300px] [&>div]:block!">
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {options.map((option) => (
-                    <CommandItem
-                      disabled={option.disabled}
-                      key={option.value}
-                      onSelect={() => toggle(option.value)}
-                      value={option.label}
-                    >
-                      <span className="flex items-center gap-2">
-                        {option.image && (
-                          <Avatar className="size-7">
-                            <AvatarImage src={option.image || "/avatars/placeholder.svg"} />
-                            <AvatarFallback>{option.label[0]}</AvatarFallback>
-                          </Avatar>
-                        )}
-                        <span className="flex flex-col items-start gap-px">
-                          <span className="font-medium">{option.label}</span>
-                          {option.subLabel && (
-                            <small className="text-sm text-muted-foreground">
-                              {option.subLabel}
-                            </small>
-                          )}
-                        </span>
-                      </span>
-                      {selectedValue === option.value && !option.disabled && <CheckIcon />}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </ScrollArea>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+        <ComboboxContent className="max-w-(--anchor-width) min-w-(--anchor-width)">
+          <ComboboxInput placeholder="Search..." />
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(option) => (
+              <ComboboxItem key={option.value} value={option} disabled={option.disabled}>
+                <Item size="xs" className="p-0">
+                  {option.image && (
+                    <Avatar className="size-6">
+                      <AvatarImage src={option.image} alt={option.label} />
+                      <AvatarFallback>{option.label[0]}</AvatarFallback>
+                    </Avatar>
+                  )}
+                  <ItemContent>
+                    <ItemTitle className="whitespace-nowrap">{option.label}</ItemTitle>
+                    {option.subLabel && <ItemDescription>{option.subLabel}</ItemDescription>}
+                  </ItemContent>
+                </Item>
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
     </BaseField>
   );
 }

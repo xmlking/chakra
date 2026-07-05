@@ -33,7 +33,7 @@ export function SelectField({
       <Select
         id={field.name}
         name={field.name}
-        onValueChange={(value) => field.handleChange(value)}
+        onValueChange={(value) => field.handleChange(value as string)}
         value={field.state.value ?? undefined}
         {...props}
       >

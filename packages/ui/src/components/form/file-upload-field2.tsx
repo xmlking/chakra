@@ -7,7 +7,7 @@ import { File, Upload, X } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { Label } from "#components/shascn/label";
+import { Label } from "#components/shadcn/label";
 
 import { useFieldContext } from "./context";
 
@@ -25,6 +25,16 @@ function ErrorMessages({ errors }: { errors: Array<string | { message: string }>
     </>
   );
 }
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) {
+    return "0 Bytes";
+  }
+  const k = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+};
 
 export function FileUploadField2({
   label,
@@ -47,16 +57,6 @@ export function FileUploadField2({
   const errors = useStore(field.store, (state) => state.meta.errors);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) {
-      return "0 Bytes";
-    }
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
-  };
 
   const validateFileSize = (file: File) => {
     if (maxSize && file.size > maxSize) {
@@ -136,7 +136,7 @@ export function FileUploadField2({
       <Label className="px-1" htmlFor={name}>
         {required && <span className="mr-1 text-red-500">*</span>}
         {label}
-        {maxSize && (
+        {maxSize != null && (
           <span className="ml-2 text-sm text-muted-foreground">
             (Max: {formatFileSize(maxSize)})
           </span>
@@ -158,7 +158,8 @@ export function FileUploadField2({
       />
 
       {/* Drop zone */}
-      <div
+      <button
+        type="button"
         className={`relative cursor-pointer rounded-lg border-2 border-dashed p-6 transition-colors ${
           isDragOver ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
         } ${currentFiles.length > 0 ? "bg-muted/20" : "bg-background"} `}
@@ -174,7 +175,7 @@ export function FileUploadField2({
             {accept && `Supported formats: ${accept}`}
           </p>
         </div>
-      </div>
+      </button>
 
       {/* Selected files list */}
       {currentFiles.length > 0 && (

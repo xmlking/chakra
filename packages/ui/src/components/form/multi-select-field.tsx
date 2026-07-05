@@ -1,27 +1,20 @@
 "use client";
 
-import { Check, CheckIcon, ChevronDown, X } from "lucide-react";
 import { useState } from "react";
 
-/**
- * Ref: https://reui.io/docs/combobox
- */
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
-import { Badge } from "#components/reui/badge";
-import { Button } from "#components/shadcn/button";
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "#components/shadcn/command";
-import { Popover, PopoverContent, PopoverTrigger } from "#components/shadcn/popover";
-import { ScrollArea } from "#components/shadcn/scroll-area";
-/**
- * Ref: https://reui.io/docs/combobox
- */
+  Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxValue,
+  useComboboxAnchor,
+} from "#components/shadcn/combobox";
 
 import { BaseField, type FieldControlProps } from "./base-field";
 import { useFieldContext } from "./context";
@@ -53,27 +46,24 @@ export function MultiSelectField({
   maxShownItems = 3,
 }: MultiSelectFieldProps) {
   const field = useFieldContext<string[]>();
-
-  const [open, setOpen] = useState(false);
+  const anchor = useComboboxAnchor();
   const [expanded, setExpanded] = useState(false);
 
   const selectedValues = field.state.value ?? [];
+  const selectedOptions = selectedValues.flatMap((v) => {
+    const option = options.find((o) => o.value === v);
+    return option ? [option] : [];
+  });
 
-  const toggle = (id: string) => {
-    field.handleChange(
-      selectedValues.includes(id)
-        ? selectedValues.filter((v) => v !== id)
-        : [...selectedValues, id],
-    );
+  const visibleItems = expanded ? selectedOptions : selectedOptions.slice(0, maxShownItems);
+  const hiddenCount = selectedOptions.length - visibleItems.length;
+
+  const handleSelect = (option: MultiSelectOption) => {
+    const newValues = selectedValues.includes(option.value)
+      ? selectedValues.filter((v) => v !== option.value)
+      : [...selectedValues, option.value];
+    field.handleChange(newValues);
   };
-
-  const remove = (id: string) => {
-    field.handleChange(selectedValues.filter((v) => v !== id));
-  };
-
-  const visibleItems = expanded ? selectedValues : selectedValues.slice(0, maxShownItems);
-
-  const hiddenCount = selectedValues.length - visibleItems.length;
 
   return (
     <BaseField
@@ -83,115 +73,80 @@ export function MultiSelectField({
       tooltip={tooltip}
       tooltipSide={tooltipSide}
     >
-      <Popover onOpenChange={setOpen} open={open}>
-        <PopoverTrigger
-          render={
-            <Button
-              aria-expanded={open}
-              autoHeight={true}
-              className="relative w-full p-1"
-              disabled={disabled}
-              mode="input"
-              role="combobox"
-              variant="outline"
-            >
-              <div className="flex flex-wrap items-center gap-1 pe-2.5">
-                {selectedValues.length ? (
-                  <>
-                    {visibleItems.map((id) => {
-                      const option = options.find((o) => o.value === id);
-                      if (!option) {
-                        return null;
-                      }
-
-                      return (
-                        <Badge className="gap-1.5" key={id} variant="outline">
-                          {option.image && (
-                            <Avatar className="size-4">
-                              <AvatarImage
-                                alt={option.label}
-                                src={option.image || "/avatars/placeholder.svg"}
-                              />
-                              <AvatarFallback className="text-xs">{option.label[0]}</AvatarFallback>
-                            </Avatar>
-                          )}
-                          <span className="font-medium">{option.label}</span>
-                          <Button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              remove(id);
-                            }}
-                          >
-                            <X />
-                          </Button>
-                        </Badge>
-                      );
-                    })}
-
-                    {(hiddenCount > 0 || expanded) && (
-                      <Badge
-                        appearance="ghost"
-                        className="cursor-pointer px-1.5 text-muted-foreground"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setExpanded((v) => !v);
-                        }}
-                      >
-                        {expanded ? "Show less" : `+${hiddenCount} more`}
-                      </Badge>
+      <Combobox
+        multiple
+        items={options}
+        itemToStringValue={(option: MultiSelectOption) => option.label}
+        disabled={disabled}
+      >
+        <ComboboxChips ref={anchor} className="has-data-[slot=combobox-chip]:pl-1">
+          <ComboboxValue>
+            {() => (
+              <>
+                {visibleItems.map((option) => (
+                  <ComboboxChip key={option.value} showRemove={true} className="gap-1.5">
+                    {option.image && (
+                      <Avatar className="size-4">
+                        <AvatarImage
+                          alt={option.label}
+                          src={option.image || "/avatars/placeholder.svg"}
+                        />
+                        <AvatarFallback className="text-xs">{option.label[0]}</AvatarFallback>
+                      </Avatar>
                     )}
-                  </>
-                ) : (
-                  <span className="px-2.5 text-muted-foreground">{placeholder}</span>
+                    <span>{option.label}</span>
+                  </ComboboxChip>
+                ))}
+                {hiddenCount > 0 && !expanded && (
+                  <ComboboxChip
+                    className="cursor-pointer px-1.5 text-muted-foreground"
+                    onClick={() => setExpanded(true)}
+                  >
+                    +{hiddenCount} more
+                  </ComboboxChip>
                 )}
-              </div>
-
-              <ChevronDown className="absolute end-3 top-2" />
-            </Button>
-          }
-        />
-
-        <PopoverContent className="w-(--radix-popper-anchor-width) p-0">
-          <Command>
-            <CommandInput placeholder="Search..." />
-            <CommandList>
-              <ScrollArea viewportClassName="max-h-[300px] [&>div]:block!">
-                <CommandEmpty>No results found.</CommandEmpty>
-                <CommandGroup>
-                  {options.map((option) => (
-                    <CommandItem
-                      disabled={option.disabled}
-                      key={option.value}
-                      onSelect={() => toggle(option.value)}
-                      value={option.label}
-                    >
-                      <span className="flex items-center gap-2">
-                        {option.image && (
-                          <Avatar className="size-7">
-                            <AvatarImage src={option.image || "/avatars/placeholder.svg"} />
-                            <AvatarFallback>{option.label[0]}</AvatarFallback>
-                          </Avatar>
-                        )}
-                        <span className="flex flex-col items-start gap-px">
-                          <span className="font-medium">{option.label}</span>
-                          {option.subLabel && (
-                            <small className="text-sm text-muted-foreground">
-                              {option.subLabel}
-                            </small>
-                          )}
-                        </span>
-                      </span>
-                      {selectedValues.includes(option.value) && !option.disabled && (
-                        <CheckIcon />
-                      )}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </ScrollArea>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+                {expanded && hiddenCount > 0 && (
+                  <ComboboxChip
+                    className="cursor-pointer px-1.5 text-muted-foreground"
+                    onClick={() => setExpanded(false)}
+                  >
+                    Show less
+                  </ComboboxChip>
+                )}
+                <ComboboxChipsInput placeholder={placeholder} />
+              </>
+            )}
+          </ComboboxValue>
+        </ComboboxChips>
+        <ComboboxContent anchor={anchor} className="max-w-(--anchor-width) min-w-(--anchor-width)">
+          <ComboboxEmpty>No results found.</ComboboxEmpty>
+          <ComboboxList>
+            {(option: MultiSelectOption) => (
+              <ComboboxItem
+                key={option.value}
+                value={option}
+                disabled={option.disabled}
+                onSelect={() => handleSelect(option)}
+              >
+                <div className="flex items-center gap-2">
+                  {option.image && (
+                    <Avatar className="size-7">
+                      <AvatarImage src={option.image || "/avatars/placeholder.svg"} />
+                      <AvatarFallback>{option.label[0]}</AvatarFallback>
+                    </Avatar>
+                  )}
+                  <div className="flex flex-col items-start gap-px">
+                    <span className="font-medium">{option.label}</span>
+                    {option.subLabel && (
+                      <small className="text-sm text-muted-foreground">{option.subLabel}</small>
+                    )}
+                  </div>
+                </div>
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
     </BaseField>
   );
 }

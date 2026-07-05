@@ -1,3 +1,4 @@
+// oxlint-disable react-doctor/no-event-handler react-doctor/no-derived-state react-doctor/no-chain-state-updates react-doctor/exhaustive-deps
 /**
  * Docs: https://shadcnui-expansions.typeart.cc/docs/multiple-selector
  * Source: https://github.com/hsuanyi-chou/shadcn-ui-expansions/blob/main/components/ui/multiple-selector.tsx
@@ -6,12 +7,14 @@
 
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { ChevronDownIcon, X } from "lucide-react";
-import * as React from "react";
-import { forwardRef, useEffect } from "react";
+// eslint-disable-next-line react-doctor/no-react19-deprecated-apis
+import React, { forwardRef, useEffect } from "react";
 
 import { Badge } from "#components/shadcn/badge";
 import { Command, CommandGroup, CommandItem, CommandList } from "#components/shadcn/command";
 import { cn } from "#lib/utils";
+
+import { useDebounce } from "./hooks/use-debounce";
 
 export interface Option {
   value: string;
@@ -90,20 +93,6 @@ export interface MultipleSelectorRef {
   reset: () => void;
 }
 
-export function useDebounce<T>(value: T, delay?: number): T {
-  const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay || 500);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
 function transToGroupOption(options: Option[], groupBy?: string) {
   if (options.length === 0) {
     return {};
@@ -126,17 +115,19 @@ function transToGroupOption(options: Option[], groupBy?: string) {
 }
 
 function removePickedOption(groupOption: GroupOption, picked: Option[]) {
-  const cloneOption = JSON.parse(JSON.stringify(groupOption)) as GroupOption;
+  const cloneOption = structuredClone(groupOption);
+  const pickedMap = new Map(picked.map((p) => [p.value, p]));
 
   for (const [key, value] of Object.entries(cloneOption)) {
-    cloneOption[key] = value.filter((val) => !picked.find((p) => p.value === val.value));
+    cloneOption[key] = value.filter((val) => !pickedMap.has(val.value));
   }
   return cloneOption;
 }
 
 function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
+  const targetMap = new Map(targetOption.map((o) => [o.value, o]));
   for (const [, value] of Object.entries(groupOption)) {
-    if (value.some((option) => targetOption.find((p) => p.value === option.value))) {
+    if (value.some((option) => targetMap.has(option.value))) {
       return true;
     }
   }
@@ -149,6 +140,7 @@ function isOptionsExist(groupOption: GroupOption, targetOption: Option[]) {
  *
  * @reference: https://github.com/hsuanyi-chou/shadcn-ui-expansions/issues/34#issuecomment-1949561607
  **/
+// eslint-disable-next-line react-doctor/no-react19-deprecated-apis
 const CommandEmpty = forwardRef<
   HTMLDivElement,
   React.ComponentProps<typeof CommandPrimitive.Empty>
@@ -160,7 +152,7 @@ const CommandEmpty = forwardRef<
   return (
     <div
       className={cn("py-6 text-center text-sm", className)}
-      cmdk-empty=""
+      {...{ "cmdk-empty": "" }}
       ref={forwardedRef}
       role="presentation"
       {...props}
@@ -170,6 +162,7 @@ const CommandEmpty = forwardRef<
 
 CommandEmpty.displayName = "CommandEmpty";
 
+// eslint-disable-next-line react-doctor/no-react19-deprecated-apis
 export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSelectorProps>(
   (
     {
@@ -203,10 +196,10 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
     const [open, setOpen] = React.useState(false);
     const [onScrollbar, setOnScrollbar] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
-    const dropdownRef = React.useRef<HTMLDivElement>(null); // Added this
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
 
     const [selected, setSelected] = React.useState<Option[]>(value || []);
-    const [options, setOptions] = React.useState<GroupOption>(
+    const [options, setOptions] = React.useState<GroupOption>(() =>
       transToGroupOption(arrayDefaultOptions, groupBy),
     );
     const [inputValue, setInputValue] = React.useState("");
@@ -235,41 +228,33 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
       }
     };
 
-    const handleUnselect = React.useCallback(
-      (option: Option) => {
-        const newOptions = selected.filter((s) => s.value !== option.value);
-        setSelected(newOptions);
-        onChange?.(newOptions);
-      },
-      [onChange, selected],
-    );
+    const handleUnselect = (option: Option) => {
+      const newOptions = selected.filter((s) => s.value !== option.value);
+      setSelected(newOptions);
+      onChange?.(newOptions);
+    };
 
-    const handleKeyDown = React.useCallback(
-      (e: React.KeyboardEvent<HTMLDivElement>) => {
-        const input = inputRef.current;
-        if (input) {
-          if (e.key === "Delete" || e.key === "Backspace") {
-            if (input.value === "" && selected.length > 0) {
-              const lastSelectOption = selected[selected.length - 1];
-              // If there is a last item and it is not fixed, we can remove it.
-              if (lastSelectOption && !lastSelectOption.fixed) {
-                handleUnselect(lastSelectOption);
-              }
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const input = inputRef.current;
+      if (input) {
+        if (e.key === "Delete" || e.key === "Backspace") {
+          if (input.value === "" && selected.length > 0) {
+            const lastSelectOption = selected[selected.length - 1];
+            if (lastSelectOption && !lastSelectOption.fixed) {
+              handleUnselect(lastSelectOption);
             }
           }
-          // This is not a default behavior of the <input /> field
-          if (e.key === "Escape") {
-            input.blur();
-          }
         }
-      },
-      [handleUnselect, selected],
-    );
+        if (e.key === "Escape") {
+          input.blur();
+        }
+      }
+    };
 
     useEffect(() => {
       if (open) {
         document.addEventListener("mousedown", handleClickOutside);
-        document.addEventListener("touchend", handleClickOutside);
+        document.addEventListener("touchend", handleClickOutside, { passive: true });
       } else {
         document.removeEventListener("mousedown", handleClickOutside);
         document.removeEventListener("touchend", handleClickOutside);
@@ -319,7 +304,6 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
       };
 
       void exec();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [debouncedSearchTerm, groupBy, open, triggerSearchOnFocus]);
 
     useEffect(() => {
@@ -393,7 +377,7 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
       return undefined;
     };
 
-    const EmptyItem = React.useCallback(() => {
+    const EmptyItem = () => {
       if (!emptyIndicator) return undefined;
 
       // For async search that showing emptyIndicator
@@ -406,15 +390,11 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
       }
 
       return <CommandEmpty>{emptyIndicator}</CommandEmpty>;
-    }, [creatable, emptyIndicator, onSearch, options]);
+    };
 
-    const selectables = React.useMemo<GroupOption>(
-      () => removePickedOption(options, selected),
-      [options, selected],
-    );
+    const selectables = removePickedOption(options, selected);
 
-    /** Avoid Creatable Selector freezing or lagging when paste a long string. */
-    const commandFilter = React.useCallback(() => {
+    const commandFilter = () => {
       if (commandProps?.filter) {
         return commandProps.filter;
       }
@@ -424,9 +404,8 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
           return value.toLowerCase().includes(search.toLowerCase()) ? 1 : -1;
         };
       }
-      // Using default filter in `cmdk`. We don't have to provide it.
       return undefined;
-    }, [creatable, commandProps?.filter]);
+    };
 
     return (
       <Command
@@ -442,6 +421,7 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
           commandProps?.shouldFilter !== undefined ? commandProps.shouldFilter : !onSearch
         }
       >
+        {/* oxlint-disable jsx-a11y/prefer-tag-over-role react-doctor/prefer-tag-over-role */}
         <div
           className={cn(
             "flex items-start justify-between rounded-md border border-input px-3 py-2 text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 md:text-sm",
@@ -454,6 +434,16 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
             if (disabled) return;
             inputRef?.current?.focus();
           }}
+          onKeyDown={(e) => {
+            if ((e.key === "Enter" || e.key === " ") && e.currentTarget === e.target) {
+              e.preventDefault();
+              if (disabled) return;
+              inputRef?.current?.focus();
+            }
+          }}
+          aria-disabled={disabled}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
         >
           <div className="relative flex flex-wrap gap-1">
             {selected.map((option) => {
