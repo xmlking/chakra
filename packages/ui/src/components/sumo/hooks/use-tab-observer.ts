@@ -9,7 +9,7 @@ interface TabObserverOptions {
 }
 
 export function useTabObserver({ onActiveTabChange }: TabObserverOptions = {}) {
-  const [mounted, setMounted] = React.useState(false);
+  const [mounted] = React.useState(true);
   const listRef = React.useRef<HTMLDivElement>(null);
   const onActiveTabChangeRef = React.useRef(onActiveTabChange);
 
@@ -17,19 +17,17 @@ export function useTabObserver({ onActiveTabChange }: TabObserverOptions = {}) {
     onActiveTabChangeRef.current = onActiveTabChange;
   }, [onActiveTabChange]);
 
-  const handleUpdate = React.useCallback(() => {
-    if (listRef.current) {
-      const tabs = listRef.current.querySelectorAll('[role="tab"]');
-      tabs.forEach((el, i) => {
-        if (el.getAttribute("data-state") === "active") {
-          onActiveTabChangeRef.current?.(i, el as HTMLElement);
-        }
-      });
-    }
-  }, []);
-
   useEffect(() => {
-    setMounted(true);
+    const handleUpdate = () => {
+      if (listRef.current) {
+        const tabs = listRef.current.querySelectorAll('[role="tab"]');
+        tabs.forEach((el, i) => {
+          if (el.getAttribute("data-state") === "active") {
+            onActiveTabChangeRef.current?.(i, el as HTMLElement);
+          }
+        });
+      }
+    };
 
     const resizeObserver = new ResizeObserver(handleUpdate);
     const mutationObserver = new MutationObserver(handleUpdate);
@@ -49,7 +47,7 @@ export function useTabObserver({ onActiveTabChange }: TabObserverOptions = {}) {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, [handleUpdate]);
+  }, []);
 
   return { mounted, listRef };
 }

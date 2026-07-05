@@ -93,7 +93,9 @@ export function DateField({
                   </span>
                 ) : mode === "single" && field.state.value ? (
                   <span>
-                    {field.state.value instanceof Date ? field.state.value.toLocaleDateString() : ""}
+                    {field.state.value instanceof Date
+                      ? field.state.value.toLocaleDateString()
+                      : ""}
                   </span>
                 ) : (
                   <span>{placeholder}</span>
@@ -121,12 +123,7 @@ export function DateField({
             <Calendar
               disabled={disabled}
               mode={mode}
-              onSelect={(
-                selected: Date | undefined,
-                triggerDate: Date,
-                modifiers: any,
-                e: React.MouseEvent | React.KeyboardEvent,
-              ) => {
+              onSelect={(selected: Date | undefined) => {
                 field.handleChange(selected);
                 setOpen(false);
               }}
@@ -144,12 +141,7 @@ export function DateField({
                 disabled={disabled}
                 mode={mode}
                 numberOfMonths={2}
-                onSelect={(
-                  selected: DateRange | undefined,
-                  triggerDate: Date,
-                  modifiers: any,
-                  e: React.MouseEvent | React.KeyboardEvent,
-                ) => {
+                onSelect={(selected: DateRange | undefined) => {
                   field.handleChange(selected);
                   // if(selected?.from && selected?.to) {
                   //   setOpen(false)
@@ -177,12 +169,7 @@ export function DateField({
               <Calendar
                 disabled={disabled}
                 mode={mode}
-                onSelect={(
-                  selected: Date[] | undefined,
-                  triggerDate: Date,
-                  modifiers: any,
-                  e: React.MouseEvent | React.KeyboardEvent,
-                ) => {
+                onSelect={(selected: Date[] | undefined) => {
                   field.handleChange(selected);
                 }}
                 selected={

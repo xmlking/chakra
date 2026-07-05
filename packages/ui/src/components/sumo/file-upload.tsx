@@ -85,7 +85,7 @@ export function FileUpload({
   return (
     <div className="flex flex-col gap-2 pb-2">
       {/* Drop area */}
-      <div
+      <button
         className="flex min-h-32 flex-col items-center justify-center rounded-md border border-dashed border-input p-4 transition-colors hover:cursor-pointer hover:bg-accent/50 has-disabled:pointer-events-none has-disabled:opacity-50 has-[input:focus]:border-ring has-[input:focus]:ring-[3px] has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50"
         data-dragging={isDragging || undefined}
         onClick={openFileDialog}
@@ -93,7 +93,7 @@ export function FileUpload({
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
-        role="button"
+        type="button"
       >
         <input
           {...getInputProps()}
@@ -118,7 +118,7 @@ export function FileUpload({
             {placeholder}
           </div>
         </div>
-      </div>
+      </button>
 
       {errors.length > 0 && (
         <div className="flex items-center gap-1 text-xs text-destructive" role="alert">

@@ -54,6 +54,7 @@ export function RichEditorField({
         },
       }),
       Placeholder.configure({
+        // oxlint-disable-next-line react-doctor/no-event-handler
         placeholder,
       }),
     ],

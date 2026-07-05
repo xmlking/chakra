@@ -1,6 +1,6 @@
 import type { DayPicker } from "@daypicker/react";
 import { CalendarDays } from "lucide-react";
-import React, { useCallback } from "react";
+import React from "react";
 
 import { Button } from "#components/shadcn/button";
 import { Calendar } from "#components/shadcn/calendar";
@@ -36,7 +36,6 @@ export function DateTimeField({
   classNames,
   tooltip,
   tooltipSide,
-  // oxlint-disable-next-line no-unused-vars
   disabled,
   placeholder,
   hideTime = false,
@@ -50,47 +49,34 @@ export function DateTimeField({
   const selectedDate = field.state.value;
   const defaultTime = "10:30";
 
-  // oxlint-disable-next-line no-unused-vars
-  const timeValue = selectedDate
-    ? `${String(selectedDate.getHours()).padStart(2, "0")}:${String(
-        selectedDate.getMinutes(),
-      ).padStart(2, "0")}`
-    : defaultTime;
-
-  const handleDateSelect = useCallback(
-    (date: Date | undefined) => {
-      if (date) {
-        // Preserve time if it exists
-        if (selectedDate instanceof Date && !hideTime) {
-          const newDate = new Date(date);
-          newDate.setHours(selectedDate.getHours());
-          newDate.setMinutes(selectedDate.getMinutes());
-          field.handleChange(newDate);
-        } else {
-          field.handleChange(date);
-        }
-        setOpen(false);
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      // Preserve time if it exists
+      if (selectedDate instanceof Date && !hideTime) {
+        const newDate = new Date(date);
+        newDate.setHours(selectedDate.getHours());
+        newDate.setMinutes(selectedDate.getMinutes());
+        field.handleChange(newDate);
+      } else {
+        field.handleChange(date);
       }
-    },
-    [field, hideTime, selectedDate],
-  );
+      setOpen(false);
+    }
+  };
 
-  const handleTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const time = e.target.value;
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const time = e.target.value;
 
-      const selectedDate = field.state.value;
-      if (time && selectedDate) {
-        const [hours, minutes] = time.split(":").map(Number);
-        if (hours !== undefined && minutes !== undefined && isValidTimeComponent(hours, minutes)) {
-          const newDate = new Date(selectedDate);
-          newDate.setHours(hours, minutes, 0, 0);
-          field.handleChange(newDate);
-        }
+    const selectedDate = field.state.value;
+    if (time && selectedDate) {
+      const [hours, minutes] = time.split(":").map(Number);
+      if (hours !== undefined && minutes !== undefined && isValidTimeComponent(hours, minutes)) {
+        const newDate = new Date(selectedDate);
+        newDate.setHours(hours, minutes, 0, 0);
+        field.handleChange(newDate);
       }
-    },
-    [field],
-  );
+    }
+  };
 
   return (
     <BaseField
@@ -110,6 +96,7 @@ export function DateTimeField({
                   hideTime ? "w-full" : "w-[calc(100%-120px)]",
                   !selectedDate && "text-muted-foreground",
                 )}
+                disabled={disabled}
                 id={field.name}
                 variant="outline"
               >
@@ -140,7 +127,7 @@ export function DateTimeField({
               "w-[120px] [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none",
               !selectedDate && "text-muted-foreground",
             )}
-            defaultValue="10:30"
+            disabled={disabled}
             onBlur={field.handleBlur}
             onChange={handleTimeChange}
             step="60"

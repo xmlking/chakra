@@ -38,8 +38,8 @@ export function FormErrors() {
             <AlertDescription className="mt-1 space-y-1 text-sm text-red-700">
               <p>Please verify the following issues:</p>
               <ul className="list-inside list-disc text-sm">
-                {messages.map((error, index) => (
-                  <li key={index}>
+                {messages.map((error) => (
+                  <li key={`${error.field}:${error.message}`}>
                     {/* {error instanceof Error ? error.message : String(error)} */}
                     <strong>{error.field}:</strong> {error.message}
                   </li>

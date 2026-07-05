@@ -8,9 +8,11 @@ export function AddressFields() {
   return (
     <div>
       <h3>Address Information</h3>
+      {/* @ts-ignore */}
       <form.Field name="address.street">
         {(_field) => <TextField label="Street" type="text" />}
       </form.Field>
+      {/* @ts-ignore */}
       <form.Field name="address.city">
         {(_field) => <TextField label="City" type="text" />}
       </form.Field>

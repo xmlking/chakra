@@ -18,14 +18,15 @@ export function ToggleGroupField<T extends string>({
   description,
   classNames,
   options,
-  type,
+  multiple = false,
   variant,
   size,
   spacing,
   className,
   disabled,
+  ...props
 }: ToggleGroupFieldProps<T>) {
-  const field = useFieldContext<typeof type extends "single" ? string : string[]>();
+  const field = useFieldContext<typeof multiple extends false ? string : string[]>();
 
   return (
     <BaseField classNames={classNames} description={description} label={label}>
@@ -36,13 +37,16 @@ export function ToggleGroupField<T extends string>({
         onValueChange={field.handleChange}
         size={size}
         spacing={spacing}
-        type={type as typeof type extends "single" ? "single" : "multiple"}
+        multiple={multiple}
         value={field.state.value}
         variant={variant}
+        {...props}
       >
         {options.map((option) => (
           <ToggleGroupItem
-            aria-label={`Toggle ${option.label}`}
+            aria-label={
+              typeof option.label === "string" ? `Toggle ${option.label}` : "Toggle option"
+            }
             className="cursor-pointer"
             key={option.value}
             value={option.value}

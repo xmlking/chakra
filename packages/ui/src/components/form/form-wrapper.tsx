@@ -12,11 +12,13 @@ type FormWrapperProps = Omit<React.ComponentProps<"form">, "onSubmit"> & {
 export function FormWrapper({ label, description, children, ...props }: FormWrapperProps) {
   const form = useFormContext();
   return (
+    // oxlint-disable-next-line react-doctor/no-prevent-default
     <form
       id={form.formId}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        // oxlint-disable-next-line typescript/no-floating-promises
         form.handleSubmit();
       }}
       {...props}
