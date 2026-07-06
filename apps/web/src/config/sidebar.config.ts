@@ -115,7 +115,7 @@ export const navGroups: NavGroup[] = [
         icon: BotIcon, // BugIcon
         items: [
           {
-            title: "Playground",
+            title: "Test",
             url: "/playground",
           },
           {
@@ -127,8 +127,12 @@ export const navGroups: NavGroup[] = [
             url: "/playground/error",
           },
           {
+            title: "Form Demo",
+            url: "/playground/form-demo",
+          },
+          {
             title: "Version",
-            url: "api/health/live",
+            url: "/api/health/live",
           },
         ],
       },

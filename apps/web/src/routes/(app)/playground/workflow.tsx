@@ -152,6 +152,9 @@ const edgeTypes = {
 };
 
 export const Route = createFileRoute("/(app)/playground/workflow")({
+  staticData: {
+    breadcrumb: ["Playground", "Workflow"],
+  },
   component: RouteComponent,
 });
 

@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/(app)/playground/error")({
+  staticData: {
+    breadcrumb: ["Playground", "Error"],
+  },
   beforeLoad: async () => {
     await new Promise((resolve) => setTimeout(resolve, 5000));
 

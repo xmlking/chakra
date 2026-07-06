@@ -10,7 +10,7 @@ import { Input } from "#components/shadcn//input";
  * Docs: https://shadcnui-expansions.typeart.cc/docs/datetime-picker
  * Source: https://github.com/hsuanyi-chou/shadcn-ui-expansions/blob/main/components/ui/datetime-picker.tsx
  */
-import { Button, buttonVariants } from "#components/shadcn/button";
+import { buttonVariants } from "#components/shadcn/button";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/shadcn/popover";
 import {
   Select,
@@ -790,26 +790,32 @@ function DateTimePicker({
       <PopoverTrigger
         disabled={disabled}
         render={
-          <Button
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !displayDate && "text-muted-foreground",
-              className,
-            )}
-            ref={buttonRef}
-            variant="outline"
-          ></Button>
+          <div className="w-full">
+            <button
+              className={cn(
+                "flex h-auto w-full items-center justify-start gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-start text-sm shadow-sm transition-colors placeholder:text-muted-foreground hover:bg-accent focus:ring-1 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+                !displayDate && "text-muted-foreground",
+                className,
+              )}
+              ref={buttonRef}
+              type="button"
+            >
+              <CalendarIcon className="size-4" />
+              <span className="flex-1">
+                {displayDate
+                  ? format(
+                      displayDate,
+                      hourCycle === 24 ? initHourFormat.hour24 : initHourFormat.hour12,
+                      {
+                        locale: loc,
+                      },
+                    )
+                  : placeholder}
+              </span>
+            </button>
+          </div>
         }
-      >
-        <CalendarIcon className="mr-2 h-4 w-4" />
-        {displayDate ? (
-          format(displayDate, hourCycle === 24 ? initHourFormat.hour24 : initHourFormat.hour12, {
-            locale: loc,
-          })
-        ) : (
-          <span>{placeholder}</span>
-        )}
-      </PopoverTrigger>
+      />
       <PopoverContent className="w-auto p-0">
         <Calendar
           locale={locale}

@@ -6,7 +6,8 @@ export default definePlugin((nitroApp) => {
   nitroApp.hooks?.hook(
     "request",
     createAuthIdentifier(auth as BetterAuthInstance, {
-      exclude: ["/api/auth/**"],
+      // Skip session resolution on auth flows and high-traffic public paths.
+      exclude: ["/api/auth/**", "/api/_evlog/**", "api/health/**"],
       maskEmail: true,
     }),
   );

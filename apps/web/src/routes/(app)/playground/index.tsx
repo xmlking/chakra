@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { liveHealthQueryOptions } from "#features/playground/queries";
 
 export const Route = createFileRoute("/(app)/playground/")({
+  staticData: {
+    breadcrumb: ["Playground", "Test"],
+  },
   loader: async ({ context }) => {
     await context.queryClient.prefetchQuery(liveHealthQueryOptions);
 
