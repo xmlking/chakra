@@ -42,7 +42,7 @@ const config = defineConfig({
           exclude: [
             "/.well-known/**",
             "/api/health/**",
-            "/api/_evlog/ingest",
+            "/api/_evlog/**",
             "/_build/**",
             "/assets/**",
           ],

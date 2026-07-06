@@ -61,59 +61,59 @@ export function DateField({
       <Popover onOpenChange={setOpen} open={open && !disabled}>
         <PopoverTrigger
           render={
-            <div className="relative">
-              <Button
+            <div className="relative flex h-auto w-full">
+              <button
                 className={cn(
-                  "h-auto w-full justify-start text-start font-normal active:scale-none",
+                  "flex flex-1 items-center justify-start gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-start text-sm shadow-sm transition-colors placeholder:text-muted-foreground hover:bg-accent focus:ring-1 focus:ring-ring focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
                   !field.state.value && "text-muted-foreground",
                 )}
                 disabled={disabled}
                 type="button"
-                variant="outline"
               >
                 <CalendarIcon className="size-4" />
-                {mode === "multiple" &&
-                Array.isArray(field.state.value) &&
-                field.state.value.length > 0 ? (
-                  field.state.value.map((date: Date) => (
-                    <div className="px-0.5" key={date.toLocaleDateString()}>
-                      {date.toLocaleDateString()}
-                    </div>
-                  ))
-                ) : mode === "range" &&
-                  field.state.value &&
-                  (field.state.value as DateRange)?.from ? (
-                  <span>
-                    {(field.state.value as DateRange).from instanceof Date
-                      ? (field.state.value as DateRange).from?.toLocaleDateString()
-                      : ""}
-                    {(field.state.value as DateRange).to instanceof Date
-                      ? `-${(field.state.value as DateRange).to?.toLocaleDateString()}`
-                      : ""}
-                  </span>
-                ) : mode === "single" && field.state.value ? (
-                  <span>
-                    {field.state.value instanceof Date
-                      ? field.state.value.toLocaleDateString()
-                      : ""}
-                  </span>
-                ) : (
-                  <span>{placeholder}</span>
-                )}
-              </Button>
+                <span>
+                  {mode === "multiple" &&
+                  Array.isArray(field.state.value) &&
+                  field.state.value.length > 0 ? (
+                    field.state.value.map((date: Date) => (
+                      <span className="px-0.5" key={date.toLocaleDateString()}>
+                        {date.toLocaleDateString()}
+                      </span>
+                    ))
+                  ) : mode === "range" &&
+                    field.state.value &&
+                    (field.state.value as DateRange)?.from ? (
+                    <>
+                      {(field.state.value as DateRange).from instanceof Date
+                        ? (field.state.value as DateRange).from?.toLocaleDateString()
+                        : ""}
+                      {(field.state.value as DateRange).to instanceof Date
+                        ? `-${(field.state.value as DateRange).to?.toLocaleDateString()}`
+                        : ""}
+                    </>
+                  ) : mode === "single" && field.state.value ? (
+                    <>
+                      {field.state.value instanceof Date
+                        ? field.state.value.toLocaleDateString()
+                        : ""}
+                    </>
+                  ) : (
+                    placeholder
+                  )}
+                </span>
+              </button>
               {field.state.meta.isDirty && (
-                <Button
-                  className="absolute -end-0 top-1/2 -translate-y-1/2 rounded-full"
+                <button
+                  className="absolute -end-0 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-muted-foreground/20"
                   onClick={(e) => {
                     e.stopPropagation();
                     field.form.resetField(field.name);
                   }}
-                  size="sm"
                   type="button"
-                  variant="ghost"
+                  aria-label="Clear date"
                 >
-                  <X />
-                </Button>
+                  <X className="size-4" />
+                </button>
               )}
             </div>
           }
