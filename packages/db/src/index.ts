@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { env } from "virtual:env/server";
 
+import { DrizzleQueryLogger } from "./logger";
 import { relations } from "./relations";
 import { authRelations } from "./schema/auth";
 
@@ -14,7 +15,7 @@ const pool = new Pool({
 export const db = drizzle({
   client: pool,
   relations: { ...relations, ...authRelations },
-  logger: import.meta.env.DEV,
+  logger: import.meta.env.DEV ? new DrizzleQueryLogger() : false,
   jit: true,
 });
 

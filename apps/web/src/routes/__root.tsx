@@ -5,7 +5,9 @@ import type { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+import { createMiddleware } from "@tanstack/react-start";
 import { getLocale } from "@workspace/i18n/runtime";
+import { evlogErrorHandler } from "evlog/nitro/v3";
 
 import { Providers } from "#components/providers";
 import { siteConfig } from "#config/site.config";
@@ -26,9 +28,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       document.documentElement.setAttribute("lang", getLocale());
     }
   },
-  // server: {
-  //   middleware: [createMiddleware().server(evlogErrorHandler)],
-  // },
+  server: {
+    middleware: [createMiddleware().server(evlogErrorHandler)],
+  },
 
   head: () => ({
     meta: [
