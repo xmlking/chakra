@@ -30,6 +30,7 @@
     "@workspace/shared": "workspace:*",
     "better-result": "catalog:",
     "drizzle-orm": "catalog:",
+    "evlog": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },

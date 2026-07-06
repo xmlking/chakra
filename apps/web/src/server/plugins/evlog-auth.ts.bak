@@ -1,0 +1,13 @@
+import { auth } from "@workspace/auth";
+import { createAuthIdentifier, type BetterAuthInstance } from "evlog/better-auth";
+import { definePlugin } from "nitro";
+
+export default definePlugin((nitroApp) => {
+  nitroApp.hooks?.hook(
+    "request",
+    createAuthIdentifier(auth as BetterAuthInstance, {
+      exclude: ["/api/auth/**"],
+      maskEmail: true,
+    }),
+  );
+});
