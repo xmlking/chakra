@@ -18,16 +18,17 @@ import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
-import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard.index'
+import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
 import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
-import { Route as appSettingsPageRouteImport } from './routes/(app)/settings.$page'
+import { Route as appSettingsNotificationsRouteImport } from './routes/(app)/settings/notifications'
+import { Route as appSettingsPageRouteImport } from './routes/(app)/settings/$page'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
 import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
 import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
 import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
-import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard.$page'
+import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard/$page'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
 import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
 import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
@@ -94,6 +95,12 @@ const publicAuthPathRoute = publicAuthPathRouteImport.update({
   path: '/auth/$path',
   getParentRoute: () => publicRouteRoute,
 } as any)
+const appSettingsNotificationsRoute =
+  appSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 const appSettingsPageRoute = appSettingsPageRouteImport.update({
   id: '/settings/$page',
   path: '/settings/$page',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
+  '/settings/notifications': typeof appSettingsNotificationsRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
@@ -175,6 +183,7 @@ export interface FileRoutesByTo {
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
+  '/settings/notifications': typeof appSettingsNotificationsRoute
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
@@ -200,6 +209,7 @@ export interface FileRoutesById {
   '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
   '/(app)/settings/$page': typeof appSettingsPageRoute
+  '/(app)/settings/notifications': typeof appSettingsNotificationsRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
+    | '/settings/notifications'
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
+    | '/settings/notifications'
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
@@ -268,6 +280,7 @@ export interface FileRouteTypes {
     | '/(app)/playground/workflow'
     | '/(app)/reports/$page'
     | '/(app)/settings/$page'
+    | '/(app)/settings/notifications'
     | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
@@ -378,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAuthPathRouteImport
       parentRoute: typeof publicRouteRoute
     }
+    '/(app)/settings/notifications': {
+      id: '/(app)/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof appSettingsNotificationsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/settings/$page': {
       id: '/(app)/settings/$page'
       path: '/settings/$page'
@@ -452,6 +472,7 @@ interface appRouteRouteChildren {
   appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
   appReportsPageRoute: typeof appReportsPageRoute
   appSettingsPageRoute: typeof appSettingsPageRoute
+  appSettingsNotificationsRoute: typeof appSettingsNotificationsRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
   appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
@@ -466,6 +487,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
   appReportsPageRoute: appReportsPageRoute,
   appSettingsPageRoute: appSettingsPageRoute,
+  appSettingsNotificationsRoute: appSettingsNotificationsRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
   appPlaygroundIndexRoute: appPlaygroundIndexRoute,
   appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,

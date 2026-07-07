@@ -14,7 +14,7 @@ import { createDocsLayoutPage } from "fumapress/layouts/docs";
 import { createHomeLayout } from "fumapress/layouts/home";
 import { blogPlugin } from "fumapress/plugins/blog";
 import { flexsearchPlugin } from "fumapress/plugins/flexsearch";
-import { imagePlugin } from "fumapress/plugins/image/vercel";
+// import { imagePlugin } from "fumapress/plugins/image/self-hosted";
 // import { linkValidationPlugin } from "fumapress/plugins/link-validation";
 import { llmsPlugin } from "fumapress/plugins/llms.txt";
 // import { githubFeedbackPlugin } from "@fumapress/feedback/github";
@@ -134,9 +134,10 @@ const config = defineConfig({
       // you can use this option in "server" mode
       // createProxy: true,
     }),
-    imagePlugin({
-      formats: ["image/webp", "image/png"],
-    }),
+    /**
+     * [Fumapress] Image Optimization is not compatible with static mode, please disable it
+     */
+    // imagePlugin({ allowedHosts: ["xmlking.github.io"] }),
     // githubFeedbackPlugin({
     //   appId: import.meta.env.GITHUB_APP_ID,
     //   privateKey: import.meta.env.GITHUB_PRIVATE_KEY,
