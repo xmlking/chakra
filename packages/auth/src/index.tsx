@@ -234,12 +234,20 @@ export const auth = betterAuth({
     jwt({
       jwt: {
         definePayload: async ({ user, session }) => {
-          const member = await db.query.member.findFirst({
-            where: {
-              userId: user.id,
-              organizationId: session.activeOrganizationId,
-            },
-          });
+          /**
+           * In Drizzle v1, passing an explicit null or undefined value directly into
+           * an object-style filter within the Relational Query Builder causes
+           * Object.entries() to crash internally.
+           * Error: TypeError: Cannot convert undefined or null to object
+           */
+          const member = session.activeOrganizationId
+            ? await db.query.member.findFirst({
+                where: {
+                  userId: user.id,
+                  organizationId: session.activeOrganizationId,
+                },
+              })
+            : null;
 
           // Only include essential user information for API authentication
           return {
