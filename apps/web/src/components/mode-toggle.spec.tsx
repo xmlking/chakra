@@ -4,7 +4,7 @@ import { afterAll, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { userEvent } from "vite-plus/test/browser";
 import { render } from "vitest-browser-react";
 
-import { ModeToggle } from "./mode-toggle.tsx";
+import { ModeToggle } from "./mode-toggle";
 
 const mockSetTheme = vi.fn<UseThemeProps["setTheme"]>();
 

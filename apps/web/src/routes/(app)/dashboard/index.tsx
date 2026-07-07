@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton.tsx";
-import { DashboardPage } from "#features/dashboard/dashboard-page.tsx";
+import { DashboardPage } from "#features/dashboard/dashboard-page";
+import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton";
 
 export const Route = createFileRoute("/(app)/dashboard/")({
   staticData: {
