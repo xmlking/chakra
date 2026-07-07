@@ -9,6 +9,7 @@ import {
   magicLinkClient,
   multiSessionClient,
   oneTapClient,
+  jwtClient,
   organizationClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
@@ -45,6 +46,7 @@ export const authClient = createAuthClient({
         ]
       : []),
     apiKeyClient(),
+    jwtClient(),
     adminClient({
       ac,
       roles,
