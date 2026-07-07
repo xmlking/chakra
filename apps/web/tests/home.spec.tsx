@@ -22,7 +22,7 @@ vi.mock("@tanstack/react-router", async (importOriginal) => {
   };
 });
 
-import { Route } from "../src/routes/(public)/index.tsx";
+import { Route } from "../src/routes/(public)/index";
 
 const Home = Route.options.component!;
 

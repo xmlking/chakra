@@ -10,7 +10,7 @@ import {
 } from "@workspace/ui/components/shadcn/empty";
 import { ConstructionIcon } from "lucide-react";
 
-import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton.tsx";
+import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton";
 
 export const Route = createFileRoute("/(app)/dashboard/$page")({
   staticData: {

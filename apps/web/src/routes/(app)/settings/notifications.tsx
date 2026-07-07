@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton.tsx";
+import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton";
 import { NotificationsPage } from "#features/notifications/notifications-page";
 
 export const Route = createFileRoute("/(app)/settings/notifications")({
