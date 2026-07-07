@@ -1,7 +1,7 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
 
-import { LandingFooter } from "#features/landing/components/landing-footer";
-import { LandingHeader } from "#features/landing/components/landing-header";
+import { LandingFooter } from "#features/landing/ui/landing-footer";
+import { LandingHeader } from "#features/landing/ui/landing-header";
 
 export const Route = createFileRoute("/(public)")({
   component: HomeLayout,

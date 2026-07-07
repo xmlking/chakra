@@ -79,7 +79,7 @@ const activity = [
   },
 ];
 
-export function DashboardContent() {
+export function DashboardPage() {
   return (
     <div className="container-wrapper">
       <div className="flex flex-col gap-6">

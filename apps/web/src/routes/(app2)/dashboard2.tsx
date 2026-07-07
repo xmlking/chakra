@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DashboardContent } from "#features/dashboard/dashboard-content2";
-import { DashboardSkeleton } from "#features/dashboard/dashboard-skeleton";
+import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton.tsx";
+import { DashboardPage } from "#features/dashboard/dashboard-page2.tsx";
 
 export const Route = createFileRoute("/(app2)/dashboard2")({
   staticData: {
@@ -12,6 +12,6 @@ export const Route = createFileRoute("/(app2)/dashboard2")({
     // breadcrumb: ({ search }: { search: StepsSearchParams }) =>
     //   search.step ? ["Steps", `${search.step}`] : "Steps",
   },
-  component: DashboardContent,
-  pendingComponent: DashboardSkeleton,
+  component: DashboardPage,
+  pendingComponent: DashboardPageSkeleton,
 });
