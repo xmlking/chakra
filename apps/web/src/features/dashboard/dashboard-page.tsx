@@ -1,9 +1,9 @@
-import { ChartAreaInteractive } from "./components/chart-area-interactive";
-import { DataTable } from "./components/data-table";
-import { SectionCards } from "./components/section-cards";
-import data from "./data.json";
+import data from "./api/data.json";
+import { ChartAreaInteractive } from "./ui/chart-area-interactive";
+import { DataTable } from "./ui/data-table";
+import { SectionCards } from "./ui/section-cards";
 
-export function DashboardContent() {
+export function DashboardPage() {
   return (
     <div className="container-wrapper p-0">
       <div className="flex flex-1 flex-col">

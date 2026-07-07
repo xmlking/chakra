@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CtaSection } from "#features/landing/components/cta-section";
-import { Features } from "#features/landing/components/features";
-import { Hero } from "#features/landing/components/hero";
+import { CtaSection } from "#features/landing/ui/cta-section";
+import { Features } from "#features/landing/ui/features";
+import { Hero } from "#features/landing/ui/hero";
 
 export const Route = createFileRoute("/(public)/")({
   component: HomeRoute,

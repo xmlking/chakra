@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { DemoForm } from "#features/playground/form-demo/demo-form.tsx";
+import { FormPage } from "#features/form-demo/form-page.tsx";
 
 export const Route = createFileRoute("/(app)/playground/form-demo")({
   staticData: {
-    breadcrumb: ["Playground", "Demo Form"],
+    breadcrumb: ["Playground", "Form Demo"],
   },
-  component: DemoForm,
+  component: FormPage,
 });

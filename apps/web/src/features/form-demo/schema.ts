@@ -130,11 +130,3 @@ export const projectDeleteSchema = z.object({
 });
 
 export type Project = z.infer<typeof projectSchema>;
-
-export type ProjectFilters = {
-  page?: number;
-  limit?: number;
-  roles?: string;
-  search?: string;
-  sort?: string;
-};

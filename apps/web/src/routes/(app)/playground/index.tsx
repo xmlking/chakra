@@ -4,7 +4,7 @@ import { m } from "@workspace/i18n/messages";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { toast } from "sonner";
 
-import { liveHealthQueryOptions } from "#features/playground/queries";
+import { liveHealthQueryOptions } from "#features/playground/api/queries.ts";
 
 export const Route = createFileRoute("/(app)/playground/")({
   staticData: {
