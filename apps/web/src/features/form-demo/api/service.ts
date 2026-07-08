@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerFn } from "@tanstack/react-start";
+import { ValidationError } from "@workspace/shared/errors";
 import { sleep } from "@workspace/shared/helpers";
 import { z } from "zod";
 
@@ -13,7 +14,13 @@ export const createProject = createServerFn({ method: "POST" })
   .handler(async ({ data: parsedInput }) => {
     console.debug(parsedInput);
     await sleep(2000);
-    return { success: true, data: "Project created successfully" };
+    const validationError = new ValidationError({
+      field: "email",
+      message: "Email already exists",
+    });
+
+    throw validationError;
+    // return { success: true, data: "Project created successfully" };
   });
 
 export const updateProject = createServerFn({ method: "POST" })
@@ -45,4 +52,10 @@ export const deleteProject = createServerFn({ method: "POST" })
       success: true,
       message: "Project deleted successfully",
     };
+  });
+
+export const greetUser = createServerFn({ method: "GET" })
+  .validator((data: { name: string }) => data)
+  .handler(async ({ data }) => {
+    return `Hello, ${data.name}!`;
   });
