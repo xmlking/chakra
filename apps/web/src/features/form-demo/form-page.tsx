@@ -41,7 +41,8 @@ import { Check, XIcon } from "lucide-react";
 import { m } from "motion/react";
 import { toast } from "sonner";
 import { z } from "zod";
-import type { ZodIssue } from "zod";
+
+import { applyZodIssues, parseZodIssues } from "#lib/zod-error-handler";
 
 import { createProjectMutationOptions } from "./api/mutations";
 import { addons, PROJECT_STATUSES, projectSchema } from "./schema";
@@ -49,19 +50,6 @@ import { frameworksList, planOptions, positionOptions, techOptions } from "./tes
 
 type FormData = z.infer<typeof projectSchema>;
 
-function parseZodIssues(message: string): ZodIssue[] | null {
-  try {
-    const parsed: unknown = JSON.parse(message);
-
-    if (Array.isArray(parsed)) {
-      return parsed as ZodIssue[];
-    }
-
-    return null;
-  } catch {
-    return null;
-  }
-}
 // oxlint-disable-next-line react-doctor/no-giant-component
 export function FormPage() {
   const form = useAppForm({
@@ -96,34 +84,13 @@ export function FormPage() {
       termsAccepted: false,
       files: undefined,
     } satisfies FormData as FormData,
-    // validators: {
-    //   onSubmit: projectSchema,
-    // },
+    validators: {
+      onSubmit: projectSchema,
+    },
     onSubmit: ({ value }) => {
       createAction.mutate({ data: value });
     },
   });
-
-  function applyZodIssues(issues: readonly ZodIssue[]) {
-    const fieldErrors: Record<string, string[]> = {};
-
-    for (const issue of issues) {
-      const field = issue.path.join(".");
-      fieldErrors[field] ??= [];
-      fieldErrors[field].push(issue.message);
-    }
-
-    for (const [field, errors] of Object.entries(fieldErrors)) {
-      form.setFieldMeta(field as never, (meta) => ({
-        ...meta,
-        errors,
-        errorMap: {
-          ...meta.errorMap,
-          onSubmit: errors,
-        },
-      }));
-    }
-  }
 
   const createAction = useMutation({
     ...createProjectMutationOptions(),
@@ -140,13 +107,11 @@ export function FormPage() {
     },
     onError: (error: Error) => {
       console.log(error);
-      console.log(error.message); // e.g., "Validation Error"
 
       const issues = parseZodIssues(error.message);
-
       if (issues) {
+        applyZodIssues(form, issues);
         toast.error("Please fix the validation errors");
-        applyZodIssues(issues);
         return;
       }
 
