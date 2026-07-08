@@ -1,4 +1,4 @@
-import type { SiteConfig } from "#types/index";
+import type { SiteConfig } from "#types";
 
 export const siteConfig: SiteConfig = {
   name: "Chakra",

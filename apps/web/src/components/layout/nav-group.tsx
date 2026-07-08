@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/shadcn/sidebar";
 import { ChevronRightIcon } from "lucide-react";
 
-import type { NavGroup } from "#types/index";
+import type { NavGroup } from "#types";
 
 export function NavGroup({
   group,

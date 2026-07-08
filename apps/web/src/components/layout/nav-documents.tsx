@@ -19,7 +19,7 @@ import {
 } from "@workspace/ui/components/shadcn/sidebar";
 import { MoreHorizontalIcon, FolderIcon, ShareIcon, Trash2Icon } from "lucide-react";
 
-import type { NavGroup } from "#types/index";
+import type { NavGroup } from "#types";
 
 export function NavDocuments({
   group,

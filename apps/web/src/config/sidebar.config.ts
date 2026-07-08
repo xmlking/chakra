@@ -20,7 +20,7 @@ import {
   LandmarkIcon,
 } from "lucide-react";
 
-import type { NavGroup } from "#types/index";
+import type { NavGroup } from "#types";
 
 export const navGroups: NavGroup[] = [
   {
