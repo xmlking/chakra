@@ -6,6 +6,7 @@
       "name": "chakra",
       "devDependencies": {
         "@playwright/test": "catalog:",
+        "@typescript/native-preview": "catalog:",
         "@vite-env/core": "catalog:",
         "@vitest/browser-playwright": "catalog:",
         "@vitest/coverage-v8": "catalog:",

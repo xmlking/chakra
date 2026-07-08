@@ -120,7 +120,7 @@
 
   // TypeScript (Native Preview) > Use Tsgo
   "js/ts.experimental.useTsgo": true,
-  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "./node_modules/@typescript/native-preview",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   // When a file is moved, update the imports to reflect the new location
   "js/ts.updateImportsOnFileMove.enabled": "always",
