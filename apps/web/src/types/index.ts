@@ -1,5 +1,17 @@
 import type { LucideIcon } from "lucide-react";
 
+// Server response types for form handling
+export type FieldErrors = Record<string, string[]>;
+
+export type ServerResponse<T = unknown> =
+  | { success: true; data: T }
+  | {
+      success: false;
+      type: "validation";
+      fieldErrors: FieldErrors;
+    }
+  | { success: false; type: "server"; message: string; code?: string };
+
 export interface SiteConfig {
   name: string;
   title: string;

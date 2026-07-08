@@ -21,7 +21,7 @@
       "#config/*": ["./src/config/*"],
       "#hooks/*": ["./src/hooks/*.ts"],
       "#lib/*": ["./src/lib/*.ts"],
-      "#types/*": ["./src/types/*.ts"]
+      "#types": ["./src/types/index.ts"]
     },
 
     /* Linting */

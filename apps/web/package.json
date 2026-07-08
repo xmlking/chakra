@@ -9,7 +9,9 @@
     "#features/*": "./src/features/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
-    "#types/*": "./src/types/*.ts"
+    "#types": [
+      "./src/types/index.ts"
+    ]
   },
   "scripts": {
     "build": "vp build",
