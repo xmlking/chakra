@@ -40,9 +40,8 @@ import { addDays, addYears } from "date-fns";
 import { Check, XIcon } from "lucide-react";
 import { m } from "motion/react";
 import { toast } from "sonner";
-import type { z } from "zod";
-
-import type { ServerResponse } from "#types";
+import { z } from "zod";
+import type { ZodIssue } from "zod";
 
 import { createProjectMutationOptions } from "./api/mutations";
 import { addons, PROJECT_STATUSES, projectSchema } from "./schema";
@@ -50,44 +49,21 @@ import { frameworksList, planOptions, positionOptions, techOptions } from "./tes
 
 type FormData = z.infer<typeof projectSchema>;
 
+function parseZodIssues(message: string): ZodIssue[] | null {
+  try {
+    const parsed: unknown = JSON.parse(message);
+
+    if (Array.isArray(parsed)) {
+      return parsed as ZodIssue[];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 // oxlint-disable-next-line react-doctor/no-giant-component
 export function FormPage() {
-  const createAction = useMutation({
-    ...createProjectMutationOptions(),
-    onSuccess: async (data) => {
-      const response = data as ServerResponse;
-      console.debug("Create project response:", response);
-      if (!response.success && response.type === "validation") {
-        Object.entries(response.fieldErrors).forEach(([field, messages]) => {
-          form.setFieldMeta(field as any, (meta) => ({
-            ...meta,
-            errors: messages,
-            isTouched: true,
-          }));
-        });
-        toast.error("Please fix the validation errors");
-        return;
-      }
-      if (!response.success && response.type === "server") {
-        toast.error(response.message || "Server error occurred");
-        return;
-      }
-      if (response.success) {
-        form.reset();
-        toast.success("Project created successfully!", {
-          description: JSON.stringify(response.data, null, 2),
-          className: "whitespace-pre-wrap font-mono",
-        });
-        // const queryClient = useQueryClient();
-        // await queryClient.invalidateQueries({ queryKey: projectKeys.all });
-      }
-    },
-    onError: (error: Error) => {
-      console.error("Error creating project:", error);
-      toast.error("Failed to create project.");
-    },
-  });
-
   const form = useAppForm({
     // HINT: Do not include optional fields in defaultValues
     defaultValues: {
@@ -125,6 +101,56 @@ export function FormPage() {
     // },
     onSubmit: ({ value }) => {
       createAction.mutate({ data: value });
+    },
+  });
+
+  function applyZodIssues(issues: readonly ZodIssue[]) {
+    const fieldErrors: Record<string, string[]> = {};
+
+    for (const issue of issues) {
+      const field = issue.path.join(".");
+      fieldErrors[field] ??= [];
+      fieldErrors[field].push(issue.message);
+    }
+
+    for (const [field, errors] of Object.entries(fieldErrors)) {
+      form.setFieldMeta(field as never, (meta) => ({
+        ...meta,
+        errors,
+        errorMap: {
+          ...meta.errorMap,
+          onSubmit: errors,
+        },
+      }));
+    }
+  }
+
+  const createAction = useMutation({
+    ...createProjectMutationOptions(),
+    onSuccess: async (data) => {
+      console.debug("Create project response:", data);
+
+      form.reset();
+      toast.success("Project created successfully!", {
+        description: JSON.stringify(data, null, 2),
+        className: "whitespace-pre-wrap font-mono",
+      });
+      // const queryClient = useQueryClient();
+      // await queryClient.invalidateQueries({ queryKey: projectKeys.all });
+    },
+    onError: (error: Error) => {
+      console.log(error);
+      console.log(error.message); // e.g., "Validation Error"
+
+      const issues = parseZodIssues(error.message);
+
+      if (issues) {
+        toast.error("Please fix the validation errors");
+        applyZodIssues(issues);
+        return;
+      }
+
+      toast.error(error.message);
     },
   });
 

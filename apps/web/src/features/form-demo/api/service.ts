@@ -4,11 +4,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { sleep } from "@workspace/shared/helpers";
 import { z } from "zod";
 
-import { errorHandlingMiddleware } from "../../../server/middleware/error";
+// import { errorHandlingMiddleware } from "../../../server/middleware/error";
 import { projectDeleteSchema, projectSchema } from "../schema";
 
 export const createProject = createServerFn({ method: "POST" })
-  .middleware([errorHandlingMiddleware])
+  // .middleware([errorHandlingMiddleware])
   .validator(projectSchema)
   .handler(async ({ data: parsedInput }) => {
     console.debug(parsedInput);
