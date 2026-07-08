@@ -28,7 +28,8 @@ import { Mermaid } from "@/components/mdx/mermaid";
 
 import { blog, docs } from "./.source/server";
 
-const basePath = import.meta.env.VITE_DOCS_BASE_PATH || "/";
+// HINT: use `basePath` setting in waku.config.ts. Defaults to  "/".
+const basePath = import.meta.env.BASE_URL;
 
 export const openapi = createOpenAPI({
   // path or URL to your OpenAPI spec.

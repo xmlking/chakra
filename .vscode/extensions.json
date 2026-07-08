@@ -1,4 +1,8 @@
 {
   // Vitest, Oxc - Oxlint + Oxfmt
-  "recommendations": ["VoidZero.vite-plus-extension-pack", "bradlc.vscode-tailwindcss"]
+  "recommendations": [
+    "VoidZero.vite-plus-extension-pack",
+    "bradlc.vscode-tailwindcss",
+    "typescriptteam.native-preview"
+  ]
 }
