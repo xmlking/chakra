@@ -393,6 +393,19 @@ export function FormPage() {
                     />
                   )}
                 </form.AppField>
+                <form.AppField name="techStack">
+                  {(field) => (
+                    <field.CreatableMultiSelectField
+                      classNames={{ base: "col-span-full gap-1 md:col-span-2" }}
+                      creatable={false}
+                      // defaultOptions={field.state.value}
+                      description="select or create"
+                      label="Tech Stack"
+                      options={techOptions}
+                      placeholder="Choose..."
+                    />
+                  )}
+                </form.AppField>
                 <form.AppField name="files">
                   {(field) => (
                     <field.FileUploadField

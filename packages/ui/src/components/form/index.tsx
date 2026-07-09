@@ -3,6 +3,7 @@ import { createFormHook } from "@tanstack/react-form";
 import { CheckboxField } from "./checkbox-field";
 import { CheckboxGroupField } from "./checkbox-group-field";
 import { fieldContext, formContext } from "./context";
+import { CreatableMultiSelectField } from "./creatable-multi-select-field";
 import { DateField } from "./date-field";
 import { DateTimeField } from "./date-time-field";
 // import { DateTimeField } from "./date-time-field-cn";
@@ -46,6 +47,7 @@ const { useAppForm, withForm, withFieldGroup } = createFormHook({
     MultiSelectField,
     SingleSelectField,
     MultiSelectProField,
+    CreatableMultiSelectField,
     CheckboxField,
     SwitchField,
     RatingField,
