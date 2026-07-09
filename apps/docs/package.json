@@ -15,7 +15,7 @@
     "@base-ui/react": "1.6.0",
     "@fuma-translate/react": "1.0.2",
     "@fumapress/feedback": "0.7.1",
-    "@takumi-rs/core": "2.0.0",
+    "@takumi-rs/core": "2.0.1",
     "@thesvg/react": "3.2.4",
     "@vite-env/core": "catalog:",
     "@workspace/i18n": "workspace:*",
@@ -54,7 +54,6 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
-    "@typescript/native-preview": "catalog:",
     "shiki": "catalog:",
     "typescript": "catalog:"
   }

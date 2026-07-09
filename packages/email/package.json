@@ -42,7 +42,6 @@
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
-    "@typescript/native-preview": "catalog:",
     "typescript": "catalog:"
   }
 }

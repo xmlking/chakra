@@ -26,12 +26,12 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "bumpp": "catalog:",
+    "typescript": "^6.0.0",
     "vite": "catalog:",
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@typescript/native-preview": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "^6.0.0"
   }
 }
