@@ -36,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         {navGroups.map((group, index) => (
           <NavGroup
-            key={`${group.label}-${index}`}
+            key={group.label}
             group={group}
             className={index === navGroups.length - 1 ? "mt-auto" : undefined}
           />

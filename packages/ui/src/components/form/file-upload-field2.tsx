@@ -184,7 +184,7 @@ export function FileUploadField2({
           {currentFiles.map((file, index) => (
             <div
               className="flex items-center justify-between rounded-lg bg-muted p-3"
-              key={`${file.name}-${index}`}
+              key={file.name}
             >
               <div className="flex min-w-0 flex-1 items-center gap-3">
                 <File className="h-4 w-4 flex-shrink-0 text-muted-foreground" />

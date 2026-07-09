@@ -46,6 +46,7 @@ export function CheckboxGroupField({
           <Field data-invalid={isInvalid} key={option.value} orientation="horizontal">
             <Checkbox
               aria-invalid={isInvalid}
+              // oxlint-disable-next-line react-doctor/js-set-map-lookups
               checked={(field.state.value || []).includes(option.value)}
               id={option.value}
               name={field.name}
