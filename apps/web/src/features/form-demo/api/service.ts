@@ -14,13 +14,15 @@ export const createProject = createServerFn({ method: "POST" })
   .handler(async ({ data: parsedInput }) => {
     console.debug(parsedInput);
     await sleep(2000);
-    const validationError = new ValidationError({
-      field: "email",
-      message: "Email already exists",
-    });
 
-    throw validationError;
-    // return { success: true, data: "Project created successfully" };
+    if (Math.random() < 0.2) {
+      throw new ValidationError({
+        field: "email",
+        message: "Email already exists",
+      });
+    }
+
+    return { success: true, data: "Project created successfully" };
   });
 
 export const updateProject = createServerFn({ method: "POST" })
