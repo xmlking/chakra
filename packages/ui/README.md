@@ -32,6 +32,9 @@ bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/nextjs/theme-system.j
 bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-catppuccin.json
 bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-cyberpunk.json
 
+## basecn
+bunx --bun shadcn@latest add -p src/components/basecn @basecn/combobox
+
 # AI Elements (optional)
 #bunx --bun shadcn@latest add @ai-elements/all
 # AI Elements Workflow Components for React Flow (optional)
