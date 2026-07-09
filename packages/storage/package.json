@@ -31,7 +31,6 @@
     "@aws-sdk/s3-presigned-post": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@better-upload/server": "catalog:",
-    "@typescript/native-preview": "catalog:",
     "typescript": "catalog:"
   }
 }
