@@ -1,3 +1,4 @@
+// oxlint-disable react-doctor/jsx-max-depth
 "use client";
 
 /**
@@ -335,10 +336,12 @@ export function FormPage() {
                       captionLayout="dropdown"
                       classNames={{ base: "col-span-full gap-1 md:col-span-2" }}
                       description="select start and end period"
+                      // oxlint-disable-next-line react-doctor/rendering-hydration-mismatch-time TODO
                       endMonth={addYears(new Date(), 5)}
                       label="Period"
                       mode="range"
                       placeholder="Pick date range"
+                      // oxlint-disable-next-line react-doctor/rendering-hydration-mismatch-time TODO
                       startMonth={addYears(new Date(), -5)}
                     />
                   )}

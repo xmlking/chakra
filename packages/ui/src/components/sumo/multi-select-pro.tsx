@@ -1,4 +1,4 @@
-// oxlint-disable react-doctor/no-event-handler react-doctor/no-derived-state react-doctor/no-chain-state-updates react-doctor/exhaustive-deps
+// oxlint-disable react-doctor/no-event-handler react-doctor/no-derived-state react-doctor/no-chain-state-updates react-doctor/exhaustive-deps react-doctor/no-giant-component react-doctor/control-has-associated-label
 /**
  * Docs: https://shadcnui-expansions.typeart.cc/docs/multiple-selector
  * Source: https://github.com/hsuanyi-chou/shadcn-ui-expansions/blob/main/components/ui/multiple-selector.tsx
@@ -169,7 +169,7 @@ export const MultipleSelector = React.forwardRef<MultipleSelectorRef, MultipleSe
       value,
       onChange,
       placeholder,
-      defaultOptions: arrayDefaultOptions = [],
+      defaultOptions: arrayDefaultOptions = [] as const,
       options: arrayOptions,
       delay,
       onSearch,

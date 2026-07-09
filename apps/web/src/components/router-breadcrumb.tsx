@@ -59,7 +59,7 @@ export function RouterBreadcrumb() {
           const isLast = index === breadcrumbs.length - 1;
 
           return (
-            <Fragment key={`${crumb.path}-${index}`}>
+            <Fragment key={crumb.path}>
               <BreadcrumbItem>
                 {isLast ? (
                   <BreadcrumbPage className="capitalize">{crumb.label}</BreadcrumbPage>
