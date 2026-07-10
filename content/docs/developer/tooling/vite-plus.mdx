@@ -6,11 +6,22 @@ description: The Unified Toolchain for the Web.
 
 [Vite+](https://viteplus.dev/) Manage your runtime, package manager, and frontend stack with one tool.
 
+## Why Vite+?
+
+Instead of learning a different combination of tools and commands in every repository, developers can use a consistent workflow:
+
+- **vp dev** — start a development server with hot module replacement, powered by [Vite](https://vite.dev/) 8.
+- **vp check** — format your code with [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html), lint it with [Oxlint](https://oxc.rs/docs/guide/usage/linter.html), and type check it at once.
+- **vp test** — run unit tests powered by [Vitest](https://vitest.dev/).
+- **vp build** — build your project for production, powered by Vite 8.
+- **vp pack** — bundle libraries with best practices baked in, powered by [tsdown](https://tsdown.dev/).
+- **vp run** — run any npm script or task through the built-in monorepo-aware task runner with intelligent caching.
+
 We are using Vite+ [Monorepo](https://viteplus.dev/guide/monorepo) project structure
 
 - The root `vite.config.ts` consist shared linting, formatting, testing, staged checks, and task definitions. For project-specific dev server, development, build, and preview behavior, use sub module specific `vite.config.ts` file i.e., `apps/web/vite.config.ts` etc
 
-# Quick Start
+## Quick Start
 
 Create a project, install dependencies, and use the default commands:
 
