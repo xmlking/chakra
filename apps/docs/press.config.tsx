@@ -55,7 +55,7 @@ const config = defineConfig({
   },
   site: {
     name: "Chakra",
-    baseUrl: import.meta.env.DEV ? "http://localhost:3000" : "https://xmlking.github.io/chakra/",
+    baseUrl: import.meta.env.DEV ? "http://localhost:3001" : "https://xmlking.github.io/chakra/",
     git: {
       user: "xmlking",
       branch: "main",
@@ -125,7 +125,7 @@ const config = defineConfig({
   .plugins(
     flexsearchPlugin(),
     llmsPlugin(),
-    takumiPlugin(),
+    takumiPlugin({ basePath }),
     sitemapPlugin(),
     // linkValidationPlugin(), // FIXME
     openapiPlugin({
