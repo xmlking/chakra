@@ -1,5 +1,6 @@
 @import "@workspace/ui/styles/globals.css";
 /* @import "@workspace/ui/styles/transitions.css"; */
+@import "@workspace/ui/styles/typeset.css";
 
 @source "../**/*.{ts,tsx}";
 
@@ -24,4 +25,17 @@
     linear-gradient(to right, currentColor 1px, transparent 1px),
     linear-gradient(to bottom, currentColor 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+/*
+ * shadcn/typeset
+ * https://ui.shadcn.com/docs/typeset.
+ */
+.typeset-docs {
+  --typeset-font-body: var(--font-geist);
+  --typeset-font-heading: var(--font-geist);
+  --typeset-font-mono: var(--font-geist-mono);
+  --typeset-size: 15px;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1.25em;
 }

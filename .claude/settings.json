@@ -1,12 +1,50 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "defaultMode": "bypassPermissions",
-  "permissions": {
-    "allow": ["Bash(vp lint)", "Bash(vp test)", "Read(~/.zshrc)"],
-    "deny": ["Bash(curl *)", "Read(./.env.production)"]
-  },
   "env": {
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "OTEL_METRICS_EXPORTER": "otlp"
+  },
+  "alwaysThinkingEnabled": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Skill(codex-skill)",
+      "Skill(claude-code-settings:codex-skill)",
+      "Skill(autonomous-skill)",
+      "Skill(claude-code-settings:autonomous-skill)",
+      "Bash(codex:*)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(**/*credential*)",
+      "Read(**/*secret*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)"
+    ],
+    "ask": [
+      "Bash(sudo:*)",
+      "Bash(chmod 777:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(npm publish:*)",
+      "Bash(eval:*)"
+    ]
+  },
+
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/status-line.sh"
   }
 }
