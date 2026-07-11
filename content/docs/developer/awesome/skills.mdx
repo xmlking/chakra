@@ -1,0 +1,105 @@
+---
+title: Agent Skills
+description: Coding Agent Skills
+---
+
+Skills are reusable instructions that teach agents how to perform specific tasks. They follow the [Agent Skills specification](https://agentskills.io/home) - an open standard for packaging agent capabilities.
+
+A skill is a folder containing:
+
+- **SKILL.md:** Instructions and metadata for the agent
+- **references/**: Supporting documentation (optional)
+- **scripts/**: Executable scripts (optional)
+- **assets/**: Images and other files (optional)
+
+**Folder structure**
+
+<Files>
+  <Folder name="skills" defaultOpen>
+    <Folder name="code-review" defaultOpen>
+      <File name="SKILL.md" />
+      <Folder name="references" defaultOpen>
+        <File name="style-guide.md" />
+        <File name="pr-checklist.md" />
+      </Folder>
+      <Folder name="scripts" defaultOpen>
+        <File name=" lint.ts" />
+      </Folder>
+    </Folder>
+  </Folder>
+</Files>
+
+Here is my curated collection of Claude Code `settings`, `skills` and `sub-agents` designed for enhanced development workflows.
+This setup includes specialized skills and subagents for feature development (spec-driven workflow), code analysis, GitHub integration, and knowledge management.
+
+## Skills CLI
+
+[Skills](https://skills.sh/) are reusable capabilities for AI agents. Install them with a single command to enhance your agents with access to procedural knowledge.
+
+```shell
+# add
+bunx skills@latest add <owner/repo>
+# update
+bunx skills@latest update
+# remove
+bunx skills@latest remove -s [skill-name]
+```
+
+## Usage
+
+to use `migrate-radix-to-base` skill, ask your coding agent:
+
+> migrate alert-dialog to base ui
+
+Or
+
+```shell
+/migrate-radix-to-base alert-dialog
+```
+
+### Workflow
+
+Developer workflow skills for **Spec Driven Development (SDD)**
+
+- [grill-me](https://www.aihero.dev/grill-with-docs): Align Before You Build — interviews you relentlessly about a plan or design, one question at a time, until you and the agent reach a shared understanding — and it writes the vocabulary and decisions down as you go.
+- [to-prd](https://www.aihero.dev/skills-to-prd): Turn Resolved Context Into a PRD - turns the current conversation context and codebase understanding into a product requirements document.
+- [to-issues](https://www.aihero.dev/skills-to-issues) - Break a PRD Into Vertical-Slice GitHub Issues
+- [tdd](https://www.aihero.dev/skills-tdd): Break a PRD Into Vertical-Slice GitHub Issues- builds a feature or fixes a bug test-first, one behaviour at a time, driving the code out through a red-green loop.
+- [improve-codebase-architecture](https://www.aihero.dev/skills-improve-codebase-architecture): Find Deepening Opportunities - Making Your Code Agent-Friendly
+- [handoff](https://www.aihero.dev/skills-handoff): Move Context Between Agent Sessions — Compact the current conversation into a handoff document so another agent can continue the work.
+
+- Shadcn's [improve](https://github.com/shadcn/improve) - An agent skill that audits any codebase and writes implementation plans for other agents to execute.
+
+### UI full-stack
+
+- [shadcn](https://ui.shadcn.com/docs/skills): Give your AI assistant deep knowledge of shadcn/ui components, patterns, and best practices.
+- [drizzle v1 skills](https://github.com/honra-io/drizzle-best-practices): AI-agent-ready best practices for Drizzle ORM with PostgreSQL. Designed to be consumed by LLM-based coding agents (Claude, Cursor, Codex, etc.) as a skill or context file so they write correct, idiomatic Drizzle code out of the box.
+- [better-auth](https://better-auth.com/docs/ai-resources/skills): Install Better Auth agent skills so your coding assistant follows library conventions and patterns.
+- [evlog](https://www.evlog.dev/reference/agent-skills): AI-assisted code review and evlog adoption using Agent Skills. Let AI review your logging patterns and guide migration to wide events.
+- [better-result](https://github.com/dmmulroy/better-result): Lightweight Result type for TypeScript with generator-based composition.
+  - **better-result-adopt** — adopt `better-result` in an existing codebase
+  - **better-result-migrate-v2** — migrate v1 `TaggedError` usage to the v2 API
+- [data-table-filters](https://data-table.openstatus.dev/): Ships with an [AI agent skill](https://data-table.openstatus.dev/docs/ai-filters) that understands the full project structure — it can scaffold, configure, and extend data tables end-to-end. Because every component is installed via the shadcn CLI, agents know exactly how to add and compose pieces without custom tooling. Also includes an [MCP server](https://data-table.openstatus.dev/docs/mcp) that lets AI assistants query and filter your actual table data directly.
+  - Then just say "add a filterable data table" — the skill detects your stack, installs the right blocks, generates a schema, and wires everything up.
+
+## AI Agent Frameworks
+
+- [Mastra](https://github.com/mastra-ai/skills) : Official Mastra skills for agents working with the [Mastra framework](https://mastra.ai/).
+- [vercel/eve](https://github.com/vercel/eve/blob/main/SKILL.md):
+
+### Design
+
+- [emilkowalski/skill](https://github.com/emilkowalski/skills): Skills For Design Engineers. [emil-design-eng](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md), [improve-animations](https://github.com/emilkowalski/skills/blob/main/skills/improve-animations/SKILL.md), [review-animations](https://github.com/emilkowalski/skills/blob/main/skills/improve-animations/SKILL.md)
+  - Agents don’t have great taste. Use your most capable model to audit animations in your project and hand the execution to cheaper models.
+- [tasteskill](https://www.tasteskill.dev/): The Anti-Slop Frontend Framework for AI Agents
+- [layers](https://layers.jamiemill.com/): AI Skills Pack. Design beyond the surface.
+
+### Database
+
+- [pg-aiguide](https://github.com/timescale/pg-aiguide): AI-optimized PostgreSQL expertise for coding assistants
+
+## Reference
+
+- [5 Agent Skills I Use Every Day](https://www.aihero.dev/5-agent-skills-i-use-every-day)
+- All mattpocock's [skill](https://www.aihero.dev/skills)
+- `.well-known skills discovery` [RFC 8615 Well-Known URI](https://github.com/cloudflare/agent-skills-discovery-rfc)
