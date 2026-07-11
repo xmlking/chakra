@@ -17,7 +17,7 @@ export default defineConfig({
       // @fuma-translate/react ships "use client" modules and is imported by
       // bare specifier from virtual:vite-rsc/client-references, so it must
       // resolve from the app root (and be a direct dependency below).
-      dedupe: ["react", "react-dom", "lucide-react", "@thesvg/react", "@fuma-translate/react", "fumadocs-ui"],
+      dedupe: ["fumadocs-ui", "fumadocs-core", "react", "react-dom", "lucide-react", "@thesvg/react", "@fuma-translate/react"],
     },
     // @takumi-rs/core is a native napi module (used by takumiPlugin for OG
     // images). Keep it external in the server-side environments so its loader
@@ -27,6 +27,9 @@ export default defineConfig({
     environments: {
       rsc: { resolve: { external: ["@takumi-rs/core"] } },
       ssr: { resolve: { external: ["@takumi-rs/core"] } },
+    },
+    ssr: {
+      external: ["typescript", "twoslash", "shiki", "@takumi-rs/core"],
     },
     optimizeDeps: {
       include: ["use-sync-external-store/shim/with-selector", "use-sync-external-store/shim"],

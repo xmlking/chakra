@@ -4,30 +4,191 @@ description: Architecture Diagrams
 icon: Rocket
 ---
 
-<Mermaid
-  chart="
-graph TD;
-subgraph AA [Consumers]
-A[Mobile app];
-B[Web app];
-C[Node.js client];
-end
-subgraph BB [Services]
-E[REST API];
-F[GraphQL API];
-G[SOAP API];
-end
-Z[GraphQL API];
-A --> Z;
-B --> Z;
-C --> Z;
-Z --> E;
-Z --> F;
-Z --> G;"
-/>
+We are using [Beautiful Mermaid](https://agents.craft.do/mermaid) for diagrams in **Markdown**
+
+## Examples
 
 ```mermaid
-graph TD;
-  A-->B;
-  A-->C;
+flowchart TD
+  A(Start) --> B{Is it sunny?}
+  B -- Yes --> C[Go to the park]
+  B -- No --> D[Stay indoors]
+  C --> E[Finish]
+  D --> E
+```
+
+```mermaid
+graph TD
+  A[Source] -->|solid| B[Target 1]
+  A -.->|dotted| C[Target 2]
+  A ==>|thick| D[Target 3]
+```
+
+```mermaid
+flowchart TD
+  A[Page meta<br/>title / description] --> B[takumiPlugin.generate]
+  B --> C[React node]
+  C --> D["ImageResponse<br/>format: webp · width × height"]
+  D --> E["@takumi-rs/image-response"]
+  E --> F[takumi-js]
+```
+
+```mermaid
+graph LR
+  A[[Subroutine]] --> B(((Double Circle)))
+  B --> C{{Hexagon}}
+```
+
+```mermaid
+graph LR
+  A[(Database)] --> B>Flag Shape]
+  B --> C[/Wider Bottom\]
+  C --> D[\Wider Top/]
+```
+
+### Subgraphs
+
+```mermaid
+graph TD
+  subgraph Frontend
+    A[React App] --> B[State Manager]
+  end
+  subgraph Backend
+    C[API Server] --> D[Database]
+  end
+  B --> C
+```
+
+### Nested Subgraphs
+
+```mermaid
+graph TD
+  subgraph Cloud
+    subgraph us-east [US East Region]
+      A[Web Server] --> B[App Server]
+    end
+    subgraph us-west [US West Region]
+      C[Web Server] --> D[App Server]
+    end
+  end
+  E[Load Balancer] --> A
+  E --> C
+```
+
+### Subgraph Direction Override
+
+```mermaid
+graph TD
+  subgraph pipeline [Processing Pipeline]
+    direction LR
+    A[Input] --> B[Parse] --> C[Transform] --> D[Output]
+  end
+  E[Source] --> A
+  D --> F[Sink]
+```
+
+### Class Shorthand
+
+```mermaid
+graph TD
+  A[Normal]:::default --> B[Highlighted]:::highlight --> C[Error]:::error
+  classDef default fill:#f4f4f5,stroke:#a1a1aa
+  classDef highlight fill:#fbbf24,stroke:#d97706
+  classDef error fill:#ef4444,stroke:#dc2626
+```
+
+### System Architecture
+
+```mermaid
+graph LR
+  subgraph clients [Client Layer]
+    A([Web App]) --> B[API Gateway]
+    C([Mobile App]) --> B
+  end
+  subgraph services [Service Layer]
+    B --> D[Auth Service]
+    B --> E[User Service]
+    B --> F[Order Service]
+  end
+  subgraph data [Data Layer]
+    D --> G[(Auth DB)]
+    E --> H[(User DB)]
+    F --> I[(Order DB)]
+    F --> J([Message Queue])
+  end
+```
+
+### State: Composite States
+
+```mermaid
+stateDiagram-v2
+  [*] --> Idle
+  Idle --> Processing : submit
+  state Processing {
+    parse --> validate
+    validate --> execute
+  }
+  Processing --> Complete : done
+  Processing --> Error : fail
+  Error --> Idle : retry
+  Complete --> [*]
+```
+
+### Sequence: OAuth 2.0 Flow
+
+```mermaid
+sequenceDiagram
+  actor U as User
+  participant App as Client App
+  participant Auth as Auth Server
+  participant API as Resource API
+  U->>App: Click Login
+  App->>Auth: Authorization request
+  Auth->>U: Login page
+  U->>Auth: Credentials
+  Auth-->>App: Authorization code
+  App->>Auth: Exchange code for token
+  Auth-->>App: Access token
+  App->>API: Request + token
+  API-->>App: Protected resource
+  App-->>U: Display data
+```
+
+### ER: E-Commerce Schema
+
+```mermaid
+erDiagram
+  CUSTOMER {
+    int id PK
+    string name
+    string email UK
+  }
+  ORDER {
+    int id PK
+    date created
+    int customer_id FK
+  }
+  PRODUCT {
+    int id PK
+    string name
+    float price
+  }
+  LINE_ITEM {
+    int id PK
+    int order_id FK
+    int product_id FK
+    int quantity
+  }
+  CUSTOMER ||--o{ ORDER : places
+  ORDER ||--|{ LINE_ITEM : contains
+  PRODUCT ||--o{ LINE_ITEM : includes
+```
+
+### XY: Simple Bar Chart
+
+```mermaid
+xychart-beta
+    title "Product Sales"
+    x-axis [Widgets, Gadgets, Gizmos, Doodads, Thingamajigs]
+    bar [150, 230, 180, 95, 310]
 ```

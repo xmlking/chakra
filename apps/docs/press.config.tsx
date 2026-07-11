@@ -1,5 +1,5 @@
-import path from "node:path";
-
+import { changelogPlugin, createChangelogIndexPage } from "@fumapress/tegami";
+import { getPageTreePeers } from "fumadocs-core/page-tree";
 import { lucideIconsPlugin } from "fumadocs-core/source/plugins/lucide-icons";
 import { createOpenAPI } from "fumadocs-openapi/server";
 import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
@@ -21,12 +21,14 @@ import { llmsPlugin } from "fumapress/plugins/llms.txt";
 import { openapiPlugin } from "fumapress/plugins/openapi";
 import { sitemapPlugin } from "fumapress/plugins/sitemap";
 import { takumiPlugin } from "fumapress/plugins/takumi";
-import { BookIcon, RssIcon } from "lucide-react";
 
-import { ClientAPIPage } from "@/components/api";
 import { Mermaid } from "@/components/mdx/mermaid";
+// import { Mermaid } from "@/components/mdx/mermaid2";
+import { OpenAPIPage } from "@/components/openapi";
+import { Video } from "@/components/video";
+import { baseOptions } from "@/layout-config";
 
-import { blog, docs } from "./.source/server";
+import { blog, changelog, docs } from "./.source/server";
 
 // HINT: use `basePath` setting in waku.config.ts. Defaults to  "/".
 const basePath = import.meta.env.BASE_URL;
@@ -49,6 +51,9 @@ const config = defineConfig({
     openapi: await openapi.staticSource({
       baseDir: "docs/openapi/(generated)",
     }),
+    changelog: changelog.toFumadocsSource({
+      baseDir: "changelog",
+    }),
   },
   loaderOptions: {
     plugins: [lucideIconsPlugin()],
@@ -66,13 +71,22 @@ const config = defineConfig({
     root() {
       return (
         <>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:image:width" content="1200" />
+          <meta name="twitter:image:height" content="630" />
+          <meta name="twitter:creator" content="@xmlking" />
+          <meta name="twitter:site" content="@xmlking" />
+          <meta property="og:site_name" content="Chakra" />
+          <meta property="og:type" content="website" />
+          <link rel="icon" href={`${basePath}favicon.ico`} type="image/x-icon" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           <link
             href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
             rel="stylesheet"
           />
-          <link rel="icon" href={`${basePath}favicon.ico`} type="image/x-icon" />
         </>
       );
     },
@@ -83,6 +97,19 @@ const config = defineConfig({
       async getMdxComponents(page) {
         const source = await this.getLoader();
 
+        // oxlint-disable-next-line react/only-export-components
+        function DocsCategory() {
+          return (
+            <Cards>
+              {getPageTreePeers(source.getPageTree(page.locale), page.url).map((peer) => (
+                <Card key={peer.url} title={peer.name} href={peer.url}>
+                  {peer.description}
+                </Card>
+              ))}
+            </Cards>
+          );
+        }
+
         return {
           File,
           Files,
@@ -92,6 +119,7 @@ const config = defineConfig({
           Accordion,
           Accordions,
           Mermaid,
+          Video,
           Tab,
           Tabs,
           TabsContent,
@@ -99,25 +127,7 @@ const config = defineConfig({
           TabsTrigger,
           ...defaultMdxComponents,
           a: createRelativeLink(source, page),
-          DocsCategory() {
-            const dir = path.dirname(page.path);
-            const items = source
-              .getPages(page.locale)
-              .filter(
-                (item) =>
-                  item.path !== page.path && !path.relative(dir, item.path).startsWith(".."),
-              );
-
-            return (
-              <Cards>
-                {items.map((item) => (
-                  <Card key={item.path} href={item.url} title={item.data.title}>
-                    {item.data.description}
-                  </Card>
-                ))}
-              </Cards>
-            );
-          },
+          DocsCategory,
         };
       },
     }),
@@ -130,7 +140,7 @@ const config = defineConfig({
     // linkValidationPlugin(), // FIXME
     openapiPlugin({
       server: openapi,
-      ClientAPIPage,
+      ClientAPIPage: OpenAPIPage,
       // mode: "static" doesn't support proxy,
       // you can use this option in "server" mode
       // createProxy: true,
@@ -153,70 +163,38 @@ const config = defineConfig({
   .layouts({
     defaultProps() {
       return {
-        nav: {
-          title: (
-            <>
-              {/* <img
-                src="/logo.png"
-                width={64}
-                height={64}
-                className="size-8 rounded-full shadow-md shadow-black mb-1"
-              /> */}
-              <img
-                alt="logo"
-                src={`${basePath}chakra2.svg`}
-                width="64"
-                height="64"
-                className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"
-              />
-              <span>
-                <span className="border-fd-primary border-b-2 font-mono uppercase">Chakra</span>
-                <br />
-                <span className="text-fd-muted-foreground text-xs font-normal">The agent guru</span>
-              </span>
-            </>
-          ),
-        },
+        nav: baseOptions.nav,
+        githubUrl: baseOptions.githubUrl,
       };
     },
     page: createDocsLayoutPage({
       async render({ locale }) {
-        let pageTree = (await this.getLoader()).getPageTree(locale);
+        const source = await this.getLoader();
+        let tree = source.getPageTree(locale);
 
-        for (const child of pageTree.children) {
+        for (const child of tree.children) {
           if (child.type === "folder" && child.$id === "docs") {
-            pageTree = {
-              ...pageTree,
-              children: child.children,
-            };
+            tree = { ...tree, children: child.children };
           }
         }
 
         return {
           layoutProps: {
-            tree: pageTree,
+            tree,
+            // links: [
+            //   { icon: <Shovel />, text: "Try in Playground", url: "/playground" },
+            //   { icon: <Sparkles />, text: "Showcase", url: "/showcase" },
+            // ],
           },
         };
       },
     }),
   });
 
+const { children: _, ...homeLayoutProps } = baseOptions;
 export const HomeLayout = createHomeLayout<Ctx>({
   layoutProps: {
-    links: [
-      {
-        url: "/docs",
-        text: "Documentation",
-        icon: <BookIcon />,
-        active: "nested-url",
-      },
-      {
-        url: "/blog",
-        text: "Blog",
-        icon: <RssIcon />,
-        active: "nested-url",
-      },
-    ],
+    ...homeLayoutProps,
   },
 });
 
@@ -227,6 +205,16 @@ export default config.plugins(
   blogPlugin({
     layouts: {
       layout: HomeLayout,
+    },
+  }),
+  changelogPlugin({
+    layouts: {
+      layout: HomeLayout,
+      index: createChangelogIndexPage({
+        heading: "Changelog",
+        description: "What shipped recently.",
+        pageSize: 10,
+      }),
     },
   }),
 );
