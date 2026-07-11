@@ -1,50 +1,27 @@
-"use client";
+import { renderMermaidSVG } from "beautiful-mermaid";
+import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
 
-import { useTheme } from "next-themes";
-import { use, useEffect, useId, useState } from "react";
+export async function Mermaid({ chart }: { chart: string }) {
+  try {
+    const svg = renderMermaidSVG(chart, {
+      bg: "var(--color-fd-background)",
+      fg: "var(--color-fd-foreground)",
+      // Edge/message labels default to a too-dim bg/fg mix; use the theme's muted-foreground for a softer, legible gray.
+      muted: "var(--color-fd-muted-foreground)",
+      accent: "var(--color-fd-primary)",
+      surface: "var(--color-fd-card)",
+      border: "var(--color-fd-border)",
 
-export function Mermaid({ chart }: { chart: string }) {
-  const [mounted, setMounted] = useState(false);
-  // oxlint-disable-next-line react-doctor/rendering-hydration-no-flicker
-  useEffect(() => {
-    // oxlint-disable-next-line react-doctor/no-initialize-state
-    setMounted(true);
-  }, []);
+      interactive: true,
+      transparent: true,
+    });
 
-  if (!mounted) return;
-  return <MermaidContent chart={chart} />;
-}
-const cache = new Map<string, Promise<unknown>>();
-function cachePromise<T>(key: string, setPromise: () => Promise<T>): Promise<T> {
-  const cached = cache.get(key);
-  if (cached) return cached as Promise<T>;
-  const promise = setPromise();
-  cache.set(key, promise);
-  return promise;
-}
-function MermaidContent({ chart }: { chart: string }) {
-  const id = useId();
-  const { resolvedTheme } = useTheme();
-  const { default: mermaid } = use(cachePromise("mermaid", () => import("mermaid")));
-  mermaid.initialize({
-    startOnLoad: false,
-    securityLevel: "loose",
-    fontFamily: "inherit",
-    themeCSS: "margin: 1.5rem auto 0;",
-    theme: resolvedTheme === "dark" ? "dark" : "default",
-  });
-  const { svg, bindFunctions } = use(
-    cachePromise(`${chart}-${resolvedTheme}`, () => {
-      return mermaid.render(id, chart.replaceAll("\\n", "\n"));
-    }),
-  );
-  return (
-    <div
-      ref={(container) => {
-        if (container) bindFunctions?.(container);
-      }}
-      // oxlint-disable-next-line react-doctor/no-danger
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  );
+    return <div dangerouslySetInnerHTML={{ __html: svg }} />;
+  } catch {
+    return (
+      <CodeBlock title="Mermaid">
+        <Pre>{chart}</Pre>
+      </CodeBlock>
+    );
+  }
 }

@@ -1,3 +1,4 @@
+import { changelogMetaSchema, changelogPageSchema } from "@fumapress/tegami/schema";
 import { remarkImage, remarkMdxMermaid, remarkMdxFiles } from "fumadocs-core/mdx-plugins";
 import { remarkSteps } from "fumadocs-core/mdx-plugins/remark-steps";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
@@ -35,6 +36,20 @@ export const blog = defineDocs({
   },
   meta: {
     schema: blogMetaSchema,
+  },
+});
+
+export const changelog = defineDocs({
+  dir: "../../content/changelog",
+  docs: {
+    async: true,
+    schema: changelogPageSchema,
+    postprocess: {
+      includeProcessedMarkdown: true,
+    },
+  },
+  meta: {
+    schema: changelogMetaSchema,
   },
 });
 
