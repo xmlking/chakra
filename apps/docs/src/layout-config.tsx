@@ -15,11 +15,17 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
-        <img src={`${basePath}chakra2.svg`} alt="Chakra" width={24} height={24} />
+        <img
+          src={`${basePath}logo.svg`}
+          alt="logo"
+          width={24}
+          height={24}
+          className="brightness-0 dark:brightness-100"
+        />
         <span className="font-semibold">Chakra</span>
         {/* <img
           alt="logo"
-          src={`${basePath}chakra2.svg`}
+          src={`${basePath}logo2.svg`}
           width={64}
           height={64}
           className="mb-1 size-8 rounded-full shadow-sm shadow-black dark:invert"

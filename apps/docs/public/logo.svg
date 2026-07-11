@@ -1,50 +1,90 @@
-<svg xmlns="http://w3.org" viewBox="0 0 500 500" width="100%" height="100%">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 500" width="100%" height="100%">
   <defs>
-    <!-- Define the 24-spoke array template for perfect rotation -->
-    <g id="spoke-pair">
-      <line x1="0" y1="0" x2="0" y2="-190" stroke="#000080" stroke-width="4.5" stroke-linecap="round" />
-      <line x1="0" y1="0" x2="0" y2="190" stroke="#000080" stroke-width="4.5" stroke-linecap="round" />
+    <!-- High-contrast bright gold gradient that pops on both light & dark themes -->
+    <linearGradient id="bright-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFF33"/>
+      <stop offset="40%" stop-color="#FFD700"/>
+      <stop offset="70%" stop-color="#FFA500"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </linearGradient>
+
+    <!-- Drop shadow filter -->
+    <filter id="drop-shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-opacity="0.3" flood-color="#000000" />
+    </filter>
+
+    <!-- Logo geometry templates using the bright gold color profile -->
+    <g id="bright-tooth">
+      <polygon points="250,30 245,65 255,65" fill="url(#bright-gold)" />
+    </g>
+    <g id="bright-spoke">
+      <polygon points="250,152 241,92 250,65 259,92" fill="url(#bright-gold)" />
     </g>
   </defs>
 
-  <!-- Background for rendering contrast (Optional) -->
-  <rect width="100%" height="100%" fill="#FFFFFF" />
+  <g stroke="none" filter="url(#drop-shadow)">
+    <!-- Outer Rim Ring Structure -->
+    <path d="M250,55 A195,195 0 1,0 251,55 Z M250,75 A175,175 0 1,1 249,75 Z" fill="url(#bright-gold)" opacity="1" />
 
-  <!-- Main wheel structure centered at (250, 250) -->
-  <g transform="translate(250, 250)">
-    
-    <!-- 1. Outer Ring -->
-    <circle r="200" fill="none" stroke="#000080" stroke-width="10" />
-    
-    <!-- 2. Inner Ring -->
-    <circle r="85" fill="none" stroke="#000080" stroke-width="4" />
+    <!-- 108 Serrations Representation (36 geometrically balanced nodes) -->
+    <g>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(0 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(10 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(20 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(30 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(40 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(50 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(60 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(70 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(80 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(90 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(100 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(110 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(120 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(130 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(140 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(150 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(160 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(170 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(180 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(190 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(200 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(210 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(220 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(230 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(240 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(250 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(260 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(270 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(280 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(290 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(300 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(310 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(320 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(330 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(340 250 250)"/>
+      <use xlink:href="#bright-tooth" href="#bright-tooth" transform="rotate(350 250 250)"/>
+    </g>
 
-    <!-- 3. The 24 Spokes -->
-    <!-- 
-      The spokes are spaced at 15-degree intervals. 
-      We loop through 12 pairs to perfectly construct the 24 spokes.
-    -->
-    <use href="#spoke-pair" transform="rotate(0)" />
-    <use href="#spoke-pair" transform="rotate(15)" />
-    <use href="#spoke-pair" transform="rotate(30)" />
-    <use href="#spoke-pair" transform="rotate(45)" />
-    <use href="#spoke-pair" transform="rotate(60)" />
-    <use href="#spoke-pair" transform="rotate(75)" />
-    <use href="#spoke-pair" transform="rotate(90)" />
-    <use href="#spoke-pair" transform="rotate(105)" />
-    <use href="#spoke-pair" transform="rotate(120)" />
-    <use href="#spoke-pair" transform="rotate(135)" />
-    <use href="#spoke-pair" transform="rotate(150)" />
-    <use href="#spoke-pair" transform="rotate(165)" />
+    <!-- 8 Primary Geometric Directional Weapons Points -->
+    <g>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(0 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(45 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(90 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(135 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(180 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(225 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(270 250 250)"/>
+      <use xlink:href="#bright-spoke" href="#bright-spoke" transform="rotate(315 250 250)"/>
+    </g>
 
-    <!-- 4. Inner Rim Connectors (Half-circles touching the inner ring) -->
-    <circle r="12" cy="-85" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cy="85" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cx="-85" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cx="85" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cy="-60" transform="rotate(45)" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cy="-60" transform="rotate(135)" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cy="-60" transform="rotate(225)" fill="none" stroke="#000080" stroke-width="3" />
-    <circle r="12" cy="-60" transform="rotate(315)" fill="none" stroke="#000080" stroke-width="3" />
+    <!-- Inner Core Hub Ring Structure -->
+    <path d="M250,135 A115,115 0 1,0 251,135 Z M250,147 A103,103 0 1,1 249,147 Z" fill="url(#bright-gold)" />
+
+    <!-- Central Sharp Focal Disc Ring -->
+    <path d="M250,175 A75,75 0 1,0 251,175 Z M250,210 A40,40 0 1,1 249,210 Z" fill="url(#bright-gold)" opacity="1" />
+
+    <!-- Pure Center Point Anchor Hole -->
+    <circle cx="250" cy="250" r="18" fill="url(#bright-gold)" />
   </g>
 </svg>
