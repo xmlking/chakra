@@ -3,14 +3,16 @@ title: Vibe Coding
 description: Setup VS Code for Vibe Coding
 ---
 
-New to vibe coding - what’s the best setup today?
+[Agent skills](https://agentskills.io/) are portable instruction files (for example `SKILL.md`) that teach your coding agent project conventions, safe patterns, and where to look in the docs.
 
-A curated collection of Claude Code settings, skills and sub-agents designed for enhanced development workflows. This setup includes specialized skills and subagents for feature development (spec-driven workflow), code analysis, GitHub integration, and knowledge management.
+**New to vibe coding - what’s the best setup today?**
+
+A curated collection of Claude Code settings, skills and sub-agents designed for enhanced development workflows.
+This setup includes specialized skills and subagents for feature development (spec-driven workflow), code analysis, GitHub integration, and knowledge management.
 
 ## Setup
 
 1. Copy claude settings `.claude/settings.json` to your repo.
-2.
 
 ## Add Skills
 
@@ -37,7 +39,7 @@ bunx skills@latest add better-auth/skills --skill '*'
 bunx skills@latest add https://www.evlog.dev --skill 'review-logging-patterns'
 
 # better-result - Lightweight Result type for TypeScript with generator-based composition.
-bunx skills@latest add dmmulroy/better-result
+bunx skills@latest add dmmulroy/better-result@better-result-adopt
 # vite-env skills
 bunx skills@latest add https://github.com/pyyupsk/skills --skill vite-env
 
@@ -96,19 +98,3 @@ Or
 ```shell
 /migrate-radix-to-base alert-dialog
 ```
-
-### Workflow
-
-Developer workflow skills for **Spec Driven Development (SDD)**
-
-- [grill-me](https://www.aihero.dev/grill-with-docs): Align Before You Build — interviews you relentlessly about a plan or design, one question at a time, until you and the agent reach a shared understanding — and it writes the vocabulary and decisions down as you go.
-- [to-prd](https://www.aihero.dev/skills-to-prd): Turn Resolved Context Into a PRD - turns the current conversation context and codebase understanding into a product requirements document.
-- [to-issues](https://www.aihero.dev/skills-to-issues) - Break a PRD Into Vertical-Slice GitHub Issues
-- [tdd](https://www.aihero.dev/skills-tdd): Break a PRD Into Vertical-Slice GitHub Issues- builds a feature or fixes a bug test-first, one behaviour at a time, driving the code out through a red-green loop.
-- [improve-codebase-architecture](https://www.aihero.dev/skills-improve-codebase-architecture): Find Deepening Opportunities - Making Your Code Agent-Friendly
-- [handoff](https://www.aihero.dev/skills-handoff): Move Context Between Agent Sessions — Compact the current conversation into a handoff document so another agent can continue the work.
-
-## Reference
-
-- [5 Agent Skills I Use Every Day](https://www.aihero.dev/5-agent-skills-i-use-every-day)
-- All mattpocock's [skill](https://www.aihero.dev/skills)
