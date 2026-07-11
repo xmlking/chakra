@@ -1,6 +1,8 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import { BookIcon, HistoryIcon, RssIcon } from "lucide-react";
 
+// import { Logo } from "./components/logo";
+
 export const SITE_URL = "https://xmlking.github.io/chakra";
 
 export const OG_IMAGE =
@@ -15,6 +17,7 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     title: (
       <>
+        {/* <Logo className="size-6" /> */}
         <img
           src={`${basePath}logo.svg`}
           alt="logo"
