@@ -75,6 +75,12 @@ export const baseOptions: BaseLayoutProps = {
           description: "Full text of the documentation",
           external: true,
         },
+        {
+          text: "sitemap.xml",
+          url: `${basePath}sitemap.xml`,
+          description: "Sitemap",
+          external: true,
+        },
       ],
     },
   ],
