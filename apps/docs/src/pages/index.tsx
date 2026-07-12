@@ -146,15 +146,12 @@ function Features() {
           <Card
             // oxlint-disable-next-line react-doctor/no-array-index-key react-doctor/no-array-index-as-key
             key={i}
-            size="sm"
-            className="rounded-xl border bg-card/70 shadow-lg backdrop-saturate-200 dark:bg-card/50"
+            className="border bg-card/70 shadow-lg backdrop-saturate-200 dark:bg-card/50"
           >
             <CardHeader>
               <div className="flex items-center gap-3">
                 <FeatureIcon>{c.icon}</FeatureIcon>
-                <CardTitle className="font-sans text-base font-semibold tracking-normal normal-case">
-                  {c.title}
-                </CardTitle>
+                <CardTitle>{c.title}</CardTitle>
               </div>
               <CardDescription>{c.desc}</CardDescription>
             </CardHeader>

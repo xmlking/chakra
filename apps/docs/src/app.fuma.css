@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+/* themes */
+/* @import "fumadocs-ui/css/aspen.css"; */
+/* @import "fumadocs-ui/css/black.css"; */
+/* @import "fumadocs-ui/css/catppuccin.css"; */
+/* @import "fumadocs-ui/css/dusk.css"; */
+/* @import "fumadocs-ui/css/emerald.css"; */
+@import "fumadocs-ui/css/neutral.css";
+/* @import "fumadocs-ui/css/ocean.css"; */
+/* @import "fumadocs-ui/css/purple.css"; */
+/* @import "fumadocs-ui/css/ruby.css"; */
+/* @import "fumadocs-ui/css/shadcn.css"; */
+/* @import "fumadocs-ui/css/solar.css"; */
+/* @import "fumadocs-ui/css/vitepress.css"; */
+
+/* plugins */
+@import "fumadocs-ui/css/preset.css";
+@import "fumadocs-openapi/css/preset.css";
+@import "fumapress/css/preset.css";
+@import "@fumapress/tegami/css/preset.css";
+@import "@fumapress/feedback/css/preset.css";
+
+@theme {
+  --font-sans: "Geist", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --default-font-family: var(--font-sans);
+  --default-mono-font-family: var(--font-mono);
+  --color-fd-primary: var(--primary);
+}
+
+:root {
+  --primary: oklch(54.52% 0.22128 294.796);
+  /* --primary: oklch(55.639% 0.16448 43.087); */
+  /* --primary: oklch(0.5676 0.2368 25.41); */
+}
+
+.dark {
+  --primary: oklch(83.802% 0.09969 304.178);
+  /* --primary: oklch(76.972% 0.15134 51.001); */
+  /* --primary: oklch(0.6971 0.2047 25.41); */
+}
