@@ -1,6 +1,11 @@
 import { changelogMetaSchema, changelogPageSchema } from "@fumapress/tegami/schema";
-import { remarkImage, remarkMdxMermaid, remarkMdxFiles } from "fumadocs-core/mdx-plugins";
-import { remarkSteps } from "fumadocs-core/mdx-plugins/remark-steps";
+import {
+  remarkSteps,
+  remarkImage,
+  remarkMdxMermaid,
+  remarkMdxFiles,
+  remarkDirectiveAdmonition,
+} from "fumadocs-core/mdx-plugins";
 import { defineConfig, defineDocs } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
 import {
@@ -9,6 +14,7 @@ import {
   blogMetaSchema,
   blogPageSchema,
 } from "fumapress/adapters/mdx/schema";
+import remarkDirective from "remark-directive";
 
 export const docs = defineDocs({
   // dir: fileURLToPath(new URL("content/docs", import.meta.url)),
@@ -58,7 +64,14 @@ export default defineConfig({
   mdxOptions: {
     // MDX options
     // preset: 'fumadocs',
-    remarkPlugins: [remarkMdxMermaid, remarkImage, remarkSteps, remarkMdxFiles],
+    remarkPlugins: [
+      remarkMdxMermaid,
+      remarkImage,
+      remarkSteps,
+      remarkMdxFiles,
+      remarkDirective,
+      remarkDirectiveAdmonition,
+    ],
     // rehypePlugins: [rehypeToc],
     rehypeCodeOptions: {
       themes: {
