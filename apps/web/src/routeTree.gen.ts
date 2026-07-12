@@ -13,6 +13,7 @@ import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
@@ -49,6 +50,11 @@ const publicIndexRoute = publicIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => publicRouteRoute,
+} as any)
+const ApiFilesRoute = ApiFilesRouteImport.update({
+  id: '/api/files',
+  path: '/api/files',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const publicVersionRoute = publicVersionRouteImport.update({
   id: '/version',
@@ -153,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
+  '/api/files': typeof ApiFilesRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
+  '/api/files': typeof ApiFilesRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/(public)/about': typeof publicAboutRoute
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/version': typeof publicVersionRoute
+  '/api/files': typeof ApiFilesRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/theme'
     | '/version'
+    | '/api/files'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
@@ -247,6 +257,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/theme'
     | '/version'
+    | '/api/files'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/(public)/about'
     | '/(public)/theme'
     | '/(public)/version'
+    | '/api/files'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
@@ -294,6 +306,7 @@ export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
+  ApiFilesRoute: typeof ApiFilesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
 }
@@ -327,6 +340,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/api/files': {
+      id: '/api/files'
+      path: '/api/files'
+      fullPath: '/api/files'
+      preLoaderRoute: typeof ApiFilesRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(public)/version': {
       id: '/(public)/version'
@@ -534,6 +554,7 @@ const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
+  ApiFilesRoute: ApiFilesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
 }
