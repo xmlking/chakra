@@ -39,7 +39,10 @@ const from = env.EMAIL_FROM;
 // const to = env.EMAIL_TO || "";
 const adminUserIds = env.BETTER_AUTH_ADMINS as unknown as string[];
 
-// HINT: update me for each product/deployment
+/**
+ * By default, Better Auth trusts the base URL of your app,
+ * but you can specify additional trusted origins via the trustedOrigins configuration option.
+ */
 const trustedOrigins = [
   "expo://",
   "mobile://",

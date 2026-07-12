@@ -23,7 +23,6 @@ import { sitemapPlugin } from "fumapress/plugins/sitemap";
 import { takumiPlugin } from "fumapress/plugins/takumi";
 
 import { Mermaid } from "@/components/mdx/mermaid";
-// import { Mermaid } from "@/components/mdx/mermaid2";
 import { OpenAPIPage } from "@/components/openapi";
 import { Video } from "@/components/video";
 import { baseOptions } from "@/layout-config";
@@ -82,7 +81,7 @@ const config = defineConfig({
           <meta property="og:type" content="website" />
           <link rel="icon" href={`${basePath}favicon.ico`} type="image/x-icon" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
           <link
             href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap"
             rel="stylesheet"
@@ -168,6 +167,9 @@ const config = defineConfig({
       };
     },
     page: createDocsLayoutPage({
+      // renderBody() {
+      //   // TODO shadcn typeset
+      // },
       async render({ locale }) {
         const source = await this.getLoader();
         let tree = source.getPageTree(locale);
@@ -179,6 +181,11 @@ const config = defineConfig({
         }
 
         return {
+          // pageProps: {
+          //   tableOfContent: {
+          //     footer: <SponsorsMarquee />,
+          //   },
+          // },
           layoutProps: {
             tree,
             // links: [
