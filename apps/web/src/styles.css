@@ -1,14 +1,39 @@
 @import "@workspace/ui/styles/globals.css";
 /* @import "@workspace/ui/styles/transitions.css"; */
 @import "@workspace/ui/styles/typeset.css";
+/* added by assistant-ui */
+@import "tw-shimmer";
 
 @source "../**/*.{ts,tsx}";
 
 /* used for fixed width vs flex layout switch */
 @custom-variant fixed (&:is(.layout-fixed *));
+
+/* added by assistant-ui */
+@custom-variant data-open (&:where([data-state="open"], [data-open]:not([data-open="false"])));
+@custom-variant data-closed (&:where([data-state="closed"], [data-closed]:not([data-closed="false"])));
+
 @theme inline {
   --breakpoint-3xl: 1600px;
   --breakpoint-4xl: 2000px;
+
+  /* added by assistant-ui */
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height, var(--collapsible-panel-height, auto));
+    }
+  }
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height, var(--collapsible-panel-height, auto));
+    }
+    to {
+      height: 0;
+    }
+  }
 }
 
 @utility container-wrapper {

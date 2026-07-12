@@ -22,6 +22,8 @@
     "preview": "vp preview"
   },
   "dependencies": {
+    "@assistant-ui/react": "catalog:",
+    "@assistant-ui/react-ai-sdk": "catalog:",
     "@better-auth-ui/core": "catalog:",
     "@better-auth-ui/react": "catalog:",
     "@bprogress/react": "catalog:",
@@ -72,6 +74,7 @@
     "recharts": "catalog:",
     "sonner": "catalog:",
     "tslib": "catalog:",
+    "tw-shimmer": "catalog:",
     "workflow": "catalog:",
     "zod": "catalog:",
     "zustand": "catalog:"
