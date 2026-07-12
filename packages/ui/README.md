@@ -88,6 +88,8 @@ bunx --bun shadcn@latest add -p src/components/flowkit-ui @flowkit-ui/creatable-
 bunx --bun shadcn@latest add -p src/components/extend @extend/pdf-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/docx-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/schema-builder
+# assistant-ui
+bunx --bun shadcn@latest add -p src/components/assistant-ui @assistant-ui/thread
 ```
 
 This will place the ui components in the `packages/ui/src/components` directory.
