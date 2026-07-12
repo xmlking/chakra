@@ -44,84 +44,76 @@ Everything else should live in TanStack Query.
 
 # Monorepo Layout
 
-```text
-apps/
-└── web/
-
-packages/
-├── auth/
-├── db/
-├── i18n/
-├── ui/
-├── config/
-├── types/
-└── sdk/
-
-turbo.json
-package.json
-bun.lock
+```files
+repo/
+├── apps/
+│   └── web/
+├── packages/
+│   ├── auth/
+│   ├── db/
+│   ├── i18n/
+│   ├── ui/
+│   ├── config/
+│   ├── types/
+│   └── sdk/
+├── package.json
+├── bun.lock
+└── turbo.json
 ```
 
 ---
 
 # Apps
 
-```text
-apps/web
-├── src
-│   ├── app
-│   ├── routes
-│   ├── widgets
-│   ├── features
-│   ├── entities
-│   ├── shared
-│   └── pages
+```files
+apps/
+└── web/
+    └── src/
+        ├── app/
+        ├── routes/
+        ├── widgets/
+        ├── features/
+        ├── entities/
+        ├── shared/
+        └── pages/
 ```
 
 ---
 
 # Route Structure
 
-```text
-routes
-
-/
+```files
+routes/
 ├── index.tsx
-
-/auth
-├── login.tsx
-├── register.tsx
-
-/dashboard
-├── index.tsx
-
-/settings
-├── profile.tsx
-├── billing.tsx
-├── team.tsx
-
-/organizations
-├── index.tsx
-├── [slug].tsx
-
-/projects
-├── index.tsx
-├── [id].tsx
+├── auth/
+│   ├── login.tsx
+│   └── register.tsx
+├── dashboard/
+│   └── index.tsx
+├── settings/
+│   ├── profile.tsx
+│   ├── billing.tsx
+│   └── team.tsx
+├── organizations/
+│   ├── index.tsx
+│   └── [slug].tsx
+└── projects/
+    ├── index.tsx
+    └── [id].tsx
 ```
 
 ---
 
 # FSD Structure
 
-```text
-src
-
-app/
-pages/
-widgets/
-features/
-entities/
-shared/
+```files
+src/
+├── app/
+├── pages/
+├── widgets/
+├── features/
+├── entities/
+└── shared/
 ```
 
 ---
