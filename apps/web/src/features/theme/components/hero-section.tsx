@@ -50,7 +50,8 @@ export function HeroSection() {
       return () => clearTimeout(timeout);
     } else {
       setIsTyping(false);
-      setTimeout(() => showTerminalLinesSequence(), 400);
+      const timeout = setTimeout(() => showTerminalLinesSequence(), 400);
+      return () => clearTimeout(timeout);
     }
   }, [typedCommand]);
 
