@@ -81,6 +81,7 @@
     "date-fns": "catalog:",
     "embla-carousel-react": "^8.6.0",
     "emblor": "catalog:",
+    "files-sdk": "catalog:",
     "input-otp": "^1.4.2",
     "lucide-react": "catalog:",
     "next-themes": "catalog:",

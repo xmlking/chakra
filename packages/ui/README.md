@@ -50,6 +50,20 @@ bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upl
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone-progress
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/paste-upload-area
+# files-sdk
+bunx --bun shadcn@latest add https://files-sdk.dev/r/capabilities-badges.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/dropzone.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/file-actions.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/file-browser.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/file-list.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/file-preview.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/file-search.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/multipart-uploader.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/share-dialog.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/trash-bin.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/upload-progress.json
+bunx --bun shadcn@latest add https://files-sdk.dev/r/version-history.json
+
 # kibo-ui (optional)
 bunx --bun shadcn@latest add @kibo-ui/gantt
 # reui data-grid

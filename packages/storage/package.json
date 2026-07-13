@@ -16,6 +16,7 @@
   "dependencies": {
     "@vite-env/core": "catalog:",
     "@workspace/shared": "workspace:*",
+    "evlog": "catalog:",
     "files-sdk": "catalog:",
     "zod": "catalog:"
   },
