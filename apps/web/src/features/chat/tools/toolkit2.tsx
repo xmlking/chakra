@@ -12,8 +12,7 @@ export default defineToolkit({
       unit: z.enum(["celsius", "fahrenheit"]).default("celsius"),
     }),
     execute: async ({ location, unit }) => {
-      "use client"; // marks this as a frontend tool
-      console.log("in client");
+      // "use client"; // marks this as a frontend tool
       return fetchWeatherAPI(location, unit);
     },
     render: ({ args, result }) => {
@@ -34,7 +33,6 @@ export default defineToolkit({
 function fetchWeatherAPI(city: string, unit: "celsius" | "fahrenheit" | undefined) {
   console.log({ city, unit });
   return {
-    location: city,
     temperature: 25,
     conditions: "Sunny",
   };
