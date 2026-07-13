@@ -206,7 +206,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { title: "Documentation", url: "/dashboard/docs", icon: FileTextIcon },
       { title: "Settings", url: "/dashboard/settings", icon: SettingsIcon },
-      { title: "Support", url: "/chat", icon: LifeBuoyIcon },
+      { title: "Support", url: "/support", icon: LifeBuoyIcon },
     ],
   },
 ];

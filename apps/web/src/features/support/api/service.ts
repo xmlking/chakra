@@ -13,7 +13,7 @@ import {
 } from "ai";
 import { env } from "virtual:env/server";
 
-import toolkit from "#features/chat/tools/toolkit";
+import toolkit from "../tools/toolkit";
 
 type ChatInput = {
   tools: AISDKToolkitToolsOptions["frontend"];

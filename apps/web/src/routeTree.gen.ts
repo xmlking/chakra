@@ -19,9 +19,9 @@ import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
+import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
 import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
-import { Route as appChatIndexRouteImport } from './routes/(app)/chat/index'
 import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
@@ -83,6 +83,11 @@ const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
   path: '/api/chat/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appSupportIndexRoute = appSupportIndexRouteImport.update({
+  id: '/support/',
+  path: '/support/',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
   id: '/playground/',
   path: '/playground/',
@@ -91,11 +96,6 @@ const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appChatIndexRoute = appChatIndexRouteImport.update({
-  id: '/chat/',
-  path: '/chat/',
   getParentRoute: () => appRouteRoute,
 } as any)
 const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
@@ -184,9 +184,9 @@ export interface FileRoutesByFullPath {
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/chat/': typeof appChatIndexRoute
   '/dashboard/': typeof appDashboardIndexRoute
   '/playground/': typeof appPlaygroundIndexRoute
+  '/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
@@ -209,9 +209,9 @@ export interface FileRoutesByTo {
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/chat': typeof appChatIndexRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/playground': typeof appPlaygroundIndexRoute
+  '/support': typeof appSupportIndexRoute
   '/api/chat': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
@@ -238,9 +238,9 @@ export interface FileRoutesById {
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/(app)/chat/': typeof appChatIndexRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/playground/': typeof appPlaygroundIndexRoute
+  '/(app)/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
   '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
   '/(app)/(security)/user/$path': typeof appsecurityUserPathRoute
@@ -265,9 +265,9 @@ export interface FileRouteTypes {
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/chat/'
     | '/dashboard/'
     | '/playground/'
+    | '/support/'
     | '/api/chat/'
     | '/organization/$path'
     | '/user/$path'
@@ -290,9 +290,9 @@ export interface FileRouteTypes {
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/chat'
     | '/dashboard'
     | '/playground'
+    | '/support'
     | '/api/chat'
     | '/organization/$path'
     | '/user/$path'
@@ -318,9 +318,9 @@ export interface FileRouteTypes {
     | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/(app)/chat/'
     | '/(app)/dashboard/'
     | '/(app)/playground/'
+    | '/(app)/support/'
     | '/api/chat/'
     | '/(app)/(security)/organization/$path'
     | '/(app)/(security)/user/$path'
@@ -408,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/support/': {
+      id: '/(app)/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof appSupportIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/playground/': {
       id: '/(app)/playground/'
       path: '/playground'
@@ -420,13 +427,6 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof appDashboardIndexRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/chat/': {
-      id: '/(app)/chat/'
-      path: '/chat'
-      fullPath: '/chat/'
-      preLoaderRoute: typeof appChatIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/api/health/live': {
@@ -532,9 +532,9 @@ interface appRouteRouteChildren {
   appReportsPageRoute: typeof appReportsPageRoute
   appSettingsPageRoute: typeof appSettingsPageRoute
   appSettingsNotificationsRoute: typeof appSettingsNotificationsRoute
-  appChatIndexRoute: typeof appChatIndexRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
   appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
+  appSupportIndexRoute: typeof appSupportIndexRoute
   appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
   appsecurityUserPathRoute: typeof appsecurityUserPathRoute
 }
@@ -548,9 +548,9 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appReportsPageRoute: appReportsPageRoute,
   appSettingsPageRoute: appSettingsPageRoute,
   appSettingsNotificationsRoute: appSettingsNotificationsRoute,
-  appChatIndexRoute: appChatIndexRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
   appPlaygroundIndexRoute: appPlaygroundIndexRoute,
+  appSupportIndexRoute: appSupportIndexRoute,
   appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,
   appsecurityUserPathRoute: appsecurityUserPathRoute,
 }

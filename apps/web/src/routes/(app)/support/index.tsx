@@ -3,10 +3,10 @@ import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { createFileRoute } from "@tanstack/react-router";
 import { Thread } from "@workspace/ui/components/assistant-ui/thread";
 
-import toolkit from "#features/chat/tools/toolkit";
-// import toolkit from "#features/chat/tools/toolkit2";
+import toolkit from "#features/support/tools/toolkit";
+// import toolkit from "#features/support/tools/toolkit2";
 
-export const Route = createFileRoute("/(app)/chat/")({
+export const Route = createFileRoute("/(app)/support/")({
   component: RouteComponent,
 });
 

@@ -10,11 +10,11 @@ import type { Notification } from "./store";
 import { NotificationCard } from "./ui/notification-card";
 
 const actionRoutes: Record<string, string> = {
-  view: "/dashboard/workspaces",
-  "view-product": "/dashboard/product",
+  workspace: "/dashboard/workspaces",
+  product: "/dashboard/product",
   billing: "/dashboard/billing",
   open: "/dashboard/kanban",
-  "open-chat": "/dashboard/chat",
+  support: "/support",
 };
 
 function NotificationsList({ items }: { items: Notification[] }) {
