@@ -1,3 +1,5 @@
+"use client"
+
 import { ReactElement } from "react"
 import { getColumnHeaderLabel } from "#components/reui/data-grid/data-grid"
 import { Table } from "@tanstack/react-table"

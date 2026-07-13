@@ -1,5 +1,3 @@
-"use client"
-
 import {
   createContext,
   CSSProperties,
@@ -73,10 +71,10 @@ function DataGridTableDndRowHandle({ className }: { className?: string }) {
           "size-7 cursor-grab opacity-70 hover:bg-transparent hover:opacity-100 active:cursor-grabbing",
           className
         )}
+        aria-label="Drag to reorder row"
         disabled
       >
-        <GripHorizontalIcon
-        />
+        <GripHorizontalIcon aria-hidden="true" />
       </Button>
     )
   }
@@ -89,11 +87,11 @@ function DataGridTableDndRowHandle({ className }: { className?: string }) {
         "size-7 cursor-grab opacity-70 hover:bg-transparent hover:opacity-100 active:cursor-grabbing",
         className
       )}
+      aria-label="Drag to reorder row"
       {...context.attributes}
       {...context.listeners}
     >
-      <GripHorizontalIcon
-      />
+      <GripHorizontalIcon aria-hidden="true" />
     </Button>
   )
 }
@@ -121,15 +119,10 @@ function DataGridTableDndRow<TData>({ row }: { row: Row<TData> }) {
 
   return (
     <SortableRowContext.Provider value={{ attributes, listeners }}>
-      <DataGridTableBodyRow
-        row={row}
-        dndRef={setNodeRef}
-        dndStyle={style}
-        key={row.id}
-      >
-        {row.getVisibleCells().map((cell: Cell<TData, unknown>, colIndex) => {
+      <DataGridTableBodyRow row={row} dndRef={setNodeRef} dndStyle={style}>
+        {row.getVisibleCells().map((cell: Cell<TData, unknown>) => {
           return (
-            <DataGridTableBodyRowCell cell={cell} key={colIndex}>
+            <DataGridTableBodyRowCell cell={cell} key={cell.id}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </DataGridTableBodyRowCell>
           )
@@ -229,7 +222,7 @@ function DataGridTableDndRows<TData>({
               .getHeaderGroups()
               .map((headerGroup: HeaderGroup<TData>, index) => {
                 return (
-                  <DataGridTableHeadRow headerGroup={headerGroup} key={index}>
+                  <DataGridTableHeadRow key={index} rowId={headerGroup.id}>
                     {headerGroup.headers.map((header, index) => {
                       const { column } = header
 
