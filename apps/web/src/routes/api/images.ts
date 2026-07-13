@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { auth } from "@workspace/auth";
 import type { Session } from "@workspace/auth/client";
-import { files } from "@workspace/storage";
+import { images } from "@workspace/storage";
 import { log } from "evlog";
 import { FilesError } from "files-sdk";
 import { createFilesRouter } from "files-sdk/api";
@@ -18,7 +18,7 @@ if (import.meta.env.DEV) {
 }
 
 const router = createFilesRouter({
-  files,
+  files: images,
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,
@@ -35,10 +35,10 @@ const router = createFilesRouter({
       throw new FilesError("Unauthorized", "NOT_MEMBER_OF_ORGANIZATION");
     }
 
-    return { keyPrefix: `org/${session.session.activeOrganizationId}/` }; // scope every key to this org
+    return { keyPrefix: `users/${session.user.id}/` }; // scope every key to this user
   },
 });
 
-export const Route = createFileRoute("/api/files")({
+export const Route = createFileRoute("/api/images")({
   server: { handlers: createRouteHandler(router) },
 });

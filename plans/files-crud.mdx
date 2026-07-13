@@ -1,0 +1,646 @@
+# Files CRUD Management UI — Simplified Single-Page Implementation
+
+## Overview
+
+A unified files management page leveraging the `files-sdk/react` hook API and pre-built components:
+
+- **Single page** at `/files` with all operations (upload, list, search, clone, delete)
+- **useFiles()** hook from files-sdk/react for direct file operations (no server functions needed)
+- **Pre-built components**: FileBrowser (folders), FileList, Dropzone
+- **shadcn/ui** + **Popover** for inline actions instead of separate dialogs
+- **Org-scoped access** via `/api/files` gateway (already secured)
+
+---
+
+## 1. File Structure (Minimal)
+
+```
+apps/web/src/
+├── routes/(app)/
+│   └── files/
+│       └── index.tsx           # Single files page route
+│
+└── features/files/
+    ├── ui/
+    │   ├── files-page.tsx           # Main component
+    │   └── action-popover.tsx        # Reusable popover for row actions
+    │
+    ├── hooks/
+    │   ├── useFileSelection.ts       # Multi-select state
+    │   └── useBreadcrumb.ts          # Folder navigation state
+    │
+    └── constants.ts                  # Max file size, etc
+```
+
+---
+
+## 2. Core Architecture
+
+**Key Insight**: Use `useFiles()` from `files-sdk/react` directly. No server functions needed—the hook handles all client-server communication via `/api/files`.
+
+```typescript
+import { useFiles } from "files-sdk/react";
+
+// In your component
+const files = useFiles();
+
+// All operations
+await files.upload(key, file, { contentType });
+await files.download(key);
+await files.delete(key); // Single or bulk: delete([key1, key2])
+await files.copy(sourceKey, destKey);
+const result = await files.list({ prefix, delimiter, cursor });
+// result: { items: StoredFile[], prefixes?: string[], cursor?: string }
+```
+
+### State Management (Simple)
+
+```typescript
+// Local UI state
+const [prefix, setPrefix] = useState(""); // Current folder
+const [searchQuery, setSearchQuery] = useState(""); // Search input
+const { selected, toggleItem } = useFileSelection(); // Multi-select
+
+// Files state (from hook)
+const files = useFiles();
+// files.items - current files
+// files.isUploading - upload in progress
+// files.error - last operation error
+// files.cursor - pagination cursor
+```
+
+---
+
+## 3. Single-Page Layout
+
+**Section 1: Breadcrumb Navigation**
+
+- Shows current folder path (Home > folder1 > subfolder)
+- Clickable breadcrumbs change prefix state
+- Automatic list refresh when prefix changes
+
+**Section 2: Search Bar**
+
+- Text input with debounce (300ms)
+- Filters items locally by key/name
+- Or use `files.search()` if supported
+
+**Section 3: Dropzone (Upload)**
+
+```typescript
+<Dropzone files={files} prefix={prefix} maxFiles={10} maxSize={100_000_000}>
+  <DropzoneEmptyState />
+</Dropzone>
+```
+
+**Section 4: File List with Inline Actions**
+
+- Display files using enhanced `FileList` component
+- Add checkbox column for multi-select
+- **shadcn Popover** on each row with: Download, Clone, Delete
+- "Load more" button for cursor pagination
+
+**Section 5: Bulk Actions Bar** (when items selected)
+
+- "Delete all selected" button
+- "Download as ZIP" (if supported)
+
+---
+
+## 4. Component Details
+
+### FilesPage (Main)
+
+```typescript
+export const FilesPage = () => {
+  const files = useFiles();
+  const [prefix, setPrefix] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { selected, toggleItem, selectAll } = useFileSelection();
+
+  useEffect(() => {
+    void files.list({ prefix, delimiter: "/" });
+  }, [prefix]);
+
+  const items = files.items || [];
+  const filtered = items.filter(i =>
+    i.key.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="flex flex-col gap-4 p-4 max-w-6xl mx-auto">
+      {/* Breadcrumb */}
+      <Breadcrumb prefix={prefix} onNavigate={setPrefix} />
+
+      {/* Search */}
+      <Input
+        placeholder="Search files..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+
+      {/* Upload */}
+      <Dropzone files={files} prefix={prefix}>
+        <DropzoneEmptyState />
+      </Dropzone>
+
+      {/* Bulk Actions Bar */}
+      {selected.size > 0 && (
+        <div className="flex gap-2">
+          <p className="text-sm text-muted-foreground">
+            {selected.size} selected
+          </p>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              files.delete(Array.from(selected));
+              selectAll(false);
+            }}
+          >
+            Delete Selected
+          </Button>
+        </div>
+      )}
+
+      {/* File List */}
+      <FileListWithActions
+        files={filtered}
+        selected={selected}
+        onToggle={toggleItem}
+        onRefresh={() => files.list({ prefix })}
+        filesHook={files}
+      />
+
+      {/* Load More */}
+      {files.cursor && (
+        <Button
+          onClick={() => files.list({ prefix, cursor: files.cursor })}
+        >
+          Load more
+        </Button>
+      )}
+    </div>
+  );
+};
+```
+
+### FileListWithActions
+
+Enhanced list with checkboxes + action popovers:
+
+```typescript
+export const FileListWithActions = ({
+  files,
+  selected,
+  onToggle,
+  onRefresh,
+  filesHook
+}) => {
+  const [cloneSource, setCloneSource] = useState<StoredFile | null>(null);
+
+  return (
+    <ul className="flex flex-col gap-2">
+      {files.map(file => (
+        <li key={file.key} className="flex items-center gap-2 border rounded-lg p-2">
+          {/* Checkbox */}
+          <input
+            type="checkbox"
+            checked={selected.has(file.key)}
+            onChange={() => onToggle(file.key)}
+          />
+
+          {/* Thumbnail + Info */}
+          <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
+            <FileIcon className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="truncate font-medium text-sm">{file.key.split('/').pop()}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatBytes(file.size)} · {formatDate(file.lastModified)}
+            </p>
+          </div>
+
+          {/* Action Popover */}
+          <ActionPopover
+            file={file}
+            onDownload={() => filesHook.download(file.key)}
+            onDelete={async () => {
+              await filesHook.delete(file.key);
+              onRefresh();
+            }}
+            onClone={() => setCloneSource(file)}
+          />
+        </li>
+      ))}
+
+      {/* Clone Dialog (Inline) */}
+      {cloneSource && (
+        <CloneDialog
+          source={cloneSource}
+          onClone={async (newKey) => {
+            await filesHook.copy(cloneSource.key, newKey);
+            setCloneSource(null);
+            onRefresh();
+          }}
+          onCancel={() => setCloneSource(null)}
+        />
+      )}
+    </ul>
+  );
+};
+```
+
+### ActionPopover (Using shadcn Popover)
+
+```typescript
+export const ActionPopover = ({ file, onDownload, onDelete, onClone }) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" size="icon-sm">
+          <MoreVerticalIcon className="w-4 h-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-40" align="end">
+        <div className="flex flex-col gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => { onDownload(); setOpen(false); }}
+          >
+            <DownloadIcon className="w-4 h-4 mr-2" />
+            Download
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => { onClone(); setOpen(false); }}
+          >
+            <CopyIcon className="w-4 h-4 mr-2" />
+            Clone
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => { onDelete(); setOpen(false); }}
+          >
+            <TrashIcon className="w-4 h-4 mr-2" />
+            Delete
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
+```
+
+### CloneDialog (Inline Modal)
+
+```typescript
+export const CloneDialog = ({ source, onClone, onCancel }) => {
+  const [newKey, setNewKey] = useState(
+    source.key.replace(/\.[^.]*$/, '') + '-copy'
+  );
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onCancel()}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Clone File</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="text-sm text-muted-foreground">Source</p>
+            <p className="font-medium">{source.key}</p>
+          </div>
+          <Input
+            label="New file name"
+            value={newKey}
+            onChange={(e) => setNewKey(e.target.value)}
+            placeholder="e.g., document-copy.pdf"
+          />
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={onCancel}>
+              Cancel
+            </Button>
+            <Button onClick={() => onClone(newKey)}>
+              Clone
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+```
+
+---
+
+## 5. Implementation Checklist (2-3 Days)
+
+### Day 1: Foundation & List
+
+- [ ] Create `routes/(app)/files/index.tsx`
+- [ ] Create `features/files/ui/files-page.tsx`
+- [ ] Create `useFileSelection` hook
+- [ ] Implement breadcrumb navigation
+- [ ] Render file list (use FileBrowser or FileList from files-sdk)
+- [ ] Wire folder navigation (update prefix on click)
+- [ ] Test: View files, navigate folders
+
+### Day 2: Upload & Actions
+
+- [ ] Integrate `Dropzone` component
+- [ ] Add checkbox column to list
+- [ ] Create `ActionPopover` component
+- [ ] Wire actions: download, delete, clone
+- [ ] Test: Upload file, delete file, download file, clone file
+
+### Day 3: Polish
+
+- [ ] Add search bar with debounce
+- [ ] Add bulk delete button
+- [ ] Toast notifications (use shadcn Toast)
+- [ ] Error handling for FilesError codes
+- [ ] Test all flows end-to-end
+- [ ] Verify mobile responsiveness
+
+---
+
+## 6. Key Implementation Notes
+
+### Files-SDK Hook API
+
+```typescript
+const files = useFiles();
+
+// All of these return StoredFile[] or void
+files.list({ prefix?, delimiter?, cursor? })       // Pagination
+files.download(key)                                 // Returns blob
+files.delete(key or [keys])                        // Single or bulk
+files.copy(from, to)                               // Returns void
+files.upload(key, file, opts)                      // Returns UploadResult
+files.isUploading                                  // Boolean state
+files.error                                        // Last error (if any)
+```
+
+### Error Handling Pattern
+
+```typescript
+try {
+  await files.delete(key);
+  // Optimistically remove from UI
+  setItems((prev) => prev.filter((i) => i.key !== key));
+} catch (error) {
+  if (error instanceof FilesError) {
+    if (error.code === "NotFound") {
+      toast.error("File no longer exists");
+      // Refresh list to sync
+      files.list({ prefix });
+    } else if (error.code === "Unauthorized") {
+      redirect("/login");
+    } else {
+      toast.error(error.message);
+    }
+  }
+}
+```
+
+### Folder Navigation
+
+Use delimiter to enable folder structure:
+
+```typescript
+const result = await files.list({
+  prefix: "org/123/",
+  delimiter: "/", // Key enables folder listing
+  cursor: undefined,
+});
+// result.items = files at this level
+// result.prefixes = ["org/123/folder1/", "org/123/folder2/"] (folders)
+```
+
+### Pagination
+
+```typescript
+// Initial
+const result1 = await files.list({ prefix });
+const items = result1.items;
+const cursor = result1.cursor;
+
+// Load more
+if (cursor) {
+  const result2 = await files.list({ prefix, cursor });
+  setItems((prev) => [...prev, ...result2.items]);
+  setCursor(result2.cursor);
+}
+```
+
+---
+
+## 7. Evlog Structured Logging
+
+Track file operations with structured wide events. TanStack Start uses Nitro v3, so evlog is auto-imported.
+
+### Setup (nitro.config.ts)
+
+Already configured via `evlog/nitro/v3` module. Just use `log` in server contexts.
+
+### File Operation Events
+
+**List files** (auto-logged by nitro):
+
+```typescript
+// Auto-captured by evlog:
+// - duration, status, route
+// Just set contextual data
+const log = useLogger();
+log.set({
+  files: { prefix, count: items.length },
+  pagination: { hasCursor: !!cursor },
+});
+```
+
+**Upload** (client-side):
+
+```typescript
+// In files-page.tsx
+const onUpload = async (key, file) => {
+  try {
+    const result = await files.upload(key, file, { contentType: file.type });
+    log.set({
+      files: {
+        action: "upload",
+        key: result.key,
+        size: file.size,
+        type: file.type,
+        success: true,
+      },
+    });
+  } catch (error) {
+    log.error(error);
+    log.set({ files: { action: "upload", success: false } });
+  }
+};
+```
+
+**Delete** (client-side):
+
+```typescript
+const onDelete = async (key) => {
+  try {
+    await files.delete(key);
+    log.set({
+      files: {
+        action: "delete",
+        key,
+        count: 1,
+        success: true,
+      },
+    });
+  } catch (error) {
+    log.error(error);
+    log.set({ files: { action: "delete", success: false } });
+  }
+};
+```
+
+**Clone** (client-side):
+
+```typescript
+const onClone = async (sourceKey, destKey) => {
+  try {
+    await files.copy(sourceKey, destKey);
+    log.set({
+      files: {
+        action: "clone",
+        sourceKey,
+        destKey,
+        success: true,
+      },
+    });
+  } catch (error) {
+    log.error(error);
+    log.set({ files: { action: "clone", success: false } });
+  }
+};
+```
+
+**Structured Errors** (use createError):
+
+```typescript
+import { createError } from "evlog";
+
+// In error boundary or catch blocks
+try {
+  await files.delete(key);
+} catch (error) {
+  if (error instanceof FilesError) {
+    if (error.code === "NotFound") {
+      throw createError({
+        message: "File not found",
+        status: 404,
+        why: "The file was deleted by another user or no longer exists",
+        fix: "Refresh the file list to see current files",
+      });
+    } else if (error.code === "Unauthorized") {
+      throw createError({
+        message: "Not authorized",
+        status: 403,
+        why: "You don't have permission to delete this file",
+        fix: "Contact your organization admin for access",
+      });
+    }
+  }
+  throw createError({
+    message: "Operation failed",
+    status: 500,
+    why: error.message,
+    fix: "Try again or contact support",
+  });
+}
+```
+
+### Wide Event Summary
+
+All file page visits emit a wide event with:
+
+```json
+{
+  "timestamp": "...",
+  "duration": 245,
+  "status": 200,
+  "route": "/files",
+  "files": {
+    "prefix": "org/123/",
+    "count": 42,
+    "action": "delete" | "upload" | "clone",
+    "success": true,
+    "key": "...",
+    "size": 1024,
+    "type": "application/pdf"
+  }
+}
+```
+
+---
+
+## 8. Dependencies & Imports
+
+```typescript
+// Files-SDK (already installed)
+import { useFiles } from "files-sdk/react";
+import type { StoredFile } from "files-sdk";
+
+// Pre-built components (from @workspace/ui)
+import { Dropzone, DropzoneEmptyState } from "@workspace/ui/components/files-sdk";
+import { FileList } from "@workspace/ui/components/files-sdk";
+
+// Shadcn
+import { Button } from "#components/shadcn/button";
+import { Input } from "#components/shadcn/input";
+import { Popover, PopoverTrigger, PopoverContent } from "#components/shadcn/popover";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "#components/shadcn/dialog";
+
+// Lucide icons
+import {
+  FileIcon,
+  DownloadIcon,
+  TrashIcon,
+  CopyIcon,
+  MoreVerticalIcon,
+  ChevronRightIcon,
+  HomeIcon,
+} from "lucide-react";
+```
+
+---
+
+## 9. Testing Checklist
+
+- [ ] Upload single file → appears in list
+- [ ] Upload multiple files → all appear
+- [ ] Download file → browser downloads
+- [ ] Delete file → removed from list (with confirmation)
+- [ ] Clone file → creates copy with new name
+- [ ] Search → filters items by name
+- [ ] Navigate folders → prefix updates, list refreshes
+- [ ] Load more → pagination works
+- [ ] Bulk delete → deletes all selected
+- [ ] Error handling → FilesError codes handled correctly
+- [ ] Mobile → list responsive, popovers work
+
+---
+
+## Why This Plan is Better
+
+1. **Simpler**: No server functions, loaders, or React Query setup
+2. **Faster**: 2-3 days vs 5-6 days for complex plan
+3. **Fewer files**: 6 files instead of 15+
+4. **Single page**: All operations in one view (no route juggling)
+5. **Popover actions**: Better UX than separate dialogs
+6. **Reuses components**: FileBrowser, FileList, Dropzone from files-sdk
+7. **Direct hook API**: Fewer abstractions to maintain
