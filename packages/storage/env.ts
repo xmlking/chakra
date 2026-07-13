@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export const preset = {
   server: {
+    FILES_API_SECRET: z.string().min(64, "you can generate with `openssl rand -hex 32`"),
     S3_IMAGES_BUCKET: z.string().min(3).default("images"),
     S3_FILES_BUCKET: z.string().min(3).default("files"),
     S3_AGENTS_BUCKET: z.string().min(3).default("agents"),

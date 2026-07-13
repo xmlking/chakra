@@ -18,6 +18,7 @@ import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
+import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
 import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
 import { Route as appChatIndexRouteImport } from './routes/(app)/chat/index'
@@ -76,6 +77,11 @@ const app2Dashboard2Route = app2Dashboard2RouteImport.update({
   id: '/dashboard2',
   path: '/dashboard2',
   getParentRoute: () => app2RouteRoute,
+} as any)
+const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
+  id: '/api/chat/',
+  path: '/api/chat/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
   id: '/playground/',
@@ -181,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/chat/': typeof appChatIndexRoute
   '/dashboard/': typeof appDashboardIndexRoute
   '/playground/': typeof appPlaygroundIndexRoute
+  '/api/chat/': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
 }
@@ -205,6 +212,7 @@ export interface FileRoutesByTo {
   '/chat': typeof appChatIndexRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/playground': typeof appPlaygroundIndexRoute
+  '/api/chat': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
   '/user/$path': typeof appsecurityUserPathRoute
 }
@@ -233,6 +241,7 @@ export interface FileRoutesById {
   '/(app)/chat/': typeof appChatIndexRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/playground/': typeof appPlaygroundIndexRoute
+  '/api/chat/': typeof ApiChatIndexRoute
   '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
   '/(app)/(security)/user/$path': typeof appsecurityUserPathRoute
 }
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/chat/'
     | '/dashboard/'
     | '/playground/'
+    | '/api/chat/'
     | '/organization/$path'
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
@@ -283,6 +293,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/dashboard'
     | '/playground'
+    | '/api/chat'
     | '/organization/$path'
     | '/user/$path'
   id:
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/(app)/chat/'
     | '/(app)/dashboard/'
     | '/(app)/playground/'
+    | '/api/chat/'
     | '/(app)/(security)/organization/$path'
     | '/(app)/(security)/user/$path'
   fileRoutesById: FileRoutesById
@@ -321,6 +333,7 @@ export interface RootRouteChildren {
   ApiFilesRoute: typeof ApiFilesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
+  ApiChatIndexRoute: typeof ApiChatIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -387,6 +400,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard2'
       preLoaderRoute: typeof app2Dashboard2RouteImport
       parentRoute: typeof app2RouteRoute
+    }
+    '/api/chat/': {
+      id: '/api/chat/'
+      path: '/api/chat'
+      fullPath: '/api/chat/'
+      preLoaderRoute: typeof ApiChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/(app)/playground/': {
       id: '/(app)/playground/'
@@ -578,6 +598,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFilesRoute: ApiFilesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
+  ApiChatIndexRoute: ApiChatIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

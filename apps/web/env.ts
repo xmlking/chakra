@@ -15,6 +15,7 @@ import { z } from "zod";
 export default defineEnv({
   presets: [db, email, auth, storage],
   server: {
+    OPENAI_API_KEY: z.string().min(1, "OPENAI_API_KEY cannot be empty").startsWith("sk-"),
     SENTRY_AUTH_TOKEN: z.string().optional(),
     SENTRY_ORG: z.string().optional(),
     SENTRY_PROJECT: z.string().optional(),
