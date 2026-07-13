@@ -73,8 +73,13 @@ bunx --bun shadcn@latest add @reui/rating
 # reui kanban (optional)
 bunx --bun shadcn@latest add @reui/kanban
 # reui (base-ui) Async Search Autocomplete  (optional)
-bunx --bun shadcn@latest add @reui/base-autocomplete
+bunx --bun shadcn@latest add @reui/alert
+bunx --bun shadcn@latest add @reui/autocomplete
 bunx --bun shadcn@latest add @reui/stepper
+bunx --bun shadcn@latest add @reui/sortable
+bunx --bun shadcn@latest add @reui/timeline
+bunx --bun shadcn@latest add @reui/tree
+bunx --bun shadcn@latest add @reui/use-file-upload
 # diceui Action Bar, mask-input, listbox etc (optional)
 bun x shadcn@latest add -p src/components/diceui @diceui/action-bar
 bun x shadcn@latest add -p src/components/diceui @diceui/badge-overflow

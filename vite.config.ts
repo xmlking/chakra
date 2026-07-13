@@ -21,6 +21,7 @@ const ignorePatterns = [
   "**/src/routeTree.gen.ts",
   "packages/db/drizzle/**",
   "apps/web/src/lib/gen/**",
+  "packages/ui/src/hooks/**",
   "packages/ui/src/components/**",
   "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
