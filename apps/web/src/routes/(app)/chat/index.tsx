@@ -31,7 +31,9 @@ function RouteComponent() {
 
   return (
     <AssistantRuntimeProvider aui={aui} runtime={runtime}>
-      <Thread />
+      <main className="flex h-[calc(100dvh-var(--header-height))] flex-col">
+        <Thread />
+      </main>
     </AssistantRuntimeProvider>
   );
 }
