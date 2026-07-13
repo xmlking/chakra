@@ -27,6 +27,6 @@
     "@reui": "https://reui.io/r/{style}/{name}.json",
     "@ai-elements": "https://ai-sdk.dev/elements/api/registry/{name}.json",
     "@basecn": "https://basecn.dev/r/{name}.json",
-    "@assistant-ui": "https://r.assistant-ui.com/{name}.json"
+    "@assistant-ui": "https://r.assistant-ui.com/styles/{style}/{name}.json"
   }
 }
