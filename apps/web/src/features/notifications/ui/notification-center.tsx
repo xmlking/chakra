@@ -13,11 +13,11 @@ import { NotificationCard } from "./notification-card";
 const MAX_VISIBLE = 5;
 
 const actionRoutes: Record<string, string> = {
-  view: "/dashboard/workspaces",
-  "view-product": "/dashboard/product",
+  workspace: "/dashboard/workspaces",
+  product: "/dashboard/product",
   billing: "/dashboard/billing",
   open: "/dashboard/kanban",
-  "open-chat": "/dashboard/chat",
+  support: "/support",
 };
 
 export function NotificationCenter() {
