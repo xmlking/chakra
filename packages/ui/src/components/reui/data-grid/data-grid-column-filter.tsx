@@ -1,3 +1,5 @@
+"use client"
+
 import { useMemo, useState } from "react"
 import { Badge } from "#components/reui/badge"
 import { Column } from "@tanstack/react-table"
@@ -29,7 +31,10 @@ function DataGridColumnFilter<TData, TValue>({
   options,
 }: DataGridColumnFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues()
-  const selectedValues = new Set(column?.getFilterValue() as string[])
+  const filterValue = column?.getFilterValue()
+  const selectedValues = new Set(
+    Array.isArray(filterValue) ? (filterValue as string[]) : []
+  )
   const [searchQuery, setSearchQuery] = useState("")
 
   const filteredOptions = useMemo(() => {
@@ -51,16 +56,13 @@ function DataGridColumnFilter<TData, TValue>({
                 <Separator orientation="vertical" className="mx-2 h-4" />
                 <Badge
                   variant="secondary"
-                  className="rounded-sm px-1 font-normal lg:hidden"
+                  className="px-1 font-normal lg:hidden"
                 >
                   {selectedValues.size}
                 </Badge>
                 <div className="hidden space-x-1 lg:flex">
                   {selectedValues.size > 2 ? (
-                    <Badge
-                      variant="secondary"
-                      className="rounded-sm px-1 font-normal"
-                    >
+                    <Badge variant="secondary" className="px-1 font-normal">
                       {selectedValues.size} selected
                     </Badge>
                   ) : (
@@ -70,7 +72,7 @@ function DataGridColumnFilter<TData, TValue>({
                         <Badge
                           variant="secondary"
                           key={option.value}
-                          className="rounded-sm px-1 font-normal"
+                          className="px-1 font-normal"
                         >
                           {option.label}
                         </Badge>
@@ -100,28 +102,39 @@ function DataGridColumnFilter<TData, TValue>({
             <div className="p-1">
               {filteredOptions.map((option) => {
                 const isSelected = selectedValues.has(option.value)
+                const facetCount = facets?.get(option.value)
+                const toggleOption = () => {
+                  if (isSelected) {
+                    selectedValues.delete(option.value)
+                  } else {
+                    selectedValues.add(option.value)
+                  }
+                  const filterValues = Array.from(selectedValues)
+                  column?.setFilterValue(
+                    filterValues.length ? filterValues : undefined
+                  )
+                }
                 return (
                   <div
                     key={option.value}
-                    onClick={() => {
-                      if (isSelected) {
-                        selectedValues.delete(option.value)
-                      } else {
-                        selectedValues.add(option.value)
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isSelected}
+                    onClick={toggleOption}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault()
+                        toggleOption()
                       }
-                      const filterValues = Array.from(selectedValues)
-                      column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
-                      )
                     }}
                     className={cn(
-                      "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none",
+                      "rounded-md relative flex cursor-pointer items-center gap-2 px-2 py-1.5 text-sm outline-hidden select-none",
                       "hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                     )}
                   >
                     <div
                       className={cn(
-                        "border-primary me-2 flex h-4 w-4 items-center justify-center rounded-sm border",
+                        "border-primary rounded-sm flex h-4 w-4 items-center justify-center border",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible"
@@ -130,12 +143,12 @@ function DataGridColumnFilter<TData, TValue>({
                       <CheckIcon className="h-4 w-4" />
                     </div>
                     {option.icon && (
-                      <option.icon className="text-muted-foreground mr-2 h-4 w-4" />
+                      <option.icon className="text-muted-foreground h-4 w-4" />
                     )}
                     <span>{option.label}</span>
-                    {facets?.get(option.value) && (
+                    {facetCount !== undefined && (
                       <span className="ms-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
+                        {facetCount}
                       </span>
                     )}
                   </div>
@@ -148,8 +161,16 @@ function DataGridColumnFilter<TData, TValue>({
               <div className="bg-border -mx-1 my-1 h-px" />
               <div className="p-1">
                 <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => column?.setFilterValue(undefined)}
-                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground relative flex cursor-default items-center justify-center rounded-sm px-2 py-1.5 text-sm outline-hidden select-none"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault()
+                      column?.setFilterValue(undefined)
+                    }
+                  }}
+                  className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground rounded-md relative flex cursor-pointer items-center justify-center px-2 py-1.5 text-sm outline-hidden select-none"
                 >
                   Clear filters
                 </div>

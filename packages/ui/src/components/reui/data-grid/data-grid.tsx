@@ -1,5 +1,3 @@
-"use client"
-
 import { createContext, ReactNode, useContext, useMemo } from "react"
 import {
   Column,
@@ -19,6 +17,7 @@ declare module "@tanstack/react-table" {
     cellClassName?: string
     skeleton?: ReactNode
     expandedContent?: (row: TData) => ReactNode
+    autoSize?: boolean
   }
 }
 
@@ -83,6 +82,7 @@ export interface DataGridProps<TData extends object> {
     rowRounded?: boolean
     stripped?: boolean
     headerBackground?: boolean
+    footerBackground?: boolean
     headerBorder?: boolean
     headerSticky?: boolean
     width?: "auto" | "fixed"
@@ -194,7 +194,8 @@ function DataGrid<TData extends object>({
       rowRounded: false,
       stripped: false,
       headerSticky: false,
-      headerBackground: true,
+      headerBackground: false,
+      footerBackground: false,
       headerBorder: true,
       width: "fixed",
       columnsVisibility: false,
@@ -255,12 +256,7 @@ function DataGridContainer({
   return (
     <div
       data-slot="data-grid"
-      className={cn(
-        "w-full overflow-hidden",
-        border &&
-          "border-border rounded-lg border",
-        className
-      )}
+      className={cn("w-full overflow-hidden", className)}
     >
       {children}
     </div>
