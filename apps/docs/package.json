@@ -16,7 +16,7 @@
     "@fuma-translate/react": "1.0.2",
     "@fumapress/feedback": "0.7.3",
     "@fumapress/tegami": "0.7.3",
-    "@takumi-rs/core": "2.1.0",
+    "@takumi-rs/core": "2.1.1",
     "@thesvg/react": "3.2.5",
     "@vite-env/core": "catalog:",
     "@workspace/i18n": "workspace:*",
