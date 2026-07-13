@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-// import { files } from "@workspace/storage";
-import { createFiles } from "files-sdk";
+import { auth } from "@workspace/auth";
+import type { Session } from "@workspace/auth/client";
+import { files } from "@workspace/storage";
+import { log } from "evlog";
+import { FilesError } from "files-sdk";
 import { createFilesRouter } from "files-sdk/api";
-import { s3 } from "files-sdk/s3";
 import { createRouteHandler } from "files-sdk/tanstack-start";
 import { env } from "virtual:env/server";
 
@@ -16,13 +18,24 @@ if (import.meta.env.DEV) {
 }
 
 const router = createFilesRouter({
-  // files,
-  files: createFiles({ adapter: s3({ bucket: env.S3_FILES_BUCKET, region: env.S3_REGION }) }),
+  files,
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,
-  authorize: async ({ req: _req }) => {
+  authorize: async ({ req, key, from }) => {
+    log.info({ key, from });
+
     /* throw to deny, or return a per-user constraint — see /ui/server/authorization */
+    const session = (await auth.api.getSession(req)) as Session;
+    if (session?.user === undefined) {
+      throw new FilesError("Unauthorized", "NOT_AUTHENTICATED");
+    }
+
+    if (session.session.activeOrganizationId === undefined) {
+      throw new FilesError("Unauthorized", "NOT_MEMBER_OF_ORGANIZATION");
+    }
+
+    return { keyPrefix: `org/${session.session.activeOrganizationId}/` }; // scope every key to this org
   },
 });
 
