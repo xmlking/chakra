@@ -103,8 +103,8 @@ bunx --bun shadcn@latest add -p src/components/extend @extend/pdf-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/docx-viewer
 bunx --bun shadcn@latest add -p src/components/extend @extend/schema-builder
 # assistant-ui
-bunx --bun shadcn@latest add -p src/components/assistant-ui @assistant-ui/thread
-bunx --bun shadcn@latest add -p src/components/assistant-ui @assistant-ui/model-selector
+bunx --bun shadcn@latest add @assistant-ui/thread
+bunx --bun shadcn@latest add @assistant-ui/model-selector
 ```
 
 This will place the ui components in the `packages/ui/src/components` directory.

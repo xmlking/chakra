@@ -1,15 +1,15 @@
 "use client";
 
-import { type ComponentPropsWithRef, forwardRef } from "react"
+import { type ComponentPropsWithRef, forwardRef } from "react";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "#components/shadcn/tooltip"
-import { Button } from "#components/shadcn/button"
-import { cn } from "#lib/utils"
+} from "#components/shadcn/tooltip";
+import { Button } from "#components/shadcn/button";
+import { cn } from "#lib/utils";
 
 export type TooltipIconButtonProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;
