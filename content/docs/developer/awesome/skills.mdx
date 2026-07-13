@@ -81,6 +81,18 @@ Developer workflow skills for **Spec Driven Development (SDD)**
   - **better-result-migrate-v2** — migrate v1 `TaggedError` usage to the v2 API
 - [data-table-filters](https://data-table.openstatus.dev/): Ships with an [AI agent skill](https://data-table.openstatus.dev/docs/ai-filters) that understands the full project structure — it can scaffold, configure, and extend data tables end-to-end. Because every component is installed via the shadcn CLI, agents know exactly how to add and compose pieces without custom tooling. Also includes an [MCP server](https://data-table.openstatus.dev/docs/mcp) that lets AI assistants query and filter your actual table data directly.
   - Then just say "add a filterable data table" — the skill detects your stack, installs the right blocks, generates a schema, and wires everything up.
+- [files-sdk](https://files-sdk.dev/): Use files-sdk to add file storage to a TypeScript/JavaScript app with a unified API across S3, R2, GCS, Azure, Vercel Blob, the local filesystem, and 40+ other providers.
+- [email-sdk](https://email-sdk.dev/docs/agents/skill): Install the Email SDK skill for coding agents and expose a send_email tool with createEmailAgentTools
+
+<Callout title="Usage">
+Prompt example:
+
+- "Use the email-sdk skill"
+- "Wire Resend as the primary adapter and SMTP as fallback."
+- "Keep secrets in environment variables."
+- "Add one narrow test around the send path."
+
+</Callout>
 
 ### Design
 

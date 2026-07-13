@@ -43,11 +43,23 @@
       "skillPath": "better-auth/emailAndPassword/SKILL.md",
       "computedHash": "747d7f73bd9e2ec5317b8ef88dc70f97df716d00e3d02de4051feebaa48b062d"
     },
+    "email-sdk": {
+      "source": "opencoredev/email-sdk",
+      "sourceType": "github",
+      "skillPath": "skills/email-sdk/SKILL.md",
+      "computedHash": "a89ab14934a3ad517a256eb52540bbbf4b77e70b4789ad225b0eb345e3077ca5"
+    },
     "eve": {
       "source": "vercel/eve",
       "sourceType": "github",
       "skillPath": "SKILL.md",
       "computedHash": "79a1e606ecf33eed33c1f3adc1cc266de391e19aa9237ca37e4f3aa3fba6b228"
+    },
+    "files-sdk": {
+      "source": "haydenbleasel/files-sdk",
+      "sourceType": "github",
+      "skillPath": "skills/files-sdk/SKILL.md",
+      "computedHash": "49b474cb0bf155fdc0eed735c9f2b64904efa820f3ecf93152efe2a7c5275fc2"
     },
     "improve": {
       "source": "shadcn/improve",
