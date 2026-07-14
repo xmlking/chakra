@@ -26,3 +26,7 @@ Tests
 ```shell
 vp test packages/auth
 ```
+
+## Plugins
+
+- [better-auth-referral](https://github.com/marinedotsh/better-auth-referral) - A Better Auth plugin for adding user referrals to your app.
