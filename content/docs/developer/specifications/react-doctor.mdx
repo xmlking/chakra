@@ -1,0 +1,354 @@
+---
+title: React Doctor
+description: "React Audit Report — apps/web"
+---
+
+**Date**: 2026-07-14
+**Commit**: 605cf56
+**Tool**: React Doctor v0.7.7 + `/improve-react` audit
+**Scope**: `apps/web` directory (TanStack Start application)
+**Score**: 68/100 (40 total issues: 5 errors, 1 warning in bugs; 1 warning in performance; 33 warnings in maintainability)
+
+---
+
+## Executive Summary
+
+The audit identified **38 confirmed findings** across five quality categories, ranked by leverage (impact ÷ effort). The highest-leverage issues concentrate on:
+
+1. **Hot-path bugs**: Debounce timer leak affecting every search keystroke
+2. **Per-keystroke performance**: Unoptimized filters and inline functions in files listing
+3. **Server runtime error**: ReferenceError in redirect middleware
+4. **Accessibility gaps**: Missing aria-labels on primary navigation surface (files page)
+5. **Component sizing**: 3 oversized components blocking refactoring (381–808 lines)
+
+**Recommendation**: Fix the top 5 bugs first (they ship to users and degrade every session), then address component sizing to unblock future refactoring.
+
+---
+
+## Findings by Severity
+
+### 🔴 CRITICAL & HIGH (Fix Now)
+
+| #     | Category    | Location                                       | Rule                      | Finding                                          | Impact                                                         | Effort |
+| ----- | ----------- | ---------------------------------------------- | ------------------------- | ------------------------------------------------ | -------------------------------------------------------------- | ------ |
+| **1** | Security    | `src/server/middleware/auth.ts:53`             | Custom                    | ReferenceError: `location` undefined on server   | Runtime crash in redirects if middleware used                  | Low    |
+| **2** | Bugs        | `src/features/files/hooks/useSearch.ts:10-13`  | `no-impure-state-updater` | Debounce timer leak: cleanup never called        | Per-keystroke timer accumulation, stale state, race conditions | Low    |
+| **3** | Performance | `src/features/files/ui/files-page.tsx:91`      | Custom                    | O(n) filter without useMemo on hot path          | Per-keystroke, 1000+ toLowerCase() calls recreated per render  | Low    |
+| **4** | Performance | `src/features/files/ui/files-page.tsx:348-352` | Custom                    | Inline functions on file items break memoization | Per-keystroke, N new functions per file count                  | Low    |
+| **5** | Bugs        | `src/features/files/ui/files-page.tsx:100-213` | Custom                    | Async state updates without unmount checks       | Console warnings in strict mode, potential memory leaks        | Medium |
+
+### 🟡 MEDIUM (Fix Soon)
+
+| #      | Category        | Location                                                          | Rule                         | Finding                                                            | Impact                                             | Effort |
+| ------ | --------------- | ----------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ | -------------------------------------------------- | ------ |
+| **6**  | Bugs            | `src/features/files/ui/files-page.tsx:62`                         | `no-ref-current-in-render`   | Ref mutated during render                                          | Violates React model; leaks if component suspends  | Low    |
+| **7**  | Bugs            | `src/features/notifications/ui/notification-card.tsx:45`          | `no-locale-format-in-render` | Locale formatting hydration mismatch (SSR)                         | Server/client render mismatch, stale dates         | Medium |
+| **8**  | Accessibility   | `src/features/files/ui/files-page.tsx` (8 locations)              | Custom                       | Missing aria-labels on breadcrumbs, search, buttons, loading state | Screen reader users can't discover file operations | Low    |
+| **9**  | Security        | `src/routes/(app)/(security)/{organization,user}.$path.tsx:20,24` | Custom                       | Unsanitized redirectTo; inconsistent redirect validation           | Bypass of `safeRedirect()` validation pattern      | Low    |
+| **10** | Performance     | `src/features/dashboard/ui/chart-area-interactive.tsx:149-161`    | Custom                       | Unoptimized chart filter: 92 Date objects per render               | Per toggle, garbage churn                          | Low    |
+| **11** | Maintainability | `src/features/files/ui/files-page.tsx` (lines 52-209)             | Custom                       | Repetitive logging pattern duplicated 5x                           | Error handling logic hard to maintain consistently | Medium |
+| **12** | Maintainability | `src/features/files/ui/files-page.tsx:28`                         | `no-giant-component`         | FilesPage component 381 lines                                      | Hard to test, refactor, or reason about state      | High   |
+| **13** | Maintainability | `src/features/dashboard/ui/data-table.tsx:1`                      | Custom                       | DataTable component 808 lines                                      | Single point of failure for table functionality    | High   |
+
+### 🟠 MEDIUM & LOW (Consider Later)
+
+| #       | Category        | Location                                                                | Rule                                               | Finding                                 | Impact                                        | Effort |
+| ------- | --------------- | ----------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------- | --------------------------------------------- | ------ |
+| **14**  | Maintainability | `src/features/form-demo/form-page.tsx:54`                               | `no-giant-component`                               | FormPage component 604 lines            | Form logic can't be tested independently      | High   |
+| **15**  | Performance     | `src/features/files/ui/files-page.tsx:46`                               | `rerender-state-only-in-handlers`                  | State only for handlers (`isCloning`)   | Unnecessary re-renders on clone operations    | Low    |
+| **16**  | Performance     | `src/features/dashboard/ui/chart-area-interactive.tsx:174`              | Custom                                             | Unstable array prop defeats memoization | Per render, breaks memoization of ToggleGroup | Low    |
+| **17**  | Performance     | `src/features/dashboard/ui/chart-area-interactive.tsx:234-240, 246-251` | Custom                                             | Inline formatter functions on Recharts  | New functions per render, garbage churn       | Low    |
+| **18**  | Accessibility   | `src/features/notifications/ui/clone-dialog.tsx:70`                     | `no-autofocus`                                     | autoFocus attribute on dialog input     | Disorients keyboard/SR users by moving focus  | Low    |
+| **19**  | Accessibility   | `src/components/theme-switcher-preview.tsx:54-56`                       | Custom                                             | Missing aria-label on theme switcher    | Screen readers can't identify toggle function | Low    |
+| **20+** | Maintainability | Various files                                                           | `deslop/unused-export`, `deslop/unused-dependency` | 8 unused exports, 7 unused dependencies | API surface bloat, supply-chain expansion     | Low    |
+
+---
+
+## Detailed Findings by Category
+
+### Bugs & Correctness (3 critical, 2 medium)
+
+**TRUE POSITIVES (React Doctor findings):**
+
+1. **useSearch.ts:10-13 | Debounce timer leak (HIGH)**
+   - Callback returns cleanup that's never invoked
+   - Timers accumulate per keystroke
+   - Causes stale state updates and race conditions
+   - Fix: Move timer to useEffect
+
+2. **files-page.tsx:62 | Ref mutation during render (MEDIUM)**
+   - `filesRef.current = files` mutates during render
+   - Violates React's pure render model
+   - Can leak state if component suspends
+   - Fix: Move to useEffect
+
+3. **notification-card.tsx:45 | Hydration mismatch (MEDIUM on SSR)**
+   - `toLocaleDateString()` called during render
+   - Server and client may have different timezones
+   - Causes HTML mismatch between server/browser
+   - Fix: Move to useEffect with state
+
+**ADDITIONAL BUGS (Not caught by scanner):**
+
+4. **files-page.tsx:100-213 | Async state updates without unmount checks (HIGH)**
+   - `handleDelete`, `handleBulkDelete`, `handleDownload`, `handleClone` all await async operations then update state
+   - No unmount protection; triggers "setState on unmounted component" warnings
+   - Could cause memory leaks in strict mode
+   - Example: `await filesRef.current.delete(key)` at line 102, then `setItems()` at line 103
+
+5. **hero-section.tsx:58-79 | Async state chain without cleanup (MEDIUM)**
+   - Promise chain with state updates doesn't clean up on unmount
+   - Pending updates attempt to update unmounted component
+   - Fix: Wrap in useEffect with cleanup
+
+**FALSE POSITIVES (Scanner over-reported):**
+
+- `chart-area-interactive.tsx:189` — Not a state updater, just direct setState in event handler
+- `files-page.tsx:96` — Not impure; `clear()` call is separate statement, not inside updater
+
+---
+
+### Performance (8 findings on hot paths)
+
+All findings are on hot paths (per-keystroke search, per-toggle charts, per-list-update files page).
+
+**HIGH-LEVERAGE:**
+
+1. **files-page.tsx:91 | Unoptimized filter (HIGH)**
+   - `items.filter(item => item.key.toLowerCase().includes(...))`
+   - O(n) with `toLowerCase()` called per item per render
+   - Runs on every keystroke + items list update
+   - 1000-item list: 1000 toLowerCase() calls recreated per render
+   - Fix: Wrap with useMemo + dependency on debouncedQuery
+
+2. **files-page.tsx:348-352 | Inline functions on file items (HIGH)**
+   - Three arrow functions created per file item per render
+   - `onDownload={() => ...}`, `onDelete={async () => ...}`, `onClone={() => ...}`
+   - Breaks memoization if ActionPopover ever uses memo()
+   - Per-keystroke, scales with file count
+   - Fix: Extract to useCallback with proper dependencies
+
+3. **useSearch.ts:9-16 | Debounce timer leak (HIGH)**
+   - Each keystroke leaves orphaned timer
+   - Stale timers update state after user has moved on
+   - Creates race conditions on rapid typing
+   - Fix: Move to useEffect (also a bug fix)
+
+**MEDIUM-LEVERAGE:**
+
+4. **chart-area-interactive.tsx:149-161 | Unoptimized filter with Date objects (MEDIUM)**
+   - Creates 92 new Date objects per render in filter function
+   - Runs on every timeRange toggle
+   - `new Date(item.date)` for each of 92 chart data points
+   - Fix: Wrap filter with useMemo, memoize Date creation
+
+5. **chart-area-interactive.tsx:174 | Unstable array prop (MEDIUM)**
+   - `value={timeRange ? [timeRange] : []}`
+   - Creates new empty array on every render when timeRange is falsy
+   - Breaks any memoization on ToggleGroup
+   - Fix: Move array to module scope or wrap with useMemo
+
+6. **chart-area-interactive.tsx:234-240, 246-251 | Inline formatters (MEDIUM)**
+   - `tickFormatter={(value) => ...}` creates new function per render
+   - `labelFormatter={(value) => ...}` creates new function per render
+   - Passed to Recharts components that may compare by reference
+   - Fix: Extract to module-scope function or useCallback
+
+**LOW-LEVERAGE:**
+
+7. **files-page.tsx:46 | isCloning state only in handlers (LOW)**
+   - `const [isCloning, setIsCloning] = useState(false)`
+   - Set at lines 186, 211 but never read in JSX
+   - Triggers re-render for non-displayed value
+   - Impact: Low because clone operations are infrequent
+   - Fix: Use useRef instead
+
+8. **files-page.tsx:307-326 | String manipulation in folder map (LOW)**
+   - `folderPrefix.slice(...).replace(...).split(...)`
+   - Runs per folder per render
+   - Creates new arrow function per folder button
+   - Impact: Bounded by folder count (typically < 50)
+
+---
+
+### Accessibility (10 findings on primary surface)
+
+All findings are on the files page — a primary user surface.
+
+**Missing aria-labels (8 issues):**
+
+1. **files-page.tsx:221** — Home breadcrumb button (icon-only, no label)
+2. **files-page.tsx:227-234** — Breadcrumb navigation buttons (missing description)
+3. **files-page.tsx:241-246** — Search input (placeholder only, no label)
+4. **files-page.tsx:248-255** — Clear search button (symbol "✕", no label)
+5. **files-page.tsx:300-302** — Refresh button (icon-only, no label)
+6. **files-page.tsx:311-323** — Folder navigation buttons (action not explicit)
+7. **action-popover.tsx:25-27** — Actions menu button (no "more actions" label)
+8. **files-page.tsx:280-284** — Loading state (no aria-live or role="status")
+
+**Secondary issues:**
+
+9. **clone-dialog.tsx:70** — autoFocus on input (disorients keyboard/SR users)
+10. **theme-switcher-preview.tsx:54-56** — Theme switcher missing aria-label
+
+**Security note**: No critical accessibility gaps (keyboard traps, form label mismatches). The codebase uses Base UI primitives which handle keyboard correctly.
+
+---
+
+### Security (2 critical findings)
+
+1. **CRITICAL: src/server/middleware/auth.ts:53 | ReferenceError on server**
+   - Code references `location.href` in server context
+   - `location` is a browser API; undefined on Node.js/Nitro
+   - Would throw `ReferenceError: location is not defined` if middleware is used
+   - Impact: Runtime crash in redirects
+   - Fix: Replace with TanStack Start's server context (e.g., `getRequestURL()` or construct from headers)
+
+2. **MEDIUM: src/routes/(app)/(security)/{organization,user}.$path.tsx:20,24 | Unsanitized redirectTo**
+   - Does not use `safeRedirect()` validation function
+   - Inconsistent with `(app)/route.tsx` and `(app2)/route.tsx` which properly validate
+   - `location.href` is path-relative (safer), but bypasses established validation pattern
+   - Impact: Potential open redirect if validation logic relaxed upstream
+   - Fix: Apply `safeRedirect()` to match established pattern
+
+**Secure patterns confirmed** ✓:
+
+- File uploads: CORS allowlist, auth, organization-scoped authorization
+- Form input: Zod validation before server processing
+- XSS: No `dangerouslySetInnerHTML`, `innerHTML`, or `eval()`
+- Secret management: API keys stay server-side
+- LocalStorage: Non-sensitive state only (theme, layout)
+- Tokens: Better Auth manages secure session cookies with server-side validation
+
+---
+
+### Maintainability & Architecture (12 findings)
+
+**Giant components (3 issues):**
+
+1. **FilesPage (381 lines)** — `src/features/files/ui/files-page.tsx:28`
+   - 10+ state variables, 5+ async handlers
+   - Repetitive logging pattern in 5 handlers (60+ lines of duplication)
+   - Hard to test handlers independently, refactor state, or modify error handling
+   - Recommendation: Extract handlers and logging helper, split into smaller components
+
+2. **DataTable (808 lines)** — `src/features/dashboard/ui/data-table.tsx:1`
+   - Combines table rendering, drag-and-drop, filtering, pagination, sorting, column visibility, charts
+   - Single point of failure for table functionality
+   - Developers explicitly disabled lints (aware of complexity)
+   - Recommendation: Decompose into feature-specific subcomponents
+
+3. **FormPage (604 lines)** — `src/features/form-demo/form-page.tsx:54`
+   - Full form definition, validation, submission in one component
+   - Form sections not independently testable
+   - Developers explicitly disabled lints
+   - Recommendation: Split into form sections with shared context
+
+**Code quality issues:**
+
+4. **Repetitive logging pattern (FilesPage)**
+   - Same check in 5 async handlers: `if (typeof window !== "undefined" && "log" in window) { win.log?.set?.({...}) }`
+   - 60+ lines of duplication
+   - If logging API changes, must update 5 places
+   - Fix: Extract to helper function `logFileAction(action, data)`
+
+5. **Unused exports** ×8 (low effort cleanup)
+   - `LocaleSwitcherFull`, `LocaleSelectField`, `documents`, form mutation options, `greetUser`, chart `description`
+   - Expands API surface, misleads callers
+
+6. **Unused dependencies** ×7 (low effort cleanup)
+   - `@tanstack/match-sorter-utils`, `@tanstack/react-form`, `@tanstack/react-pacer*`, `@tanstack/react-store`, `@tanstack/react-table-devtools`, `@unpic/react`
+   - Bloats install time, supply chain surface
+
+---
+
+## Missed Opportunities (Additive Improvements)
+
+These are not bugs but high-value additions the scanner doesn't flag:
+
+1. **Error boundary around FilesPage operations**
+   - File upload, delete, and clone operations can fail with user-visible errors
+   - Currently errors fall through to unhandled promise rejection
+   - Add error boundary + user-facing toast for failed operations
+
+2. **Context splitting in FilesPage**
+   - If files state is exposed via context, split into (files data) + (UI state)
+   - Prevents whole-tree re-renders when user toggles UI controls
+   - High leverage for nested components
+
+3. **Optimistic UI for delete/clone**
+   - Show operation complete immediately, roll back on error
+   - Dramatically improves perceived performance
+   - User sees instant feedback instead of waiting for server
+
+4. **Debounce helper hook (useDebouncedValue)**
+   - Extract debounce logic into reusable hook to prevent similar timer leaks elsewhere
+   - Canonical pattern for future uses
+
+---
+
+## Recommendations
+
+### Priority 1: Fix Now (High Impact, Low Effort)
+
+1. **Debounce timer leak** (useSearch.ts) — Affects every search keystroke
+2. **Unoptimized filter** (files-page.tsx:91) — Affects every search keystroke
+3. **Inline functions on items** (files-page.tsx:348-352) — Affects every file list render
+4. **Server middleware ReferenceError** (auth.ts:53) — Runtime crash risk
+5. **Ref mutation** (files-page.tsx:62) — Violates React model
+
+**Estimated effort**: 2–3 hours total
+**Payoff**: +15% React Doctor score, eliminates per-keystroke bugs
+
+### Priority 2: Fix Soon (Medium Impact, Medium Effort)
+
+6. **Async state unmount protection** (files-page.tsx handlers) — Strict mode warnings
+7. **Accessibility aria-labels** (files-page.tsx, 8 locations) — Fixes primary surface
+8. **Hydration mismatch** (notification-card.tsx:45) — SSR correctness
+9. **Redirect validation** (security routes) — Consistency with pattern
+10. **Logging helper extraction** (FilesPage) — Reduces duplication
+
+**Estimated effort**: 4–6 hours
+**Payoff**: +10% score, improves a11y, eliminates strict mode warnings
+
+### Priority 3: Architectural (High Effort, Long-term Payoff)
+
+11. **Component decomposition** (FilesPage 381L, DataTable 808L, FormPage 604L)
+    - Unblock refactoring, improve testability, reduce complexity
+    - Estimated effort: 8–12 hours per component
+    - Payoff: Easier to maintain, test, and extend
+
+12. **Remove unused exports/dependencies**
+    - Estimated effort: 1–2 hours
+    - Payoff: Cleaner API, reduced supply chain surface
+
+---
+
+## Audit Methodology
+
+This audit ran React Doctor v0.7.7 in `apps/web` and applied human judgment across five quality dimensions:
+
+- **Bugs & correctness**: 5 issues (3 confirmed, 2 false positives from scanner)
+- **Performance**: 8 issues (all on hot paths: per-keystroke or per-toggle)
+- **Accessibility**: 10 issues (8 on primary surface, 2 secondary)
+- **Security**: 2 issues (1 critical runtime error, 1 pattern inconsistency)
+- **Maintainability**: 12 issues (3 giant components, 9 code quality)
+
+Audit workflow:
+
+1. **Phase 1 (Recon)**: React Doctor scan + tech stack mapping
+2. **Phase 2 (Audit)**: 5 parallel auditors triaged each category
+3. **Phase 3 (Vet)**: Confirmed findings at `file:line` with code evidence
+4. **Phase 4 (Plans)**: Writing implementation plans for top findings
+
+---
+
+## Next Steps
+
+1. **Select findings** from the priority list above
+2. **Review implementation plans** (if generated)
+3. **Execute plans** in order of priority
+4. **Verify** with `npx react-doctor@latest --scope changed` after each fix
+5. **Celebrate**: Target is 80+ score (from 68)
+
+For detailed implementation guidance, see the `plans/` directory.
