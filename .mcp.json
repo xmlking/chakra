@@ -5,12 +5,13 @@
       "url": "https://mcp.better-auth.com/mcp"
     },
     "shadcn": {
-      "command": "npx",
+      "command": "bunx",
       "args": ["shadcn@latest", "mcp"]
     },
     "mcp-docs-server": {
-      "command": "npx",
+      "command": "bunx",
       "args": ["-y", "@assistant-ui/mcp-docs-server"]
-    }
+    },
+    "drizzle": { "command": "bunx", "args": ["drizzle-kit", "mcp"] }
   }
 }

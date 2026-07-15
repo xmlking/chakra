@@ -2,6 +2,22 @@
 
 **Data Access Layer** with [Drizzle ORM](https://orm.drizzle.team/) and Postgres Database.
 
+## Setup
+
+Drizzle Kit ships installable [Agent Skills](https://skills.sh/) amd MCP for AI coding assistants
+
+Install in your project's root:
+
+```shell
+bunx drizzle-kit skills
+```
+
+Or use MCP
+
+```shell
+bunx drizzle-kit mcp
+```
+
 ## Development
 
 - Run the unit tests:
