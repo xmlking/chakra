@@ -98,7 +98,7 @@
     "tw-shimmer": "catalog:",
     "vaul": "^1.1.2",
     "zod": "catalog:",
-    "zustand": "^5.0.14"
+    "zustand": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.3.2",

@@ -39,16 +39,16 @@ The audit identified **38 confirmed findings** across five quality categories, r
 
 ### 🟡 MEDIUM (Fix Soon)
 
-| #      | Category        | Location                                                          | Rule                         | Finding                                                            | Impact                                             | Effort |
-| ------ | --------------- | ----------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ | -------------------------------------------------- | ------ |
-| **6**  | Bugs            | `src/features/files/ui/files-page.tsx:62`                         | `no-ref-current-in-render`   | Ref mutated during render                                          | Violates React model; leaks if component suspends  | Low    |
-| **7**  | Bugs            | `src/features/notifications/ui/notification-card.tsx:45`          | `no-locale-format-in-render` | Locale formatting hydration mismatch (SSR)                         | Server/client render mismatch, stale dates         | Medium |
-| **8**  | Accessibility   | `src/features/files/ui/files-page.tsx` (8 locations)              | Custom                       | Missing aria-labels on breadcrumbs, search, buttons, loading state | Screen reader users can't discover file operations | Low    |
-| **9**  | Security        | `src/routes/(app)/(security)/{organization,user}.$path.tsx:20,24` | Custom                       | Unsanitized redirectTo; inconsistent redirect validation           | Bypass of `safeRedirect()` validation pattern      | Low    |
-| **10** | Performance     | `src/features/dashboard/ui/chart-area-interactive.tsx:149-161`    | Custom                       | Unoptimized chart filter: 92 Date objects per render               | Per toggle, garbage churn                          | Low    |
-| **11** | Maintainability | `src/features/files/ui/files-page.tsx` (lines 52-209)             | Custom                       | Repetitive logging pattern duplicated 5x                           | Error handling logic hard to maintain consistently | Medium |
-| **12** | Maintainability | `src/features/files/ui/files-page.tsx:28`                         | `no-giant-component`         | FilesPage component 381 lines                                      | Hard to test, refactor, or reason about state      | High   |
-| **13** | Maintainability | `src/features/dashboard/ui/data-table.tsx:1`                      | Custom                       | DataTable component 808 lines                                      | Single point of failure for table functionality    | High   |
+| #      | Category        | Location                                                        | Rule                         | Finding                                                            | Impact                                             | Effort |
+| ------ | --------------- | --------------------------------------------------------------- | ---------------------------- | ------------------------------------------------------------------ | -------------------------------------------------- | ------ |
+| **6**  | Bugs            | `src/features/files/ui/files-page.tsx:62`                       | `no-ref-current-in-render`   | Ref mutated during render                                          | Violates React model; leaks if component suspends  | Low    |
+| **7**  | Bugs            | `src/features/notifications/ui/notification-card.tsx:45`        | `no-locale-format-in-render` | Locale formatting hydration mismatch (SSR)                         | Server/client render mismatch, stale dates         | Medium |
+| **8**  | Accessibility   | `src/features/files/ui/files-page.tsx` (8 locations)            | Custom                       | Missing aria-labels on breadcrumbs, search, buttons, loading state | Screen reader users can't discover file operations | Low    |
+| **9**  | Security        | `src/routes/(app)/(security)/organization,user.$path.tsx:20,24` | Custom                       | Unsanitized redirectTo; inconsistent redirect validation           | Bypass of `safeRedirect()` validation pattern      | Low    |
+| **10** | Performance     | `src/features/dashboard/ui/chart-area-interactive.tsx:149-161`  | Custom                       | Unoptimized chart filter: 92 Date objects per render               | Per toggle, garbage churn                          | Low    |
+| **11** | Maintainability | `src/features/files/ui/files-page.tsx` (lines 52-209)           | Custom                       | Repetitive logging pattern duplicated 5x                           | Error handling logic hard to maintain consistently | Medium |
+| **12** | Maintainability | `src/features/files/ui/files-page.tsx:28`                       | `no-giant-component`         | FilesPage component 381 lines                                      | Hard to test, refactor, or reason about state      | High   |
+| **13** | Maintainability | `src/features/dashboard/ui/data-table.tsx:1`                    | Custom                       | DataTable component 808 lines                                      | Single point of failure for table functionality    | High   |
 
 ### 🟠 MEDIUM & LOW (Consider Later)
 
@@ -204,7 +204,7 @@ All findings are on the files page — a primary user surface.
    - Impact: Runtime crash in redirects
    - Fix: Replace with TanStack Start's server context (e.g., `getRequestURL()` or construct from headers)
 
-2. **MEDIUM: src/routes/(app)/(security)/{organization,user}.$path.tsx:20,24 | Unsanitized redirectTo**
+2. **MEDIUM: src/routes/(app)/(security)/organization,user.$path.tsx:20,24 | Unsanitized redirectTo**
    - Does not use `safeRedirect()` validation function
    - Inconsistent with `(app)/route.tsx` and `(app2)/route.tsx` which properly validate
    - `location.href` is path-relative (safer), but bypasses established validation pattern
