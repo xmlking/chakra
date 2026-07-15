@@ -84,10 +84,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## Development Workflow
 
 - My TanStack Start development server is already running in another terminal.
-- Never start a new dev server.
-- If you need logs or browser output, ask me instead.
+- Never start a new dev server. Ask user for logs/browser output if needed
 - Never leave background processes running.
-- Verify changes using `vp check` and ensure it passes before finishing.
+- Run `vp check` to ensure changes pass.
 - Bug fixes and new features MUST include tests
   - For bug fixes: after confirming the reproducible behavior violates the intended contract, write a failing test first, then implement the fix
 - DO NOT COMMIT unless the user explicitly asks
