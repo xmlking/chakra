@@ -194,6 +194,7 @@ export const auth = betterAuth({
           clientId: env.GITHUB_CLIENT_ID,
           clientSecret: env.GITHUB_CLIENT_SECRET,
           scope: ["user:email", "read:user"],
+          requireEmailVerification: true,
         },
       }),
     ...(env.VITE_GOOGLE_CLIENT_ID &&
