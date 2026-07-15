@@ -789,6 +789,7 @@ function DateTimePicker({
     <Popover>
       <PopoverTrigger
         disabled={disabled}
+        nativeButton={false}
         render={
           <div className="w-full">
             <button
