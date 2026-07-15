@@ -60,6 +60,7 @@ export function DateField({
     >
       <Popover onOpenChange={setOpen} open={open && !disabled}>
         <PopoverTrigger
+          nativeButton={false}
           render={
             <div className="relative flex h-auto w-full">
               <button
@@ -120,20 +121,28 @@ export function DateField({
         />
         <PopoverContent align="start" className="w-auto p-0">
           {mode === "single" && (
-            <Calendar
-              disabled={disabled}
-              mode={mode}
-              onSelect={(selected: Date | undefined) => {
-                field.handleChange(selected);
-                setOpen(false);
-              }}
-              selected={
-                typeof field.state.value === "object" && field.state.value instanceof Date
-                  ? field.state.value
-                  : undefined
-              }
-              {...props}
-            />
+            <>
+              <Calendar
+                disabled={disabled}
+                mode={mode}
+                onSelect={(selected: Date | undefined) => {
+                  field.handleChange(selected);
+                  setOpen(false);
+                }}
+                selected={
+                  typeof field.state.value === "object" && field.state.value instanceof Date
+                    ? field.state.value
+                    : undefined
+                }
+                {...props}
+              />
+              <Separator />
+              <div className="ml-auto w-fit px-2 py-1.5">
+                <Button onClick={() => setOpen(false)} size={"sm"} variant={"ghost"}>
+                  OK
+                </Button>
+              </div>
+            </>
           )}
           {mode === "range" && (
             <>
