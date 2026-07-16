@@ -12,9 +12,6 @@ import {
   BookOpenIcon,
   BotIcon,
   TerminalSquareIcon,
-  DatabaseIcon,
-  FileChartColumnIcon,
-  FileIcon,
   HomeIcon,
   UserIcon,
   LandmarkIcon,
@@ -59,7 +56,7 @@ export const navGroups: NavGroup[] = [
     items: [
       {
         title: "Reports",
-        url: "#",
+        url: "/reports",
         icon: TerminalSquareIcon,
         isActive: true,
         items: [
@@ -79,7 +76,7 @@ export const navGroups: NavGroup[] = [
       },
       {
         title: "Settings",
-        url: "#",
+        url: "/settings",
         icon: Settings2Icon,
         items: [
           {
@@ -111,7 +108,7 @@ export const navGroups: NavGroup[] = [
       },
       {
         title: "Playground",
-        url: "#",
+        url: "/playground",
         icon: BotIcon, // BugIcon
         items: [
           {
@@ -138,24 +135,24 @@ export const navGroups: NavGroup[] = [
       },
       {
         title: "Documentation",
-        url: "#",
+        url: "/docs",
         icon: BookOpenIcon,
         items: [
           {
             title: "Introduction",
-            url: "#",
+            url: "/docs/introduction",
           },
           {
             title: "Get Started",
-            url: "#",
+            url: "/docs/get-started",
           },
           {
             title: "Tutorials",
-            url: "#",
+            url: "/docs/tutorials",
           },
           {
             title: "Changelog",
-            url: "#",
+            url: "/docs/change-log",
           },
         ],
       },
@@ -210,24 +207,3 @@ export const navGroups: NavGroup[] = [
     ],
   },
 ];
-
-export const documents: NavGroup = {
-  // label: "",
-  items: [
-    {
-      title: "Data Library",
-      url: "#",
-      icon: DatabaseIcon,
-    },
-    {
-      title: "Reports",
-      url: "#",
-      icon: FileChartColumnIcon,
-    },
-    {
-      title: "Word Assistant",
-      url: "#",
-      icon: FileIcon,
-    },
-  ],
-};
