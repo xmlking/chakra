@@ -31,25 +31,35 @@ export function NavGroup({
         {group.items.map((item) => {
           const hasSubItems = item.items && item.items.length > 0;
 
-          if (hasSubItems) {
+          if (!hasSubItems) {
             return (
-              <Collapsible
-                key={item.title}
-                defaultOpen={item.isActive}
-                className="group/collapsible"
-                render={<SidebarMenuItem />}
-              >
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton
+                  isActive={pathname === item.url}
+                  tooltip={item.title}
+                  render={<Link to={item.url} />}
+                >
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          }
+
+          return (
+            <Collapsible key={item.title} defaultOpen={item.isActive} className="group/collapsible">
+              <SidebarMenuItem>
                 <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                  <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+                  <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items!.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton
-                          isActive={pathname === item.url}
+                          isActive={pathname === subItem.url}
                           render={<Link to={subItem.url} aria-label={subItem.title} />}
                         >
                           <span>{subItem.title}</span>
@@ -58,21 +68,8 @@ export function NavGroup({
                     ))}
                   </SidebarMenuSub>
                 </CollapsibleContent>
-              </Collapsible>
-            );
-          }
-
-          return (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton
-                isActive={pathname === item.url}
-                tooltip={item.title}
-                render={<Link to={item.url} aria-label={item.title} />}
-              >
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+              </SidebarMenuItem>
+            </Collapsible>
           );
         })}
       </SidebarMenu>
