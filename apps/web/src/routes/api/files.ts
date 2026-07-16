@@ -23,6 +23,7 @@ const router = createFilesRouter({
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,
   authorize: async ({ req, key, from }) => {
+    log.info({ req });
     log.info({ key, from });
 
     /* throw to deny, or return a per-user constraint — see /ui/server/authorization */

@@ -14,6 +14,7 @@ import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
+import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
@@ -21,7 +22,6 @@ import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
 import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
-import { Route as appPlaygroundIndexRouteImport } from './routes/(app)/playground/index'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
 import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -30,7 +30,9 @@ import { Route as appSettingsNotificationsRouteImport } from './routes/(app)/set
 import { Route as appSettingsPageRouteImport } from './routes/(app)/settings/$page'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
 import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
+import { Route as appPlaygroundTestRouteImport } from './routes/(app)/playground/test'
 import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
+import { Route as appPlaygroundFilesRouteImport } from './routes/(app)/playground/files'
 import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard/$page'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
@@ -57,6 +59,11 @@ const publicIndexRoute = publicIndexRouteImport.update({
 const ApiImagesRoute = ApiImagesRouteImport.update({
   id: '/api/images',
   path: '/api/images',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiFilesTestRoute = ApiFilesTestRouteImport.update({
+  id: '/api/files-test',
+  path: '/api/files-test',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiFilesRoute = ApiFilesRouteImport.update({
@@ -92,11 +99,6 @@ const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
 const appSupportIndexRoute = appSupportIndexRouteImport.update({
   id: '/support/',
   path: '/support/',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appPlaygroundIndexRoute = appPlaygroundIndexRouteImport.update({
-  id: '/playground/',
-  path: '/playground/',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
@@ -140,9 +142,19 @@ const appPlaygroundWorkflowRoute = appPlaygroundWorkflowRouteImport.update({
   path: '/playground/workflow',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundTestRoute = appPlaygroundTestRouteImport.update({
+  id: '/playground/test',
+  path: '/playground/test',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
   id: '/playground/form-demo',
   path: '/playground/form-demo',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundFilesRoute = appPlaygroundFilesRouteImport.update({
+  id: '/playground/files',
+  path: '/playground/files',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
@@ -178,12 +190,15 @@ export interface FileRoutesByFullPath {
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
@@ -192,7 +207,6 @@ export interface FileRoutesByFullPath {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
   '/dashboard/': typeof appDashboardIndexRoute
-  '/playground/': typeof appPlaygroundIndexRoute
   '/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
@@ -204,12 +218,15 @@ export interface FileRoutesByTo {
   '/theme': typeof publicThemeRoute
   '/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
@@ -218,7 +235,6 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
   '/dashboard': typeof appDashboardIndexRoute
-  '/playground': typeof appPlaygroundIndexRoute
   '/support': typeof appSupportIndexRoute
   '/api/chat': typeof ApiChatIndexRoute
   '/organization/$path': typeof appsecurityOrganizationPathRoute
@@ -234,12 +250,15 @@ export interface FileRoutesById {
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
+  '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
   '/(app)/playground/error': typeof appPlaygroundErrorRoute
+  '/(app)/playground/files': typeof appPlaygroundFilesRoute
   '/(app)/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/(app)/playground/test': typeof appPlaygroundTestRoute
   '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
   '/(app)/settings/$page': typeof appSettingsPageRoute
@@ -248,7 +267,6 @@ export interface FileRoutesById {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
-  '/(app)/playground/': typeof appPlaygroundIndexRoute
   '/(app)/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
   '/(app)/(security)/organization/$path': typeof appsecurityOrganizationPathRoute
@@ -262,12 +280,15 @@ export interface FileRouteTypes {
     | '/theme'
     | '/version'
     | '/api/files'
+    | '/api/files-test'
     | '/api/images'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
     | '/playground/error'
+    | '/playground/files'
     | '/playground/form-demo'
+    | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
@@ -276,7 +297,6 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/health/live'
     | '/dashboard/'
-    | '/playground/'
     | '/support/'
     | '/api/chat/'
     | '/organization/$path'
@@ -288,12 +308,15 @@ export interface FileRouteTypes {
     | '/theme'
     | '/version'
     | '/api/files'
+    | '/api/files-test'
     | '/api/images'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
     | '/playground/error'
+    | '/playground/files'
     | '/playground/form-demo'
+    | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
@@ -302,7 +325,6 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/health/live'
     | '/dashboard'
-    | '/playground'
     | '/support'
     | '/api/chat'
     | '/organization/$path'
@@ -317,12 +339,15 @@ export interface FileRouteTypes {
     | '/(public)/theme'
     | '/(public)/version'
     | '/api/files'
+    | '/api/files-test'
     | '/api/images'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
     | '/(app)/playground/error'
+    | '/(app)/playground/files'
     | '/(app)/playground/form-demo'
+    | '/(app)/playground/test'
     | '/(app)/playground/workflow'
     | '/(app)/reports/$page'
     | '/(app)/settings/$page'
@@ -331,7 +356,6 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/api/health/live'
     | '/(app)/dashboard/'
-    | '/(app)/playground/'
     | '/(app)/support/'
     | '/api/chat/'
     | '/(app)/(security)/organization/$path'
@@ -343,6 +367,7 @@ export interface RootRouteChildren {
   app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
   ApiFilesRoute: typeof ApiFilesRoute
+  ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
@@ -384,6 +409,13 @@ declare module '@tanstack/react-router' {
       path: '/api/images'
       fullPath: '/api/images'
       preLoaderRoute: typeof ApiImagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/files-test': {
+      id: '/api/files-test'
+      path: '/api/files-test'
+      fullPath: '/api/files-test'
+      preLoaderRoute: typeof ApiFilesTestRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/files': {
@@ -433,13 +465,6 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support/'
       preLoaderRoute: typeof appSupportIndexRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/playground/': {
-      id: '/(app)/playground/'
-      path: '/playground'
-      fullPath: '/playground/'
-      preLoaderRoute: typeof appPlaygroundIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/': {
@@ -498,11 +523,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appPlaygroundWorkflowRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/playground/test': {
+      id: '/(app)/playground/test'
+      path: '/playground/test'
+      fullPath: '/playground/test'
+      preLoaderRoute: typeof appPlaygroundTestRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/playground/form-demo': {
       id: '/(app)/playground/form-demo'
       path: '/playground/form-demo'
       fullPath: '/playground/form-demo'
       preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/files': {
+      id: '/(app)/playground/files'
+      path: '/playground/files'
+      fullPath: '/playground/files'
+      preLoaderRoute: typeof appPlaygroundFilesRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/playground/error': {
@@ -547,13 +586,14 @@ interface appRouteRouteChildren {
   appAdminPageRoute: typeof appAdminPageRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
+  appPlaygroundFilesRoute: typeof appPlaygroundFilesRoute
   appPlaygroundFormDemoRoute: typeof appPlaygroundFormDemoRoute
+  appPlaygroundTestRoute: typeof appPlaygroundTestRoute
   appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
   appReportsPageRoute: typeof appReportsPageRoute
   appSettingsPageRoute: typeof appSettingsPageRoute
   appSettingsNotificationsRoute: typeof appSettingsNotificationsRoute
   appDashboardIndexRoute: typeof appDashboardIndexRoute
-  appPlaygroundIndexRoute: typeof appPlaygroundIndexRoute
   appSupportIndexRoute: typeof appSupportIndexRoute
   appsecurityOrganizationPathRoute: typeof appsecurityOrganizationPathRoute
   appsecurityUserPathRoute: typeof appsecurityUserPathRoute
@@ -563,13 +603,14 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appAdminPageRoute: appAdminPageRoute,
   appDashboardPageRoute: appDashboardPageRoute,
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
+  appPlaygroundFilesRoute: appPlaygroundFilesRoute,
   appPlaygroundFormDemoRoute: appPlaygroundFormDemoRoute,
+  appPlaygroundTestRoute: appPlaygroundTestRoute,
   appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
   appReportsPageRoute: appReportsPageRoute,
   appSettingsPageRoute: appSettingsPageRoute,
   appSettingsNotificationsRoute: appSettingsNotificationsRoute,
   appDashboardIndexRoute: appDashboardIndexRoute,
-  appPlaygroundIndexRoute: appPlaygroundIndexRoute,
   appSupportIndexRoute: appSupportIndexRoute,
   appsecurityOrganizationPathRoute: appsecurityOrganizationPathRoute,
   appsecurityUserPathRoute: appsecurityUserPathRoute,
@@ -616,6 +657,7 @@ const rootRouteChildren: RootRouteChildren = {
   app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
   ApiFilesRoute: ApiFilesRoute,
+  ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
