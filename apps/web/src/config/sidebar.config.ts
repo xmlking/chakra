@@ -128,6 +128,10 @@ export const navGroups: NavGroup[] = [
             url: "/playground/form-demo",
           },
           {
+            title: "Files",
+            url: "/playground/files",
+          },
+          {
             title: "Version",
             url: "/api/health/live",
           },
