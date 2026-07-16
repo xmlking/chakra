@@ -33,7 +33,7 @@ export function NavGroup({
 
           if (!hasSubItems) {
             return (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   isActive={pathname === item.url}
                   tooltip={item.title}
@@ -47,7 +47,7 @@ export function NavGroup({
           }
 
           return (
-            <Collapsible key={item.title} defaultOpen={item.isActive} className="group/collapsible">
+            <Collapsible key={item.url} defaultOpen={item.isActive} className="group/collapsible">
               <SidebarMenuItem>
                 <CollapsibleTrigger render={<SidebarMenuButton tooltip={item.title} />}>
                   {item.icon && <item.icon />}
@@ -57,7 +57,7 @@ export function NavGroup({
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {item.items!.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
+                      <SidebarMenuSubItem key={subItem.url}>
                         <SidebarMenuSubButton
                           isActive={pathname === subItem.url}
                           render={<Link to={subItem.url} aria-label={subItem.title} />}
