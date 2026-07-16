@@ -113,7 +113,7 @@ export const navGroups: NavGroup[] = [
         items: [
           {
             title: "Test",
-            url: "/playground",
+            url: "/playground/test",
           },
           {
             title: "Workflow",
