@@ -1,3 +1,4 @@
+// oxlint-disable react-doctor/no-impure-state-updater
 "use client";
 
 import type React from "react";

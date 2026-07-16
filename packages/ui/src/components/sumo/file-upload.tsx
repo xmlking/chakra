@@ -7,8 +7,7 @@
 import { AlertCircleIcon, CloudUpload, File, XIcon } from "lucide-react";
 
 import { Button } from "#components/shadcn/button";
-
-import { formatBytes, useFileUpload } from "./hooks/use-file-upload";
+import { formatBytes, useFileUpload } from "#hooks/use-file-upload";
 
 const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   const fileType = file.file.type;
