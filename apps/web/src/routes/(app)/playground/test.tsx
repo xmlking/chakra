@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 import { liveHealthQueryOptions } from "#features/playground/api/queries.ts";
 
-export const Route = createFileRoute("/(app)/playground/")({
+export const Route = createFileRoute("/(app)/playground/test")({
   staticData: {
     breadcrumb: ["Playground", "Test"],
   },
