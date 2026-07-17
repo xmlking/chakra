@@ -18,7 +18,7 @@ if (import.meta.env.DEV) {
 }
 
 const router = createFilesRouter({
-  files: images,
+  files: images as any,
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,

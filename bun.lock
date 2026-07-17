@@ -286,7 +286,6 @@
         "@vite-env/core": "catalog:",
         "@workspace/shared": "workspace:*",
         "evlog": "catalog:",
-        "files-sdk": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -301,6 +300,7 @@
         "@aws-sdk/s3-presigned-post": "catalog:",
         "@aws-sdk/s3-request-presigner": "catalog:",
         "@better-upload/server": "catalog:",
+        "files-sdk": "catalog:",
         "typescript": "catalog:",
       },
     },
