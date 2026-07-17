@@ -2,14 +2,14 @@
 
 The 17 ReUI building blocks: `alert`, `autocomplete`, `badge`, `data-grid`, `date-selector`, `filters`, `frame`, `icon-stack`, `kanban`, `number-field`, `phone-input`, `rating`, `scrollspy`, `sortable`, `stepper`, `timeline`, `tree`. Examples and blocks are composed from these.
 
-**Rule one: never guess a component's API. Read it first.** Call **`get_component(name)`** for its inline `api` (props + usage, no web fetch); the result's `docsUrl` and the `/llms.txt` index are the fallback. Then call **`get_examples(name)`** to install a worked example and copy real composition. The contracts below are first-try orientation (required props, composition shape, the one gotcha); the inline `api` is the full reference. No single block fits? Compose: search the components you need, read each `get_component`, install a `get_examples` example per component, and adapt.
+**Rule one: never guess a component's API. Read it first.** Call **`get_component(name)`** for its inline `api` (props + usage, no web fetch), and **share the result's `docsUrl`** (the component's API documentation page) with the user whenever you work with that component's API, so they have the full reference (the `/llms.txt` index is a further fallback). Then call **`get_examples(name)`** to install a worked example and copy real composition. The contracts below are first-try orientation (required props, composition shape, the one gotcha); the inline `api` is the full reference. No single block fits? Compose: search the components you need, read each `get_component`, install a `get_examples` example per component, and adapt.
 
 ## data-grid (the flagship - read its API every time)
 
 `data-grid` wraps TanStack Table v8. It is NOT a styled `<table>` and does NOT take `data`/`columns` props directly. The contract:
 
 - Build a TanStack table instance with `useReactTable(...)` (columns, data, the feature models you need: sorting, pagination, row selection).
-- Pass that instance to `<DataGrid table={table} recordCount={total}>` (`total` is the full row count for pagination, not just the current page's `data.length`).
+- Pass that instance to `<DataGrid table={table} recordCount={total}>`.
 - Compose the body with `DataGridTable` inside `DataGrid`, and enable features through `tableLayout` (e.g. `{ headerSticky: true, columnsResizable: true }`), not ad-hoc classes.
 - Server-side data uses the documented fetch shape (`recordCount` is the total for pagination).
 
@@ -21,7 +21,7 @@ const table = useReactTable({
   // add sorting/pagination/selection models per the API
 })
 
-<DataGrid table={table} recordCount={totalRowCount}>
+<DataGrid table={table} recordCount={data.length}>
   <DataGridTable />
 </DataGrid>
 ```
@@ -42,9 +42,7 @@ Common mistakes:
   <KanbanBoard>
     {Object.entries(cols).map(([id, items]) => (
       <KanbanColumn key={id} value={id}>
-        <KanbanColumnHandle>
-          <h3>{id}</h3>
-        </KanbanColumnHandle>
+        <KanbanColumnHandle><h3>{id}</h3></KanbanColumnHandle>
         <KanbanColumnContent value={id}>
           {items.map((i) => (
             <KanbanItem key={i.id} value={i.id}>
@@ -55,9 +53,7 @@ Common mistakes:
       </KanbanColumn>
     ))}
   </KanbanBoard>
-  <KanbanOverlay>
-    <div className="bg-muted size-full rounded-md" />
-  </KanbanOverlay>
+  <KanbanOverlay><div className="bg-muted size-full rounded-md" /></KanbanOverlay>
 </Kanban>
 ```
 
@@ -72,9 +68,7 @@ Common mistakes:
 <Sortable value={items} onValueChange={setItems} getItemValue={(i) => i.id}>
   {items.map((i) => (
     <SortableItem key={i.id} value={i.id}>
-      <SortableItemHandle>
-        <GripVertical />
-      </SortableItemHandle>
+      <SortableItemHandle><GripVertical /></SortableItemHandle>
       {i.label}
     </SortableItem>
   ))}
@@ -141,15 +135,11 @@ const [value, setValue] = useState<DateSelectorValue | undefined>()
 <Stepper defaultValue={1}>
   <StepperNav>
     <StepperItem step={1}>
-      <StepperTrigger>
-        <StepperIndicator>1</StepperIndicator>
-      </StepperTrigger>
+      <StepperTrigger><StepperIndicator>1</StepperIndicator></StepperTrigger>
       <StepperSeparator />
     </StepperItem>
     <StepperItem step={2}>
-      <StepperTrigger>
-        <StepperIndicator>2</StepperIndicator>
-      </StepperTrigger>
+      <StepperTrigger><StepperIndicator>2</StepperIndicator></StepperTrigger>
     </StepperItem>
   </StepperNav>
   <StepperPanel>
@@ -194,9 +184,7 @@ const [value, setValue] = useState<DateSelectorValue | undefined>()
     <AutocompleteEmpty>No results found.</AutocompleteEmpty>
     <AutocompleteList>
       {(item) => (
-        <AutocompleteItem key={item.value} value={item}>
-          {item.label}
-        </AutocompleteItem>
+        <AutocompleteItem key={item.value} value={item}>{item.label}</AutocompleteItem>
       )}
     </AutocompleteList>
   </AutocompleteContent>
@@ -211,12 +199,7 @@ const [value, setValue] = useState<DateSelectorValue | undefined>()
 **Shape:**
 
 ```tsx
-<PhoneInput
-  placeholder="Enter phone number"
-  defaultCountry="US"
-  value={value}
-  onChange={setValue}
-/>
+<PhoneInput placeholder="Enter phone number" defaultCountry="US" value={value} onChange={setValue} />
 ```
 
 **Gotcha:** `value`/`onChange` use an E.164 string (e.g. `"+14155551234"`), not a display-formatted string; `onChange` can fire `undefined`. `defaultCountry` is a 2-letter ISO code. Wraps `react-phone-number-input`.
@@ -311,9 +294,7 @@ const [value, setValue] = useState<DateSelectorValue | undefined>()
   <ShieldCheckIcon />
   <AlertTitle>Security update</AlertTitle>
   <AlertDescription>Enable two-factor authentication.</AlertDescription>
-  <AlertAction>
-    <Button size="xs">Update</Button>
-  </AlertAction>
+  <AlertAction><Button size="xs">Update</Button></AlertAction>
 </Alert>
 ```
 

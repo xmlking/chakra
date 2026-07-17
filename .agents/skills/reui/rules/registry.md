@@ -19,7 +19,11 @@ Premium installs need the authenticated form + `REUI_LICENSE_KEY` in `.env.local
 
 ## Know your base: base or radix
 
-ReUI ships every item in two builds - `base` (Base UI) and `radix` (Radix UI) - with mirrored names. The CLI installs the build matching your project automatically, but **you must write code against the right base's API**. Detect it from `components.json` -> `style`: the segment before the first `-` is the base (`base-nova` -> Base UI, `radix-nova` -> Radix UI). The installed files and `c-*` examples are already in your base - read them and adapt on that base. See [components.md](./components.md) for the API deltas. Blocks adapt to your active theme through semantic tokens and CSS variables - change the theme and every block follows.
+ReUI ships every item in two builds - `base` (Base UI) and `radix` (Radix UI) - with mirrored names. The CLI installs the build matching your project automatically, but **you must write code against the right base's API**. Detect it from `components.json` -> `style`: the segment before the first `-` is the base (`base-nova` -> Base UI, `radix-nova` -> Radix UI). The installed files and `c-*` examples are already in your base - read them and adapt on that base. See [components.md](./components.md) for the API deltas.
+
+**So the MCP's own `docsUrl` and `previewUrl` match your base**, send your `style` to the MCP: add `?style=<your components.json style>` to the ReUI MCP server URL (or set an `X-Reui-Style` header) in your MCP client config - set once, applies to every call. The MCP then resolves docs/preview links to YOUR library (`/docs/components/radix/...`, `/preview/radix/...` for a radix project) instead of the default base; `get_project_context` echoes back the style it currently sees so you can confirm it. Install commands are unaffected (the CLI already installs the right variant). If you notice the MCP returning `base` links for a `radix` project, tell the user to add `?style=` to the server URL.
+
+Blocks adapt to your active theme through semantic tokens and CSS variables - change the theme and every block follows.
 
 ## Free vs premium
 
