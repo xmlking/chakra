@@ -1,6 +1,8 @@
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryClient, type QueryKey } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { log } from "evlog";
+import { toast } from "sonner";
 
 import { DefaultError } from "#components/default-error";
 // import { DefaultLoading } from "#components/default-loading";
@@ -14,9 +16,50 @@ export function getRouter() {
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
-        staleTime: 1000 * 60 * 2, // 2 minutes
+        staleTime: 2 * 60_000, // 2 minutes
+        gcTime: 5 * 60_000, // 5 minutes
+        // retry: 1,
       },
     },
+    /**
+     * Inspired by https://www.youtube.com/watch?v=QP1_vuzOYJs
+     */
+    mutationCache: new MutationCache({
+      onSuccess: (_data, _variables, _context, mutation) => {
+        if (mutation.meta?.successMessage) {
+          toast.success(mutation.meta?.successMessage, {
+            duration: 5000,
+          });
+        }
+      },
+      onError: (error, _variables, _context, mutation) => {
+        log.error({ error });
+        // if (error?.status === 401) {
+        //   // perform logout
+        //   localStorage.removeItem("token"); // or whatever you store
+        //   window.location.href = "/login"; // or navigate with router
+        // }
+        let errorMsg = error.message;
+        if (mutation.meta?.errorMessage) {
+          errorMsg = mutation.meta.errorMessage;
+        }
+        const mutationKey = mutation.options.mutationKey?.[0] as string;
+        toast.error(mutationKey, {
+          description: errorMsg,
+          duration: Infinity,
+          closeButton: true,
+        });
+      },
+      onSettled: async (_data, _error, _variables, _context, mutation) => {
+        {
+          if (mutation.meta?.invalidateQuery) {
+            await queryClient.invalidateQueries({
+              queryKey: mutation.meta?.invalidateQuery,
+            });
+          }
+        }
+      },
+    }),
   });
 
   const router = createRouter({
@@ -58,5 +101,15 @@ declare module "@tanstack/react-router" {
   }
   interface StaticDataRouteOption {
     breadcrumb?: BreadcrumbValue;
+  }
+}
+
+declare module "@tanstack/react-query" {
+  interface Register {
+    mutationMeta: {
+      invalidateQuery?: QueryKey;
+      successMessage?: string;
+      errorMessage?: string;
+    };
   }
 }
