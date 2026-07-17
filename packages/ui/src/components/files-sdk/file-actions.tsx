@@ -127,8 +127,8 @@ export const FileActions = ({
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          {children ?? (
+        <DropdownMenuTrigger
+          render={
             <Button
               className={className}
               size="icon-sm"
@@ -138,8 +138,8 @@ export const FileActions = ({
               <MoreHorizontalIcon />
               <span className="sr-only">Actions</span>
             </Button>
-          )}
-        </DropdownMenuTrigger>
+        }
+        />
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => void download()}>
             <DownloadIcon />
