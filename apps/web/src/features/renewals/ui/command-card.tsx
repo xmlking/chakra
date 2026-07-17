@@ -10,7 +10,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import { type ReactNode } from "react";
 
-interface RenewalsCommandCardProps {
+interface CommandCardProps {
   title: string;
   description?: ReactNode;
   meta?: ReactNode;
@@ -21,7 +21,7 @@ interface RenewalsCommandCardProps {
   contentClassName?: string;
 }
 
-export function RenewalsCommandCard({
+export function CommandCard({
   title,
   description,
   meta,
@@ -30,7 +30,7 @@ export function RenewalsCommandCard({
   footer,
   className,
   contentClassName,
-}: RenewalsCommandCardProps) {
+}: CommandCardProps) {
   return (
     <Card className={cn("w-full gap-0 p-0", className)}>
       {/* Header */}
