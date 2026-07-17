@@ -22,10 +22,8 @@ const router = createFilesRouter({
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,
-  authorize: async ({ req, key, from }) => {
-    log.info({ req });
-    log.info({ key, from });
-
+  authorize: async ({ req, key, operation, from, to }) => {
+    log.info({ key, operation, from, to });
     /* throw to deny, or return a per-user constraint — see /ui/server/authorization */
     const session = (await auth.api.getSession(req)) as Session;
     if (session?.user === undefined) {
