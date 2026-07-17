@@ -16,6 +16,8 @@ Example: "build a users management page with filters" -> `search({ query: "users
 
 Each result has `install`, `previewUrl`, `docsUrl`, `componentsUsed`, `score`, `termCoverage`, and `whyMatch`. `score` is relative to the top hit (the top is ~100 by construction), not an absolute quality - compare results to each other, and show the user the top options if several score closely; do not silently guess. A low `termCoverage` means a weak match even with a high score - rephrase or widen.
 
+**Always show the preview link.** Whenever you list or recommend items - from `search`, `search_icons`, `list_components`, `compose_page`, or a getter - include each item's `previewUrl` (a live preview page) so the user can SEE it before you install. Blocks and examples link to an individual live preview; icons and components to their live category/component page. This applies to every listing, not only a single pick.
+
 ## 2. Install (shadcn CLI)
 
 Run the result's `install` command from the project root, non-interactively:
@@ -30,7 +32,7 @@ The CLI reads `components.json`, installs the correct base+style variant, resolv
 
 Before writing code against any component an item uses:
 
-1. The item's `componentDigests` already give a 1-line contract per component - often enough to wire it. For the full API, call **`get_component(names)`** with ALL of `componentsUsed` in ONE call (it accepts an array) and read each inline `api` - no web fetch. `docsUrl` and the `/llms.txt` index are the fallback.
+1. The item's `componentDigests` already give a 1-line contract per component - often enough to wire it. For the full API, call **`get_component(names)`** with ALL of `componentsUsed` in ONE call (it accepts an array) and read each inline `api` - no web fetch. **Share the component's `docsUrl`** (its API documentation page) with the user whenever you work with that component's API, so they have the full reference; the `/llms.txt` index is a further fallback.
 2. Call **`get_examples(name)`** for the free `c-*` examples of that component; install one and **read the added files** to copy the exact composition. This is the fastest correct path - the example shows real wiring you adapt, not invent.
 3. About to write a prop you did not see in an `api` or installed file? Run **`validate_usage`** BEFORE writing the code - per-prop documented / notDocumented verdicts plus did-you-mean suggestions. notDocumented means read the API, not push on.
 

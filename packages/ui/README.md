@@ -145,6 +145,9 @@ bunx --bun shadcn@latest add @magicui/video-text -c apps/web --overwrite
 # add [AI Tools Registry](https://ai-tools-registry.vercel.app/) blocks to `apps/web`
 bunx --bun shadcn@latest add @ai-tools/weather -c apps/web
 bunx --bun shadcn@latest add @ai-tools/calculator -c apps/web
+
+# adding paid reui comps
+bunx --bun shadcn@latest add @reui/c-data-grid-1
 ```
 
 ### Initial setup

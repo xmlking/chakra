@@ -12,6 +12,16 @@
       "command": "bunx",
       "args": ["-y", "@assistant-ui/mcp-docs-server"]
     },
-    "drizzle": { "command": "bunx", "args": ["drizzle-kit", "mcp"] }
+    "drizzle": {
+      "command": "bunx",
+      "args": ["drizzle-kit", "mcp"]
+    },
+    "reui": {
+      "type": "http",
+      "url": "https://mcp.reui.io",
+      "headers": {
+        "Authorization": "Bearer ${REUI_LICENSE_KEY}"
+      }
+    }
   }
 }

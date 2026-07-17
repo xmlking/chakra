@@ -1,6 +1,6 @@
 # ReUI MCP: full reference
 
-The ReUI MCP (`https://mcp.reui.io`, Streamable HTTP) is free - it needs no license and no auth header at all. It does **discovery + guidance** (search, inline APIs, page planning, validation) and never serves source code; the shadcn CLI does **installation**, and the license key lives only there (the `@reui` entry in `components.json`, backed by `.env.local`). In this repo it is configured as `reui` for Claude Code (`.mcp.json`), Cursor (`.cursor/mcp.json`), and Codex (`.codex/config.toml`). Goal: from the user's intent to correct, themed, data-wired ReUI code in the **fewest tokens and calls**, with **no guessing**.
+The ReUI MCP (`https://mcp.reui.io`, Streamable HTTP) is free to use but needs a ReUI account: on first use the agent signs in with ReUI (a free account is created if the user has none), so every request is tied to an account. Free covers components and examples; a Pro or Ultimate license unlocks premium blocks and Motion Icons and removes the daily request limit. It does **discovery + guidance** (search, inline APIs, page planning, validation) and never serves source; the shadcn CLI does **installation**, and the license key lives there (the `@reui` entry in `components.json`, backed by `.env.local`). Goal: from the user's intent to correct, themed, data-wired ReUI code in the **fewest tokens and calls**, with **no guessing**.
 
 ## Golden path (token-optimal - follow this order)
 
@@ -45,7 +45,8 @@ If you already know the exact item name, skip `search`. Everything else is situa
 
 ## Error playbook
 
-- **401 / 403** - install-time only: a premium install without a valid `REUI_LICENSE_KEY`, or a plan that does not cover the item (blocks Pro+, icons/templates Ultimate). Point to https://reui.io/account (key) or https://reui.io/pricing (upgrade). The MCP itself never authenticates - connecting and every tool are free.
+- **401** - the MCP requires a signed-in ReUI account. The client prompts "Sign in with ReUI" (OAuth) on first use; a free account is created if needed. For headless/CI, pass a personal token (`reui_pat_...`, created at https://reui.io/account/mcp) as `Authorization: Bearer`.
+- **403 / locked result** - a valid account but the plan does not cover the item: premium blocks need Pro, Motion Icons need Ultimate. Point to https://reui.io/pricing (upgrade). Free accounts still get all components + examples.
 - **429** - rate limited (120 requests/min per IP); back off, honor `Retry-After`.
 - **not found** (`found: false`) - use the returned `suggestions`, or `search`; check `whats_new` if you suspect a stale name. Never run a fabricated install command.
 

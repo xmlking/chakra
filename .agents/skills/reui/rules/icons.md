@@ -34,5 +34,6 @@ Finding icons:
 - Several icons (the common case): **`search_icons(concepts[])`** - up to 24 concepts in one call, the best icons per concept with install commands. Pass `animated: true` to get only icons with a hover-animated Motion variant.
 - One icon: `search` with `type: "icon"`.
 - Icon results and `get_icon` carry `animated: true` and `installAnimated` when an animated variant exists - use those install strings, do not construct paths by hand.
+- Every icon result carries a `previewUrl` (its live icon-category page) - **share it with the user** so they can SEE the icon before installing.
 
 The `icon-stack` component composes multiple icons into a stacked display.
