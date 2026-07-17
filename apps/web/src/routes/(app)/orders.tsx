@@ -31,6 +31,9 @@ interface OrdersSearchParams {
 }
 
 export const Route = createFileRoute("/(app)/orders")({
+  staticData: {
+    breadcrumb: "Orders",
+  },
   validateSearch: (search: Record<string, unknown>): OrdersSearchParams => {
     return {
       page: (search.page as string) ?? "0",

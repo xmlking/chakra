@@ -1,18 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-import { RenewalsCommandGridView } from "#features/renewals/data-grid-view.tsx";
+import { DataTableSkeleton } from "#features/renewals/data-table-skeleton.tsx";
+import { DataTable } from "#features/renewals/data-table.tsx";
 
 export const Route = createFileRoute("/(app)/renewals")({
+  staticData: {
+    breadcrumb: "Renewals",
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [isReady, setIsReady] = useState(false);
+  const isReady = useSyncExternalStore(
+    (notify) => {
+      if (typeof window === "undefined") {
+        return () => {};
+      }
 
-  useEffect(() => {
-    setIsReady(true);
-  }, []);
+      const frameId = window.requestAnimationFrame(notify);
+
+      return () => {
+        window.cancelAnimationFrame(frameId);
+      };
+    },
+    () => true,
+    () => false,
+  );
 
   return (
     // <main
@@ -23,15 +37,7 @@ function RouteComponent() {
       <h1 id="page-heading" className="sr-only">
         Renewals command data grid
       </h1>
-      {isReady ? (
-        <RenewalsCommandGridView />
-      ) : (
-        <div
-          className="w-full rounded-xl border border-border bg-card"
-          style={{ height: 640 }}
-          aria-hidden="true"
-        />
-      )}
+      {isReady ? <DataTable /> : <DataTableSkeleton />}
     </div>
     // </main>
   );

@@ -65,8 +65,8 @@ import {
   type RenewalRisk,
   type RenewalStage,
 } from "./data";
-import { RenewalSelectionBar } from "./ui/renewal-selection-bar";
-import { RenewalsCommandCard } from "./ui/renewals-command-card";
+import { CommandCard } from "./ui/command-card";
+import { SelectionBar } from "./ui/selection-bar";
 
 function getActiveFilters(filters: Filter[]) {
   return filters.filter((filter) => {
@@ -382,7 +382,7 @@ function Toolbar({
   );
 }
 
-export function RenewalsCommandGridView() {
+export function DataTable() {
   const [renewals, setRenewals] = useState<IRenewalRecord[]>(RENEWAL_RECORDS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
   const [columnsResizable, setColumnsResizable] = useState(true);
@@ -649,7 +649,7 @@ export function RenewalsCommandGridView() {
         width: "auto",
       }}
     >
-      <RenewalsCommandCard
+      <CommandCard
         title="Renewals Review"
         description={`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
         action={
@@ -684,7 +684,7 @@ export function RenewalsCommandGridView() {
         />
 
         {selectedCount > 0 ? (
-          <RenewalSelectionBar
+          <SelectionBar
             selectedCount={selectedCount}
             ownerValue={bulkOwnerValue}
             stageValue={bulkStageValue}
@@ -701,7 +701,7 @@ export function RenewalsCommandGridView() {
         <DataGridScrollArea className="h-[540px]">
           <DataGridTable />
         </DataGridScrollArea>
-      </RenewalsCommandCard>
+      </CommandCard>
     </DataGrid>
   );
 }

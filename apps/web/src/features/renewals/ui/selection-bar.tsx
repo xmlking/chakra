@@ -11,7 +11,7 @@ import {
 
 import { RENEWAL_STAGE_ORDER, type RenewalOwnerOption, type RenewalStage } from "../data";
 
-interface RenewalSelectionBarProps {
+interface SelectionBarProps {
   selectedCount: number;
   ownerValue: string;
   stageValue: RenewalStage;
@@ -22,7 +22,7 @@ interface RenewalSelectionBarProps {
   onClear: () => void;
 }
 
-export function RenewalSelectionBar({
+export function SelectionBar({
   selectedCount,
   ownerValue,
   stageValue,
@@ -31,7 +31,7 @@ export function RenewalSelectionBar({
   onStageChange,
   onApply,
   onClear,
-}: RenewalSelectionBarProps) {
+}: SelectionBarProps) {
   return (
     <div className="flex flex-col gap-3 border-y bg-muted/30 px-5 py-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="flex min-w-0 items-center gap-2">
