@@ -63,6 +63,7 @@ const config = defineConfig({
     viteReact(),
     babel({
       presets: [reactCompilerPreset()],
+      // TODO: remove after TanStack Table v9
       exclude: ["**/components/reui/data-grid/**"],
     }),
   ],

@@ -93,6 +93,17 @@ export function FormPage() {
     },
   });
 
+  /*
+  // TODO
+  const createAction = useMutation({
+    ...createProjectMutationOptions(),
+    meta: {
+      successMessage: "Project created successfully",
+      errorMessage: "Project creation failed",
+      invalidateQuery: listProjectsQueryOptions().queryKey, // projectKeys.all
+    },
+  });
+  */
   const createAction = useMutation({
     ...createProjectMutationOptions(),
     onSuccess: async (data) => {
