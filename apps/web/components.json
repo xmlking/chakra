@@ -7,17 +7,26 @@
     "config": "",
     "css": "../../packages/ui/src/styles/globals.css",
     "baseColor": "neutral",
-    "cssVariables": true
+    "cssVariables": true,
+    "prefix": ""
   },
   "iconLibrary": "lucide",
-  "aliases": {
-    "components": "#components",
-    "ui": "@workspace/ui/components/shadcn",
-    "lib": "#lib",
-    "hooks": "#hooks",
-    "utils": "@workspace/ui/lib/utils"
-  },
   "rtl": false,
   "menuColor": "default",
-  "menuAccent": "subtle"
+  "menuAccent": "subtle",
+  "aliases": {
+    "components": "#components",
+    "utils": "@workspace/ui/lib/utils",
+    "ui": "@workspace/ui/components/shadcn",
+    "lib": "#lib",
+    "hooks": "#hooks"
+  },
+  "registries": {
+    "@reui": {
+      "url": "https://reui.io/r/{style}/{name}.json",
+      "headers": {
+        "Authorization": "Bearer ${REUI_LICENSE_KEY}"
+      }
+    }
+  }
 }

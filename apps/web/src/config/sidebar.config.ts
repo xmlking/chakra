@@ -35,12 +35,12 @@ export const navGroups: NavGroup[] = [
         shortcut: ["g", "o"],
       },
       {
-        title: "Projects",
-        url: "/dashboard/projects",
+        title: "Renewals",
+        url: "/renewals",
         icon: FolderKanbanIcon, // FolderIcon
         shortcut: ["g", "p"],
       },
-      { title: "Inbox", url: "/dashboard/inbox", icon: InboxIcon },
+      { title: "Orders", url: "/orders", icon: InboxIcon },
       { title: "Team", url: "/dashboard/team", icon: UsersIcon },
       {
         title: "Analytics",

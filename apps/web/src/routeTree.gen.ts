@@ -13,6 +13,7 @@ import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as ApiOrdersRouteImport } from './routes/api/orders'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
@@ -20,6 +21,8 @@ import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
+import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
+import { Route as appOrdersRouteImport } from './routes/(app)/orders'
 import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
 import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
@@ -56,6 +59,11 @@ const publicIndexRoute = publicIndexRouteImport.update({
   path: '/',
   getParentRoute: () => publicRouteRoute,
 } as any)
+const ApiOrdersRoute = ApiOrdersRouteImport.update({
+  id: '/api/orders',
+  path: '/api/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiImagesRoute = ApiImagesRouteImport.update({
   id: '/api/images',
   path: '/api/images',
@@ -90,6 +98,16 @@ const app2Dashboard2Route = app2Dashboard2RouteImport.update({
   id: '/dashboard2',
   path: '/dashboard2',
   getParentRoute: () => app2RouteRoute,
+} as any)
+const appRenewalsRoute = appRenewalsRouteImport.update({
+  id: '/renewals',
+  path: '/renewals',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appOrdersRoute = appOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => appRouteRoute,
 } as any)
 const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
   id: '/api/chat/',
@@ -185,6 +203,8 @@ const appsecurityOrganizationPathRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/orders': typeof appOrdersRoute
+  '/renewals': typeof appRenewalsRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
@@ -192,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
@@ -213,6 +234,8 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
+  '/orders': typeof appOrdersRoute
+  '/renewals': typeof appRenewalsRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
@@ -220,6 +243,7 @@ export interface FileRoutesByTo {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/dashboard/$page': typeof appDashboardPageRoute
@@ -245,6 +269,8 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
+  '/(app)/orders': typeof appOrdersRoute
+  '/(app)/renewals': typeof appRenewalsRoute
   '/(app2)/dashboard2': typeof app2Dashboard2Route
   '/(public)/about': typeof publicAboutRoute
   '/(public)/theme': typeof publicThemeRoute
@@ -252,6 +278,7 @@ export interface FileRoutesById {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
@@ -275,6 +302,8 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/orders'
+    | '/renewals'
     | '/dashboard2'
     | '/about'
     | '/theme'
@@ -282,6 +311,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
@@ -303,6 +333,8 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/orders'
+    | '/renewals'
     | '/dashboard2'
     | '/about'
     | '/theme'
@@ -310,6 +342,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/dashboard/$page'
@@ -334,6 +367,8 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app2)'
     | '/(public)'
+    | '/(app)/orders'
+    | '/(app)/renewals'
     | '/(app2)/dashboard2'
     | '/(public)/about'
     | '/(public)/theme'
@@ -341,6 +376,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/dashboard/$page'
@@ -369,6 +405,7 @@ export interface RootRouteChildren {
   ApiFilesRoute: typeof ApiFilesRoute
   ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
+  ApiOrdersRoute: typeof ApiOrdersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
   ApiChatIndexRoute: typeof ApiChatIndexRoute
@@ -403,6 +440,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof publicIndexRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/api/orders': {
+      id: '/api/orders'
+      path: '/api/orders'
+      fullPath: '/api/orders'
+      preLoaderRoute: typeof ApiOrdersRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/images': {
       id: '/api/images'
@@ -452,6 +496,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/dashboard2'
       preLoaderRoute: typeof app2Dashboard2RouteImport
       parentRoute: typeof app2RouteRoute
+    }
+    '/(app)/renewals': {
+      id: '/(app)/renewals'
+      path: '/renewals'
+      fullPath: '/renewals'
+      preLoaderRoute: typeof appRenewalsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/orders': {
+      id: '/(app)/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof appOrdersRouteImport
+      parentRoute: typeof appRouteRoute
     }
     '/api/chat/': {
       id: '/api/chat/'
@@ -583,6 +641,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appOrdersRoute: typeof appOrdersRoute
+  appRenewalsRoute: typeof appRenewalsRoute
   appAdminPageRoute: typeof appAdminPageRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
@@ -600,6 +660,8 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appOrdersRoute: appOrdersRoute,
+  appRenewalsRoute: appRenewalsRoute,
   appAdminPageRoute: appAdminPageRoute,
   appDashboardPageRoute: appDashboardPageRoute,
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
@@ -659,6 +721,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFilesRoute: ApiFilesRoute,
   ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,
+  ApiOrdersRoute: ApiOrdersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
   ApiChatIndexRoute: ApiChatIndexRoute,
