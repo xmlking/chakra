@@ -13,7 +13,7 @@
   "scripts": {
     "clean": "git clean -xdf vite-env.d.ts dist test-results coverage node_modules",
     "generate-schema": "bun x vite-node@latest scripts/generate-better-auth-schemas.ts",
-    "generate-schema-ori": "dotenv-run -f ../../.env -v -- bun x auth@v1.7.0-rc.0 generate --config src/index.ts --output ../db/src/schema/copy_me_auth.ts -y",
+    "generate-schema-ori": "dotenv-run -f ../../.env -v -- bun x auth@1.7.0-rc.0 generate --config src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
     "postinstall": "vite-env types && vite-env generate",
     "studio": "dotenv-run -f ../../.env -v -- better-auth-studio start --port 3002 --config ./src/index.tsx",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"

@@ -78,6 +78,10 @@ export const auth = betterAuth({
   telemetry: { enabled: false },
   secret: env.BETTER_AUTH_SECRET,
   baseURL,
+  // baseURL: {
+  //   allowedHosts: ["localhost:3000", "localhost:5173", "myapp.com", "*.vercel.app"],
+  //   protocol: process.env.NODE_ENV === "development" ? "http" : "https",
+  // },
   databaseHooks: {
     session: {
       create: {
