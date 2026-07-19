@@ -9,99 +9,57 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as publicRouteRouteImport } from './routes/(public)/route'
-import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
-import { Route as publicIndexRouteImport } from './routes/(public)/index'
-import { Route as ApiOrdersRouteImport } from './routes/api/orders'
-import { Route as ApiImagesRouteImport } from './routes/api/images'
-import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
-import { Route as ApiFilesRouteImport } from './routes/api/files'
-import { Route as publicVersionRouteImport } from './routes/(public)/version'
-import { Route as publicThemeRouteImport } from './routes/(public)/theme'
-import { Route as publicAboutRouteImport } from './routes/(public)/about'
-import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
-import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
+import { Route as app2RouteRouteImport } from './routes/(app2)/route'
+import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
 import { Route as appOrdersRouteImport } from './routes/(app)/orders'
-import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
-import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
+import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
+import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
+import { Route as publicIndexRouteImport } from './routes/(public)/index'
+import { Route as publicAboutRouteImport } from './routes/(public)/about'
+import { Route as publicThemeRouteImport } from './routes/(public)/theme'
+import { Route as publicUnauthorizedRouteImport } from './routes/(public)/unauthorized'
+import { Route as publicVersionRouteImport } from './routes/(public)/version'
+import { Route as ApiFilesRouteImport } from './routes/api/files'
+import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
+import { Route as ApiImagesRouteImport } from './routes/api/images'
+import { Route as ApiOrdersRouteImport } from './routes/api/orders'
+import { Route as appAdminPageRouteImport } from './routes/(app)/admin/$page'
+import { Route as appAdminUsersRouteImport } from './routes/(app)/admin/users'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
-import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
-import { Route as appSettingsNotificationsRouteImport } from './routes/(app)/settings/notifications'
-import { Route as appSettingsPageRouteImport } from './routes/(app)/settings/$page'
-import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
-import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
-import { Route as appPlaygroundTestRouteImport } from './routes/(app)/playground/test'
-import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
-import { Route as appPlaygroundFilesRouteImport } from './routes/(app)/playground/files'
-import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard/$page'
-import { Route as appAdminPageRouteImport } from './routes/(app)/admin.$page'
-import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
+import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
+import { Route as appPlaygroundFilesRouteImport } from './routes/(app)/playground/files'
+import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
+import { Route as appPlaygroundTestRouteImport } from './routes/(app)/playground/test'
+import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
+import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
+import { Route as appSettingsPageRouteImport } from './routes/(app)/settings/$page'
+import { Route as appSettingsNotificationsRouteImport } from './routes/(app)/settings/notifications'
+import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
+import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
+import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
 import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
+import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
 
-const publicRouteRoute = publicRouteRouteImport.update({
-  id: '/(public)',
+const appRouteRoute = appRouteRouteImport.update({
+  id: '/(app)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const app2RouteRoute = app2RouteRouteImport.update({
   id: '/(app2)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appRouteRoute = appRouteRouteImport.update({
-  id: '/(app)',
+const publicRouteRoute = publicRouteRouteImport.update({
+  id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
-const publicIndexRoute = publicIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const ApiOrdersRoute = ApiOrdersRouteImport.update({
-  id: '/api/orders',
-  path: '/api/orders',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiImagesRoute = ApiImagesRouteImport.update({
-  id: '/api/images',
-  path: '/api/images',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiFilesTestRoute = ApiFilesTestRouteImport.update({
-  id: '/api/files-test',
-  path: '/api/files-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiFilesRoute = ApiFilesRouteImport.update({
-  id: '/api/files',
-  path: '/api/files',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const publicVersionRoute = publicVersionRouteImport.update({
-  id: '/version',
-  path: '/version',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const publicThemeRoute = publicThemeRouteImport.update({
-  id: '/theme',
-  path: '/theme',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const publicAboutRoute = publicAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const app2Dashboard2Route = app2Dashboard2RouteImport.update({
-  id: '/dashboard2',
-  path: '/dashboard2',
-  getParentRoute: () => app2RouteRoute,
-} as any)
-const appRenewalsRoute = appRenewalsRouteImport.update({
-  id: '/renewals',
-  path: '/renewals',
+const appForbiddenRoute = appForbiddenRouteImport.update({
+  id: '/forbidden',
+  path: '/forbidden',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appOrdersRoute = appOrdersRouteImport.update({
@@ -109,14 +67,69 @@ const appOrdersRoute = appOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => appRouteRoute,
 } as any)
-const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
-  id: '/api/chat/',
-  path: '/api/chat/',
+const appRenewalsRoute = appRenewalsRouteImport.update({
+  id: '/renewals',
+  path: '/renewals',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const app2Dashboard2Route = app2Dashboard2RouteImport.update({
+  id: '/dashboard2',
+  path: '/dashboard2',
+  getParentRoute: () => app2RouteRoute,
+} as any)
+const publicIndexRoute = publicIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicAboutRoute = publicAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicThemeRoute = publicThemeRouteImport.update({
+  id: '/theme',
+  path: '/theme',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicUnauthorizedRoute = publicUnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const publicVersionRoute = publicVersionRouteImport.update({
+  id: '/version',
+  path: '/version',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const ApiFilesRoute = ApiFilesRouteImport.update({
+  id: '/api/files',
+  path: '/api/files',
   getParentRoute: () => rootRouteImport,
 } as any)
-const appSupportIndexRoute = appSupportIndexRouteImport.update({
-  id: '/support/',
-  path: '/support/',
+const ApiFilesTestRoute = ApiFilesTestRouteImport.update({
+  id: '/api/files-test',
+  path: '/api/files-test',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiImagesRoute = ApiImagesRouteImport.update({
+  id: '/api/images',
+  path: '/api/images',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOrdersRoute = ApiOrdersRouteImport.update({
+  id: '/api/orders',
+  path: '/api/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const appAdminPageRoute = appAdminPageRouteImport.update({
+  id: '/admin/$page',
+  path: '/admin/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appAdminUsersRoute = appAdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
@@ -124,55 +137,9 @@ const appDashboardIndexRoute = appDashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => appRouteRoute,
 } as any)
-const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
-  id: '/api/health/live',
-  path: '/api/health/live',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const publicAuthPathRoute = publicAuthPathRouteImport.update({
-  id: '/auth/$path',
-  path: '/auth/$path',
-  getParentRoute: () => publicRouteRoute,
-} as any)
-const appSettingsNotificationsRoute =
-  appSettingsNotificationsRouteImport.update({
-    id: '/settings/notifications',
-    path: '/settings/notifications',
-    getParentRoute: () => appRouteRoute,
-  } as any)
-const appSettingsPageRoute = appSettingsPageRouteImport.update({
-  id: '/settings/$page',
-  path: '/settings/$page',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appReportsPageRoute = appReportsPageRouteImport.update({
-  id: '/reports/$page',
-  path: '/reports/$page',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appPlaygroundWorkflowRoute = appPlaygroundWorkflowRouteImport.update({
-  id: '/playground/workflow',
-  path: '/playground/workflow',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appPlaygroundTestRoute = appPlaygroundTestRouteImport.update({
-  id: '/playground/test',
-  path: '/playground/test',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
-  id: '/playground/form-demo',
-  path: '/playground/form-demo',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appPlaygroundFilesRoute = appPlaygroundFilesRouteImport.update({
-  id: '/playground/files',
-  path: '/playground/files',
+const appDashboardPageRoute = appDashboardPageRouteImport.update({
+  id: '/dashboard/$page',
+  path: '/dashboard/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
@@ -180,20 +147,66 @@ const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
   path: '/playground/error',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appDashboardPageRoute = appDashboardPageRouteImport.update({
-  id: '/dashboard/$page',
-  path: '/dashboard/$page',
+const appPlaygroundFilesRoute = appPlaygroundFilesRouteImport.update({
+  id: '/playground/files',
+  path: '/playground/files',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appAdminPageRoute = appAdminPageRouteImport.update({
-  id: '/admin/$page',
-  path: '/admin/$page',
+const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
+  id: '/playground/form-demo',
+  path: '/playground/form-demo',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
-  id: '/(security)/user/$path',
-  path: '/user/$path',
+const appPlaygroundTestRoute = appPlaygroundTestRouteImport.update({
+  id: '/playground/test',
+  path: '/playground/test',
   getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundWorkflowRoute = appPlaygroundWorkflowRouteImport.update({
+  id: '/playground/workflow',
+  path: '/playground/workflow',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appReportsPageRoute = appReportsPageRouteImport.update({
+  id: '/reports/$page',
+  path: '/reports/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appSettingsPageRoute = appSettingsPageRouteImport.update({
+  id: '/settings/$page',
+  path: '/settings/$page',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appSettingsNotificationsRoute =
+  appSettingsNotificationsRouteImport.update({
+    id: '/settings/notifications',
+    path: '/settings/notifications',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appSupportIndexRoute = appSupportIndexRouteImport.update({
+  id: '/support/',
+  path: '/support/',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const publicAuthPathRoute = publicAuthPathRouteImport.update({
+  id: '/auth/$path',
+  path: '/auth/$path',
+  getParentRoute: () => publicRouteRoute,
+} as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatIndexRoute = ApiChatIndexRouteImport.update({
+  id: '/api/chat/',
+  path: '/api/chat/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
+  id: '/api/health/live',
+  path: '/api/health/live',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const appsecurityOrganizationPathRoute =
   appsecurityOrganizationPathRouteImport.update({
@@ -201,13 +214,20 @@ const appsecurityOrganizationPathRoute =
     path: '/organization/$path',
     getParentRoute: () => appRouteRoute,
   } as any)
+const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
+  id: '/(security)/user/$path',
+  path: '/user/$path',
+  getParentRoute: () => appRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
+  '/forbidden': typeof appForbiddenRoute
   '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
+  '/unauthorized': typeof publicUnauthorizedRoute
   '/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
@@ -215,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
+  '/admin/users': typeof appAdminUsersRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
   '/playground/files': typeof appPlaygroundFilesRoute
@@ -234,11 +255,13 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
+  '/forbidden': typeof appForbiddenRoute
   '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
+  '/unauthorized': typeof publicUnauthorizedRoute
   '/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
@@ -246,6 +269,7 @@ export interface FileRoutesByTo {
   '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
+  '/admin/users': typeof appAdminUsersRoute
   '/dashboard/$page': typeof appDashboardPageRoute
   '/playground/error': typeof appPlaygroundErrorRoute
   '/playground/files': typeof appPlaygroundFilesRoute
@@ -269,11 +293,13 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
+  '/(app)/forbidden': typeof appForbiddenRoute
   '/(app)/orders': typeof appOrdersRoute
   '/(app)/renewals': typeof appRenewalsRoute
   '/(app2)/dashboard2': typeof app2Dashboard2Route
   '/(public)/about': typeof publicAboutRoute
   '/(public)/theme': typeof publicThemeRoute
+  '/(public)/unauthorized': typeof publicUnauthorizedRoute
   '/(public)/version': typeof publicVersionRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
@@ -281,6 +307,7 @@ export interface FileRoutesById {
   '/api/orders': typeof ApiOrdersRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
+  '/(app)/admin/users': typeof appAdminUsersRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
   '/(app)/playground/error': typeof appPlaygroundErrorRoute
   '/(app)/playground/files': typeof appPlaygroundFilesRoute
@@ -302,11 +329,13 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/forbidden'
     | '/orders'
     | '/renewals'
     | '/dashboard2'
     | '/about'
     | '/theme'
+    | '/unauthorized'
     | '/version'
     | '/api/files'
     | '/api/files-test'
@@ -314,6 +343,7 @@ export interface FileRouteTypes {
     | '/api/orders'
     | '/'
     | '/admin/$page'
+    | '/admin/users'
     | '/dashboard/$page'
     | '/playground/error'
     | '/playground/files'
@@ -333,11 +363,13 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/forbidden'
     | '/orders'
     | '/renewals'
     | '/dashboard2'
     | '/about'
     | '/theme'
+    | '/unauthorized'
     | '/version'
     | '/api/files'
     | '/api/files-test'
@@ -345,6 +377,7 @@ export interface FileRouteTypes {
     | '/api/orders'
     | '/'
     | '/admin/$page'
+    | '/admin/users'
     | '/dashboard/$page'
     | '/playground/error'
     | '/playground/files'
@@ -367,11 +400,13 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app2)'
     | '/(public)'
+    | '/(app)/forbidden'
     | '/(app)/orders'
     | '/(app)/renewals'
     | '/(app2)/dashboard2'
     | '/(public)/about'
     | '/(public)/theme'
+    | '/(public)/unauthorized'
     | '/(public)/version'
     | '/api/files'
     | '/api/files-test'
@@ -379,6 +414,7 @@ export interface FileRouteTypes {
     | '/api/orders'
     | '/(public)/'
     | '/(app)/admin/$page'
+    | '/(app)/admin/users'
     | '/(app)/dashboard/$page'
     | '/(app)/playground/error'
     | '/(app)/playground/files'
@@ -413,11 +449,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/(public)': {
-      id: '/(public)'
+    '/(app)': {
+      id: '/(app)'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof publicRouteRouteImport
+      preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app2)': {
@@ -427,81 +463,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof app2RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)': {
-      id: '/(app)'
+    '/(public)': {
+      id: '/(public)'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof appRouteRouteImport
+      preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(public)/': {
-      id: '/(public)/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof publicIndexRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/api/orders': {
-      id: '/api/orders'
-      path: '/api/orders'
-      fullPath: '/api/orders'
-      preLoaderRoute: typeof ApiOrdersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/images': {
-      id: '/api/images'
-      path: '/api/images'
-      fullPath: '/api/images'
-      preLoaderRoute: typeof ApiImagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/files-test': {
-      id: '/api/files-test'
-      path: '/api/files-test'
-      fullPath: '/api/files-test'
-      preLoaderRoute: typeof ApiFilesTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/files': {
-      id: '/api/files'
-      path: '/api/files'
-      fullPath: '/api/files'
-      preLoaderRoute: typeof ApiFilesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(public)/version': {
-      id: '/(public)/version'
-      path: '/version'
-      fullPath: '/version'
-      preLoaderRoute: typeof publicVersionRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(public)/theme': {
-      id: '/(public)/theme'
-      path: '/theme'
-      fullPath: '/theme'
-      preLoaderRoute: typeof publicThemeRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(public)/about': {
-      id: '/(public)/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof publicAboutRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(app2)/dashboard2': {
-      id: '/(app2)/dashboard2'
-      path: '/dashboard2'
-      fullPath: '/dashboard2'
-      preLoaderRoute: typeof app2Dashboard2RouteImport
-      parentRoute: typeof app2RouteRoute
-    }
-    '/(app)/renewals': {
-      id: '/(app)/renewals'
-      path: '/renewals'
-      fullPath: '/renewals'
-      preLoaderRoute: typeof appRenewalsRouteImport
+    '/(app)/forbidden': {
+      id: '/(app)/forbidden'
+      path: '/forbidden'
+      fullPath: '/forbidden'
+      preLoaderRoute: typeof appForbiddenRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/orders': {
@@ -511,18 +484,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appOrdersRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/api/chat/': {
-      id: '/api/chat/'
-      path: '/api/chat'
-      fullPath: '/api/chat/'
-      preLoaderRoute: typeof ApiChatIndexRouteImport
+    '/(app)/renewals': {
+      id: '/(app)/renewals'
+      path: '/renewals'
+      fullPath: '/renewals'
+      preLoaderRoute: typeof appRenewalsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app2)/dashboard2': {
+      id: '/(app2)/dashboard2'
+      path: '/dashboard2'
+      fullPath: '/dashboard2'
+      preLoaderRoute: typeof app2Dashboard2RouteImport
+      parentRoute: typeof app2RouteRoute
+    }
+    '/(public)/': {
+      id: '/(public)/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof publicIndexRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/about': {
+      id: '/(public)/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof publicAboutRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/theme': {
+      id: '/(public)/theme'
+      path: '/theme'
+      fullPath: '/theme'
+      preLoaderRoute: typeof publicThemeRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/unauthorized': {
+      id: '/(public)/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof publicUnauthorizedRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/(public)/version': {
+      id: '/(public)/version'
+      path: '/version'
+      fullPath: '/version'
+      preLoaderRoute: typeof publicVersionRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/api/files': {
+      id: '/api/files'
+      path: '/api/files'
+      fullPath: '/api/files'
+      preLoaderRoute: typeof ApiFilesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(app)/support/': {
-      id: '/(app)/support/'
-      path: '/support'
-      fullPath: '/support/'
-      preLoaderRoute: typeof appSupportIndexRouteImport
+    '/api/files-test': {
+      id: '/api/files-test'
+      path: '/api/files-test'
+      fullPath: '/api/files-test'
+      preLoaderRoute: typeof ApiFilesTestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/images': {
+      id: '/api/images'
+      path: '/api/images'
+      fullPath: '/api/images'
+      preLoaderRoute: typeof ApiImagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/orders': {
+      id: '/api/orders'
+      path: '/api/orders'
+      fullPath: '/api/orders'
+      preLoaderRoute: typeof ApiOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/admin/$page': {
+      id: '/(app)/admin/$page'
+      path: '/admin/$page'
+      fullPath: '/admin/$page'
+      preLoaderRoute: typeof appAdminPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/admin/users': {
+      id: '/(app)/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof appAdminUsersRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/dashboard/': {
@@ -532,74 +582,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardIndexRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/api/health/live': {
-      id: '/api/health/live'
-      path: '/api/health/live'
-      fullPath: '/api/health/live'
-      preLoaderRoute: typeof ApiHealthLiveRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/(public)/auth/$path': {
-      id: '/(public)/auth/$path'
-      path: '/auth/$path'
-      fullPath: '/auth/$path'
-      preLoaderRoute: typeof publicAuthPathRouteImport
-      parentRoute: typeof publicRouteRoute
-    }
-    '/(app)/settings/notifications': {
-      id: '/(app)/settings/notifications'
-      path: '/settings/notifications'
-      fullPath: '/settings/notifications'
-      preLoaderRoute: typeof appSettingsNotificationsRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/settings/$page': {
-      id: '/(app)/settings/$page'
-      path: '/settings/$page'
-      fullPath: '/settings/$page'
-      preLoaderRoute: typeof appSettingsPageRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/reports/$page': {
-      id: '/(app)/reports/$page'
-      path: '/reports/$page'
-      fullPath: '/reports/$page'
-      preLoaderRoute: typeof appReportsPageRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/playground/workflow': {
-      id: '/(app)/playground/workflow'
-      path: '/playground/workflow'
-      fullPath: '/playground/workflow'
-      preLoaderRoute: typeof appPlaygroundWorkflowRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/playground/test': {
-      id: '/(app)/playground/test'
-      path: '/playground/test'
-      fullPath: '/playground/test'
-      preLoaderRoute: typeof appPlaygroundTestRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/playground/form-demo': {
-      id: '/(app)/playground/form-demo'
-      path: '/playground/form-demo'
-      fullPath: '/playground/form-demo'
-      preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/playground/files': {
-      id: '/(app)/playground/files'
-      path: '/playground/files'
-      fullPath: '/playground/files'
-      preLoaderRoute: typeof appPlaygroundFilesRouteImport
+    '/(app)/dashboard/$page': {
+      id: '/(app)/dashboard/$page'
+      path: '/dashboard/$page'
+      fullPath: '/dashboard/$page'
+      preLoaderRoute: typeof appDashboardPageRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/playground/error': {
@@ -609,18 +596,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appPlaygroundErrorRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/dashboard/$page': {
-      id: '/(app)/dashboard/$page'
-      path: '/dashboard/$page'
-      fullPath: '/dashboard/$page'
-      preLoaderRoute: typeof appDashboardPageRouteImport
+    '/(app)/playground/files': {
+      id: '/(app)/playground/files'
+      path: '/playground/files'
+      fullPath: '/playground/files'
+      preLoaderRoute: typeof appPlaygroundFilesRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/admin/$page': {
-      id: '/(app)/admin/$page'
-      path: '/admin/$page'
-      fullPath: '/admin/$page'
-      preLoaderRoute: typeof appAdminPageRouteImport
+    '/(app)/playground/form-demo': {
+      id: '/(app)/playground/form-demo'
+      path: '/playground/form-demo'
+      fullPath: '/playground/form-demo'
+      preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/test': {
+      id: '/(app)/playground/test'
+      path: '/playground/test'
+      fullPath: '/playground/test'
+      preLoaderRoute: typeof appPlaygroundTestRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/workflow': {
+      id: '/(app)/playground/workflow'
+      path: '/playground/workflow'
+      fullPath: '/playground/workflow'
+      preLoaderRoute: typeof appPlaygroundWorkflowRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/reports/$page': {
+      id: '/(app)/reports/$page'
+      path: '/reports/$page'
+      fullPath: '/reports/$page'
+      preLoaderRoute: typeof appReportsPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/settings/$page': {
+      id: '/(app)/settings/$page'
+      path: '/settings/$page'
+      fullPath: '/settings/$page'
+      preLoaderRoute: typeof appSettingsPageRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/settings/notifications': {
+      id: '/(app)/settings/notifications'
+      path: '/settings/notifications'
+      fullPath: '/settings/notifications'
+      preLoaderRoute: typeof appSettingsNotificationsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/support/': {
+      id: '/(app)/support/'
+      path: '/support'
+      fullPath: '/support/'
+      preLoaderRoute: typeof appSupportIndexRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(public)/auth/$path': {
+      id: '/(public)/auth/$path'
+      path: '/auth/$path'
+      fullPath: '/auth/$path'
+      preLoaderRoute: typeof publicAuthPathRouteImport
+      parentRoute: typeof publicRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat/': {
+      id: '/api/chat/'
+      path: '/api/chat'
+      fullPath: '/api/chat/'
+      preLoaderRoute: typeof ApiChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/health/live': {
+      id: '/api/health/live'
+      path: '/api/health/live'
+      fullPath: '/api/health/live'
+      preLoaderRoute: typeof ApiHealthLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(app)/(security)/organization/$path': {
+      id: '/(app)/(security)/organization/$path'
+      path: '/organization/$path'
+      fullPath: '/organization/$path'
+      preLoaderRoute: typeof appsecurityOrganizationPathRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/(security)/user/$path': {
@@ -630,20 +694,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appsecurityUserPathRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/(security)/organization/$path': {
-      id: '/(app)/(security)/organization/$path'
-      path: '/organization/$path'
-      fullPath: '/organization/$path'
-      preLoaderRoute: typeof appsecurityOrganizationPathRouteImport
-      parentRoute: typeof appRouteRoute
-    }
   }
 }
 
 interface appRouteRouteChildren {
+  appForbiddenRoute: typeof appForbiddenRoute
   appOrdersRoute: typeof appOrdersRoute
   appRenewalsRoute: typeof appRenewalsRoute
   appAdminPageRoute: typeof appAdminPageRoute
+  appAdminUsersRoute: typeof appAdminUsersRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
   appPlaygroundFilesRoute: typeof appPlaygroundFilesRoute
@@ -660,9 +719,11 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appForbiddenRoute: appForbiddenRoute,
   appOrdersRoute: appOrdersRoute,
   appRenewalsRoute: appRenewalsRoute,
   appAdminPageRoute: appAdminPageRoute,
+  appAdminUsersRoute: appAdminUsersRoute,
   appDashboardPageRoute: appDashboardPageRoute,
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
   appPlaygroundFilesRoute: appPlaygroundFilesRoute,
@@ -697,6 +758,7 @@ const app2RouteRouteWithChildren = app2RouteRoute._addFileChildren(
 interface publicRouteRouteChildren {
   publicAboutRoute: typeof publicAboutRoute
   publicThemeRoute: typeof publicThemeRoute
+  publicUnauthorizedRoute: typeof publicUnauthorizedRoute
   publicVersionRoute: typeof publicVersionRoute
   publicIndexRoute: typeof publicIndexRoute
   publicAuthPathRoute: typeof publicAuthPathRoute
@@ -705,6 +767,7 @@ interface publicRouteRouteChildren {
 const publicRouteRouteChildren: publicRouteRouteChildren = {
   publicAboutRoute: publicAboutRoute,
   publicThemeRoute: publicThemeRoute,
+  publicUnauthorizedRoute: publicUnauthorizedRoute,
   publicVersionRoute: publicVersionRoute,
   publicIndexRoute: publicIndexRoute,
   publicAuthPathRoute: publicAuthPathRoute,
@@ -731,10 +794,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }
