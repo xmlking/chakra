@@ -60,6 +60,7 @@
     "@workspace/ui": "workspace:*",
     "ai": "catalog:",
     "better-auth": "catalog:",
+    "better-auth-studio": "catalog:",
     "better-result": "catalog:",
     "date-fns": "catalog:",
     "evlog": "catalog:",
