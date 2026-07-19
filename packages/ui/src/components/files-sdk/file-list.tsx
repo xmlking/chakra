@@ -23,6 +23,8 @@ export interface FileListProps {
   endpoint?: string;
   /** Hide the delete action. */
   readOnly?: boolean;
+    /** Called after a successful restore or purge. */
+  onChanged?: () => void;
   className?: string;
 }
 
@@ -75,6 +77,7 @@ export const FileList = ({
   prefix,
   endpoint = "/api/files",
   readOnly = false,
+  onChanged,
   className,
 }: FileListProps) => {
   const [items, setItems] = useState<StoredFile[]>([]);
@@ -109,6 +112,7 @@ export const FileList = ({
   const remove = useCallback(async (key: string) => {
     await filesRef.current.delete(key);
     setItems((prev) => prev.filter((item) => item.key !== key));
+    onChanged?.();
   }, []);
 
   const download = useCallback(async (file: StoredFile) => {

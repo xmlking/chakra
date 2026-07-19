@@ -12,7 +12,7 @@ import {
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 
-import { Button } from "#components/shadcn/button";
+import { Button, buttonVariants } from "#components/shadcn/button";
 import {
   Dialog,
   DialogContent,
@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "#components/shadcn/dropdown-menu";
 import { Input } from "#components/shadcn/input";
+import { cn } from "#lib/utils";
 
 export interface FileActionsProps {
   /** A `useFiles()` instance — every action runs through it. */
@@ -37,7 +38,7 @@ export interface FileActionsProps {
   fileKey: string;
   /** Called after a successful copy/rename/move/delete so the parent can refresh. */
   onChanged?: () => void;
-  /** Custom trigger. Defaults to a `⋯` icon button. */
+  /** Custom trigger content, rendered inside the trigger button. Defaults to a styled `⋯` icon. */
   children?: ReactNode;
   className?: string;
 }
@@ -127,19 +128,23 @@ export const FileActions = ({
   return (
     <>
       <DropdownMenu>
+        {/* Styled via buttonVariants instead of asChild-wrapping a Button: the
+            trigger must work with both the Radix and Base UI shadcn flavors,
+            and Base UI has no asChild (nesting a Button renders <button> inside
+            <button>). */}
         <DropdownMenuTrigger
-          render={
-            <Button
-              className={className}
-              size="icon-sm"
-              type="button"
-              variant="ghost"
-            >
+          className={cn(
+            !children && buttonVariants({ size: "icon-sm", variant: "ghost" }),
+            className
+          )}
+        >
+          {children ?? (
+            <>
               <MoreHorizontalIcon />
               <span className="sr-only">Actions</span>
-            </Button>
-        }
-        />
+            </>
+          )}
+        </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => void download()}>
             <DownloadIcon />

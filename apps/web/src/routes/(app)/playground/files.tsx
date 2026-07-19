@@ -11,6 +11,7 @@ import { FileList } from "@workspace/ui/components/files-sdk/file-list";
 import { FileSearch } from "@workspace/ui/components/files-sdk/file-search";
 import { TrashBin } from "@workspace/ui/components/files-sdk/trash-bin";
 import { useFiles } from "files-sdk/react";
+import { useState } from "react";
 
 export const Route = createFileRoute("/(app)/playground/files")({
   staticData: {
@@ -21,6 +22,8 @@ export const Route = createFileRoute("/(app)/playground/files")({
 
 function FilesPage() {
   const files = useFiles({ endpoint: "/api/files" });
+  const [version, setVersion] = useState(0);
+  const bump = () => setVersion((v) => v + 1);
 
   return (
     <div className="container mx-auto p-8">
@@ -29,7 +32,13 @@ function FilesPage() {
         {/* Capabilities Badges   */}
         <CapabilitiesBadges files={files} supportedOnly />
         {/* Upload Section */}
-        <Dropzone accept="application/pdf" files={files} prefix="docs/" maxFiles={5}>
+        <Dropzone
+          accept="application/pdf"
+          files={files}
+          prefix="docs/"
+          onUploaded={bump}
+          maxFiles={5}
+        >
           <DropzoneEmptyState />
           <DropzoneContent />
         </Dropzone>
@@ -40,19 +49,15 @@ function FilesPage() {
           onSelect={(file) => console.log(file.key)}
         />
         {/* file list   */}
-        <FileList files={files} prefix="docs/" />
+        <FileList files={files} key={`list-${version}`} prefix="docs/" onChanged={bump} />
 
         <FileBrowser
           files={files}
+          key={`browser-${version}`}
           initialPrefix="docs/"
           onSelect={(file) => console.log(file.key)}
         />
-        <TrashBin
-          files={files}
-          onChanged={() => {
-            console.log("TrashBin...");
-          }}
-        />
+        <TrashBin files={files} key={`trash-${version}`} onChanged={bump} />
         {/* file actions   */}
         <div className="flex w-full max-w-sm items-center justify-between gap-4 rounded-lg border border-border p-3">
           <span className="truncate text-sm font-medium">docs/b4.png</span>
