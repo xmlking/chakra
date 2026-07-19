@@ -69,6 +69,10 @@ export const baseOptions: BaseLayoutProps = {
       url: "/docs/openapi",
     },
     {
+      text: "Graph",
+      url: "/graph",
+    },
+    {
       text: "For LLMs",
       type: "menu",
       items: [
