@@ -1,18 +1,13 @@
-"use server";
-import { loader } from "fumadocs-core/source";
+import { getPressContext } from "fumapress";
 
-import { docs } from "../../.source/server";
+import type PressConfig from "../../press.config";
 import type { Graph } from "../components/graph-view";
-
-const source = loader({
-  source: docs.toFumadocsSource(),
-  baseUrl: "/docs",
-});
-const pages = source.getPages();
 
 // oxlint-disable-next-line react-doctor/server-auth-actions
 export async function buildGraph(): Promise<Graph> {
-  // const pages = source.getPages();
+  const { getLoader } = getPressContext<typeof PressConfig.$context>();
+  const source = await getLoader();
+  const pages = source.getPages();
   const graph: Graph = { links: [], nodes: [] };
   const pageMap = new Map(pages.map((p) => [p.url, p]));
 
