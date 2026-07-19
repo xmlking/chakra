@@ -24,6 +24,7 @@ export const docs = defineDocs({
     schema: pageSchema,
     postprocess: {
       includeProcessedMarkdown: true,
+      extractLinkReferences: true,
     },
   },
   meta: {
@@ -38,6 +39,7 @@ export const blog = defineDocs({
     schema: blogPageSchema,
     postprocess: {
       includeProcessedMarkdown: true,
+      extractLinkReferences: true,
     },
   },
   meta: {
@@ -52,6 +54,7 @@ export const changelog = defineDocs({
     schema: changelogPageSchema,
     postprocess: {
       includeProcessedMarkdown: true,
+      extractLinkReferences: true,
     },
   },
   meta: {
