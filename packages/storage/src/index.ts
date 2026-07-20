@@ -1,6 +1,7 @@
 import { log } from "evlog";
 import { createFiles } from "files-sdk";
 import { minio } from "files-sdk/minio";
+import { signedUrlPolicy } from "files-sdk/signed-url-policy";
 import { softDelete } from "files-sdk/soft-delete";
 import { env } from "virtual:env/server";
 
@@ -15,7 +16,13 @@ export const images = createFiles({
     secretAccessKey: env.S3_SECRET_ACCESS_KEY,
     region: env.S3_REGION,
   }),
-  plugins: [softDelete()],
+  plugins: [
+    signedUrlPolicy({
+      maxExpiresIn: 15 * 60, // no URL lives longer than 15 minutes
+      maxUploadSize: 10 * 1024 * 1024, // every signed upload caps at 10 MiB
+    }),
+    softDelete(),
+  ],
   // prefix: "users", // every key resolves under users/
   timeout: 10_000, // default per-attempt timeout
   retries: 3, // retry provider failures

@@ -8,6 +8,7 @@ import {
 import { FileActions } from "@workspace/ui/components/files-sdk/file-actions";
 import { FileBrowser } from "@workspace/ui/components/files-sdk/file-browser";
 import { FileList } from "@workspace/ui/components/files-sdk/file-list";
+import { FilePreview } from "@workspace/ui/components/files-sdk/file-preview";
 import { FileSearch } from "@workspace/ui/components/files-sdk/file-search";
 import { TrashBin } from "@workspace/ui/components/files-sdk/trash-bin";
 import { useFiles } from "files-sdk/react";
@@ -24,6 +25,7 @@ function FilesPage() {
   const files = useFiles({ endpoint: "/api/files" });
   const [version, setVersion] = useState(0);
   const bump = () => setVersion((v) => v + 1);
+  const [key, setKey] = useState<string>();
 
   return (
     <div className="container mx-auto p-8">
@@ -33,7 +35,7 @@ function FilesPage() {
         <CapabilitiesBadges files={files} supportedOnly />
         {/* Upload Section */}
         <Dropzone
-          accept="application/pdf"
+          accept="image/*,text/*,application/pdf"
           files={files}
           prefix="docs/"
           onUploaded={bump}
@@ -55,8 +57,10 @@ function FilesPage() {
           files={files}
           key={`browser-${version}`}
           initialPrefix="docs/"
-          onSelect={(file) => console.log(file.key)}
+          onSelect={(file) => setKey(file.key)}
         />
+        {key && <FilePreview file={key} files={files} />}
+
         <TrashBin files={files} key={`trash-${version}`} onChanged={bump} />
         {/* file actions   */}
         <div className="flex w-full max-w-sm items-center justify-between gap-4 rounded-lg border border-border p-3">

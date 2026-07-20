@@ -15,7 +15,11 @@ import { env } from "virtual:env/server";
 
 const allowedOrigins = ["https://chakra.ai", "https://www.chakra.ai", env.VITE_BETTER_AUTH_URL];
 if (import.meta.env.DEV) {
-  allowedOrigins.push("http://localhost:3000", "https://console-127-0-0-1.nip.io");
+  allowedOrigins.push(
+    "http://localhost:3000",
+    "https://console-127-0-0-1.nip.io",
+    "http://localhost:9000",
+  );
 }
 
 const router = createFilesRouter({
