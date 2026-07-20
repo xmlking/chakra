@@ -132,6 +132,10 @@ export const navGroups: NavGroup[] = [
             url: "/playground/files",
           },
           {
+            title: "PDF Viewer",
+            url: "/playground/pdf-viewer",
+          },
+          {
             title: "Version",
             url: "/api/health/live",
           },
