@@ -32,6 +32,7 @@ import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard/$
 import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
 import { Route as appPlaygroundFilesRouteImport } from './routes/(app)/playground/files'
 import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
+import { Route as appPlaygroundPdfViewerRouteImport } from './routes/(app)/playground/pdf-viewer'
 import { Route as appPlaygroundTestRouteImport } from './routes/(app)/playground/test'
 import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
@@ -158,6 +159,11 @@ const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
   path: '/playground/form-demo',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundPdfViewerRoute = appPlaygroundPdfViewerRouteImport.update({
+  id: '/playground/pdf-viewer',
+  path: '/playground/pdf-viewer',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appPlaygroundTestRoute = appPlaygroundTestRouteImport.update({
   id: '/playground/test',
   path: '/playground/test',
@@ -246,6 +252,7 @@ export interface FileRoutesByFullPath {
   '/playground/error': typeof appPlaygroundErrorRoute
   '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
   '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/playground/error': typeof appPlaygroundErrorRoute
   '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
   '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
@@ -320,6 +328,7 @@ export interface FileRoutesById {
   '/(app)/playground/error': typeof appPlaygroundErrorRoute
   '/(app)/playground/files': typeof appPlaygroundFilesRoute
   '/(app)/playground/form-demo': typeof appPlaygroundFormDemoRoute
+  '/(app)/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
   '/(app)/playground/test': typeof appPlaygroundTestRoute
   '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
@@ -357,6 +366,7 @@ export interface FileRouteTypes {
     | '/playground/error'
     | '/playground/files'
     | '/playground/form-demo'
+    | '/playground/pdf-viewer'
     | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/playground/error'
     | '/playground/files'
     | '/playground/form-demo'
+    | '/playground/pdf-viewer'
     | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
@@ -430,6 +441,7 @@ export interface FileRouteTypes {
     | '/(app)/playground/error'
     | '/(app)/playground/files'
     | '/(app)/playground/form-demo'
+    | '/(app)/playground/pdf-viewer'
     | '/(app)/playground/test'
     | '/(app)/playground/workflow'
     | '/(app)/reports/$page'
@@ -623,6 +635,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/playground/pdf-viewer': {
+      id: '/(app)/playground/pdf-viewer'
+      path: '/playground/pdf-viewer'
+      fullPath: '/playground/pdf-viewer'
+      preLoaderRoute: typeof appPlaygroundPdfViewerRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/playground/test': {
       id: '/(app)/playground/test'
       path: '/playground/test'
@@ -727,6 +746,7 @@ interface appRouteRouteChildren {
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
   appPlaygroundFilesRoute: typeof appPlaygroundFilesRoute
   appPlaygroundFormDemoRoute: typeof appPlaygroundFormDemoRoute
+  appPlaygroundPdfViewerRoute: typeof appPlaygroundPdfViewerRoute
   appPlaygroundTestRoute: typeof appPlaygroundTestRoute
   appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
   appReportsPageRoute: typeof appReportsPageRoute
@@ -748,6 +768,7 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
   appPlaygroundFilesRoute: appPlaygroundFilesRoute,
   appPlaygroundFormDemoRoute: appPlaygroundFormDemoRoute,
+  appPlaygroundPdfViewerRoute: appPlaygroundPdfViewerRoute,
   appPlaygroundTestRoute: appPlaygroundTestRoute,
   appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
   appReportsPageRoute: appReportsPageRoute,
