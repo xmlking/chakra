@@ -1,7 +1,7 @@
 import { MutationCache, QueryClient, type QueryKey } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import { log } from "evlog";
+import { UnauthorizedError } from "@workspace/shared";
 import { toast } from "sonner";
 
 import { DefaultError } from "#components/default-error";
@@ -33,22 +33,26 @@ export function getRouter() {
         }
       },
       onError: (error, _variables, _context, mutation) => {
-        log.error({ error });
-        // if (error?.status === 401) {
-        //   // perform logout
-        //   localStorage.removeItem("token"); // or whatever you store
-        //   window.location.href = "/login"; // or navigate with router
-        // }
-        let errorMsg = error.message;
-        if (mutation.meta?.errorMessage) {
-          errorMsg = mutation.meta.errorMessage;
+        // log.error({ error });
+
+        if (error instanceof UnauthorizedError) {
+          // perform logout
+          window.location.href = "/auth/sign-in"; // or navigate with router
         }
-        const mutationKey = mutation.options.mutationKey?.[0] as string;
-        toast.error(mutationKey, {
-          description: errorMsg,
-          duration: Infinity,
-          closeButton: true,
-        });
+        // if (error instanceof FormattedError) {
+        //   toast.warning(error.message);
+        // } else if (error instanceof ZodError) {
+        //   toast.error("Please check the form for errors.");
+        // } else if (error instanceof NotFoundError) {
+        //   toast.error("The requested resource was not found.");
+        // } else {
+        if (mutation.meta?.errorMessage) {
+          // const mutationKey = mutation.options.mutationKey?.[0] as string;
+          toast.error(mutation.meta.errorMessage, {
+            duration: Infinity,
+            closeButton: true,
+          });
+        }
       },
       onSettled: async (_data, _error, _variables, _context, mutation) => {
         {

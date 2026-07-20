@@ -1,7 +1,4 @@
-interface ZodIssue {
-  path: (string | number)[];
-  message: string;
-}
+import type { ZodIssue } from "zod";
 
 export function parseZodIssues(message: string): ZodIssue[] | null {
   try {
