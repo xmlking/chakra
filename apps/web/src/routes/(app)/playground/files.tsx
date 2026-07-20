@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+// import { PDFViewer } from "@workspace/ui/components/extend/pdf-viewer";
 import { CapabilitiesBadges } from "@workspace/ui/components/files-sdk/capabilities-badges";
 import {
   Dropzone,
@@ -48,7 +49,7 @@ function FilesPage() {
           files={files}
           prefix="docs/"
           defaultMatch="glob"
-          onSelect={(file) => console.log(file.key)}
+          onSelect={(file) => setKey(file.key)}
         />
         {/* file list   */}
         <FileList files={files} key={`list-${version}`} prefix="docs/" onChanged={bump} />
@@ -59,7 +60,9 @@ function FilesPage() {
           initialPrefix="docs/"
           onSelect={(file) => setKey(file.key)}
         />
+        <p>Preview File: {key}</p>
         {key && <FilePreview file={key} files={files} />}
+        {/* {key && <PDFViewer src={files.url(key)} className="h-[640px]" />} */}
 
         <TrashBin files={files} key={`trash-${version}`} onChanged={bump} />
         {/* file actions   */}
