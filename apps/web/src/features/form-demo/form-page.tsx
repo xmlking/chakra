@@ -120,6 +120,9 @@ export function FormPage() {
     onError: (error: Error) => {
       console.log(error);
 
+      // if (error instanceof ZodError) {
+      // }
+
       const issues = parseZodIssues(error.message);
       if (issues) {
         applyZodIssues(form, issues);

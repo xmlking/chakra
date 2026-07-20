@@ -24,6 +24,18 @@ export class ValidationError extends TaggedError("ValidationError")<{
   message: string;
 }>() {}
 
+export class NotFoundError extends TaggedError("NotFoundError")<{
+  message: string;
+}>() {}
+
+export class UnauthorizedError extends TaggedError("UnauthorizedError")<{
+  message: string;
+}>() {}
+
+export class ForbiddenError extends TaggedError("ForbiddenError")<{
+  message: string;
+}>() {}
+
 export type AppError = NetworkError | ValidationError;
 
 export class AiInternalError extends TaggedError("AiInternalError")<{
