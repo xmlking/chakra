@@ -1,4 +1,4 @@
-// oxlint-disable typescript/no-base-to-string
+// oxlint-disable typescript/no-base-to-string react-doctor/react-compiler-no-manual-memoization
 "use client";
 "use no memo";
 
@@ -6,14 +6,17 @@ import { type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type PaginationState,
   type ColumnDef,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
 import { DataGrid } from "@workspace/ui/components/reui/data-grid/data-grid";
+import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTableDndRows } from "@workspace/ui/components/reui/data-grid/data-grid-table-dnd-rows";
 import {
@@ -28,6 +31,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/shadcn/card";
@@ -55,7 +59,7 @@ import {
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { cn } from "@workspace/ui/lib/utils";
-import { CheckIcon, FilterIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
+import { CheckIcon, FilterIcon, PlusIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -75,20 +79,16 @@ function normalizeOrder(items: BacklogItem[]) {
 function getActiveFilters(filters: Filter[]) {
   return filters.filter((filter) => {
     const { operator, values } = filter;
-
     if (operator === "empty" || operator === "not_empty") return true;
     if (!values || values.length === 0) return false;
-
     if (values.every((value) => typeof value === "string" && value.trim() === "")) {
       return false;
     }
-
     if (values.every((value) => value == null)) return false;
 
     if (values.every((value) => Array.isArray(value) && value.length === 0)) {
       return false;
     }
-
     return true;
   });
 }
@@ -104,15 +104,6 @@ function applyFiltersToData(data: BacklogItem[], filters: Filter[]) {
         const fieldValue = item[field as keyof BacklogItem];
 
         switch (operator) {
-          case "contains": {
-            const tokens = values.map((value) => String(value).trim()).filter(Boolean);
-
-            if (tokens.length === 0) return true;
-
-            return tokens.some((token) =>
-              String(fieldValue).toLowerCase().includes(token.toLowerCase()),
-            );
-          }
           case "is":
             return values.includes(fieldValue);
           case "is_not":
@@ -121,10 +112,55 @@ function applyFiltersToData(data: BacklogItem[], filters: Filter[]) {
             return values.some((value) => fieldValue === value);
           case "is_not_any_of":
             return !values.some((value) => fieldValue === value);
+          case "contains": {
+            const tokens = values.map((value) => String(value).trim()).filter(Boolean);
+            if (tokens.length === 0) return true;
+            return tokens.some((token) =>
+              String(fieldValue).toLowerCase().includes(token.toLowerCase()),
+            );
+          }
+          case "not_contains":
+            return !values.some((value) =>
+              String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
+            );
+          case "starts_with":
+            return values.some((value) =>
+              String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
+            );
+          case "ends_with":
+            return values.some((value) =>
+              String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
+            );
+          case "equals":
+            return fieldValue === values[0];
+          case "not_equals":
+            return fieldValue !== values[0];
+          case "greater_than":
+            return Number(fieldValue) > Number(values[0]);
+          case "less_than":
+            return Number(fieldValue) < Number(values[0]);
+          case "greater_than_or_equal":
+            return Number(fieldValue) >= Number(values[0]);
+          case "less_than_or_equal":
+            return Number(fieldValue) <= Number(values[0]);
+          case "between":
+            if (values.length >= 2) {
+              const min = Number(values[0]);
+              const max = Number(values[1]);
+              return Number(fieldValue) >= min && Number(fieldValue) <= max;
+            }
+            return true;
+          case "not_between":
+            if (values.length >= 2) {
+              const min = Number(values[0]);
+              const max = Number(values[1]);
+              return Number(fieldValue) < min || Number(fieldValue) > max;
+            }
+            return true;
           case "empty":
             return fieldValue === "" || fieldValue == null;
           case "not_empty":
-            return fieldValue !== "" && fieldValue == null;
+            return fieldValue !== "" && fieldValue != null;
           default:
             return true;
         }
@@ -141,14 +177,14 @@ function createDefaultFilters(): Filter[] {
 const SEED_ITEMS = normalizeOrder(sortByOrder(BACKLOG_ITEMS));
 
 type TableDensity = "compact" | "comfortable";
-type DisplayProperty = "status" | "type" | "owner" | "team" | "cycle" | "effort";
+type DisplayColumn = "status" | "type" | "owner" | "team" | "cycle" | "effort";
 
 const TABLE_DENSITY_OPTIONS: { value: TableDensity; label: string }[] = [
   { value: "compact", label: "Compact" },
   { value: "comfortable", label: "Comfortable" },
 ];
 
-const DISPLAY_PROPERTIES: { key: DisplayProperty; label: string }[] = [
+const DISPLAY_COLUMNS: { key: DisplayColumn; label: string }[] = [
   { key: "status", label: "Status" },
   { key: "type", label: "Type" },
   { key: "owner", label: "Owner" },
@@ -171,8 +207,8 @@ interface ToolbarProps {
   onColumnsResizableChange: (value: boolean) => void;
   columnsMovable: boolean;
   onColumnsMovableChange: (value: boolean) => void;
-  visibleProperties: Record<DisplayProperty, boolean>;
-  onToggleProperty: (property: DisplayProperty) => void;
+  visibleColumns: Record<DisplayColumn, boolean>;
+  onToggleColumn: (columnId: DisplayColumn) => void;
 }
 
 function Toolbar({
@@ -189,8 +225,8 @@ function Toolbar({
   onColumnsResizableChange,
   columnsMovable,
   onColumnsMovableChange,
-  visibleProperties,
-  onToggleProperty,
+  visibleColumns,
+  onToggleColumn,
 }: ToolbarProps) {
   const activeFilters = useMemo(() => getActiveFilters(filters), [filters]);
 
@@ -317,20 +353,20 @@ function Toolbar({
               <div className="space-y-2.5">
                 <div className="text-xs font-medium text-muted-foreground">Display columns</div>
                 <div className="flex flex-wrap gap-1.5">
-                  {DISPLAY_PROPERTIES.map((property) => {
-                    const active = visibleProperties[property.key];
+                  {DISPLAY_COLUMNS.map((column) => {
+                    const active = visibleColumns[column.key];
 
                     return (
                       <Button
-                        key={property.key}
+                        key={column.key}
                         type="button"
                         size="xs"
                         variant={active ? "secondary" : "outline"}
                         className={cn("rounded-full", active && "border-foreground/10")}
-                        onClick={() => onToggleProperty(property.key)}
+                        onClick={() => onToggleColumn(column.key)}
                       >
                         {active ? <CheckIcon className="size-3.5" aria-hidden="true" /> : null}
-                        {property.label}
+                        {column.label}
                       </Button>
                     );
                   })}
@@ -351,6 +387,10 @@ export function DataTable() {
   const [columnsMovable, setColumnsMovable] = useState(false);
   const [filters, setFilters] = useState<Filter[]>(createDefaultFilters());
   const [searchQuery, setSearchQuery] = useState("");
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 5,
+  });
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     status: true,
@@ -364,6 +404,7 @@ export function DataTable() {
   const filteredItems = useMemo(() => {
     const filterResult = applyFiltersToData(items, filters);
 
+    // Apply search query
     if (!searchQuery) {
       return filterResult;
     }
@@ -379,7 +420,7 @@ export function DataTable() {
     [filteredItems],
   );
 
-  const visibleProperties = useMemo<Record<DisplayProperty, boolean>>(
+  const visibleColumns = useMemo<Record<DisplayColumn, boolean>>(
     () => ({
       status: columnVisibility.status !== false,
       type: columnVisibility.type !== false,
@@ -415,7 +456,7 @@ export function DataTable() {
     setFilters(createDefaultFilters());
   }, []);
 
-  const toggleProperty = useCallback((property: DisplayProperty) => {
+  const handleToggleColumn = useCallback((property: DisplayColumn) => {
     setColumnVisibility((current) => ({
       ...current,
       [property]: !current[property],
@@ -504,15 +545,18 @@ export function DataTable() {
     data: filteredItems,
     columns,
     state: {
+      pagination,
       sorting,
       columnVisibility: Object.fromEntries(
         Object.entries(columnVisibility).map(([key, value]) => [key, value]),
       ),
     },
+    onPaginationChange: setPagination,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -564,11 +608,13 @@ export function DataTable() {
                 })
               }
             >
-              <CheckIcon aria-hidden="true" />
+              <PlusIcon aria-hidden="true" />
               New item
             </Button>
           </CardAction>
         </CardHeader>
+
+        {/* Content */}
 
         <Toolbar
           filters={filters}
@@ -584,17 +630,21 @@ export function DataTable() {
           onColumnsResizableChange={setColumnsResizable}
           columnsMovable={columnsMovable}
           onColumnsMovableChange={setColumnsMovable}
-          visibleProperties={visibleProperties}
-          onToggleProperty={toggleProperty}
+          visibleColumns={visibleColumns}
+          onToggleColumn={handleToggleColumn}
         />
 
         <Separator />
-
-        <CardContent className="p-0">
+        <CardContent className={cn("p-0")}>
           <DataGridScrollArea>
             <DataGridTableDndRows dataIds={dataIds} handleDragEnd={handleDragEnd} />
           </DataGridScrollArea>
         </CardContent>
+        <CardFooter className={cn("border-t px-5 py-3")}>
+          <div className="flex w-full justify-end">
+            <DataGridPagination />
+          </div>
+        </CardFooter>
       </Card>
     </DataGrid>
   );

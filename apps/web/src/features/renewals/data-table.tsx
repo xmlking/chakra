@@ -1,15 +1,18 @@
-// oxlint-disable typescript/no-base-to-string
+// oxlint-disable typescript/no-base-to-string react-doctor/react-compiler-no-manual-memoization
 "use client";
 
 import {
   getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  type PaginationState,
   type RowSelectionState,
   type SortingState,
   type VisibilityState,
 } from "@tanstack/react-table";
 import { DataGrid } from "@workspace/ui/components/reui/data-grid/data-grid";
+import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
 import {
@@ -24,6 +27,7 @@ import {
   CardAction,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/shadcn/card";
@@ -425,10 +429,14 @@ function Toolbar({
 }
 
 export function DataTable() {
-  const [renewals, setRenewals] = useState<IRenewalRecord[]>(RENEWAL_RECORDS);
+  const [items, setItems] = useState<IRenewalRecord[]>(RENEWAL_RECORDS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
   const [columnsResizable, setColumnsResizable] = useState(true);
   const [columnsMovable, setColumnsMovable] = useState(true);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const [sorting, setSorting] = useState<SortingState>([
     { id: "renewalWindow", desc: false },
     { id: "arr", desc: true },
@@ -534,7 +542,7 @@ export function DataTable() {
   );
 
   const filteredData = useMemo(() => {
-    const filterResult = applyFiltersToData(renewals, filters);
+    const filterResult = applyFiltersToData(items, filters);
 
     // Apply search query
     if (!searchQuery) {
@@ -545,7 +553,7 @@ export function DataTable() {
     return filterResult.filter((item) =>
       Object.values(item).join(" ").toLowerCase().includes(searchLower),
     );
-  }, [filters, renewals, searchQuery]);
+  }, [filters, items, searchQuery]);
   const visibleColumns = useMemo<Record<DisplayColumn, boolean>>(
     () => ({
       health: columnVisibility.health !== false,
@@ -595,7 +603,7 @@ export function DataTable() {
   }, []);
 
   const handleEscalateReview = useCallback((renewal: IRenewalRecord) => {
-    setRenewals((current) =>
+    setItems((current) =>
       current.map((record) =>
         record.id === renewal.id
           ? {
@@ -627,6 +635,7 @@ export function DataTable() {
     data: filteredData,
     getRowId: (row) => row.id,
     state: {
+      pagination,
       sorting,
       columnVisibility,
       columnOrder,
@@ -635,10 +644,12 @@ export function DataTable() {
     enableRowSelection: true,
     columnResizeMode: "onChange",
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   });
 
@@ -672,7 +683,7 @@ export function DataTable() {
     const nextOwner = RENEWAL_OWNERS.find((owner) => owner.value === bulkOwnerValue);
     if (!nextOwner) return;
 
-    setRenewals((current) =>
+    setItems((current) =>
       current.map((renewal) =>
         selectedRows.includes(renewal.id)
           ? {
@@ -722,50 +733,55 @@ export function DataTable() {
               }
             >
               <PlusIcon aria-hidden="true" />
-              New transaction
+              New item
             </Button>
           </CardAction>
         </CardHeader>
 
         {/* Content */}
-        <CardContent className={cn("p-0")}>
-          <Toolbar
-            filters={filters}
-            fields={filterFields}
-            onFiltersChange={handleFiltersChange}
-            onClearFilters={handleClearFilters}
-            showClearButton={showClearButton}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            tableDensity={tableDensity}
-            onTableDensityChange={setTableDensity}
-            columnsResizable={columnsResizable}
-            onColumnsResizableChange={setColumnsResizable}
-            columnsMovable={columnsMovable}
-            onColumnsMovableChange={setColumnsMovable}
-            visibleColumns={visibleColumns}
-            onToggleColumn={handleToggleColumn}
+
+        <Toolbar
+          filters={filters}
+          fields={filterFields}
+          onFiltersChange={handleFiltersChange}
+          onClearFilters={handleClearFilters}
+          showClearButton={showClearButton}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          tableDensity={tableDensity}
+          onTableDensityChange={setTableDensity}
+          columnsResizable={columnsResizable}
+          onColumnsResizableChange={setColumnsResizable}
+          columnsMovable={columnsMovable}
+          onColumnsMovableChange={setColumnsMovable}
+          visibleColumns={visibleColumns}
+          onToggleColumn={handleToggleColumn}
+        />
+
+        {selectedCount > 0 ? (
+          <SelectionBar
+            selectedCount={selectedCount}
+            ownerValue={bulkOwnerValue}
+            stageValue={bulkStageValue}
+            ownerOptions={RENEWAL_OWNERS}
+            onOwnerChange={setBulkOwnerValue}
+            onStageChange={setBulkStageValue}
+            onApply={handleApplySelected}
+            onClear={handleClearSelection}
           />
-
-          {selectedCount > 0 ? (
-            <SelectionBar
-              selectedCount={selectedCount}
-              ownerValue={bulkOwnerValue}
-              stageValue={bulkStageValue}
-              ownerOptions={RENEWAL_OWNERS}
-              onOwnerChange={setBulkOwnerValue}
-              onStageChange={setBulkStageValue}
-              onApply={handleApplySelected}
-              onClear={handleClearSelection}
-            />
-          ) : (
-            <Separator />
-          )}
-
-          <DataGridScrollArea className="h-[540px]">
+        ) : (
+          <Separator />
+        )}
+        <CardContent className={cn("p-0")}>
+          <DataGridScrollArea>
             <DataGridTable />
           </DataGridScrollArea>
         </CardContent>
+        <CardFooter className={cn("border-t px-5 py-3")}>
+          <div className="flex w-full justify-end">
+            <DataGridPagination />
+          </div>
+        </CardFooter>
       </Card>
     </DataGrid>
   );
