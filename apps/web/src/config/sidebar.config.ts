@@ -15,6 +15,8 @@ import {
   HomeIcon,
   UserIcon,
   LandmarkIcon,
+  GripHorizontalIcon,
+  TableIcon,
 } from "lucide-react";
 
 import type { NavGroup } from "#types";
@@ -40,6 +42,11 @@ export const navGroups: NavGroup[] = [
         icon: FolderKanbanIcon, // FolderIcon
         shortcut: ["g", "p"],
       },
+      {
+        title: "Renewals Risk",
+        url: "/renewals-risk",
+        icon: TableIcon,
+      },
       { title: "Orders", url: "/orders", icon: InboxIcon },
       { title: "Team", url: "/dashboard/team", icon: UsersIcon },
       {
@@ -48,6 +55,11 @@ export const navGroups: NavGroup[] = [
         icon: BarChart3Icon,
         // icon: ChartBarIcon,
         shortcut: ["g", "a"],
+      },
+      {
+        title: "Drag Drop",
+        url: "/drag-drop",
+        icon: GripHorizontalIcon,
       },
     ],
   },

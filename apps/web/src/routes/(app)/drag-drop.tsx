@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncExternalStore } from "react";
 
+import { DataTable } from "#features/data-grid-drag-drop/data-table";
 import { DataTableSkeleton } from "#features/data-table-skeleton.tsx";
-import { DataTable } from "#features/renewals/data-table";
 
-export const Route = createFileRoute("/(app)/renewals")({
+export const Route = createFileRoute("/(app)/drag-drop")({
   staticData: {
     breadcrumb: "Renewals",
   },

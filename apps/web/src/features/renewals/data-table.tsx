@@ -20,11 +20,25 @@ import {
 } from "@workspace/ui/components/reui/filters";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/shadcn/card";
+import {
   Field,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
 } from "@workspace/ui/components/shadcn/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@workspace/ui/components/shadcn/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/shadcn/popover";
 import {
   Select,
@@ -48,6 +62,8 @@ import {
   CalendarClockIcon,
   UserRoundIcon,
   PlusIcon,
+  SearchIcon,
+  XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -65,7 +81,6 @@ import {
   type RenewalRisk,
   type RenewalStage,
 } from "./data";
-import { CommandCard } from "./ui/command-card";
 import { SelectionBar } from "./ui/selection-bar";
 
 function getActiveFilters(filters: Filter[]) {
@@ -235,6 +250,8 @@ interface ToolbarProps {
   onFiltersChange: (filters: Filter[]) => void;
   onClearFilters: () => void;
   showClearButton: boolean;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   tableDensity: TableDensity;
   onTableDensityChange: (value: TableDensity) => void;
   columnsResizable: boolean;
@@ -251,6 +268,8 @@ function Toolbar({
   onFiltersChange,
   onClearFilters,
   showClearButton,
+  searchQuery,
+  onSearchChange,
   tableDensity,
   onTableDensityChange,
   columnsResizable,
@@ -264,6 +283,29 @@ function Toolbar({
     <div className="flex flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between">
       {/* Actions */}
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <InputGroup className="w-48">
+          <InputGroupAddon align="inline-start">
+            <SearchIcon className="size-4" />
+          </InputGroupAddon>
+          <InputGroupInput
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+          {searchQuery.length > 0 && (
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                size="sm"
+                variant="ghost"
+                className="size-6 p-0.5"
+                onClick={() => onSearchChange("")}
+              >
+                <XIcon className="size-3.5" aria-hidden="true" />
+              </InputGroupButton>
+            </InputGroupAddon>
+          )}
+        </InputGroup>
+
         <Filters
           filters={filters}
           fields={fields}
@@ -403,6 +445,7 @@ export function DataTable() {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER);
   const [filters, setFilters] = useState<Filter[]>(createDefaultRenewalFilters);
+  const [searchQuery, setSearchQuery] = useState("");
   const [bulkOwnerValue, setBulkOwnerValue] = useState(RENEWAL_OWNERS[0].value);
   const [bulkStageValue, setBulkStageValue] = useState<RenewalStage>("Commercial review");
 
@@ -490,7 +533,19 @@ export function DataTable() {
     [],
   );
 
-  const filteredData = useMemo(() => applyFiltersToData(renewals, filters), [filters, renewals]);
+  const filteredData = useMemo(() => {
+    const filterResult = applyFiltersToData(renewals, filters);
+
+    // Apply search query
+    if (!searchQuery) {
+      return filterResult;
+    }
+
+    const searchLower = searchQuery.toLowerCase();
+    return filterResult.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(searchLower),
+    );
+  }, [filters, renewals, searchQuery]);
   const visibleColumns = useMemo<Record<DisplayColumn, boolean>>(
     () => ({
       health: columnVisibility.health !== false,
@@ -649,59 +704,69 @@ export function DataTable() {
         width: "auto",
       }}
     >
-      <CommandCard
-        title="Renewals Review"
-        description={`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
-        action={
-          <Button
-            type="button"
-            size="sm"
-            onClick={() =>
-              toast.success("Transaction started", {
-                description: "New renewal entry opened.",
-              })
-            }
-          >
-            <PlusIcon aria-hidden="true" />
-            New transaction
-          </Button>
-        }
-      >
-        <Toolbar
-          filters={filters}
-          fields={filterFields}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          showClearButton={showClearButton}
-          tableDensity={tableDensity}
-          onTableDensityChange={setTableDensity}
-          columnsResizable={columnsResizable}
-          onColumnsResizableChange={setColumnsResizable}
-          columnsMovable={columnsMovable}
-          onColumnsMovableChange={setColumnsMovable}
-          visibleColumns={visibleColumns}
-          onToggleColumn={handleToggleColumn}
-        />
+      <Card className={cn("w-full gap-0 p-0")}>
+        {/* Header */}
+        <CardHeader className="flex flex-row items-center justify-between gap-4 border-b px-5 py-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <CardTitle>Renewals Review</CardTitle>
+            <CardDescription className="text-xs">{`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}</CardDescription>
+          </div>
+          <CardAction className="self-center">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() =>
+                toast.success("Transaction started", {
+                  description: "New renewal entry opened.",
+                })
+              }
+            >
+              <PlusIcon aria-hidden="true" />
+              New transaction
+            </Button>
+          </CardAction>
+        </CardHeader>
 
-        {selectedCount > 0 ? (
-          <SelectionBar
-            selectedCount={selectedCount}
-            ownerValue={bulkOwnerValue}
-            stageValue={bulkStageValue}
-            ownerOptions={RENEWAL_OWNERS}
-            onOwnerChange={setBulkOwnerValue}
-            onStageChange={setBulkStageValue}
-            onApply={handleApplySelected}
-            onClear={handleClearSelection}
+        {/* Content */}
+        <CardContent className={cn("p-0")}>
+          <Toolbar
+            filters={filters}
+            fields={filterFields}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            showClearButton={showClearButton}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            tableDensity={tableDensity}
+            onTableDensityChange={setTableDensity}
+            columnsResizable={columnsResizable}
+            onColumnsResizableChange={setColumnsResizable}
+            columnsMovable={columnsMovable}
+            onColumnsMovableChange={setColumnsMovable}
+            visibleColumns={visibleColumns}
+            onToggleColumn={handleToggleColumn}
           />
-        ) : (
-          <Separator />
-        )}
 
-        <DataGridScrollArea className="h-[540px]">
-          <DataGridTable />
-        </DataGridScrollArea>
-      </CommandCard>
+          {selectedCount > 0 ? (
+            <SelectionBar
+              selectedCount={selectedCount}
+              ownerValue={bulkOwnerValue}
+              stageValue={bulkStageValue}
+              ownerOptions={RENEWAL_OWNERS}
+              onOwnerChange={setBulkOwnerValue}
+              onStageChange={setBulkStageValue}
+              onApply={handleApplySelected}
+              onClear={handleClearSelection}
+            />
+          ) : (
+            <Separator />
+          )}
+
+          <DataGridScrollArea className="h-[540px]">
+            <DataGridTable />
+          </DataGridScrollArea>
+        </CardContent>
+      </Card>
     </DataGrid>
   );
 }

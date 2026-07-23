@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useSyncExternalStore } from "react";
 
 import { DataTableSkeleton } from "#features/data-table-skeleton.tsx";
-import { DataTable } from "#features/renewals/data-table";
+import { DataTable } from "#features/renewals-risk/data-table";
 
-export const Route = createFileRoute("/(app)/renewals")({
+export const Route = createFileRoute("/(app)/renewals-risk")({
   staticData: {
     breadcrumb: "Renewals",
   },

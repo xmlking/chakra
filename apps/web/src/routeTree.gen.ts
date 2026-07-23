@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as appDragDropRouteImport } from './routes/(app)/drag-drop'
 import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
 import { Route as appOrdersRouteImport } from './routes/(app)/orders'
 import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
+import { Route as appRenewalsRiskRouteImport } from './routes/(app)/renewals-risk'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
 import { Route as publicIndexRouteImport } from './routes/(public)/index'
 import { Route as publicAboutRouteImport } from './routes/(public)/about'
@@ -59,6 +61,11 @@ const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
 } as any)
+const appDragDropRoute = appDragDropRouteImport.update({
+  id: '/drag-drop',
+  path: '/drag-drop',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appForbiddenRoute = appForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
@@ -72,6 +79,11 @@ const appOrdersRoute = appOrdersRouteImport.update({
 const appRenewalsRoute = appRenewalsRouteImport.update({
   id: '/renewals',
   path: '/renewals',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appRenewalsRiskRoute = appRenewalsRiskRouteImport.update({
+  id: '/renewals-risk',
+  path: '/renewals-risk',
   getParentRoute: () => appRouteRoute,
 } as any)
 const app2Dashboard2Route = app2Dashboard2RouteImport.update({
@@ -233,9 +245,11 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
   '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
+  '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
@@ -269,9 +283,11 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
+  '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
   '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
+  '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
   '/about': typeof publicAboutRoute
   '/theme': typeof publicThemeRoute
@@ -309,9 +325,11 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
+  '/(app)/drag-drop': typeof appDragDropRoute
   '/(app)/forbidden': typeof appForbiddenRoute
   '/(app)/orders': typeof appOrdersRoute
   '/(app)/renewals': typeof appRenewalsRoute
+  '/(app)/renewals-risk': typeof appRenewalsRiskRoute
   '/(app2)/dashboard2': typeof app2Dashboard2Route
   '/(public)/about': typeof publicAboutRoute
   '/(public)/theme': typeof publicThemeRoute
@@ -347,9 +365,11 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/drag-drop'
     | '/forbidden'
     | '/orders'
     | '/renewals'
+    | '/renewals-risk'
     | '/dashboard2'
     | '/about'
     | '/theme'
@@ -383,9 +403,11 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/drag-drop'
     | '/forbidden'
     | '/orders'
     | '/renewals'
+    | '/renewals-risk'
     | '/dashboard2'
     | '/about'
     | '/theme'
@@ -422,9 +444,11 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app2)'
     | '/(public)'
+    | '/(app)/drag-drop'
     | '/(app)/forbidden'
     | '/(app)/orders'
     | '/(app)/renewals'
+    | '/(app)/renewals-risk'
     | '/(app2)/dashboard2'
     | '/(public)/about'
     | '/(public)/theme'
@@ -495,6 +519,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/(app)/drag-drop': {
+      id: '/(app)/drag-drop'
+      path: '/drag-drop'
+      fullPath: '/drag-drop'
+      preLoaderRoute: typeof appDragDropRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/forbidden': {
       id: '/(app)/forbidden'
       path: '/forbidden'
@@ -514,6 +545,13 @@ declare module '@tanstack/react-router' {
       path: '/renewals'
       fullPath: '/renewals'
       preLoaderRoute: typeof appRenewalsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/renewals-risk': {
+      id: '/(app)/renewals-risk'
+      path: '/renewals-risk'
+      fullPath: '/renewals-risk'
+      preLoaderRoute: typeof appRenewalsRiskRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app2)/dashboard2': {
@@ -737,9 +775,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appDragDropRoute: typeof appDragDropRoute
   appForbiddenRoute: typeof appForbiddenRoute
   appOrdersRoute: typeof appOrdersRoute
   appRenewalsRoute: typeof appRenewalsRoute
+  appRenewalsRiskRoute: typeof appRenewalsRiskRoute
   appAdminPageRoute: typeof appAdminPageRoute
   appAdminUsersRoute: typeof appAdminUsersRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
@@ -759,9 +799,11 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appDragDropRoute: appDragDropRoute,
   appForbiddenRoute: appForbiddenRoute,
   appOrdersRoute: appOrdersRoute,
   appRenewalsRoute: appRenewalsRoute,
+  appRenewalsRiskRoute: appRenewalsRiskRoute,
   appAdminPageRoute: appAdminPageRoute,
   appAdminUsersRoute: appAdminUsersRoute,
   appDashboardPageRoute: appDashboardPageRoute,
