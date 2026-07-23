@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerFn } from "@tanstack/react-start";
+import { db } from "@workspace/db";
 import { ValidationError } from "@workspace/shared/errors";
 import { sleep } from "@workspace/shared/helpers";
 import { z } from "zod";
@@ -13,6 +14,13 @@ export const createProject = createServerFn({ method: "POST" })
   .validator(projectSchema)
   .handler(async ({ data: parsedInput }) => {
     console.debug(parsedInput);
+
+    const response = await db.query.settings.findMany({
+      with: {
+        organization: true,
+      },
+    });
+    console.log("Existing settings:", response);
     await sleep(2000);
 
     if (Math.random() < 0.2) {

@@ -311,7 +311,7 @@ export function DataTable() {
   });
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 7,
+    pageSize: 10,
   });
   const [sorting, setSorting] = useState<SortingState>([{ id: "renewalWindow", desc: false }]);
   const [rowPinning, setRowPinning] = useState<RowPinningState>({
