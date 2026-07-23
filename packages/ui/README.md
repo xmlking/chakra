@@ -85,9 +85,9 @@ bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed
 # creatable-combobox - base-ui based https://flowkit-ui.vzkiss.com/docs
 bunx --bun shadcn@latest add -p src/components/flowkit-ui @flowkit-ui/creatable-combobox
 #  Extend UI components for document viewers for PDF, DOCX, XLSX, and CSV (optional)
-bunx --bun shadcn@latest add -p src/components/extend @extend/pdf-viewer
-bunx --bun shadcn@latest add -p src/components/extend @extend/docx-viewer
-bunx --bun shadcn@latest add -p src/components/extend @extend/schema-builder
+bunx --bun shadcn@latest add @extend/pdf-viewer
+bunx --bun shadcn@latest add @extend/docx-viewer
+bunx --bun shadcn@latest add @extend/schema-builder
 # assistant-ui
 bunx --bun shadcn@latest add @assistant-ui/thread
 bunx --bun shadcn@latest add @assistant-ui/model-selector
