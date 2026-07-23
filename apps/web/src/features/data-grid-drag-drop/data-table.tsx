@@ -4,7 +4,14 @@
 
 import { type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { getCoreRowModel, useReactTable, type ColumnDef } from "@tanstack/react-table";
+import {
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type ColumnDef,
+  type SortingState,
+  type VisibilityState,
+} from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
 import { DataGrid } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
@@ -29,6 +36,12 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@workspace/ui/components/shadcn/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@workspace/ui/components/shadcn/input-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/shadcn/popover";
 import {
   Select,
@@ -39,7 +52,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/shadcn/select";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
-import { FilterIcon, Settings2Icon } from "lucide-react";
+import { cn } from "@workspace/ui/lib/utils";
+import { CheckIcon, FilterIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 import { BacklogEmptyState } from "../empty-state";
@@ -146,8 +160,14 @@ interface ToolbarProps {
   onFiltersChange: (filters: Filter[]) => void;
   onClearFilters: () => void;
   showClearButton: boolean;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
   tableDensity: TableDensity;
   onTableDensityChange: (value: TableDensity) => void;
+  columnsResizable: boolean;
+  onColumnsResizableChange: (value: boolean) => void;
+  columnsMovable: boolean;
+  onColumnsMovableChange: (value: boolean) => void;
   visibleProperties: Record<DisplayProperty, boolean>;
   onToggleProperty: (property: DisplayProperty) => void;
 }
@@ -158,8 +178,14 @@ function Toolbar({
   onFiltersChange,
   onClearFilters,
   showClearButton,
+  searchQuery,
+  onSearchChange,
   tableDensity,
   onTableDensityChange,
+  columnsResizable,
+  onColumnsResizableChange,
+  columnsMovable,
+  onColumnsMovableChange,
   visibleProperties,
   onToggleProperty,
 }: ToolbarProps) {
@@ -169,6 +195,29 @@ function Toolbar({
     <div className="flex flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between">
       {/* Actions */}
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <InputGroup className="w-48">
+          <InputGroupAddon align="inline-start">
+            <SearchIcon className="size-4" />
+          </InputGroupAddon>
+          <InputGroupInput
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
+          {searchQuery.length > 0 ? (
+            <InputGroupAddon align="inline-end">
+              <InputGroupButton
+                size="sm"
+                variant="ghost"
+                className="size-6 p-0.5"
+                onClick={() => onSearchChange("")}
+              >
+                <XIcon className="size-3.5" aria-hidden="true" />
+              </InputGroupButton>
+            </InputGroupAddon>
+          ) : null}
+        </InputGroup>
+
         <Filters
           filters={filters}
           fields={fields}
@@ -233,28 +282,55 @@ function Toolbar({
                       </SelectContent>
                     </Select>
                   </Field>
+
+                  <Field
+                    orientation="horizontal"
+                    className="min-h-9 items-center justify-between gap-3"
+                  >
+                    <FieldLabel className="text-sm font-normal">Resizable columns</FieldLabel>
+                    <Switch
+                      size="sm"
+                      checked={columnsResizable}
+                      onCheckedChange={onColumnsResizableChange}
+                    />
+                  </Field>
+
+                  <Field
+                    orientation="horizontal"
+                    className="min-h-9 items-center justify-between gap-3"
+                  >
+                    <FieldLabel className="text-sm font-normal">Movable columns</FieldLabel>
+                    <Switch
+                      size="sm"
+                      checked={columnsMovable}
+                      onCheckedChange={onColumnsMovableChange}
+                    />
+                  </Field>
                 </div>
               </div>
 
               <FieldSeparator className="-mx-3.5" />
 
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-muted-foreground">Columns</div>
-                <div className="space-y-0">
-                  {DISPLAY_PROPERTIES.map((property) => (
-                    <Field
-                      key={property.key}
-                      orientation="horizontal"
-                      className="min-h-9 items-center justify-between gap-3"
-                    >
-                      <FieldLabel className="text-sm font-normal">{property.label}</FieldLabel>
-                      <Switch
-                        size="sm"
-                        checked={visibleProperties[property.key]}
-                        onCheckedChange={() => onToggleProperty(property.key)}
-                      />
-                    </Field>
-                  ))}
+              <div className="space-y-2.5">
+                <div className="text-xs font-medium text-muted-foreground">Display columns</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {DISPLAY_PROPERTIES.map((property) => {
+                    const active = visibleProperties[property.key];
+
+                    return (
+                      <Button
+                        key={property.key}
+                        type="button"
+                        size="xs"
+                        variant={active ? "secondary" : "outline"}
+                        className={cn("rounded-full", active && "border-foreground/10")}
+                        onClick={() => onToggleProperty(property.key)}
+                      >
+                        {active ? <CheckIcon className="size-3.5" aria-hidden="true" /> : null}
+                        {property.label}
+                      </Button>
+                    );
+                  })}
                 </div>
               </div>
             </FieldGroup>
@@ -268,8 +344,12 @@ function Toolbar({
 export function DataTable() {
   const [items, setItems] = useState<BacklogItem[]>(SEED_ITEMS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
+  const [columnsResizable, setColumnsResizable] = useState(true);
+  const [columnsMovable, setColumnsMovable] = useState(false);
   const [filters, setFilters] = useState<Filter[]>(createDefaultFilters());
-  const [visibleProperties, setVisibleProperties] = useState<Record<DisplayProperty, boolean>>({
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
     status: true,
     type: true,
     owner: true,
@@ -278,16 +358,37 @@ export function DataTable() {
     effort: true,
   });
 
-  const activeFilters = useMemo(() => getActiveFilters(filters), [filters]);
+  const filteredItems = useMemo(() => {
+    const filterResult = applyFiltersToData(items, filters);
 
-  const filteredItems = useMemo(() => applyFiltersToData(items, filters), [items, filters]);
+    if (!searchQuery) {
+      return filterResult;
+    }
+
+    const searchLower = searchQuery.toLowerCase();
+    return filterResult.filter((item) =>
+      Object.values(item).join(" ").toLowerCase().includes(searchLower),
+    );
+  }, [filters, items, searchQuery]);
 
   const dataIds = useMemo<UniqueIdentifier[]>(
     () => filteredItems.map((item) => item.id),
     [filteredItems],
   );
 
-  const showClearButton = activeFilters.length > 0;
+  const visibleProperties = useMemo<Record<DisplayProperty, boolean>>(
+    () => ({
+      status: columnVisibility.status !== false,
+      type: columnVisibility.type !== false,
+      owner: columnVisibility.owner !== false,
+      team: columnVisibility.team !== false,
+      cycle: columnVisibility.cycle !== false,
+      effort: columnVisibility.effort !== false,
+    }),
+    [columnVisibility],
+  );
+
+  const showClearButton = filters.length > 0;
 
   const handleAction = useCallback((action: BacklogRowAction, item: BacklogItem) => {
     setItems((current) => {
@@ -312,7 +413,7 @@ export function DataTable() {
   }, []);
 
   const toggleProperty = useCallback((property: DisplayProperty) => {
-    setVisibleProperties((current) => ({
+    setColumnVisibility((current) => ({
       ...current,
       [property]: !current[property],
     }));
@@ -397,10 +498,19 @@ export function DataTable() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data: items,
+    data: filteredItems,
     columns,
+    state: {
+      sorting,
+      columnVisibility: Object.fromEntries(
+        Object.entries(columnVisibility).map(([key, value]) => [key, value]),
+      ),
+    },
+    onSortingChange: setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
     getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -422,18 +532,18 @@ export function DataTable() {
       tableLayout={{
         dense: tableDensity === "compact",
         rowsDraggable: true,
-        columnsResizable: true,
-        columnsMovable: false,
-        columnsVisibility: false,
+        columnsResizable,
+        columnsMovable,
+        columnsVisibility: true,
         width: "fixed",
       }}
       tableClassNames={{
         bodyRow: "[&[style*='cursor:_grabbing']>td]:border-t",
       }}
     >
-      <Card className="w-full">
-        <CardHeader className="flex-row items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-col gap-0.5">
+      <Card className={cn("w-full gap-0 p-0")}>
+        <CardHeader className="flex flex-row items-center justify-between gap-4 border-b px-5 py-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
             <CardTitle>Sprint Backlog</CardTitle>
             <CardDescription className="flex items-center gap-1.5 text-xs">
               Drag to prioritize
@@ -449,8 +559,14 @@ export function DataTable() {
           onFiltersChange={handleFiltersChange}
           onClearFilters={handleClearFilters}
           showClearButton={showClearButton}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
           tableDensity={tableDensity}
           onTableDensityChange={setTableDensity}
+          columnsResizable={columnsResizable}
+          onColumnsResizableChange={setColumnsResizable}
+          columnsMovable={columnsMovable}
+          onColumnsMovableChange={setColumnsMovable}
           visibleProperties={visibleProperties}
           onToggleProperty={toggleProperty}
         />

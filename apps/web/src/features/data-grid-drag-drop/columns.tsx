@@ -2,6 +2,7 @@
 
 import type { Row, ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
+import { DataGridColumnHeader } from "@workspace/ui/components/reui/data-grid/data-grid-column-header";
 import { DataGridTableDndRowHandle } from "@workspace/ui/components/reui/data-grid/data-grid-table-dnd-rows";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/shadcn/avatar";
 import { Button } from "@workspace/ui/components/shadcn/button";
@@ -217,12 +218,14 @@ export function createBacklogColumns({
     {
       accessorKey: "title",
       id: "task",
-      header: "Task",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Task" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <TaskCell item={row.original} />,
       size: 260,
       minSize: 200,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: true,
       meta: {
         headerTitle: "Task",
@@ -232,11 +235,13 @@ export function createBacklogColumns({
     {
       accessorKey: "owner",
       id: "owner",
-      header: "Owner",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Owner" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <OwnerCell item={row.original} />,
       size: 165,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Owner",
@@ -245,11 +250,13 @@ export function createBacklogColumns({
     {
       accessorKey: "team",
       id: "team",
-      header: "Team",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Team" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <TeamCell item={row.original} />,
       size: 130,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Team",
@@ -258,11 +265,13 @@ export function createBacklogColumns({
     {
       accessorKey: "cycle",
       id: "cycle",
-      header: "Cycle",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Cycle" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <CycleCell item={row.original} />,
       size: 110,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Cycle",
@@ -271,11 +280,13 @@ export function createBacklogColumns({
     {
       accessorKey: "dueDate",
       id: "dueDate",
-      header: "Due",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Due" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <DueDateCell item={row.original} />,
       size: 90,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Due",
@@ -284,11 +295,13 @@ export function createBacklogColumns({
     {
       accessorKey: "status",
       id: "status",
-      header: "Status",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Status" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => <StatusBadge status={row.original.status} />,
       size: 125,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Status",
@@ -297,7 +310,9 @@ export function createBacklogColumns({
     {
       accessorKey: "effort",
       id: "effort",
-      header: "Effort",
+      header: ({ column }) => (
+        <DataGridColumnHeader title="Effort" visibility={true} column={column} />
+      ),
       cell: ({ row }: { row: Row<BacklogItem> }) => (
         <span className="text-sm text-foreground tabular-nums">
           {row.original.effort}
@@ -305,8 +320,8 @@ export function createBacklogColumns({
         </span>
       ),
       size: 80,
-      enableSorting: false,
-      enableHiding: false,
+      enableSorting: true,
+      enableHiding: true,
       enableResizing: false,
       meta: {
         headerTitle: "Effort",
