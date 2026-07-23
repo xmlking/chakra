@@ -25,6 +25,7 @@ import {
 import { Button } from "@workspace/ui/components/shadcn/button";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -51,10 +52,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/shadcn/select";
+import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { cn } from "@workspace/ui/lib/utils";
 import { CheckIcon, FilterIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { BacklogEmptyState } from "../empty-state";
 import { createBacklogColumns, type BacklogRowAction } from "./columns";
@@ -551,6 +554,20 @@ export function DataTable() {
               <span className="whitespace-nowrap">{filteredItems.length} items</span>
             </CardDescription>
           </div>
+          <CardAction className="self-center">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() =>
+                toast.success("New backlog item created", {
+                  description: "Item added to sprint backlog.",
+                })
+              }
+            >
+              <CheckIcon aria-hidden="true" />
+              New item
+            </Button>
+          </CardAction>
         </CardHeader>
 
         <Toolbar
@@ -570,6 +587,8 @@ export function DataTable() {
           visibleProperties={visibleProperties}
           onToggleProperty={toggleProperty}
         />
+
+        <Separator />
 
         <CardContent className="p-0">
           <DataGridScrollArea>
