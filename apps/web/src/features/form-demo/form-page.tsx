@@ -100,7 +100,7 @@ export function FormPage() {
     meta: {
       successMessage: "Project created successfully",
       errorMessage: "Project creation failed",
-      invalidateQuery: listProjectsQueryOptions().queryKey, // projectKeys.all
+      invalidateQueries: [listProjectsQueryOptions().queryKey], // projectKeys.all
     },
   });
   */
