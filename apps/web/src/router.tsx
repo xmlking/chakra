@@ -55,13 +55,11 @@ export function getRouter() {
         }
       },
       onSettled: async (_data, _error, _variables, _context, mutation) => {
-        {
-          if (mutation.meta?.invalidateQuery) {
-            await queryClient.invalidateQueries({
-              queryKey: mutation.meta?.invalidateQuery,
-            });
-          }
-        }
+        await Promise.all(
+          mutation.meta?.invalidateQueries?.map((queryKey) =>
+            queryClient.invalidateQueries({ queryKey }),
+          ) ?? [],
+        );
       },
     }),
   });
