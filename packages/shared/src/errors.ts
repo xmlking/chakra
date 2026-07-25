@@ -36,14 +36,37 @@ export class ForbiddenError extends TaggedError("ForbiddenError")<{
   message: string;
 }>() {}
 
-export class RateLimitError extends TaggedError("RateLimit")<{
+export class RateLimitError extends TaggedError("RateLimitError")<{
   message: string;
 }>() {}
-
-export type AppError = NetworkError | ValidationError;
 
 export class AiInternalError extends TaggedError("AiInternalError")<{
   message: string;
 }>() {}
 
-export type AiError = AiInternalError;
+export class DatabaseError extends TaggedError("DatabaseError")<{
+  message: string;
+}>() {}
+
+export type AppError =
+  | NetworkError
+  | ValidationError
+  | NotFoundError
+  | UnauthorizedError
+  | ForbiddenError
+  | RateLimitError
+  | AiInternalError
+  | DatabaseError;
+
+// Map error tags to their constructors
+// TODO: keep this Record updated as you add new tagged errors
+export const TAGGED_ERROR_CONSTRUCTORS: Record<string, new (props: any) => any> = {
+  NetworkError,
+  ValidationError,
+  NotFoundError,
+  UnauthorizedError,
+  ForbiddenError,
+  RateLimitError,
+  AiInternalError,
+  DatabaseError,
+};

@@ -11,6 +11,6 @@ export const rateLimitMiddleware = createMiddleware({ type: "function" })
   .middleware([authMiddleware])
   .server(async ({ next, context }) => {
     if (!bucket.consume(context.session.user.id, 1))
-      throw new RateLimitError({ message: "429: Too many requests" });
+      throw new RateLimitError({ message: "Too many requests" });
     return next();
   });

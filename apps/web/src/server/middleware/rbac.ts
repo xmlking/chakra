@@ -22,7 +22,7 @@ export const memberRequiredMiddleware = createMiddleware({ type: "function" })
     const headers = getRequestHeaders();
     const activeMember = await auth.api.getActiveMember({ headers });
     if (!activeMember) {
-      throw new ForbiddenError({ message: "Unauthorized: Organization membership required" });
+      throw new ForbiddenError({ message: "User don't have organization" });
     }
     return next({ context: { member: activeMember } });
   });
@@ -57,7 +57,7 @@ export function permissionRequiredMiddleware(permissions: Permissions) {
       });
 
       if (!success) {
-        throw new ForbiddenError({ message: "Forbidden: User don't have permission" });
+        throw new ForbiddenError({ message: "User don't have permission" });
       }
 
       return next();
