@@ -340,6 +340,26 @@ export const auth = betterAuth({
       },
     }),
     organization({
+      // organizationHooks: {
+      //   // Organization creation hooks
+      //   beforeCreateOrganization: async ({ organization, user }) => {
+      //     // Run custom logic before organization is created
+      //     // Optionally modify the organization data
+      //     return {
+      //       data: {
+      //         ...organization,
+      //         metadata: {
+      //           customField: "value",
+      //         },
+      //       },
+      //     };
+      //   },
+      //   afterCreateOrganization: async ({ organization, member, user }) => {
+      //     // Run custom logic after organization is created
+      //     // e.g., create default resources, send notifications
+      //     await setupDefaultResources({id: organization.id, memberId: member.id, role: user.role});
+      //   },
+      // }
       // schema: {
       //   organization: {
       //     additionalFields: {
@@ -363,6 +383,10 @@ export const auth = betterAuth({
       dynamicAccessControl: {
         enabled: true,
       },
+      /**
+       * Restrict who can create an organization
+       * TODO: check if email is in ADMIN_EMAILS[]
+       */
       async allowUserToCreateOrganization(user) {
         console.info(user.name);
         // const subscription = await getSubscription(user.id)
