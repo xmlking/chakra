@@ -1,5 +1,7 @@
 import { createSerializationAdapter } from "@tanstack/react-router";
+import { TAGGED_ERROR_CONSTRUCTORS } from "@workspace/shared/errors";
 import { createError, EvlogError, parseError } from "evlog";
+import { ZodError } from "zod";
 
 export const evlogErrorAdapter = createSerializationAdapter({
   key: "evlogError",
@@ -16,22 +18,27 @@ import { isTaggedError } from "better-result";
 export const taggedErrorAdapter = createSerializationAdapter({
   key: "taggedError",
   test: isTaggedError,
-  // toSerializable: (err) => err.toJSON(),
   toSerializable: (err) => ({
     _tag: err._tag,
     message: err.message,
     stack: err.stack,
   }),
   fromSerializable: (pojo) => {
-    // return new TaggedError(pojo);
+    const ErrorClass = TAGGED_ERROR_CONSTRUCTORS[pojo._tag];
+    if (ErrorClass) {
+      const err = new ErrorClass({ message: pojo.message }) as any;
+      err._tag = pojo._tag;
+      err.stack = pojo.stack;
+      return err;
+    }
+
+    // Fallback to generic error with _tag property
     const err = new Error(pojo.message) as any;
     err._tag = pojo._tag;
     err.stack = pojo.stack;
     return err;
   },
 });
-
-import { ZodError } from "zod";
 
 export const zodErrorAdapter = createSerializationAdapter({
   key: "zodError",

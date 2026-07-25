@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { m } from "@workspace/i18n/messages";
+import { ForbiddenError, RateLimitError } from "@workspace/shared/errors";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { toast } from "sonner";
 
@@ -31,7 +32,11 @@ function RouteComponent() {
       const result = await demoRateLimitedFn();
       toast.success(result.message);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Rate limit check failed");
+      if (error instanceof RateLimitError) {
+        toast.error(`Rate limited: ${error.message}`);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Rate limit check failed");
+      }
     }
   };
 
@@ -40,7 +45,11 @@ function RouteComponent() {
       const result = await demoAdminOnlyFn();
       toast.success(result.message);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Admin access check failed");
+      if (error instanceof ForbiddenError) {
+        toast.error(`Forbidden: ${error.message}`);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Admin access check failed");
+      }
     }
   };
 
@@ -49,7 +58,11 @@ function RouteComponent() {
       const result = await demoPermissionRequiredFn();
       toast.success(result.message);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Permission check failed");
+      if (error instanceof ForbiddenError) {
+        toast.error(`Forbidden: ${error.message}`);
+      } else {
+        toast.error(error instanceof Error ? error.message : "Permission check failed");
+      }
     }
   };
 
