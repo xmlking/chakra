@@ -383,7 +383,7 @@ function Toolbar({
 export function DataTable() {
   const [items, setItems] = useState<BacklogItem[]>(SEED_ITEMS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
-  const [columnsResizable, setColumnsResizable] = useState(true);
+  const [columnsResizable, setColumnsResizable] = useState(false);
   const [columnsMovable, setColumnsMovable] = useState(false);
   const [filters, setFilters] = useState<Filter[]>(createDefaultFilters());
   const [searchQuery, setSearchQuery] = useState("");

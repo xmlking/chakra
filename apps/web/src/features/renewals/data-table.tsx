@@ -431,7 +431,7 @@ function Toolbar({
 export function DataTable() {
   const [items, setItems] = useState<IRenewalRecord[]>(RENEWAL_RECORDS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
-  const [columnsResizable, setColumnsResizable] = useState(true);
+  const [columnsResizable, setColumnsResizable] = useState(false);
   const [columnsMovable, setColumnsMovable] = useState(true);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
