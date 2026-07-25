@@ -19,7 +19,7 @@ export const orgRequiredMiddleware = createMiddleware({ type: "function" })
 export const memberRequiredMiddleware = createMiddleware({ type: "function" })
   .middleware([orgRequiredMiddleware])
   .server(async ({ next }) => {
-    const headers = getRequestHeaders() as unknown as Headers;
+    const headers = getRequestHeaders();
     const activeMember = await auth.api.getActiveMember({ headers });
     if (!activeMember) {
       throw new ForbiddenError({ message: "Unauthorized: Organization membership required" });
