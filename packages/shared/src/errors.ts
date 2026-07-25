@@ -36,6 +36,10 @@ export class ForbiddenError extends TaggedError("ForbiddenError")<{
   message: string;
 }>() {}
 
+export class RateLimitError extends TaggedError("RateLimit")<{
+  message: string;
+}>() {}
+
 export type AppError = NetworkError | ValidationError;
 
 export class AiInternalError extends TaggedError("AiInternalError")<{

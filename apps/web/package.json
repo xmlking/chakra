@@ -9,6 +9,9 @@
     "#features/*": "./src/features/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
+    "#server/*": [
+      "./src/server/*"
+    ],
     "#types": [
       "./src/types/index.ts"
     ]
