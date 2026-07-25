@@ -21,6 +21,7 @@
       "#config/*": ["./src/config/*"],
       "#hooks/*": ["./src/hooks/*.ts"],
       "#lib/*": ["./src/lib/*.ts"],
+      "#server/*": ["./src/server/*"],
       "#types": ["./src/types/index.ts"]
     },
 

@@ -4,7 +4,12 @@ import { m } from "@workspace/i18n/messages";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { toast } from "sonner";
 
-import { liveHealthQueryOptions } from "#features/playground/api/queries.ts";
+import {
+  demoAdminOnlyFn,
+  demoPermissionRequiredFn,
+  demoRateLimitedFn,
+} from "#features/playground/api/middleware-demo";
+import { liveHealthQueryOptions } from "#features/playground/api/queries";
 
 export const Route = createFileRoute("/(app)/playground/test")({
   staticData: {
@@ -20,6 +25,33 @@ export const Route = createFileRoute("/(app)/playground/test")({
 
 function RouteComponent() {
   const { data, isLoading } = useQuery(liveHealthQueryOptions);
+
+  const handleRateLimitDemo = async () => {
+    try {
+      const result = await demoRateLimitedFn();
+      toast.success(result.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Rate limit check failed");
+    }
+  };
+
+  const handleAdminDemo = async () => {
+    try {
+      const result = await demoAdminOnlyFn();
+      toast.success(result.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Admin access check failed");
+    }
+  };
+
+  const handlePermissionDemo = async () => {
+    try {
+      const result = await demoPermissionRequiredFn();
+      toast.success(result.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Permission check failed");
+    }
+  };
 
   return (
     <div className="container-wrapper">
@@ -38,6 +70,31 @@ function RouteComponent() {
                   ? m.playground_page__connected()
                   : m.playground_page__disconnected()}
             </span>
+          </div>
+        </div>
+      </section>
+      <section className="mb-8">
+        <h2 className="font-display mb-8 text-4xl">Middleware demos</h2>
+        <div className="space-y-4 rounded-lg border p-4">
+          <div>
+            <p className="mb-3 text-sm text-muted-foreground">
+              Trigger the server function below repeatedly to exhaust the bucket and observe the
+              429-style rate-limit error after 30 requests.
+            </p>
+            <Button onClick={handleRateLimitDemo}>Run rate-limit demo</Button>
+          </div>
+          <div>
+            <p className="mb-3 text-sm text-muted-foreground">
+              This calls the admin-only middleware and should fail unless the current session is an
+              admin user.
+            </p>
+            <Button onClick={handleAdminDemo}>Run admin demo</Button>
+          </div>
+          <div>
+            <p className="mb-3 text-sm text-muted-foreground">
+              This exercises the permission middleware with an example permission payload.
+            </p>
+            <Button onClick={handlePermissionDemo}>Run permission demo</Button>
           </div>
         </div>
       </section>

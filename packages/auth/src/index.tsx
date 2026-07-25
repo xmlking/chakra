@@ -13,7 +13,6 @@ import { MagicLinkEmail } from "@workspace/email/magic-link";
 import { OrganizationInvitationEmail } from "@workspace/email/organization-invitation";
 import { ResetPasswordEmail } from "@workspace/email/reset-password";
 import { betterAuth } from "better-auth";
-import type { BetterAuthPlugin } from "better-auth";
 import {
   admin,
   captcha,
@@ -101,7 +100,7 @@ export const auth = betterAuth({
   },
 
   emailAndPassword: {
-    enabled: true,
+    enabled: Boolean(env.SMTP_HOST || env.RESEND_API_KEY),
     requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
     async sendResetPassword({ user, url }) {
@@ -513,7 +512,7 @@ export const auth = betterAuth({
     }),
     ...(process.env.VITEST === "true" ? [testUtils()] : []),
     tanstackStartCookies(), // make sure this is the last plugin in the array
-  ] as BetterAuthPlugin[],
+  ],
   trustedOrigins,
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days

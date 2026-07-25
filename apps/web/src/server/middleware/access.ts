@@ -1,0 +1,79 @@
+import { createMiddleware } from "@tanstack/react-start";
+import { getRequestHeaders } from "@tanstack/react-start/server";
+import { auth } from "@workspace/auth";
+import { ForbiddenError } from "@workspace/shared/errors";
+
+import { authMiddleware } from "./auth";
+
+export const orgRequiredMiddleware = createMiddleware({ type: "function" })
+  .middleware([authMiddleware])
+  .server(({ next, context }) => {
+    const activeOrgId = context.session.session.activeOrganizationId;
+    if (!activeOrgId) {
+      throw new ForbiddenError({ message: "No active organization" });
+    }
+
+    return next();
+  });
+
+export const memberRequiredMiddleware = createMiddleware({ type: "function" })
+  .middleware([orgRequiredMiddleware])
+  .server(async ({ next }) => {
+    const headers = getRequestHeaders() as unknown as Headers;
+    const activeMember = await auth.api.getActiveMember({ headers });
+    if (!activeMember) {
+      throw new ForbiddenError({ message: "Unauthorized: Organization membership required" });
+    }
+    return next({ context: { member: activeMember } });
+  });
+
+/**
+ *
+ * Usage:
+ *
+ * import { createServerFn } from "@tanstack/react-start";
+ * import { permissionRequiredMiddleware } from "./middleware";
+ * export const getClients = createServerFn()
+ *  .middleware([
+ *    permissionRequiredMiddleware({
+ *      resource: ["create"],
+ *    }),
+ *  ])
+ *  .handler(async ({ context }) => {
+ *   return { message: "The user can read clients." };
+ *  });
+ *
+ */
+
+type Permissions = Record<string, string[]>;
+
+export function permissionRequiredMiddleware(permissions: Permissions) {
+  return createMiddleware({ type: "function" })
+    .middleware([memberRequiredMiddleware])
+    .server(async ({ next }) => {
+      const { success } = await auth.api.hasPermission({
+        headers: getRequestHeaders(),
+        body: { permissions },
+      });
+
+      if (!success) {
+        throw new ForbiddenError({ message: "Forbidden: User don't have permission" });
+      }
+
+      return next();
+    });
+}
+
+export function roleRequiredMiddleware(role: string) {
+  return createMiddleware({ type: "function" })
+    .middleware([memberRequiredMiddleware])
+    .server(async ({ next, context }) => {
+      const granted = context.member.role === role;
+
+      if (!granted) {
+        throw new ForbiddenError({ message: "Forbidden: User don't have role" });
+      }
+
+      return next();
+    });
+}

@@ -2,6 +2,7 @@ import { redirect } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
+import type { Session } from "@workspace/auth/client";
 import type { RequestLogger } from "evlog";
 import { identifyUser } from "evlog/better-auth";
 // Aliased: `useRequest` is a Nitro ALS accessor, not a React hook — oxlint
@@ -44,30 +45,27 @@ const tagLoggerWithSession = (
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
+  const session = (await auth.api.getSession({ headers })) as Session;
 
   if (!session) {
     throw redirect({
       to: "/auth/$path",
       params: { path: "sign-in" },
+      // search: { redirectTo: pathname },
       search: { redirectTo: location.href },
     });
   }
 
   tagLoggerWithSession(session);
 
-  return next({
-    context: {
-      session,
-    },
-  });
+  return next({ context: { session } });
 });
 
 // API variant: JSON 401 not a redirect — consumers want a status, not HTML;
 // useObject/fetch can't follow a 302 to HTML and recover.
 export const apiAuthMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
-  const session = await auth.api.getSession({ headers });
+  const session = (await auth.api.getSession({ headers })) as Session;
 
   if (!session) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
