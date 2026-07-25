@@ -2,7 +2,6 @@ import { redirect } from "@tanstack/react-router";
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
-import type { Session } from "@workspace/auth/client";
 import type { RequestLogger } from "evlog";
 import { identifyUser } from "evlog/better-auth";
 // Aliased: `useRequest` is a Nitro ALS accessor, not a React hook — oxlint
@@ -15,9 +14,7 @@ import { useRequest as getNitroRequest } from "nitro/context";
 // `plan` not tagged for the same reason (needs async DB read) — slice by
 // activeOrganizationId and join the plan column out-of-band. No-op without evlog
 // or null session.
-const tagLoggerWithSession = (
-  session: { user: Record<string, unknown>; session: Record<string, unknown> } | null,
-) => {
+const tagLoggerWithSession = (session: typeof auth.$Infer.Session | null) => {
   if (!session) return;
   const log = getNitroRequest().context?.log as RequestLogger | undefined;
   if (!log) return;
@@ -27,10 +24,11 @@ const tagLoggerWithSession = (
     // omitted — PII, no observability value.
     maskEmail: true,
     extend: () => ({
+      userId: session.user.id,
+      role: session.user.role,
+      organizationId: session.session.activeOrganizationId,
       ipAddress: session.session.ipAddress,
       userAgent: session.session.userAgent,
-      organization: session.user.activeOrganization,
-      role: session.user.role,
     }),
   });
 };
@@ -45,7 +43,7 @@ const tagLoggerWithSession = (
 
 export const authMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
-  const session = (await auth.api.getSession({ headers })) as Session;
+  const session = await auth.api.getSession({ headers });
 
   if (!session) {
     throw redirect({
@@ -65,7 +63,7 @@ export const authMiddleware = createMiddleware().server(async ({ next }) => {
 // useObject/fetch can't follow a 302 to HTML and recover.
 export const apiAuthMiddleware = createMiddleware().server(async ({ next }) => {
   const headers = getRequestHeaders();
-  const session = (await auth.api.getSession({ headers })) as Session;
+  const session = await auth.api.getSession({ headers });
 
   if (!session) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {

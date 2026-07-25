@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { auth } from "@workspace/auth";
-import type { Session } from "@workspace/auth/client";
 import { files } from "@workspace/storage";
 import { log } from "evlog";
 import { FilesError } from "files-sdk";
@@ -31,7 +30,7 @@ const router = createFilesRouter({
     log.info({ key, operation, from, to });
     /* throw to deny, or return a per-user constraint — see /ui/server/authorization */
     const headers = getRequestHeaders();
-    const session = (await auth.api.getSession({ headers })) as Session;
+    const session = await auth.api.getSession({ headers });
     if (session?.user === undefined) {
       throw new FilesError("Unauthorized", "NOT_AUTHENTICATED");
     }
