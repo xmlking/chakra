@@ -109,7 +109,7 @@ declare module "@tanstack/react-router" {
 declare module "@tanstack/react-query" {
   interface Register {
     mutationMeta: {
-      invalidateQuery?: QueryKey;
+      invalidateQueries?: QueryKey[];
       successMessage?: string;
       errorMessage?: string;
     };

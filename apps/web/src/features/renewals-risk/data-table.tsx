@@ -298,7 +298,7 @@ function sanitizeRowPinning(
 
 export function DataTable() {
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
-  const [columnsResizable, setColumnsResizable] = useState(true);
+  const [columnsResizable, setColumnsResizable] = useState(false);
   const [columnsMovable, setColumnsMovable] = useState(true);
   const [visibleProperties, setVisibleProperties] = useState<Record<DisplayProperty, boolean>>({
     stage: true,
