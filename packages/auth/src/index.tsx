@@ -30,7 +30,7 @@ import {
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { env } from "virtual:env/server";
 
-import { additionalUserFields } from "./additional-fields";
+import { additionalSessionFields, additionalUserFields } from "./additional-fields";
 import { ac, roles } from "./permissions";
 
 const MAGIC_LINK_EXPIRES_SECONDS = 300;
@@ -85,7 +85,7 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session) => {
-          // Sets the active organization for a user session
+          // Implement your custom logic to set initial active organization
           // Finds the first organization the user is a member of and sets it as active
           const membership = await getFirstMembership(session.userId);
           return {
@@ -521,6 +521,7 @@ export const auth = betterAuth({
       enabled: true,
       maxAge: 5 * 60, // Cache duration in seconds
     },
+    additionalFields: additionalSessionFields,
   },
   // secondaryStorage: {
   //   // const redis = createClient();
