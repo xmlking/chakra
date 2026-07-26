@@ -3,6 +3,7 @@
 import { authMutationKeys } from "@better-auth-ui/core"
 import { useAuth, useFetchOptions, useSignInEmail } from "@better-auth-ui/react"
 import { useIsMutating } from "@tanstack/react-query"
+import { Eye, EyeOff } from "lucide-react"
 import { type SyntheticEvent, useState } from "react"
 
 import { Button } from "#components/shadcn/button"
@@ -13,12 +14,19 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput
+} from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
+import { LastUsedBadge } from "./last-login-method/last-used-badge"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
 
 export type SignInProps = {
@@ -88,6 +96,8 @@ export function SignIn({
     (plugin) => plugin.captchaComponent
   )?.captchaComponent
 
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+
   const [fieldErrors, setFieldErrors] = useState<{
     email?: string
     password?: string
@@ -124,7 +134,7 @@ export function SignIn({
           {socialPosition === "top" && (
             <>
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="signIn" />
               )}
 
               {showSeparator && (
@@ -139,7 +149,9 @@ export function SignIn({
             <form onSubmit={handleSubmit}>
               <FieldGroup>
                 <Field data-invalid={!!fieldErrors.email}>
-                  <Label htmlFor="email">{localization.auth.email}</Label>
+                  <FieldLabel htmlFor="email">
+                    {localization.auth.email}
+                  </FieldLabel>
 
                   <Input
                     id="email"
@@ -174,51 +186,76 @@ export function SignIn({
                 </Field>
 
                 <Field data-invalid={!!fieldErrors.password}>
-                  <Label htmlFor="password">{localization.auth.password}</Label>
+                  <FieldLabel htmlFor="password">
+                    {localization.auth.password}
+                  </FieldLabel>
 
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value)
+                  <InputGroup>
+                    <InputGroupInput
+                      id="password"
+                      name="password"
+                      type={isPasswordVisible ? "text" : "password"}
+                      autoComplete="current-password"
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
 
-                      setFieldErrors((prev) => ({
-                        ...prev,
-                        password: undefined
-                      }))
-                    }}
-                    placeholder={localization.auth.passwordPlaceholder}
-                    required
-                    minLength={emailAndPassword?.minPasswordLength}
-                    maxLength={emailAndPassword?.maxPasswordLength}
-                    disabled={isPending}
-                    onInvalid={(e) => {
-                      e.preventDefault()
-                      const el = e.target as HTMLInputElement
-                      const min = emailAndPassword?.minPasswordLength
-                      const max = emailAndPassword?.maxPasswordLength
-                      const msg = el.validity.valueMissing
-                        ? localization.auth.fieldRequired
-                        : el.validity.tooShort
-                          ? localization.auth.tooShort.replace(
-                              "{{min}}",
-                              String(min)
-                            )
-                          : localization.auth.tooLong.replace(
-                              "{{max}}",
-                              String(max)
-                            )
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          password: undefined
+                        }))
+                      }}
+                      placeholder={localization.auth.passwordPlaceholder}
+                      required
+                      minLength={emailAndPassword?.minPasswordLength}
+                      maxLength={emailAndPassword?.maxPasswordLength}
+                      disabled={isPending}
+                      onInvalid={(e) => {
+                        e.preventDefault()
+                        const el = e.target as HTMLInputElement
+                        const min = emailAndPassword?.minPasswordLength
+                        const max = emailAndPassword?.maxPasswordLength
+                        const msg = el.validity.valueMissing
+                          ? localization.auth.fieldRequired
+                          : el.validity.tooShort
+                            ? localization.auth.tooShort.replace(
+                                "{{min}}",
+                                String(min)
+                              )
+                            : localization.auth.tooLong.replace(
+                                "{{max}}",
+                                String(max)
+                              )
 
-                      setFieldErrors((prev) => ({
-                        ...prev,
-                        password: msg
-                      }))
-                    }}
-                    aria-invalid={!!fieldErrors.password}
-                  />
+                        setFieldErrors((prev) => ({
+                          ...prev,
+                          password: msg
+                        }))
+                      }}
+                      aria-invalid={!!fieldErrors.password}
+                    />
+
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        size="icon-xs"
+                        aria-label={
+                          isPasswordVisible
+                            ? localization.auth.hidePassword
+                            : localization.auth.showPassword
+                        }
+                        title={
+                          isPasswordVisible
+                            ? localization.auth.hidePassword
+                            : localization.auth.showPassword
+                        }
+                        onClick={() => {
+                          setIsPasswordVisible((visible) => !visible)
+                        }}
+                      >
+                        {isPasswordVisible ? <EyeOff /> : <Eye />}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
 
                   <FieldError>{fieldErrors.password}</FieldError>
                 </Field>
@@ -232,12 +269,12 @@ export function SignIn({
                         disabled={isPending}
                       />
 
-                      <Label
+                      <FieldLabel
                         htmlFor="rememberMe"
                         className="cursor-pointer text-sm font-normal"
                       >
                         {localization.auth.rememberMe}
-                      </Label>
+                      </FieldLabel>
                     </div>
                   </Field>
                 )}
@@ -247,10 +284,16 @@ export function SignIn({
                 )}
 
                 <div className="flex flex-col gap-3">
-                  <Button type="submit" disabled={isPending}>
+                  <Button
+                    type="submit"
+                    className="relative overflow-visible"
+                    disabled={isPending}
+                  >
                     {signInEmailPending && <Spinner />}
 
                     {localization.auth.signIn}
+
+                    <LastUsedBadge method="email" floating />
                   </Button>
 
                   {plugins.flatMap((plugin) =>
@@ -275,7 +318,7 @@ export function SignIn({
               )}
 
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="signIn" />
               )}
             </>
           )}

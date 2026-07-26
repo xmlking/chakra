@@ -6,7 +6,6 @@ import {
   useRequestPasswordReset
 } from "@better-auth-ui/react"
 import { type SyntheticEvent, useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
@@ -14,12 +13,13 @@ import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup
+  FieldGroup,
+  FieldLabel
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
+import { RESET_LINK_SENT_STORAGE_KEY } from "./reset-link-sent"
 
 export type ForgotPasswordProps = {
   className?: string
@@ -29,7 +29,9 @@ export type ForgotPasswordProps = {
  * Render a card-based "Forgot Password" form that sends a password-reset email.
  *
  * The form displays an email input, submit button, and a link back to sign-in.
- * Toasts are displayed on success or error via the `useForgotPassword` hook.
+ * After a successful request the submitted email is stored in `sessionStorage`
+ * and the user is redirected to the reset-link-sent view, which offers to open
+ * their email provider.
  *
  * @param className - Optional additional CSS class names applied to the card
  * @returns The forgot-password form UI as a JSX element
@@ -40,6 +42,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
     baseURL,
     basePaths,
     localization,
+    navigate,
     plugins,
     viewPaths,
     Link
@@ -53,7 +56,10 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
       onError: () => {
         resetFetchOptions()
       },
-      onSuccess: () => toast.success(localization.auth.passwordResetEmailSent)
+      onSuccess: (_data, { email }) => {
+        sessionStorage.setItem(RESET_LINK_SENT_STORAGE_KEY, email)
+        navigate({ to: `${basePaths.auth}/${viewPaths.auth.resetLinkSent}` })
+      }
     }
   )
 
@@ -87,7 +93,7 @@ export function ForgotPassword({ className }: ForgotPasswordProps) {
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field data-invalid={!!fieldErrors.email}>
-              <Label htmlFor="email">{localization.auth.email}</Label>
+              <FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
 
               <Input
                 id="email"

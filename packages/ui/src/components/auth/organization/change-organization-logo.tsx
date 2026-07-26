@@ -1,3 +1,5 @@
+"use client"
+
 import { fileToBase64 } from "@better-auth-ui/core"
 import {
   type OrganizationAuthClient,

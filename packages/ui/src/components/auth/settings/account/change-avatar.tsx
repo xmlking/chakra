@@ -11,8 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "#components/shadcn/dropdown-menu"
-import { Field } from "#components/shadcn/field"
-import { Label } from "#components/shadcn/label"
+import { Field, FieldLabel } from "#components/shadcn/field"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
 
@@ -88,7 +87,7 @@ export function ChangeAvatar({ className }: ChangeAvatarProps) {
 
   return (
     <Field className={className}>
-      <Label>{localization.settings.avatar}</Label>
+      <FieldLabel>{localization.settings.avatar}</FieldLabel>
 
       <input
         ref={fileInputRef}

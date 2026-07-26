@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type OrganizationAuthClient,
   useActiveOrganization,
@@ -136,7 +138,7 @@ export function OrganizationSwitcher({
               />
             )}
 
-            <ChevronsUpDown className="ml-auto" />
+            <ChevronsUpDown className="ml-auto size-4 shrink-0 text-muted-foreground" />
           </DropdownMenuTrigger>
         )}
 

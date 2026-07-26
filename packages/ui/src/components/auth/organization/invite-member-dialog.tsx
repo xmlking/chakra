@@ -21,9 +21,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import {
   Select,
   SelectContent,
@@ -114,9 +113,9 @@ export function InviteMemberDialog({
 
           <div className="flex flex-col gap-4">
             <Field data-invalid={!!emailError}>
-              <Label htmlFor="invite-member-email">
+              <FieldLabel htmlFor="invite-member-email">
                 {localization.auth.email}
-              </Label>
+              </FieldLabel>
 
               <Input
                 id="invite-member-email"
@@ -142,9 +141,9 @@ export function InviteMemberDialog({
             </Field>
 
             <Field>
-              <Label htmlFor="invite-member-role">
+              <FieldLabel htmlFor="invite-member-role">
                 {organizationLocalization.role}
-              </Label>
+              </FieldLabel>
 
               <Select
                 value={role}

@@ -20,9 +20,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
 import { NewApiKeyDialog } from "./new-api-key-dialog"
@@ -105,7 +104,9 @@ export function CreateApiKeyDialog({
             </AlertDialogHeader>
 
             <Field>
-              <Label htmlFor="api-key-name">{apiKeyLocalization.name}</Label>
+              <FieldLabel htmlFor="api-key-name">
+                {apiKeyLocalization.name}
+              </FieldLabel>
 
               <Input
                 id="api-key-name"

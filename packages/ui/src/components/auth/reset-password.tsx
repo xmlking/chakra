@@ -1,3 +1,5 @@
+"use client"
+
 import { useAuth, useResetPassword } from "@better-auth-ui/react"
 import { Eye, EyeOff } from "lucide-react"
 import { type SyntheticEvent, useEffect, useState } from "react"
@@ -9,7 +11,8 @@ import {
   Field,
   FieldDescription,
   FieldError,
-  FieldGroup
+  FieldGroup,
+  FieldLabel
 } from "#components/shadcn/field"
 import {
   InputGroup,
@@ -17,7 +20,6 @@ import {
   InputGroupButton,
   InputGroupInput
 } from "#components/shadcn/input-group"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
 
@@ -110,7 +112,9 @@ export function ResetPassword({ className }: ResetPasswordProps) {
         <form onSubmit={handleSubmit}>
           <FieldGroup>
             <Field data-invalid={!!fieldErrors.password}>
-              <Label htmlFor="password">{localization.auth.password}</Label>
+              <FieldLabel htmlFor="password">
+                {localization.auth.password}
+              </FieldLabel>
 
               <InputGroup>
                 <InputGroupInput
@@ -156,6 +160,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
 
                 <InputGroupAddon align="inline-end">
                   <InputGroupButton
+                    size="icon-xs"
                     aria-label={
                       isPasswordVisible
                         ? localization.auth.hidePassword
@@ -167,7 +172,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                         : localization.auth.showPassword
                     }
                     onClick={() => {
-                      setIsPasswordVisible(!isPasswordVisible)
+                      setIsPasswordVisible((visible) => !visible)
                     }}
                   >
                     {isPasswordVisible ? <EyeOff /> : <Eye />}
@@ -180,9 +185,9 @@ export function ResetPassword({ className }: ResetPasswordProps) {
 
             {emailAndPassword?.confirmPassword && (
               <Field data-invalid={!!fieldErrors.confirmPassword}>
-                <Label htmlFor="confirmPassword">
+                <FieldLabel htmlFor="confirmPassword">
                   {localization.auth.confirmPassword}
-                </Label>
+                </FieldLabel>
 
                 <InputGroup>
                   <InputGroupInput
@@ -228,6 +233,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
 
                   <InputGroupAddon align="inline-end">
                     <InputGroupButton
+                      size="icon-xs"
                       aria-label={
                         isConfirmPasswordVisible
                           ? localization.auth.hidePassword
@@ -239,7 +245,7 @@ export function ResetPassword({ className }: ResetPasswordProps) {
                           : localization.auth.showPassword
                       }
                       onClick={() => {
-                        setIsConfirmPasswordVisible(!isConfirmPasswordVisible)
+                        setIsConfirmPasswordVisible((visible) => !visible)
                       }}
                     >
                       {isConfirmPasswordVisible ? <EyeOff /> : <Eye />}

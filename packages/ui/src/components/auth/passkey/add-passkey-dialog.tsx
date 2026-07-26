@@ -20,9 +20,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { passkeyPlugin } from "#lib/auth/passkey-plugin"
 
@@ -72,7 +71,9 @@ export function AddPasskeyDialog({
           </AlertDialogHeader>
 
           <Field>
-            <Label htmlFor="passkey-name">{passkeyLocalization.name}</Label>
+            <FieldLabel htmlFor="passkey-name">
+              {passkeyLocalization.name}
+            </FieldLabel>
 
             <Input
               id="passkey-name"

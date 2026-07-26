@@ -7,7 +7,6 @@ import {
 } from "@better-auth-ui/react"
 import { useIsMutating } from "@tanstack/react-query"
 import { type SyntheticEvent, useState } from "react"
-import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
@@ -16,13 +15,14 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { magicLinkPlugin } from "#lib/auth/magic-link-plugin"
 import { cn } from "#lib/utils"
+import { MAGIC_LINK_SENT_STORAGE_KEY } from "./magic-link-sent"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
 
 export type MagicLinkProps = {
@@ -50,21 +50,25 @@ export function MagicLink({
     baseURL,
     emailAndPassword,
     localization,
+    navigate,
     plugins,
     redirectTo,
     socialProviders,
     viewPaths,
     Link
   } = useAuth()
-  const { localization: magicLinkLocalization } = useAuthPlugin(magicLinkPlugin)
+  const { localization: magicLinkLocalization, viewPaths: magicLinkViewPaths } =
+    useAuthPlugin(magicLinkPlugin)
 
   const [email, setEmail] = useState("")
 
   const { mutate: signInMagicLink, isPending: signInMagicLinkPending } =
     useSignInMagicLink(authClient as MagicLinkAuthClient, {
-      onSuccess: () => {
-        setEmail("")
-        toast.success(magicLinkLocalization.magicLinkSent)
+      onSuccess: (_data, variables) => {
+        sessionStorage.setItem(MAGIC_LINK_SENT_STORAGE_KEY, variables.email)
+        navigate({
+          to: `${basePaths.auth}/${magicLinkViewPaths.auth.magicLinkSent}`
+        })
       }
     })
 
@@ -98,7 +102,7 @@ export function MagicLink({
           {socialPosition === "top" && (
             <>
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="magicLink" />
               )}
 
               {showSeparator && (
@@ -112,7 +116,9 @@ export function MagicLink({
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field data-invalid={!!fieldErrors.email}>
-                <Label htmlFor="email">{localization.auth.email}</Label>
+                <FieldLabel htmlFor="email">
+                  {localization.auth.email}
+                </FieldLabel>
 
                 <Input
                   id="email"
@@ -173,7 +179,7 @@ export function MagicLink({
               )}
 
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="magicLink" />
               )}
             </>
           )}
