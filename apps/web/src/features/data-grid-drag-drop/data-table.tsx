@@ -58,10 +58,10 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import { CheckIcon, FilterIcon, PlusIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import { BacklogEmptyState } from "../empty-state";
 import { createBacklogColumns, type BacklogRowAction } from "./columns";
@@ -603,8 +603,10 @@ export function DataTable() {
               type="button"
               size="sm"
               onClick={() =>
-                toast.success("New backlog item created", {
+                toast.add({
+                  title: "New backlog item created",
                   description: "Item added to sprint backlog.",
+                  type: "success",
                 })
               }
             >

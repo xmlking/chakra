@@ -2,7 +2,7 @@ import { MutationCache, QueryClient, type QueryKey } from "@tanstack/react-query
 import { createRouter } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
 import { UnauthorizedError } from "@workspace/shared";
-import { toast } from "sonner";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 
 import { DefaultError } from "#components/default-error";
 // import { DefaultLoading } from "#components/default-loading";
@@ -27,8 +27,10 @@ export function getRouter() {
     mutationCache: new MutationCache({
       onSuccess: (_data, _variables, _context, mutation) => {
         if (mutation.meta?.successMessage) {
-          toast.success(mutation.meta?.successMessage, {
-            duration: 5000,
+          toast.add({
+            title: mutation.meta?.successMessage,
+            type: "success",
+            timeout: 5000,
           });
         }
       },
@@ -40,17 +42,23 @@ export function getRouter() {
           window.location.href = "/auth/sign-in"; // or navigate with router
         }
         // if (error instanceof FormattedError) {
-        //   toast.warning(error.message);
+        //   toast.add({ title: error.message, type: "warning" });
         // } else if (error instanceof ZodError) {
-        //   toast.error("Please check the form for errors.");
+        //   toast.add({ title: "Please check the form for errors.", type: "error" });
         // } else if (error instanceof NotFoundError) {
-        //   toast.error("The requested resource was not found.");
+        //   toast.add({ title: "The requested resource was not found.", type: "error" });
         // } else {
         if (mutation.meta?.errorMessage) {
           // const mutationKey = mutation.options.mutationKey?.[0] as string;
-          toast.error(mutation.meta.errorMessage, {
-            duration: Infinity,
-            closeButton: true,
+          const id = toast.add({
+            title: mutation.meta.errorMessage,
+            type: "error",
+            actionProps: {
+              children: "Close",
+              onClick() {
+                toast.close(id);
+              },
+            },
           });
         }
       },
