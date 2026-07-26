@@ -50,15 +50,9 @@ export function getRouter() {
         // } else {
         if (mutation.meta?.errorMessage) {
           // const mutationKey = mutation.options.mutationKey?.[0] as string;
-          const id = toast.add({
+          toast.add({
             title: mutation.meta.errorMessage,
             type: "error",
-            actionProps: {
-              children: "Close",
-              onClick() {
-                toast.close(id);
-              },
-            },
           });
         }
       },
