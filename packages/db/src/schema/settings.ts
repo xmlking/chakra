@@ -4,7 +4,7 @@ import { createInsertSchema, createSelectSchema, createUpdateSchema } from "driz
 import { z } from "zod";
 
 import { organization } from "./auth";
-import { auditAtFields, auditByFields } from "./column";
+import { auditColumns } from "./column";
 import { settingTypeEnum } from "./enum";
 
 // ------------------ entities -----------------------
@@ -16,9 +16,8 @@ export const settings = snakeCase.table(
       .uuid()
       .notNull()
       .references(() => organization.id, { onDelete: "cascade" }),
-    documentation: t.text(),
-    ...auditAtFields,
-    ...auditByFields,
+    description: t.text(),
+    ...auditColumns,
     value: t.jsonb().notNull(),
     type: settingTypeEnum().default("org").notNull(),
     secret: t.boolean().default(false).notNull(),
