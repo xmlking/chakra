@@ -5,7 +5,8 @@ import { captchaPlugin } from "@better-auth-ui/react/plugins";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
-import { Toaster } from "@workspace/ui/components/shadcn/sonner";
+import { Toaster as SonnerToster } from "@workspace/ui/components/shadcn/sonner";
+import { Toaster } from "@workspace/ui/components/shadcn/toast";
 import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
 import { apiKeyPlugin } from "@workspace/ui/lib/auth/api-key-plugin";
@@ -86,7 +87,8 @@ export function Providers({ children }: { children: ReactNode }) {
                 </AuthProvider>
                 <MetaTheme />
                 <Suspense fallback={null}>
-                  <Toaster
+                  <Toaster />
+                  <SonnerToster
                     // HINT: without this, the toaster will not fit correctly
                     // className="flex justify-center"
                     // duration={10_000}
