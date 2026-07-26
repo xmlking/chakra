@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+// import { CsvViewer } from "@workspace/ui/components/extend/csv-viewer";
 // import { PDFViewer } from "@workspace/ui/components/extend/pdf-viewer";
 import { CapabilitiesBadges } from "@workspace/ui/components/files-sdk/capabilities-badges";
 import {
   Dropzone,
   DropzoneContent,
   DropzoneEmptyState,
+  DropzoneError,
 } from "@workspace/ui/components/files-sdk/dropzone";
 import { FileActions } from "@workspace/ui/components/files-sdk/file-actions";
 import { FileBrowser } from "@workspace/ui/components/files-sdk/file-browser";
@@ -37,13 +39,15 @@ function FilesPage() {
         {/* Upload Section */}
         <Dropzone
           accept="image/*,text/*,application/pdf"
+          directory
           files={files}
           prefix="docs/"
           onUploaded={bump}
-          maxFiles={5}
+          maxFiles={10}
         >
-          <DropzoneEmptyState />
           <DropzoneContent />
+          <DropzoneEmptyState />
+          <DropzoneError />
         </Dropzone>
         <FileSearch
           files={files}
@@ -62,7 +66,21 @@ function FilesPage() {
         />
         <p>Preview File: {key}</p>
         {key && <FilePreview file={key} files={files} />}
-        {/* {key && <PDFViewer src={files.url(key)} className="h-[640px]" />} */}
+        {/* {key && (
+          <FilePreview
+            file={key}
+            files={files}
+            renderPreview={({ file, src, text }) => {
+              if (file.type === "application/pdf" && src) {
+                return <PDFViewer className="h-[640px]" src={src} />;
+              }
+              if (file.type === "text/csv" && text) {
+                return <CsvViewer data={text} search />;
+              }
+              return <p className="text-sm text-muted-foreground">No preview</p>;
+            }}
+          />
+        )} */}
 
         <TrashBin files={files} key={`trash-${version}`} onChanged={bump} />
         {/* file actions   */}

@@ -1,5 +1,6 @@
 // "use client";
 
+import { adminPlugin, lastLoginMethodPlugin } from "@better-auth-ui/core/plugins";
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
@@ -49,6 +50,8 @@ export function Providers({ children }: { children: ReactNode }) {
                   // @ts-ignore : FIXME
                   navigate={navigate}
                   plugins={[
+                    adminPlugin(),
+                    lastLoginMethodPlugin(),
                     magicLinkPlugin(),
                     passkeyPlugin(),
                     apiKeyPlugin({ organization: true }),

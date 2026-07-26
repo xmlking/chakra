@@ -45,13 +45,13 @@ bunx --bun shadcn@latest add @ai-elements/edge
 bunx --bun shadcn@latest add @ai-elements/node
 bunx --bun shadcn@latest add @ai-elements/panel
 bunx --bun shadcn@latest add @ai-elements/toolbar
+# files-sdk
+bunx --bun shadcn@latest add https://files-sdk.dev/r/all.json
 # better-upload (optional)
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-button
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone-progress
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/paste-upload-area
-# files-sdk
-bunx --bun shadcn@latest add https://files-sdk.dev/r/all.json
 # kibo-ui (optional)
 bunx --bun shadcn@latest add @kibo-ui/gantt
 # reui data-grid
@@ -86,6 +86,7 @@ bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed
 bunx --bun shadcn@latest add -p src/components/flowkit-ui @flowkit-ui/creatable-combobox
 #  Extend UI components for document viewers for PDF, DOCX, XLSX, and CSV (optional)
 bunx --bun shadcn@latest add @extend/pdf-viewer
+bunx --bun shadcn@latest add @extend/csv-viewer
 bunx --bun shadcn@latest add @extend/docx-viewer
 bunx --bun shadcn@latest add @extend/schema-builder
 # assistant-ui
