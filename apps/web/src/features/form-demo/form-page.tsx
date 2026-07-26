@@ -41,9 +41,9 @@ import { addDays, addYears } from "date-fns";
 import { Check, XIcon } from "lucide-react";
 import { m } from "motion/react";
 import { toast } from "sonner";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 
-import { applyZodIssues, parseZodIssues } from "#lib/zod-error-handler";
+import { applyZodIssues } from "#lib/zod-error-handler";
 
 import { createProjectMutationOptions } from "./api/mutations";
 import { addons, PROJECT_STATUSES, projectSchema } from "./schema";
@@ -120,12 +120,16 @@ export function FormPage() {
     onError: (error: Error) => {
       console.log(error);
 
-      // if (error instanceof ZodError) {
+      // const issues = parseZodIssues(error.message);
+      // if (issues) {
+      //   applyZodIssues(form, issues);
+      //   toast.error("Please fix the validation errors");
+      //   return;
       // }
 
-      const issues = parseZodIssues(error.message);
-      if (issues) {
-        applyZodIssues(form, issues);
+      if (error instanceof ZodError) {
+        console.log("it is ZodError");
+        applyZodIssues(form, error.issues);
         toast.error("Please fix the validation errors");
         return;
       }

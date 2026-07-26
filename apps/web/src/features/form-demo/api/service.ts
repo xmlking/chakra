@@ -6,12 +6,12 @@ import { ValidationError } from "@workspace/shared/errors";
 import { sleep } from "@workspace/shared/helpers";
 import { z } from "zod";
 
-// import { errorHandlingMiddleware } from "../../../server/middleware/error";
-import { projectDeleteSchema, projectSchema } from "../schema";
+import { validate } from "#lib/utils/validate";
+
+import { projectDeleteSchema, projectValidationSchema } from "../schema";
 
 export const createProject = createServerFn({ method: "POST" })
-  // .middleware([errorHandlingMiddleware])
-  .validator(projectSchema)
+  .validator(validate(projectValidationSchema))
   .handler(async ({ data: parsedInput }) => {
     console.debug(parsedInput);
 
@@ -20,7 +20,7 @@ export const createProject = createServerFn({ method: "POST" })
         organization: true,
       },
     });
-    console.log("Existing settings:", response);
+    console.debug("Existing settings:", response);
     await sleep(2000);
 
     if (Math.random() < 0.2) {
@@ -37,7 +37,7 @@ export const updateProject = createServerFn({ method: "POST" })
   .validator(
     z.object({
       id: z.number().int().positive({ message: "Invalid project ID" }),
-      value: projectSchema,
+      value: projectValidationSchema,
     }),
   )
   .handler(async ({ data: parsedInput }) => {
