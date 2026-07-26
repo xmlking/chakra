@@ -129,4 +129,7 @@ export const projectDeleteSchema = z.object({
   id: z.number().int().positive({ message: "Invalid project ID" }),
 });
 
+// Schema for validation (excludes File types which can't serialize)
+export const projectValidationSchema = projectSchema.omit({ files: true });
+
 export type Project = z.infer<typeof projectSchema>;
