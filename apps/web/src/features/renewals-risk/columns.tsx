@@ -22,10 +22,10 @@ import {
 import { Item, ItemMedia } from "@workspace/ui/components/shadcn/item";
 import { Progress, ProgressLabel, ProgressValue } from "@workspace/ui/components/shadcn/progress";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import { MoreHorizontalIcon, EyeIcon, FlagIcon, CalendarDaysIcon, CopyIcon } from "lucide-react";
 import { memo, type ComponentProps } from "react";
-import { toast } from "sonner";
 
 import { useCopyToClipboard } from "#hooks/use-copy-to-clipboard";
 
@@ -289,8 +289,10 @@ function ActionsCell({
 }) {
   const { copyToClipboard } = useCopyToClipboard({
     onCopy: () => {
-      toast.success("Renewal brief copied", {
+      toast.add({
+        title: "Renewal brief copied",
         description: `${row.original.account} renewal summary copied to the clipboard.`,
+        type: "success",
       });
     },
   });

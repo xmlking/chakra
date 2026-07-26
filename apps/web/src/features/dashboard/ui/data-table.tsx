@@ -80,6 +80,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/shadcn/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/shadcn/tabs";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
 import {
   GripVerticalIcon,
@@ -98,7 +99,6 @@ import {
 import * as React from "react";
 // oxlint-disable-next-line react-doctor/prefer-dynamic-import
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { toast } from "sonner";
 import { z } from "zod";
 
 // oxlint-disable-next-line react/only-export-components react-doctor/only-export-components
@@ -201,10 +201,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+          void toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
+            loading: { title: `Saving ${row.original.header}` },
+            success: { title: "Done" },
+            error: { title: "Error" },
           });
         }}
       >
@@ -227,10 +227,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
+          void toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
+            loading: { title: `Saving ${row.original.header}` },
+            success: { title: "Done" },
+            error: { title: "Error" },
           });
         }}
       >

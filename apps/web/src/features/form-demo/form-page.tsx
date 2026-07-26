@@ -37,10 +37,10 @@ import {
   InputGroupInput,
 } from "@workspace/ui/components/shadcn/input-group";
 import { SelectItem } from "@workspace/ui/components/shadcn/select";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { addDays, addYears } from "date-fns";
 import { Check, XIcon } from "lucide-react";
 import { m } from "motion/react";
-import { toast } from "sonner";
 import { z, ZodError } from "zod";
 
 import { applyZodIssues } from "#lib/zod-error-handler";
@@ -110,9 +110,10 @@ export function FormPage() {
       console.debug("Create project response:", data);
 
       form.reset();
-      toast.success("Project created successfully!", {
+      toast.add({
+        title: "Project created successfully!",
         description: JSON.stringify(data, null, 2),
-        className: "whitespace-pre-wrap font-mono",
+        type: "success",
       });
       // const queryClient = useQueryClient();
       // await queryClient.invalidateQueries({ queryKey: projectKeys.all });
@@ -123,18 +124,18 @@ export function FormPage() {
       // const issues = parseZodIssues(error.message);
       // if (issues) {
       //   applyZodIssues(form, issues);
-      //   toast.error("Please fix the validation errors");
+      //   toast.add({ title: "Please fix the validation errors", type: "error" });
       //   return;
       // }
 
       if (error instanceof ZodError) {
         console.log("it is ZodError");
         applyZodIssues(form, error.issues);
-        toast.error("Please fix the validation errors");
+        toast.add({ title: "Please fix the validation errors", type: "error" });
         return;
       }
 
-      toast.error(error.message);
+      toast.add({ title: error.message, type: "error" });
     },
   });
 

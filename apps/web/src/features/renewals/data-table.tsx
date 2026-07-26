@@ -54,6 +54,7 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import {
   FilterIcon,
@@ -70,7 +71,6 @@ import {
   XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import { createRenewalColumns, RiskBadge, StageBadge } from "./columns";
 import {
@@ -591,14 +591,18 @@ export function DataTable() {
   );
 
   const handleOpenAccount = useCallback((renewal: IRenewalRecord) => {
-    toast.info("Open account workspace", {
+    toast.add({
+      title: "Open account workspace",
       description: `${renewal.accountName} · ${renewal.ownerName}`,
+      type: "info",
     });
   }, []);
 
   const handleCreateBrief = useCallback((renewal: IRenewalRecord) => {
-    toast.success("Renewal brief created", {
+    toast.add({
+      title: "Renewal brief created",
       description: `${renewal.accountName} is ready for executive review.`,
+      type: "success",
     });
   }, []);
 
@@ -615,8 +619,10 @@ export function DataTable() {
       ),
     );
 
-    toast.success("Exec escalation created", {
+    toast.add({
+      title: "Exec escalation created",
       description: `${renewal.accountName} moved into an urgent board-review track.`,
+      type: "success",
     });
   }, []);
 
@@ -697,8 +703,10 @@ export function DataTable() {
     );
 
     setRowSelection({});
-    toast.success("Renewals updated", {
+    toast.add({
+      title: "Renewals updated",
       description: `${selectedRows.length} account${selectedRows.length === 1 ? "" : "s"} moved to ${nextOwner.label} and ${bulkStageValue}.`,
+      type: "success",
     });
   }, [bulkOwnerValue, bulkStageValue, selectedRows]);
 
@@ -727,8 +735,10 @@ export function DataTable() {
               type="button"
               size="sm"
               onClick={() =>
-                toast.success("Transaction started", {
+                toast.add({
+                  title: "Transaction started",
                   description: "New renewal entry opened.",
+                  type: "success",
                 })
               }
             >

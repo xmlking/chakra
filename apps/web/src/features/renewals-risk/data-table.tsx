@@ -57,6 +57,7 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
+import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import {
   Building2Icon,
@@ -72,7 +73,6 @@ import {
   XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { toast } from "sonner";
 
 import { createRenewalRiskColumns } from "./columns";
 import {
@@ -379,21 +379,27 @@ export function DataTable() {
       createRenewalRiskColumns({
         onAction: (action, renewal) => {
           if (action === "open") {
-            toast.info("Open account workspace", {
+            toast.add({
+              title: "Open account workspace",
               description: `${renewal.account} · ${renewal.productLine}`,
+              type: "info",
             });
             return;
           }
 
           if (action === "save_plan") {
-            toast.success("Save plan assigned", {
+            toast.add({
+              title: "Save plan assigned",
               description: `${renewal.account} is now routed into the rescue motion for ${renewal.owner.name}.`,
+              type: "success",
             });
             return;
           }
 
-          toast.message("Executive review scheduled", {
+          toast.add({
+            title: "Executive review scheduled",
             description: `${renewal.account} has been queued for the next renewals escalation review.`,
+            type: "info",
           });
         },
       }),
@@ -615,9 +621,11 @@ export function DataTable() {
             <Button
               type="button"
               onClick={() =>
-                toast.success("Save plan drafted", {
+                toast.add({
+                  title: "Save plan drafted",
                   description:
                     "Connect this action to your renewals workspace or escalation workflow.",
+                  type: "success",
                 })
               }
             >
