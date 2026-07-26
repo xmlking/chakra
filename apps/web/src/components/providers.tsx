@@ -1,6 +1,5 @@
 // "use client";
 
-import { adminPlugin, lastLoginMethodPlugin } from "@better-auth-ui/core/plugins";
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
@@ -9,8 +8,10 @@ import { Toaster as SonnerToster } from "@workspace/ui/components/shadcn/sonner"
 import { Toaster } from "@workspace/ui/components/shadcn/toast";
 import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { ThemeProvider } from "@workspace/ui/components/theme-provider";
+import { adminPlugin } from "@workspace/ui/lib/auth/admin-plugin";
 import { apiKeyPlugin } from "@workspace/ui/lib/auth/api-key-plugin";
 import { deleteUserPlugin } from "@workspace/ui/lib/auth/delete-user-plugin";
+import { lastLoginMethodPlugin } from "@workspace/ui/lib/auth/last-login-method-plugin";
 import { magicLinkPlugin } from "@workspace/ui/lib/auth/magic-link-plugin";
 import { multiSessionPlugin } from "@workspace/ui/lib/auth/multi-session-plugin";
 import { organizationPlugin } from "@workspace/ui/lib/auth/organization-plugin";
