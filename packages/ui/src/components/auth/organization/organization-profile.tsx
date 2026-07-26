@@ -12,9 +12,8 @@ import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
@@ -79,9 +78,9 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
             <ChangeOrganizationLogo />
 
             <Field>
-              <Label htmlFor={nameInputId}>
+              <FieldLabel htmlFor={nameInputId}>
                 {organizationLocalization.name}
-              </Label>
+              </FieldLabel>
 
               {activeOrganization ? (
                 <Input
@@ -110,7 +109,7 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
               />
             ) : (
               <Field>
-                <Label>{organizationLocalization.slug}</Label>
+                <FieldLabel>{organizationLocalization.slug}</FieldLabel>
                 <Skeleton className="h-8 w-full rounded-md" />
               </Field>
             )}

@@ -17,9 +17,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field } from "#components/shadcn/field"
+import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { passkeyPlugin } from "#lib/auth/passkey-plugin"
 
@@ -71,9 +70,9 @@ export function DeletePasskeyDialog({
         </AlertDialogHeader>
 
         <Field>
-          <Label htmlFor={previewId}>
+          <FieldLabel htmlFor={previewId}>
             {passkey.name || passkeyLocalization.passkey}
-          </Label>
+          </FieldLabel>
 
           <Input id={previewId} value={passkeyName} readOnly disabled />
         </Field>

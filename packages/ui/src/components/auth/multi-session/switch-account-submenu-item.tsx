@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type ListDeviceSession,
   type MultiSessionAuthClient,

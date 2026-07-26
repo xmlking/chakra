@@ -34,6 +34,7 @@
     "@better-auth-ui/core": "catalog:",
     "@better-auth-ui/react": "catalog:",
     "@better-auth/api-key": "catalog:",
+    "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:",
     "@daypicker/react": "^10.0.1",
     "@dnd-kit/core": "6.3.1",

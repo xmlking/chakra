@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type OrganizationAuthClient,
   useAuth,
@@ -8,13 +10,12 @@ import { useDebouncer } from "@tanstack/react-pacer"
 import { Check, X } from "lucide-react"
 import { useEffect, useState } from "react"
 
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput
 } from "#components/shadcn/input-group"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 
@@ -86,7 +87,7 @@ export function SlugField({
 
   return (
     <Field data-invalid={!!slugError}>
-      <Label htmlFor={id}>{localization.slug}</Label>
+      <FieldLabel htmlFor={id}>{localization.slug}</FieldLabel>
 
       <InputGroup>
         {slugPrefix && (

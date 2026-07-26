@@ -20,9 +20,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field } from "#components/shadcn/field"
+import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
 
@@ -67,9 +66,9 @@ export function DeleteApiKeyDialog({
         </AlertDialogHeader>
 
         <Field>
-          <Label htmlFor={previewId}>
+          <FieldLabel htmlFor={previewId}>
             {apiKey.name || apiKeyLocalization.apiKey}
-          </Label>
+          </FieldLabel>
 
           <Input
             id={previewId}

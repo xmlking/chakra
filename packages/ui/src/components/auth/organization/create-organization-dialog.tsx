@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type OrganizationAuthClient,
   useAuth,
@@ -18,9 +20,8 @@ import {
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { SlugField, sanitizeSlug } from "./slug-field"
@@ -88,9 +89,9 @@ export function CreateOrganizationDialog({
 
           <div className="flex flex-col gap-4">
             <Field data-invalid={!!nameError}>
-              <Label htmlFor="create-organization-name">
+              <FieldLabel htmlFor="create-organization-name">
                 {organizationLocalization.name}
-              </Label>
+              </FieldLabel>
 
               <Input
                 id="create-organization-name"

@@ -14,6 +14,7 @@ import {
   FieldDescription,
   FieldError,
   FieldGroup,
+  FieldLabel,
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
@@ -23,7 +24,6 @@ import {
   InputGroupButton,
   InputGroupInput
 } from "#components/shadcn/input-group"
-import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
 import { AdditionalField } from "./additional-field"
@@ -33,6 +33,12 @@ export type SignUpProps = {
   className?: string
   socialLayout?: SocialLayout
   socialPosition?: "top" | "bottom"
+  /**
+   * Runs instead of the post-sign-up redirect, but only when the sign-up
+   * created an immediately usable session. Email verification still takes
+   * priority, and social sign-ups are unaffected.
+   */
+  onSignUpSuccess?: () => void
 }
 
 /**
@@ -47,12 +53,14 @@ export type SignUpProps = {
  * @param className - Additional CSS classes applied to the outer container
  * @param socialLayout - Social layout to apply to the component
  * @param socialPosition - Social position to apply to the component
+ * @param onSignUpSuccess - Replaces the post-sign-up redirect when the new account is immediately usable
  * @returns The sign-up form React element.
  */
 export function SignUp({
   className,
   socialLayout,
-  socialPosition = "bottom"
+  socialPosition = "bottom",
+  onSignUpSuccess
 }: SignUpProps) {
   const {
     additionalFields,
@@ -87,6 +95,8 @@ export function SignUp({
           navigate({
             to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
           })
+        } else if (onSignUpSuccess) {
+          onSignUpSuccess()
         } else {
           navigate({ to: redirectTo })
         }
@@ -180,7 +190,7 @@ export function SignUp({
           {socialPosition === "top" && (
             <>
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="signUp" />
               )}
 
               {showSeparator && (
@@ -196,7 +206,9 @@ export function SignUp({
               <FieldGroup>
                 {emailAndPassword.name !== false && (
                   <Field data-invalid={!!fieldErrors.name}>
-                    <Label htmlFor="name">{localization.auth.name}</Label>
+                    <FieldLabel htmlFor="name">
+                      {localization.auth.name}
+                    </FieldLabel>
 
                     <Input
                       id="name"
@@ -228,7 +240,9 @@ export function SignUp({
                 )}
 
                 <Field data-invalid={!!fieldErrors.email}>
-                  <Label htmlFor="email">{localization.auth.email}</Label>
+                  <FieldLabel htmlFor="email">
+                    {localization.auth.email}
+                  </FieldLabel>
 
                   <Input
                     id="email"
@@ -270,12 +284,15 @@ export function SignUp({
                         name={field.name}
                         field={field}
                         isPending={isPending}
+                        optionalLabel={localization.auth.optional}
                       />
                     )
                 )}
 
                 <Field data-invalid={!!fieldErrors.password}>
-                  <Label htmlFor="password">{localization.auth.password}</Label>
+                  <FieldLabel htmlFor="password">
+                    {localization.auth.password}
+                  </FieldLabel>
 
                   <InputGroup>
                     <InputGroupInput
@@ -323,6 +340,7 @@ export function SignUp({
 
                     <InputGroupAddon align="inline-end">
                       <InputGroupButton
+                        size="icon-xs"
                         aria-label={
                           isPasswordVisible
                             ? localization.auth.hidePassword
@@ -334,7 +352,7 @@ export function SignUp({
                             : localization.auth.showPassword
                         }
                         onClick={() => {
-                          setIsPasswordVisible(!isPasswordVisible)
+                          setIsPasswordVisible((visible) => !visible)
                         }}
                       >
                         {isPasswordVisible ? <EyeOff /> : <Eye />}
@@ -347,9 +365,9 @@ export function SignUp({
 
                 {emailAndPassword?.confirmPassword && (
                   <Field data-invalid={!!fieldErrors.confirmPassword}>
-                    <Label htmlFor="confirmPassword">
+                    <FieldLabel htmlFor="confirmPassword">
                       {localization.auth.confirmPassword}
-                    </Label>
+                    </FieldLabel>
 
                     <InputGroup>
                       <InputGroupInput
@@ -400,6 +418,7 @@ export function SignUp({
 
                       <InputGroupAddon align="inline-end">
                         <InputGroupButton
+                          size="icon-xs"
                           aria-label={
                             isConfirmPasswordVisible
                               ? localization.auth.hidePassword
@@ -411,9 +430,7 @@ export function SignUp({
                               : localization.auth.showPassword
                           }
                           onClick={() =>
-                            setIsConfirmPasswordVisible(
-                              !isConfirmPasswordVisible
-                            )
+                            setIsConfirmPasswordVisible((visible) => !visible)
                           }
                         >
                           {isConfirmPasswordVisible ? <EyeOff /> : <Eye />}
@@ -434,6 +451,7 @@ export function SignUp({
                         name={field.name}
                         field={field}
                         isPending={isPending}
+                        optionalLabel={localization.auth.optional}
                       />
                     )
                 )}
@@ -471,7 +489,7 @@ export function SignUp({
               )}
 
               {socialProviders && socialProviders.length > 0 && (
-                <ProviderButtons socialLayout={socialLayout} />
+                <ProviderButtons socialLayout={socialLayout} view="signUp" />
               )}
             </>
           )}

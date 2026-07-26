@@ -6,9 +6,8 @@ import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent, CardFooter } from "#components/shadcn/card"
-import { Field, FieldError } from "#components/shadcn/field"
+import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Label } from "#components/shadcn/label"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
@@ -58,7 +57,7 @@ export function ChangeEmail({ className }: ChangeEmailProps) {
         <Card className={cn(className)}>
           <CardContent className="flex flex-col gap-6">
             <Field data-invalid={!!fieldErrors.email}>
-              <Label htmlFor="email">{localization.auth.email}</Label>
+              <FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
 
               {session ? (
                 <Input
