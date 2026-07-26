@@ -64,11 +64,12 @@ export function permissionRequiredMiddleware(permissions: Permissions) {
     });
 }
 
-export function roleRequiredMiddleware(role: string) {
+export function roleRequiredMiddleware(roles: string | string[]) {
   return createMiddleware({ type: "function" })
     .middleware([memberRequiredMiddleware])
     .server(async ({ next, context }) => {
-      const granted = context.member.role === role;
+      const roleList = Array.isArray(roles) ? roles : [roles];
+      const granted = roleList.includes(context.member.role);
 
       if (!granted) {
         throw new ForbiddenError({ message: "Forbidden: User don't have role" });
