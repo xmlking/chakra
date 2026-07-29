@@ -23,6 +23,7 @@ const ignorePatterns = [
   "apps/web/src/lib/gen/**",
   "packages/ui/src/hooks/**",
   "packages/ui/src/lib/auth/**",
+  "packages/ui/src/hooks/use-mobile.ts",
   "packages/ui/src/components/**",
   "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
