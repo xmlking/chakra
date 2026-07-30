@@ -2,6 +2,7 @@
 
 import { authMutationKeys } from "@better-auth-ui/core"
 import {
+  AuthPrompts,
   type UsernameAuthClient,
   useAuth,
   useAuthPlugin,
@@ -35,6 +36,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
+import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
 import { usernamePlugin } from "#lib/auth/username-plugin"
 import { cn } from "#lib/utils"
 import { LastUsedBadge } from "../last-login-method/last-used-badge"
@@ -65,7 +67,6 @@ export function SignInUsername({
     emailAndPassword,
     localization,
     plugins,
-    redirectTo,
     socialProviders,
     viewPaths,
     navigate,
@@ -73,6 +74,7 @@ export function SignInUsername({
   } = useAuth()
 
   const { fetchOptions, resetFetchOptions } = useFetchOptions()
+  const continueSignIn = useSignInContinuation()
 
   const { localization: usernameLocalization } = useAuthPlugin(usernamePlugin)
 
@@ -92,9 +94,9 @@ export function SignInUsername({
 
         resetFetchOptions()
       },
-      onSuccess: () => {
+      onSuccess: (data) => {
         sessionStorage.removeItem("better-auth-ui.verify-email")
-        navigate({ to: redirectTo })
+        continueSignIn(data)
       }
     })
 
@@ -113,9 +115,9 @@ export function SignInUsername({
 
         resetFetchOptions()
       },
-      onSuccess: () => {
+      onSuccess: (data) => {
         sessionStorage.removeItem("better-auth-ui.verify-email")
-        navigate({ to: redirectTo })
+        continueSignIn(data)
       }
     })
 
@@ -168,6 +170,7 @@ export function SignInUsername({
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
+      <AuthPrompts view="signIn" />
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
           {localization.auth.signIn}

@@ -23,7 +23,7 @@
   },
   "registries": {
     "@better-upload": "https://better-upload.com/r/{name}.json",
-    "@better-auth-ui": "https://better-auth-ui.com/r/{name}.json",
+    "@better-auth-ui": "https://better-auth-ui.com/r/{style}/{name}.json",
     "@ai-elements": "https://ai-sdk.dev/elements/api/registry/{name}.json",
     "@basecn": "https://basecn.dev/r/{name}.json",
     "@assistant-ui": "https://r.assistant-ui.com/styles/{style}/{name}.json",
