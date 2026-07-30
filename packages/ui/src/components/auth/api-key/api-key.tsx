@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type ListedApiKey,
   useAuth,
@@ -7,7 +9,14 @@ import { Key, X } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
-import { Card, CardContent } from "#components/shadcn/card"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle
+} from "#components/shadcn/item"
 import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
 import { DeleteApiKeyDialog } from "./delete-api-key-dialog"
 
@@ -27,33 +36,35 @@ export function ApiKey({ apiKey, hideDelete, organizationId }: ApiKeyProps) {
   const preview = `${apiKey.start}${"*".repeat(16)}`
 
   return (
-    <Card className="bg-transparent border-0 ring-0 shadow-none">
-      <CardContent className="flex items-center gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
-          <Key className="size-4.5" />
-        </div>
-
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm font-medium leading-tight">
-            {apiKey.name || apiKeyLocalization.apiKey}
-          </span>
-
-          <span className="truncate font-mono text-muted-foreground text-xs">
-            {preview}
-          </span>
-
-          <span className="text-muted-foreground text-xs">
-            {new Date(apiKey.createdAt).toLocaleString(undefined, {
-              dateStyle: "medium",
-              timeStyle: "short"
-            })}
-          </span>
-        </div>
-
+    <Item>
+      <ItemMedia variant="icon">
+        <Key />
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{apiKey.name || apiKeyLocalization.apiKey}</ItemTitle>
+        <ItemDescription className="font-mono">{preview}</ItemDescription>
+        <ItemDescription>
+          {apiKeyLocalization.created}{" "}
+          {new Date(apiKey.createdAt).toLocaleString(undefined, {
+            dateStyle: "medium",
+            timeStyle: "short"
+          })}
+        </ItemDescription>
+        <ItemDescription>
+          {apiKey.expiresAt
+            ? `${apiKeyLocalization.expires} ${new Date(
+                apiKey.expiresAt
+              ).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short"
+              })}`
+            : apiKeyLocalization.neverExpires}
+        </ItemDescription>
+      </ItemContent>
+      <ItemActions>
         {!hideDelete && (
           <>
             <Button
-              className="ml-auto shrink-0"
               variant="outline"
               size="sm"
               onClick={() => setDeleteOpen(true)}
@@ -72,7 +83,7 @@ export function ApiKey({ apiKey, hideDelete, organizationId }: ApiKeyProps) {
             />
           </>
         )}
-      </CardContent>
-    </Card>
+      </ItemActions>
+    </Item>
   )
 }

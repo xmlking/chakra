@@ -1,3 +1,5 @@
+"use client"
+
 import {
   type AdditionalField as AdditionalFieldConfig,
   resolveInputType
@@ -40,6 +42,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -269,6 +272,7 @@ export function AdditionalField({
         <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
         <Select
+          items={field.options ?? []}
           name={name}
           defaultValue={
             field.defaultValue != null ? String(field.defaultValue) : undefined
@@ -281,11 +285,13 @@ export function AdditionalField({
           </SelectTrigger>
 
           <SelectContent>
-            {field.options?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
+            <SelectGroup>
+              {field.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
           </SelectContent>
         </Select>
 
@@ -521,14 +527,14 @@ function DateInput({ name, field, isPending }: AdditionalFieldProps) {
             through the styled <FieldError> below — matching the pattern used by
             the Name / Email / Password fields in the sign-up form. */}
         <input
+          aria-label={typeof field.label === "string" ? field.label : name}
           type="text"
           name={name}
           value={formValue}
           onChange={() => {}}
           required={field.required}
           tabIndex={-1}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full opacity-0"
+          className="sr-only"
           onInvalid={(e) => {
             e.preventDefault()
             setError((e.target as HTMLInputElement).validationMessage)

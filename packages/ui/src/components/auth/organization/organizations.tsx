@@ -1,16 +1,14 @@
-"use client"
-
 import {
   type OrganizationAuthClient,
   useAuth,
   useAuthPlugin,
   useListOrganizations
 } from "@better-auth-ui/react"
-import { useState } from "react"
+import { Fragment, useState } from "react"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
-import { Separator } from "#components/shadcn/separator"
+import { Item, ItemGroup, ItemSeparator } from "#components/shadcn/item"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { CreateOrganizationDialog } from "./create-organization-dialog"
 import { OrganizationRow } from "./organization-row"
@@ -58,21 +56,22 @@ export function Organizations({ className }: OrganizationsProps) {
           <Card className="p-0">
             <CardContent className="p-0">
               {organizationsPending ? (
-                <div className="p-4">
-                  <OrganizationViewSkeleton />
-                </div>
+                <ItemGroup>
+                  <Item>
+                    <OrganizationViewSkeleton />
+                  </Item>
+                </ItemGroup>
               ) : !organizations?.length ? (
                 <OrganizationsEmpty onCreatePress={() => setCreateOpen(true)} />
               ) : (
-                organizations.map((organization, index) => (
-                  <div key={organization.id}>
-                    {index > 0 && <Separator />}
-
-                    <div className="p-4">
+                <ItemGroup className="gap-0">
+                  {organizations.map((organization, index) => (
+                    <Fragment key={organization.id}>
+                      {index > 0 && <ItemSeparator />}
                       <OrganizationRow organization={organization} />
-                    </div>
-                  </div>
-                ))
+                    </Fragment>
+                  ))}
+                </ItemGroup>
               )}
             </CardContent>
           </Card>

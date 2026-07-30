@@ -1,7 +1,8 @@
 // "use client";
 
 import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { oneTapPlugin } from "@better-auth-ui/react/plugins";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster as SonnerToster } from "@workspace/ui/components/shadcn/sonner";
@@ -27,6 +28,7 @@ import { RouteProgressController, RouteProgressProvider } from "./layout/route-p
 
 export function Providers({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
+  const router = useRouter();
 
   return (
     <ThemeProvider>
@@ -38,6 +40,12 @@ export function Providers({ children }: { children: ReactNode }) {
                 <AuthProvider
                   basePaths={{
                     settings: "/user",
+                  }}
+                  // onSessionChange={() => {
+                  //   queryClient.invalidateQueries({ queryKey: authQueryKeys.all })
+                  // }}
+                  onSessionChange={async () => {
+                    await router.invalidate();
                   }}
                   // @ts-ignore : FIXME
                   authClient={authClient}
@@ -55,8 +63,16 @@ export function Providers({ children }: { children: ReactNode }) {
                     adminPlugin(),
                     lastLoginMethodPlugin(),
                     magicLinkPlugin(),
+                    oneTapPlugin(),
                     passkeyPlugin(),
-                    apiKeyPlugin({ organization: true }),
+                    apiKeyPlugin({
+                      organization: true,
+                      keyExpiration: {
+                        intervals: [7, 30, 90],
+                        defaultInterval: 30,
+                        allowNever: true,
+                      },
+                    }),
                     // themePlugin({ useTheme }), // NOTE: we use tweakcn switcher
                     multiSessionPlugin({
                       // Override any of the plugin's localization strings.

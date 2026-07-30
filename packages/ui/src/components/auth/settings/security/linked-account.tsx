@@ -1,3 +1,5 @@
+"use client"
+
 import { getProviderName } from "@better-auth-ui/core"
 import {
   providerIcons,
@@ -11,7 +13,14 @@ import { Link2, Link2Off, Plug } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
-import { Card, CardContent } from "#components/shadcn/card"
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle
+} from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { cn } from "#lib/utils"
@@ -59,40 +68,32 @@ export function LinkedAccount({ account, provider }: LinkedAccountProps) {
     account?.accountId
 
   return (
-    <Card className="bg-transparent border-0 ring-0 shadow-none">
-      <CardContent className="flex items-center justify-between gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-muted">
-          {ProviderIcon ? (
-            <ProviderIcon
-              className={cn("size-4.5", !account && "opacity-50")}
-            />
-          ) : (
-            <Plug className={cn("size-4.5", !account && "opacity-50")} />
-          )}
-        </div>
-
-        <div className="flex flex-col min-w-0">
-          <span className="text-sm font-medium leading-tight">
-            {providerName}
-          </span>
-
-          {account && isLoadingInfo ? (
-            <Skeleton className="my-0.5 h-3 w-24" />
-          ) : (
-            <span className="text-xs text-muted-foreground truncate">
-              {account
-                ? displayName
-                : localization.settings.linkProvider.replace(
-                    "{{provider}}",
-                    providerName
-                  )}
-            </span>
-          )}
-        </div>
-
+    <Item>
+      <ItemMedia variant="icon">
+        {ProviderIcon ? (
+          <ProviderIcon className={cn(!account && "opacity-50")} />
+        ) : (
+          <Plug className={cn(!account && "opacity-50")} />
+        )}
+      </ItemMedia>
+      <ItemContent>
+        <ItemTitle>{providerName}</ItemTitle>
+        {account && isLoadingInfo ? (
+          <Skeleton className="my-0.5 h-3 w-24" />
+        ) : (
+          <ItemDescription>
+            {account
+              ? displayName
+              : localization.settings.linkProvider.replace(
+                  "{{provider}}",
+                  providerName
+                )}
+          </ItemDescription>
+        )}
+      </ItemContent>
+      <ItemActions>
         {account ? (
           <Button
-            className="ml-auto shrink-0"
             variant="outline"
             size="sm"
             onClick={() => unlinkAccount({ providerId: account.providerId })}
@@ -109,7 +110,6 @@ export function LinkedAccount({ account, provider }: LinkedAccountProps) {
           </Button>
         ) : (
           <Button
-            className="ml-auto shrink-0"
             variant="outline"
             size="sm"
             onClick={() =>
@@ -128,7 +128,7 @@ export function LinkedAccount({ account, provider }: LinkedAccountProps) {
             {localization.settings.link}
           </Button>
         )}
-      </CardContent>
-    </Card>
+      </ItemActions>
+    </Item>
   )
 }

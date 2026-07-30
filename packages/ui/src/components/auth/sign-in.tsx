@@ -1,7 +1,12 @@
 "use client"
 
 import { authMutationKeys } from "@better-auth-ui/core"
-import { useAuth, useFetchOptions, useSignInEmail } from "@better-auth-ui/react"
+import {
+  AuthPrompts,
+  useAuth,
+  useFetchOptions,
+  useSignInEmail
+} from "@better-auth-ui/react"
 import { useIsMutating } from "@tanstack/react-query"
 import { Eye, EyeOff } from "lucide-react"
 import { type SyntheticEvent, useState } from "react"
@@ -25,6 +30,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
+import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
 import { cn } from "#lib/utils"
 import { LastUsedBadge } from "./last-login-method/last-used-badge"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
@@ -54,7 +60,6 @@ export function SignIn({
     emailAndPassword,
     localization,
     plugins,
-    redirectTo,
     socialProviders,
     viewPaths,
     navigate,
@@ -62,6 +67,7 @@ export function SignIn({
   } = useAuth()
 
   const { fetchOptions, resetFetchOptions } = useFetchOptions()
+  const continueSignIn = useSignInContinuation()
 
   const [password, setPassword] = useState("")
 
@@ -80,7 +86,7 @@ export function SignIn({
 
         resetFetchOptions()
       },
-      onSuccess: () => navigate({ to: redirectTo })
+      onSuccess: (data) => continueSignIn(data)
     }
   )
 
@@ -123,6 +129,7 @@ export function SignIn({
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
+      <AuthPrompts view="signIn" />
       <CardHeader>
         <CardTitle className="text-xl font-semibold">
           {localization.auth.signIn}

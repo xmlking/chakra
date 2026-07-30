@@ -1,5 +1,3 @@
-"use client"
-
 import { groupOAuthConsents } from "@better-auth-ui/core/plugins"
 import {
   type OAuthProviderAuthClient,
@@ -7,9 +5,10 @@ import {
   useAuthPlugin,
   useListOAuthConsents
 } from "@better-auth-ui/react"
+import { Fragment } from "react"
 
 import { Card, CardContent } from "#components/shadcn/card"
-import { Separator } from "#components/shadcn/separator"
+import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
 import { oauthProviderPlugin } from "#lib/auth/oauth-provider-plugin"
 import { cn } from "#lib/utils"
 import { AuthorizedApplication } from "./authorized-application"
@@ -52,13 +51,14 @@ export function AuthorizedApplications({
           ) : !applications.length ? (
             <AuthorizedApplicationsEmpty />
           ) : (
-            applications.map((application, index) => (
-              <div key={application.clientId}>
-                {index > 0 && <Separator />}
-
-                <AuthorizedApplication application={application} />
-              </div>
-            ))
+            <ItemGroup className="gap-0">
+              {applications.map((application, index) => (
+                <Fragment key={application.clientId}>
+                  {index > 0 && <ItemSeparator />}
+                  <AuthorizedApplication application={application} />
+                </Fragment>
+              ))}
+            </ItemGroup>
           )}
         </CardContent>
       </Card>
