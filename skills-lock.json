@@ -5,13 +5,13 @@
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "better-auth/best-practices/SKILL.md",
-      "computedHash": "a4c830509e85557b59339d8d93a4e243e9e59c686e7678854d39230e12c2a6dc"
+      "computedHash": "61ba0ef64ed2e7c424401cc848ca33dd6d790a720c44727717dc0c5cba5fc122"
     },
     "better-auth-security-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "security/SKILL.md",
-      "computedHash": "5717187bba9c22030c7174c74012f01c359f21e2ce87e0eb80e24244d8b8c915"
+      "computedHash": "7a230edf3a24ce18162cb4379f59b6a19b8d24ca04db530609d0f15cede556dc"
     },
     "better-result-adopt": {
       "source": "dmmulroy/better-result",
@@ -29,7 +29,7 @@
       "source": "honra-io/drizzle-best-practices",
       "sourceType": "github",
       "skillPath": "SKILL.md",
-      "computedHash": "a1a3b7de25301018058a1c969d5a79b4270dc29f3b9e81783e40eb95c7de9591"
+      "computedHash": "c723c157f3af98486d64dea4a1c1250ca0c57e1d0cdd426a6c301f844dcdbaed"
     },
     "drizzle-orm": {
       "source": "pyyupsk/skills",
@@ -47,13 +47,19 @@
       "source": "opencoredev/email-sdk",
       "sourceType": "github",
       "skillPath": "skills/email-sdk/SKILL.md",
-      "computedHash": "a89ab14934a3ad517a256eb52540bbbf4b77e70b4789ad225b0eb345e3077ca5"
+      "computedHash": "b9d511bcd9e061ad7adeeb2e496abe708fcaba52b627eb9b2cea48d39f1724ed"
+    },
+    "email-sdk-migrate": {
+      "source": "opencoredev/email-sdk",
+      "sourceType": "github",
+      "skillPath": "skills/email-sdk-migrate/SKILL.md",
+      "computedHash": "4555bc2f191cf9ea15004168374f4ddaf72541eab904e391cd819806318d36a4"
     },
     "eve": {
       "source": "vercel/eve",
       "sourceType": "github",
-      "skillPath": "SKILL.md",
-      "computedHash": "79a1e606ecf33eed33c1f3adc1cc266de391e19aa9237ca37e4f3aa3fba6b228"
+      "skillPath": "skills/eve/SKILL.md",
+      "computedHash": "4833349453c45c606f79202e495b7bbc42ea380f329f3beee36b9927763f19ef"
     },
     "files-sdk": {
       "source": "haydenbleasel/files-sdk",
@@ -71,7 +77,7 @@
       "source": "aidenybai/react-doctor",
       "sourceType": "github",
       "skillPath": "skills/improve-react/SKILL.md",
-      "computedHash": "0f763a1d7752989f45494837a46a8cea70b0048d141fc696b6846f829bef5407"
+      "computedHash": "ee6095448a511e2507528caae7ba91c5dc462464b603196c5b1931d4924a371a"
     },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",
@@ -83,7 +89,7 @@
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "better-auth/organization/SKILL.md",
-      "computedHash": "79a5a85b43d10e9fe37582b3506b051a33a991817b938f349099baa5ddba21aa"
+      "computedHash": "27627eb3a13bd44eff3a5d890f96e7db052b623db90e01684f759abe3e7fe56b"
     },
     "review-logging-patterns": {
       "source": "evlog.dev",
@@ -94,13 +100,13 @@
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "d81caa0f86aabab65b25e302d454f23a3328760386ed9078345584c0d5c8058e"
+      "computedHash": "c1a68ee06a668aced9ab2b5fbdea5f989864123794eb2e056b339a072dbb7f10"
     },
     "two-factor-authentication-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "better-auth/twoFactor/SKILL.md",
-      "computedHash": "7e297aaf887e11fdc03e52bdbf44974e161e8f7c393170ced7dc66cace4f6d46"
+      "computedHash": "a6f720042e5a090909e0d519a6a50a7eb8179553cd5315f0bbad852a6d20dac8"
     },
     "vite-env": {
       "source": "pyyupsk/skills",
