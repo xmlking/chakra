@@ -1,5 +1,15 @@
 # @workspace/i18n
 
+```
+i18n/
+├── project.inlang/
+│   └── settings.json      # CLI reads this config
+├── messages/
+│   ├── en.json            # Source language
+│   └── de.json            # Translations
+└── src/
+```
+
 ## Usage
 
 ### TanStack Start
@@ -52,6 +62,9 @@ vp test packages/i18n
 ```
 
 ### Machine Translate
+
+Set `INLANG_GOOGLE_TRANSLATE_API_KEY` to use google translation service,
+otherwise fallback to community-operated translation service at `translate.demosjarco.dev`
 
 ```shell
 vp run @workspace/i18n#translate

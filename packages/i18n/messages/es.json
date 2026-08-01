@@ -20,7 +20,6 @@
   "language_label": "Idioma",
   "language_name": "Español",
   "language_flag": "🇪🇸",
-
   "error_404__title": "404",
   "error_404__description_line_1": "La página que buscas podría haber sido",
   "error_404__description_line_2": "movida o no existir.",
@@ -30,7 +29,6 @@
   "error_500__description_line_2": "Por favor, intenta actualizar la página o vuelve a la página principal.",
   "error_500__go_home": "Ir a inicio",
   "error_500__try_again": "Intentar de nuevo",
-
   "playground_page__refetch": "Volver a obtener",
   "playground_page__image_optimization": "Optimización de imagen",
   "playground_page__test_rpc": "Probar RPC",
