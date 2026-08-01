@@ -9,7 +9,7 @@ import { env } from "virtual:env/server";
  *
  *  await email.send(message, {
  *    adapter: "resend",
- *    fallbackAdapters: ["smtp"],
+ *    fallback: { adapters: ["smtp"] },
  *    idempotencyKey: "receipt:order_123",
  *  })
  *
@@ -30,46 +30,64 @@ export const email = createEmailClient({
     }),
   ],
   retry: {
-    retries: 1,
+    maxAttempts: 2,
   },
   defaultAdapter: "resend",
-  fallback: ["smtp"],
+  fallback: {
+    adapters: ["smtp"],
+  },
   hooks: {
     beforeSend(event) {
-      console.log("email.attempt", event.provider, event.attempt);
+      console.log("email.attempt", event.adapter, event.attempt);
     },
     onRetry(event) {
-      console.warn("email.retry", event.provider, event.nextAttempt);
+      console.warn("email.retry", event.adapter, event.nextAttempt);
     },
     onError(event) {
-      console.error("email.error", event.provider, event.error);
+      console.error("email.error", event.adapter, event.error);
     },
     afterSend(event) {
-      console.log("email.sent", event.provider, event.response.id);
+      console.log("email.sent", event.adapter, event.response.id);
     },
   },
 });
 
-export interface EmailMessageWithReact extends EmailMessage {
-  react?: React.ReactNode;
-}
+type EmailMessageWithReactBase = Omit<EmailMessage, "html" | "text">;
+
+type EmailMessageWithReact = EmailMessageWithReactBase &
+  (
+    | { react: React.ReactNode; html?: string; text?: string }
+    | { react?: never; html: string; text?: string }
+    | { react?: never; html?: never; text: string }
+  );
 
 // Helper functions
 export async function sendMail(payload: EmailMessageWithReact): Promise<void> {
-  const html = payload.react ? await render(payload.react) : payload.html;
-  // console.info({ html });
+  const { react, html: payloadHtml, text: payloadText, ...rest } = payload;
 
-  await email.send({
-    ...payload,
-    html,
-  });
+  let html: string | undefined;
+  if (react) {
+    html = await render(react);
+  } else if (payloadHtml) {
+    html = payloadHtml;
+  } else if (payloadText) {
+    html = payloadText;
+  }
+
+  const message: EmailMessage = {
+    ...rest,
+    text: payloadText ?? "",
+    html: html ?? "",
+  };
+
+  await email.send(message);
 }
 
 // Ref: https://email-sdk.dev/docs/reference/errors
 export {
   type EmailMessage,
   EmailValidationError,
-  EmailProviderNotFoundError,
-  EmailProviderError,
+  EmailAdapterNotFoundError,
+  EmailAdapterError,
   EmailSdkError,
 } from "@opencoredev/email-sdk";

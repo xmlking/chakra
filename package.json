@@ -81,7 +81,7 @@
     "@inlang/cli": "3.3.0",
     "@inlang/paraglide-js": "2.23.0",
     "@marsidev/react-turnstile": "1.5.4",
-    "@opencoredev/email-sdk": "0.6.5",
+    "@opencoredev/email-sdk": "1.0.0",
     "@playwright/test": "1.62.1",
     "@react-email/ui": "6.9.1",
     "@rolldown/plugin-babel": "0.2.3",
