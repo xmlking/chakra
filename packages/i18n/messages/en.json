@@ -20,7 +20,6 @@
   "language_label": "Language",
   "language_name": "English",
   "language_flag": "🇺🇸",
-
   "error_404__title": "404",
   "error_404__description_line_1": "The page you're looking for might have been",
   "error_404__description_line_2": "moved or doesn't exist.",
@@ -30,7 +29,6 @@
   "error_500__description_line_2": "Please try refreshing the page, or go back home.",
   "error_500__go_home": "Go Home",
   "error_500__try_again": "Try Again",
-
   "playground_page__refetch": "Refetch",
   "playground_page__image_optimization": "Image Optimization",
   "playground_page__test_rpc": "Test RPC",
