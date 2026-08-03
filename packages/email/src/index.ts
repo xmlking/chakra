@@ -15,6 +15,7 @@ import { env } from "virtual:env/server";
  *
  */
 export const email = createEmailClient({
+  telemetry: false,
   adapters: [
     resend({ apiKey: env.RESEND_API_KEY! }),
     smtp({
