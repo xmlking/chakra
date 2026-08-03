@@ -23,6 +23,11 @@ if (import.meta.env.DEV) {
 
 const router = createFilesRouter({
   files: files as any,
+  // HINT: https://files-sdk.dev/docs/ui/server/multiple-buckets
+  // files: (req) =>
+  //   new URL(req.url).searchParams.get("bucket") === "images"
+  //     ? imagesInstance
+  //     : filesInstance,
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
   secret: env.FILES_API_SECRET,

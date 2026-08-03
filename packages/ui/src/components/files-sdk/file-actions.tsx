@@ -146,25 +146,25 @@ export const FileActions = ({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => void download()}>
+          <DropdownMenuItem onClick={() => void download()}>
             <DownloadIcon />
             Download
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => open("copy")}>
+          <DropdownMenuItem onClick={() => open("copy")}>
             <CopyIcon />
             Copy
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => open("rename")}>
+          <DropdownMenuItem onClick={() => open("rename")}>
             <PencilIcon />
             Rename
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => open("move")}>
+          <DropdownMenuItem onClick={() => open("move")}>
             <CopyIcon />
             Move
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onSelect={() => open("delete")}
+            onClick={() => open("delete")}
             variant="destructive"
           >
             <Trash2Icon />

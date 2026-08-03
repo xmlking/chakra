@@ -8,9 +8,7 @@ import {
   DropzoneEmptyState,
   DropzoneError,
 } from "@workspace/ui/components/files-sdk/dropzone";
-import { FileActions } from "@workspace/ui/components/files-sdk/file-actions";
 import { FileBrowser } from "@workspace/ui/components/files-sdk/file-browser";
-import { FileList } from "@workspace/ui/components/files-sdk/file-list";
 import { FilePreview } from "@workspace/ui/components/files-sdk/file-preview";
 import { FileSearch } from "@workspace/ui/components/files-sdk/file-search";
 import { TrashBin } from "@workspace/ui/components/files-sdk/trash-bin";
@@ -56,7 +54,7 @@ function FilesPage() {
           onSelect={(file) => setKey(file.key)}
         />
         {/* file list   */}
-        <FileList files={files} key={`list-${version}`} prefix="docs/" onChanged={bump} />
+        {/* <FileList files={files} key={`list-${version}`} prefix="docs/" onChanged={bump} /> */}
 
         <FileBrowser
           files={files}
@@ -83,17 +81,6 @@ function FilesPage() {
         )} */}
 
         <TrashBin files={files} key={`trash-${version}`} onChanged={bump} />
-        {/* file actions   */}
-        <div className="flex w-full max-w-sm items-center justify-between gap-4 rounded-lg border border-border p-3">
-          <span className="truncate text-sm font-medium">docs/b4.png</span>
-          <FileActions
-            files={files}
-            fileKey="docs/b4.png"
-            onChanged={() => {
-              console.log("FileActions...");
-            }}
-          />
-        </div>
       </div>
     </div>
   );
