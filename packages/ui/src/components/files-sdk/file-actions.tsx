@@ -146,6 +146,9 @@ export const FileActions = ({
           )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          {/* onClick rather than Radix's onSelect: Base UI menu items have no
+              onSelect prop, and Radix items fire a real click on both pointer
+              and keyboard selection, so onClick works with both flavors. */}
           <DropdownMenuItem onClick={() => void download()}>
             <DownloadIcon />
             Download
