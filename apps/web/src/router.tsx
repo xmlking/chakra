@@ -53,6 +53,7 @@ export function getRouter() {
           toast.add({
             title: mutation.meta.errorMessage,
             type: "error",
+            timeout: 5000,
           });
         }
       },

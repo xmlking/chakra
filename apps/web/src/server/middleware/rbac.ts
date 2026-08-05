@@ -22,9 +22,24 @@ export const memberRequiredMiddleware = createMiddleware({ type: "function" })
     const headers = getRequestHeaders();
     const activeMember = await auth.api.getActiveMember({ headers });
     if (!activeMember) {
-      throw new ForbiddenError({ message: "User don't have organization" });
+      throw new ForbiddenError({ message: "User doesn't have an organization" });
     }
     return next({ context: { member: activeMember } });
+  });
+
+export const adminRequiredMiddleware = createMiddleware({ type: "function" })
+  .middleware([memberRequiredMiddleware])
+  .server(({ next, context }) => {
+    if (context.session.user.role !== "admin") {
+      // Admin access required
+      throw new ForbiddenError({ message: "Admin access required" });
+      // throw redirect({
+      //   to: "/auth/$path",
+      //   params: { path: "sign-in" },
+      //   search: { redirectTo: location.href },
+      // });
+    }
+    return next();
   });
 
 /**
