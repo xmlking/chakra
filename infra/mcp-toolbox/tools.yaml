@@ -2,31 +2,85 @@
 # Documentation: https://mcp-toolbox.dev/documentation/configuration/
 # Override TOOLBOX_DB_USER/TOOLBOX_DB_PASSWORD with a read-only role rather than
 # relying on the postgres superuser defaults below.
+# `Prompts` define templates for interacting with language models
 sources:
-  webapp-pg:
+  webapp-db:
     kind: postgres
     host: postgres
-    port: 5432
-    database: ${POSTGRES_DB:-postgres}
-    user: ${TOOLBOX_DB_USER:-postgres}
-    password: ${TOOLBOX_DB_PASSWORD:-postgres}
+    port: "5432"
+    database: ${POSTGRES_DATABASE}
+    user: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    sqlCommenter: true
+
+# authServices:
+#   my-mcp-auth:
+#     kind: generic
+#     mcpEnabled: true
+#     authorizationServer: "https://accounts.google.com" # Your authorization server URL
+#     audience: "your-mcp-audience" # Matches the `aud` claim in the JWT
+#     scopesRequired:
+#       - "mcp:tools"
 
 tools:
-  list-organizations:
+  list_organizations:
     kind: postgres-sql
-    source: webapp-pg
+    source: webapp-db
     description: >
       List all organizations, with the organization's name.
     parameters: []
     statement: >
-      SELECT o.organization_id,
-             o.name AS organization_name,
+      SELECT o.id,
+             o.name,
              o.display_name,
              o.created_at
       FROM organization o
-      ORDER BY o.created_at DESC;
+      ORDER BY o.created_at DESC
+      LIMIT 10;
 
 toolsets:
   webapp-readonly:
-    - list-organizations
+    - list_organizations
+  # Business Intelligence
+  # bi:
+  #   - tableau-get-workbook
+  #   - redshift-analytics-query
+  # Data Warehouse Analytics
+  # analytics:
+  #   - redshift-analytics-query
+  #   - athena-query
+  #   - aurora-pg-query
 
+# Prompts for AI interactions
+prompts:
+  analyze-s3-data:
+    description: "Analyze data stored in S3 using Athena"
+    messages:
+      - content: "Analyze the data in S3 bucket {{.bucket}} with prefix {{.prefix}} and provide insights on:\n1. Data volume\n2. File formats\n3. Date ranges\n4. Recommended queries"
+    arguments:
+      - name: "bucket"
+        description: "S3 bucket name"
+      - name: "prefix"
+        description: "S3 object prefix"
+
+  query-optimization:
+    description: "Optimize a database query for better performance"
+    messages:
+      - content: "Review and optimize this {{.database}} query:\n\n{{.query}}\n\nProvide:\n1. Performance analysis\n2. Optimization suggestions\n3. Index recommendations\n4. Rewritten query"
+    arguments:
+      - name: "database"
+        description: "Database type (redshift, aurora, etc.)"
+      - name: "query"
+        description: "SQL query to optimize"
+
+  graph-path-finding:
+    description: "Find paths in Neptune graph database"
+    messages:
+      - content: "Find all paths between {{.start_vertex}} and {{.end_vertex}} in the Neptune graph.\n\nConsider:\n1. Shortest paths\n2. Weighted paths if applicable\n3. Path constraints: {{.constraints}}"
+    arguments:
+      - name: "start_vertex"
+        description: "Starting vertex ID"
+      - name: "end_vertex"
+        description: "Ending vertex ID"
+      - name: "constraints"
+        description: "Any path constraints or filters"
