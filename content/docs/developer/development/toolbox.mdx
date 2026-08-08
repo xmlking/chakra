@@ -1,20 +1,27 @@
 ---
-title: MCP
-description: "MCP Tools for Coding Agents"
+title: MCP Toolbox
+description: "MCP Toolbox for Databases"
 ---
-
-MCP Tools for Coding Agents are configured for **Copilot** in `.vscode/mcp.json` and for **Claude Code** in `.mcp.json`.
-
-## MCP Toolbox
 
 [MCP Toolbox for Databases](https://github.com/googleapis/mcp-toolbox) is Google's open source MCP server for databases. It sits between coding agents and our Postgres database, turning hand-written, parameterized SQL statements into MCP tools instead of letting an agent run arbitrary queries directly against the connection string.
 
 In this repo it's registered as `mcp-toolbox` in both `.mcp.json` and `.vscode/mcp.json`, pointing at a locally running server:
 
 ```json title=".mcp.json"
-"mcp-toolbox": {
-  "type": "http",
-  "url": "http://127.0.0.1:5000/mcp"
+{
+  "mcpServers": {
+    "mcp-toolbox": {
+      "type": "http",
+      "url": "http://127.0.0.1:5000/mcp"
+    },
+    "toolbox-secure": {
+      "type": "http",
+      "url": "https://toolbox-service-123456789-uc.a.run.app/mcp",
+      "headers": {
+        "Authorization": "Bearer <your-jwt-access-token>"
+      }
+    }
+  }
 }
 ```
 
@@ -36,7 +43,7 @@ Toolbox is configured with a `tools.yaml` file that declares `sources` (database
 
 ```yaml title="tools.yaml"
 sources:
-  webapp-pg:
+  webapp-db:
     kind: postgres
     host: 127.0.0.1
     port: 5432
@@ -47,7 +54,7 @@ sources:
 tools:
   get-customer-by-id:
     kind: postgres-sql
-    source: webapp-pg
+    source: webapp-dn
     description: Look up a customer by id.
     parameters:
       - name: id
