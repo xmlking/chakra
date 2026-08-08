@@ -1,8 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import { rateLimitMiddleware } from "#server/middleware/rate-limit";
-import { adminRequiredMiddleware } from "#server/middleware/rbac";
-import { permissionRequiredMiddleware } from "#server/middleware/rbac";
+import { adminRequiredMiddleware, permissionRequiredMiddleware } from "#server/middleware/rbac";
 
 export const demoRateLimitedFn = createServerFn({ method: "POST" })
   .middleware([rateLimitMiddleware])
