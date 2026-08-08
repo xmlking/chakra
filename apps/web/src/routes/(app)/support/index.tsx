@@ -24,6 +24,12 @@ const MCP_CONNECTORS = [
     url: "https://mcp.better-auth.com/mcp",
     auth: { type: "none" },
   }),
+  defineConnector({
+    id: "mcp-toolbox",
+    name: "MCP Toolbox",
+    url: "http://127.0.0.1:5010/mcp",
+    auth: { type: "none" },
+  }),
 ];
 
 // @ts-ignore TODO
@@ -64,6 +70,21 @@ function SupportChat() {
         title: "Tell me a fun fact",
         label: "about any topic",
         prompt: "Tell me a fun fact about space.",
+      },
+      {
+        title: "List all",
+        label: "Better Auth plugins",
+        prompt: "List better auth plugins",
+      },
+      {
+        title: "List 5",
+        label: "Organization Names",
+        prompt: "List 5 organization names",
+      },
+      {
+        title: "List 5",
+        label: "tables names",
+        prompt: "List table names",
       },
     ]),
   });

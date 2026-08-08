@@ -14,6 +14,10 @@ export default defineToolkit({
       url: "https://mcp.better-auth.com/mcp",
       connectionTimeout: 10_000,
     },
+    "mcp-toolbox": {
+      type: "http",
+      url: "http://127.0.0.1:5010/mcp",
+    },
   }),
   get_weather: {
     description: "Get the current weather for a city.",
