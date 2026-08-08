@@ -298,10 +298,10 @@ CREATE TABLE "verification" (
 CREATE TABLE "settings" (
 	"key" text,
 	"organization_id" uuid,
-	"documentation" text,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp,
-	"created_by" uuid NOT NULL,
+	"description" text,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone,
+	"created_by" uuid,
 	"updated_by" uuid,
 	"value" jsonb NOT NULL,
 	"type" "setting_type" DEFAULT 'org'::"setting_type" NOT NULL,
@@ -382,4 +382,6 @@ ALTER TABLE "team" ADD CONSTRAINT "team_organization_id_organization_id_fkey" FO
 ALTER TABLE "team_member" ADD CONSTRAINT "team_member_team_id_team_id_fkey" FOREIGN KEY ("team_id") REFERENCES "team"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "team_member" ADD CONSTRAINT "team_member_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "settings" ADD CONSTRAINT "settings_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "settings" ADD CONSTRAINT "settings_created_by_member_id_fkey" FOREIGN KEY ("created_by") REFERENCES "member"("id") ON DELETE SET NULL;--> statement-breakpoint
+ALTER TABLE "settings" ADD CONSTRAINT "settings_updated_by_member_id_fkey" FOREIGN KEY ("updated_by") REFERENCES "member"("id") ON DELETE SET NULL;--> statement-breakpoint
 ALTER TABLE "embeddings" ADD CONSTRAINT "embeddings_resource_id_resources_id_fkey" FOREIGN KEY ("resource_id") REFERENCES "resources"("id") ON DELETE CASCADE;

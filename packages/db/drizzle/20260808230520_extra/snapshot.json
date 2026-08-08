@@ -1,10 +1,10 @@
 {
+  "id": "7b07fdbc-dd28-43da-b447-2f6bd5c95c31",
+  "prevIds": [
+    "c2ffad92-7ce0-4bc7-8d7a-17b1cb97bea5"
+  ],
   "version": "8",
   "dialect": "postgres",
-  "id": "45a66558-bee4-43f8-a1d0-28d020b5c5a4",
-  "prevIds": [
-    "00000000-0000-0000-0000-000000000000"
-  ],
   "ddl": [
     {
       "values": [
@@ -3212,13 +3212,13 @@
       "default": null,
       "generated": null,
       "identity": null,
-      "name": "documentation",
+      "name": "description",
       "entityType": "columns",
       "schema": "public",
       "table": "settings"
     },
     {
-      "type": "timestamp",
+      "type": "timestamp with time zone",
       "typeSchema": null,
       "notNull": true,
       "dimensions": 0,
@@ -3231,7 +3231,7 @@
       "table": "settings"
     },
     {
-      "type": "timestamp",
+      "type": "timestamp with time zone",
       "typeSchema": null,
       "notNull": false,
       "dimensions": 0,
@@ -3246,7 +3246,7 @@
     {
       "type": "uuid",
       "typeSchema": null,
-      "notNull": true,
+      "notNull": false,
       "dimensions": 0,
       "default": null,
       "generated": null,
@@ -4525,6 +4525,40 @@
       "onUpdate": "NO ACTION",
       "onDelete": "CASCADE",
       "name": "settings_organization_id_organization_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "settings"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "created_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "member",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "SET NULL",
+      "name": "settings_created_by_member_id_fkey",
+      "entityType": "fks",
+      "schema": "public",
+      "table": "settings"
+    },
+    {
+      "nameExplicit": false,
+      "columns": [
+        "updated_by"
+      ],
+      "schemaTo": "public",
+      "tableTo": "member",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "SET NULL",
+      "name": "settings_updated_by_member_id_fkey",
       "entityType": "fks",
       "schema": "public",
       "table": "settings"
