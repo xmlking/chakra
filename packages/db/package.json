@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@better-auth/utils": "0.5.0",
-    "@noble/hashes": "2.2.0",
+    "@noble/hashes": "2.3.0",
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",

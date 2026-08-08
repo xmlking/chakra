@@ -1,3 +1,3 @@
 export * from "./mcp";
-export * from "./namera";
+export * from "./github";
 export * from "./not-found";
