@@ -50,8 +50,9 @@ export const Route = createFileRoute("/(app)/support/")({
 });
 
 function SupportChat() {
-  const aui = useAui({ mcp: McpManagerResource({ connectors: MCP_CONNECTORS }) });
+  const aui = useAui();
   const config = AuiConfig({
+    mcp: McpManagerResource({ connectors: MCP_CONNECTORS }),
     tools: Tools({ toolkit }),
     suggestions: Suggestions([
       {
