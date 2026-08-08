@@ -8,6 +8,7 @@ import {
   WebSpeechDictationAdapter,
 } from "@assistant-ui/react";
 import { AssistantChatTransport, useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { McpManagerResource, defineConnector } from "@assistant-ui/react-mcp";
 import { createFileRoute } from "@tanstack/react-router";
 import { ModelSelector } from "@workspace/ui/components/assistant-ui/model-selector";
 import { Thread } from "@workspace/ui/components/assistant-ui/thread";
@@ -15,7 +16,15 @@ import { ThreadListSidebar } from "@workspace/ui/components/assistant-ui/threadl
 import type { FC } from "react";
 
 import toolkit from "#features/support/tools/toolkit";
-// import toolkit from "#features/support/tools/toolkit2";
+
+const MCP_CONNECTORS = [
+  defineConnector({
+    id: "better-auth",
+    name: "Better Auth",
+    url: "https://mcp.better-auth.com/mcp",
+    auth: { type: "none" },
+  }),
+];
 
 // @ts-ignore TODO
 // oxlint-disable-next-line no-unused-vars
@@ -41,7 +50,7 @@ export const Route = createFileRoute("/(app)/support/")({
 });
 
 function SupportChat() {
-  const aui = useAui();
+  const aui = useAui({ mcp: McpManagerResource({ connectors: MCP_CONNECTORS }) });
   const config = AuiConfig({
     tools: Tools({ toolkit }),
     suggestions: Suggestions([

@@ -1,12 +1,20 @@
 "use generative";
 
 import { defineToolkit } from "@assistant-ui/react";
+import { defineMcpToolkit } from "@assistant-ui/react";
 import { z } from "zod";
 
 import { WeatherCard } from "../ui/weather-card";
 
 // oxlint-disable-next-line import/no-default-export react/only-export-components
 export default defineToolkit({
+  ...defineMcpToolkit({
+    better_auth: {
+      type: "http",
+      url: "https://mcp.better-auth.com/mcp",
+      connectionTimeout: 10_000,
+    },
+  }),
   get_weather: {
     description: "Get the current weather for a city.",
     parameters: z.object({ city: z.string() }),
