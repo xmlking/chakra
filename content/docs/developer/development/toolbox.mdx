@@ -12,7 +12,7 @@ In this repo it's registered as `mcp-toolbox` in both `.mcp.json` and `.vscode/m
   "mcpServers": {
     "mcp-toolbox": {
       "type": "http",
-      "url": "http://127.0.0.1:5000/mcp"
+      "url": "http://127.0.0.1:5010/mcp"
     },
     "toolbox-secure": {
       "type": "http",
@@ -27,7 +27,7 @@ In this repo it's registered as `mcp-toolbox` in both `.mcp.json` and `.vscode/m
 
 <Callout type="info">
   The toolbox server itself isn't started by these configs — it's a separate local process you run
-  yourself (see Install below). Both configs just point the agent at `http://127.0.0.1:5000/mcp`
+  yourself (see Install below). Both configs just point the agent at `http://127.0.0.1:5010/mcp`
   once it's running.
 </Callout>
 
@@ -87,7 +87,7 @@ Toolbox gives a coding agent a live path to the database, so treat its config wi
 
 - **Never commit `tools.yaml`** — it can contain a database host, user, and password. Add it to `.gitignore` and interpolate secrets with `${ENV_VAR}` syntax (as above) rather than hardcoding them.
 - **Prefer hand-written `tools` over `--prebuilt`/`execute_sql` for anything beyond local exploration.** A parameterized statement like `get-customer-by-id` above can't be used for arbitrary SQL; `execute_sql` can. Scope exposed tools with `toolsets` per client/use case rather than exposing every tool to every agent.
-- **Keep the server on localhost.** Our config talks to `127.0.0.1:5000`; don't bind toolbox to `0.0.0.0` or expose it on a shared network unless it's also placed behind authentication.
+- **Keep the server on localhost.** Our config talks to `127.0.0.1:5010`; don't bind toolbox to `0.0.0.0` or expose it on a shared network unless it's also placed behind authentication.
 - **If Toolbox is ever exposed beyond localhost** (e.g. deployed for a shared/production use case), require an `authServices` entry and mark sensitive tools `authRequired` so calls carry a validated OIDC token:
 
   ```yaml title="tools.yaml"
