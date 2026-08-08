@@ -92,6 +92,8 @@ bunx --bun shadcn@latest add @extend/docx-viewer
 bunx --bun shadcn@latest add @extend/schema-builder
 # assistant-ui
 bunx --bun shadcn@latest add @assistant-ui/thread
+bunx --bun shadcn@latest add @assistant-ui/thread-list
+bunx --bun shadcn@latest add @assistant-ui/threadlist-sidebar
 bunx --bun shadcn@latest add @assistant-ui/model-selector
 ```
 

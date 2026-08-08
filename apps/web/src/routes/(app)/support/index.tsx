@@ -1,14 +1,17 @@
 import {
+  AuiProvider,
+  AuiConfig,
   AssistantRuntimeProvider,
   Suggestions,
   Tools,
   useAui,
   WebSpeechDictationAdapter,
 } from "@assistant-ui/react";
-import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { AssistantChatTransport, useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { createFileRoute } from "@tanstack/react-router";
 import { ModelSelector } from "@workspace/ui/components/assistant-ui/model-selector";
 import { Thread } from "@workspace/ui/components/assistant-ui/thread";
+import { ThreadListSidebar } from "@workspace/ui/components/assistant-ui/threadlist-sidebar";
 import type { FC } from "react";
 
 import toolkit from "#features/support/tools/toolkit";
@@ -37,18 +40,9 @@ export const Route = createFileRoute("/(app)/support/")({
   component: RouteComponent,
 });
 
-function RouteComponent() {
-  const runtime = useChatRuntime({
-    adapters: {
-      dictation: new WebSpeechDictationAdapter({
-        language: "en-US", // default: browser language
-        continuous: true, // keep recording after pauses (default: true)
-        interimResults: true, // emit interim transcripts (default: true)
-      }),
-    },
-  });
-  // Register the toolkit
-  const aui = useAui({
+function SupportChat() {
+  const aui = useAui();
+  const config = AuiConfig({
     tools: Tools({ toolkit }),
     suggestions: Suggestions([
       {
@@ -65,20 +59,45 @@ function RouteComponent() {
   });
 
   return (
-    <AssistantRuntimeProvider aui={aui} runtime={runtime}>
+    <AuiProvider extends={aui} config={config}>
       <main className="flex h-[calc(100dvh-var(--header-height))] flex-col">
-        <Thread
-        // composerStart={
-        //   <ModelSelector
-        //     models={models}
-        //     defaultValue="gpt-5.4-nano"
-        //     defaultEffort="medium"
-        //     size="sm"
-        //     contentClassName="min-w-56"
-        //   />
-        // }
-        />
+        <div className="relative flex flex-1 flex-col">
+          {/* <SidebarTrigger className="absolute top-4 left-4" /> */}
+          <Thread
+          // composerStart={
+          //   <ModelSelector
+          //     models={models}
+          //     defaultValue="gpt-5.4-nano"
+          //     defaultEffort="medium"
+          //     size="sm"
+          //     contentClassName="min-w-56"
+          //   />
+          // }
+          />
+        </div>
+        <ThreadListSidebar side="right" showHeader={false} showFooter={false} className="h-full" />
       </main>
+    </AuiProvider>
+  );
+}
+
+function RouteComponent() {
+  const runtime = useChatRuntime({
+    transport: new AssistantChatTransport({
+      api: "/api/chat",
+    }),
+    adapters: {
+      dictation: new WebSpeechDictationAdapter({
+        language: "en-US", // default: browser language
+        continuous: true, // keep recording after pauses (default: true)
+        interimResults: true, // emit interim transcripts (default: true)
+      }),
+    },
+  });
+
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <SupportChat />
     </AssistantRuntimeProvider>
   );
 }
