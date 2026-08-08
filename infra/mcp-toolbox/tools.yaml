@@ -32,7 +32,6 @@ tools:
     statement: >
       SELECT o.id,
              o.name,
-             o.display_name,
              o.created_at
       FROM organization o
       ORDER BY o.created_at DESC

@@ -6,12 +6,13 @@ services:
   # mcp-toolbox
   # Serves webapp's Postgres tools over MCP for coding agents.
   # See content/docs/developer/development/mcp.mdx for config and security notes.
-  # SERVICE URL: http://localhost:5000/mcp
-  # HEALTHCHECK URL: http://localhost:5000/healthz
-  # WELL-KNOWN URL: http://localhost:5000/.well-known/oauth-protected-resource
+  # SERVICE URL: http://localhost:5010/mcp
+  # HEALTHCHECK URL: http://localhost:5010/healthz
+  # WELL-KNOWN URL: http://localhost:5010/.well-known/oauth-protected-resource
   # TODO: Disabled healthcheck for docker-compose because it's distroless, but enable for k8s deployment
   # TODO: Remove the `--prebuilt postgres` flag for production deployment and use a custom tools.yaml instead.
   # TODO: Add --allowed-origins  ,  --allowed-hosts  flags for production deployment to restrict access to the MCP Toolbox.
+  # IMPORTANT: MacOS uses port 5000 by default for the built-in AirPlay Receiver service. use 5010 instead to avoid conflicts.
   ###########################################################################
   mcp-toolbox:
     # TODO: It is recommended to pin to a specific image version instead of latest (e.g. 1.8.0).
@@ -29,7 +30,9 @@ services:
         "--address",
         "0.0.0.0",
         "--port",
-        "5000",
+        "5010",
+        "--log-level",
+        "warn",
         "--ui",
       ]
     depends_on:
@@ -41,9 +44,9 @@ services:
       POSTGRES_DATABASE: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${TOOLBOX_DB_USER:-toolbox}
       POSTGRES_PASSWORD: ${TOOLBOX_DB_PASSWORD:-toolbox}
-      TOOLBOX_URL: ${TOOLBOX_URL:-http://localhost:5000}
+      TOOLBOX_URL: ${TOOLBOX_URL:-http://localhost:5010}
     ports:
-      - "5000:5000"
+      - "5010:5010"
     healthcheck:
       disable: true
     volumes:
