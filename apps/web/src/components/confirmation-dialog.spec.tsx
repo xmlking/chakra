@@ -29,7 +29,7 @@ function DeleteProjectExample({ onDelete }: { onDelete: () => Promise<void> }) {
       </Button>
       <ConfirmationDialog
         open={open}
-        title="Delete Docuflow?"
+        title="Delete Record?"
         description="This permanently deletes the project and its documents."
         confirmLabel="Delete project"
         confirmVariant="destructive"
@@ -51,7 +51,7 @@ describe("ConfirmationDialog", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Delete project" }));
 
-    await expect.element(screen.getByText("Delete Docuflow?")).toBeInTheDocument();
+    await expect.element(screen.getByText("Delete Record?")).toBeInTheDocument();
     await expect
       .element(
         screen.getByText("Type-safe child content can be placed between the header and actions."),
@@ -64,7 +64,7 @@ describe("ConfirmationDialog", () => {
     confirmButton.click();
 
     await vi.waitFor(() => expect(onDelete).toHaveBeenCalledOnce());
-    await expect.element(screen.getByText("Delete Docuflow?")).not.toBeInTheDocument();
+    await expect.element(screen.getByText("Delete Record?")).not.toBeInTheDocument();
   });
 
   it("renders custom content and confirms without closing itself", async () => {

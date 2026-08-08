@@ -1,0 +1,42 @@
+# MCP Toolbox Services
+# Google MCP Toolbox for Databases
+
+services:
+  ###########################################################################
+  # mcp-toolbox
+  # Serves webapp's Postgres tools over MCP for coding agents.
+  # See content/docs/developer/development/mcp.mdx for config and security notes.
+  # SERVICE URL: http://localhost:5000/mcp
+  ###########################################################################
+  mcp-toolbox:
+    # TODO: It is recommended to pin to a specific image version instead of latest.
+    image: us-central1-docker.pkg.dev/database-toolbox/toolbox/toolbox:latest
+    hostname: mcp-toolbox
+    container_name: mcp-toolbox
+    restart: unless-stopped
+    platform: linux/amd64
+    command: ["--config", "/app/tools.yaml", "--address", "0.0.0.0", "--port", "5000"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      TOOLBOX_DB_USER: ${TOOLBOX_DB_USER:-toolbox}
+      TOOLBOX_DB_PASSWORD: ${TOOLBOX_DB_PASSWORD:-toolbox}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ../mcp-toolbox/tools.yaml:/app/tools.yaml:ro
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

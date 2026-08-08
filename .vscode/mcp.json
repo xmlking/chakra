@@ -8,8 +8,8 @@
       "command": "bunx",
       "args": ["shadcn@latest", "mcp"]
     },
-    "assistant-ui-docs-server": {
-      "command": "npx",
+    "assistant-ui": {
+      "command": "bunx",
       "args": ["-y", "@assistant-ui/mcp-docs-server"]
     },
     "drizzle": {
@@ -22,6 +22,10 @@
       "headers": {
         "Authorization": "Bearer ${env:REUI_LICENSE_KEY}"
       }
+    },
+    "mcp-toolbox": {
+      "type": "http",
+      "url": "http://127.0.0.1:5000/mcp"
     }
   }
 }

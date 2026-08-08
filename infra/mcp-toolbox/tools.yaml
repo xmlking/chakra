@@ -1,0 +1,32 @@
+# See content/docs/developer/development/mcp.mdx for setup and security notes.
+# Documentation: https://mcp-toolbox.dev/documentation/configuration/
+# Override TOOLBOX_DB_USER/TOOLBOX_DB_PASSWORD with a read-only role rather than
+# relying on the postgres superuser defaults below.
+sources:
+  webapp-pg:
+    kind: postgres
+    host: postgres
+    port: 5432
+    database: ${POSTGRES_DB:-postgres}
+    user: ${TOOLBOX_DB_USER:-postgres}
+    password: ${TOOLBOX_DB_PASSWORD:-postgres}
+
+tools:
+  list-organizations:
+    kind: postgres-sql
+    source: webapp-pg
+    description: >
+      List all organizations, with the organization's name.
+    parameters: []
+    statement: >
+      SELECT o.organization_id,
+             o.name AS organization_name,
+             o.display_name,
+             o.created_at
+      FROM organization o
+      ORDER BY o.created_at DESC;
+
+toolsets:
+  webapp-readonly:
+    - list-organizations
+
