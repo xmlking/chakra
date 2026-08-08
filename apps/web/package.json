@@ -28,6 +28,7 @@
     "@ai-sdk/openai": "catalog:",
     "@assistant-ui/react": "catalog:",
     "@assistant-ui/react-ai-sdk": "catalog:",
+    "@assistant-ui/react-mcp": "catalog:",
     "@better-auth-ui/core": "catalog:",
     "@better-auth-ui/react": "catalog:",
     "@bprogress/react": "catalog:",

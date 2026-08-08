@@ -42,6 +42,9 @@ export const Route = createFileRoute("/api/chat/")({
             stopWhen: stepCountIs(5),
             messages: await convertToModelMessages(messages),
             tools: (await aiToolkit.tools({ frontend: tools })) as ToolSet,
+            onFinish: async () => {
+              await aiToolkit.close();
+            },
           });
 
           return createUIMessageStreamResponse({
