@@ -1,9 +1,9 @@
 "use client"
-"use no memo"
 
 import { useMemo, useState } from "react"
 import { Badge } from "#components/reui/badge"
-import { Column } from "@tanstack/react-table"
+import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"
+import type { Column } from "@tanstack/react-table"
 
 import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
@@ -16,8 +16,8 @@ import {
 import { Separator } from "#components/shadcn/separator"
 import { CirclePlusIcon, CheckIcon } from "lucide-react"
 
-interface DataGridColumnFilterProps<TData, TValue> {
-  column?: Column<TData, TValue>
+interface DataGridColumnFilterProps<TData extends object, TValue> {
+  column?: Column<DataGridFeatures, TData, TValue>
   title?: string
   options: {
     label: string
@@ -26,7 +26,7 @@ interface DataGridColumnFilterProps<TData, TValue> {
   }[]
 }
 
-function DataGridColumnFilter<TData, TValue>({
+function DataGridColumnFilter<TData extends object, TValue>({
   column,
   title,
   options,

@@ -62,6 +62,7 @@ bunx --bun shadcn@latest add @reui/rating
 # reui kanban (optional)
 bunx --bun shadcn@latest add @reui/kanban
 # reui (base-ui) Async Search Autocomplete  (optional)
+bunx --bun shadcn@latest add @reui/icon-tile
 bunx --bun shadcn@latest add @reui/alert
 bunx --bun shadcn@latest add @reui/autocomplete
 bunx --bun shadcn@latest add @reui/stepper
