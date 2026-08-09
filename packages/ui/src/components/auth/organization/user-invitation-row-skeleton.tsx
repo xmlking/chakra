@@ -1,3 +1,5 @@
+"use client"
+
 import { Item, ItemContent, ItemMedia } from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
 

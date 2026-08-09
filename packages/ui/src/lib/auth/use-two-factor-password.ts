@@ -1,3 +1,5 @@
+"use client"
+
 import { useAuth, useAuthPlugin, useListAccounts } from "@better-auth-ui/react"
 
 import { twoFactorPlugin } from "./two-factor-plugin"
