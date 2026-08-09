@@ -1,11 +1,12 @@
-"use no memo"
-
-import { HTMLAttributes, memo, ReactNode, useMemo } from "react"
+import { memo, useMemo } from "react"
+import type { HTMLAttributes, ReactNode } from "react"
 import {
   getColumnHeaderLabel,
   useDataGrid,
 } from "#components/reui/data-grid/data-grid"
-import { Column } from "@tanstack/react-table"
+import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"
+import { Subscribe } from "@tanstack/react-table"
+import type { Column } from "@tanstack/react-table"
 
 import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
@@ -25,10 +26,10 @@ import {
 import { ArrowDownIcon, ArrowUpIcon, ChevronsUpDownIcon, CheckIcon, ArrowLeftToLineIcon, ArrowRightToLineIcon, ArrowLeftIcon, ArrowRightIcon, Settings2Icon, PinOffIcon } from "lucide-react"
 
 interface DataGridColumnHeaderProps<
-  TData,
+  TData extends object,
   TValue,
 > extends HTMLAttributes<HTMLDivElement> {
-  column: Column<TData, TValue>
+  column: Column<DataGridFeatures, TData, TValue>
   /** When omitted, uses `column.columnDef.meta.headerTitle`, then a string `columnDef.header`, then `column.id`. */
   title?: string
   icon?: ReactNode
@@ -38,7 +39,7 @@ interface DataGridColumnHeaderProps<
   visibility?: boolean
 }
 
-function DataGridColumnHeaderInner<TData, TValue>({
+function DataGridColumnHeaderInner<TData extends object, TValue>({
   column,
   title,
   icon,
@@ -51,14 +52,14 @@ function DataGridColumnHeaderInner<TData, TValue>({
 
   // TanStack's columnOrder defaults to [] until a consumer seeds it; fall
   // back to the definition order so Move Left/Right work out of the box.
-  const columnOrderState = table.getState().columnOrder
+  const columnOrderState = table.state.columnOrder
   const columnOrder =
     columnOrderState.length > 0
       ? columnOrderState
       : table.getAllLeafColumns().map((leafColumn) => leafColumn.id)
   const columnVisibilityKey =
     props.tableLayout?.columnsVisibility && visibility
-      ? JSON.stringify(table.getState().columnVisibility)
+      ? JSON.stringify(table.state.columnVisibility)
       : ""
   const isSorted = column.getIsSorted()
   const isPinned = column.getIsPinned()
@@ -172,21 +173,21 @@ function DataGridColumnHeaderInner<TData, TValue>({
       items.push(
         <DropdownMenuItem
           key="pin-left"
-          onClick={() => column.pin(isPinned === "left" ? false : "left")}
+          onClick={() => column.pin(isPinned === "start" ? false : "start")}
         >
           <ArrowLeftToLineIcon className="size-3.5!" aria-hidden="true" />
           <span className="grow">Pin to left</span>
-          {isPinned === "left" && (
+          {isPinned === "start" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="pin-right"
-          onClick={() => column.pin(isPinned === "right" ? false : "right")}
+          onClick={() => column.pin(isPinned === "end" ? false : "end")}
         >
           <ArrowRightToLineIcon className="size-3.5!" aria-hidden="true" />
           <span className="grow">Pin to right</span>
-          {isPinned === "right" && (
+          {isPinned === "end" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
         </DropdownMenuItem>
@@ -348,8 +349,47 @@ function DataGridColumnHeaderInner<TData, TValue>({
   )
 }
 
-const DataGridColumnHeader = memo(
-  DataGridColumnHeaderInner
-) as typeof DataGridColumnHeaderInner
+const DataGridColumnHeaderMemo = memo(DataGridColumnHeaderInner) as <
+  TData extends object,
+  TValue,
+>(
+  props: DataGridColumnHeaderProps<TData, TValue> & {
+    /** Internal: the state slices the header re-renders on. Not part of the public API. */
+    subscribedState?: unknown
+  }
+) => ReactNode
+
+/**
+ * Sort and pin state reaches this header through builder calls on `column`
+ * (`getIsSorted()`, `getIsPinned()`), and `column` is a stable reference. That
+ * combination is the one v9's fresh-table-per-state-change does NOT cover:
+ * React Compiler is free to memoize against the stable column and never
+ * re-evaluate those reads, which shows up as frozen sort arrows and pin
+ * controls. The `Subscribe` below turns the slices this header actually reads
+ * into a real reactive dependency, and threading the selection through as a
+ * prop is what lets it past the `memo` - which would otherwise see unchanged
+ * props and skip the render anyway.
+ */
+function DataGridColumnHeader<TData extends object, TValue>(
+  props: DataGridColumnHeaderProps<TData, TValue>
+) {
+  const { table } = useDataGrid()
+
+  return (
+    <Subscribe
+      source={table.store}
+      selector={(state) => ({
+        sorting: state.sorting,
+        columnPinning: state.columnPinning,
+        columnOrder: state.columnOrder,
+        columnVisibility: state.columnVisibility,
+      })}
+    >
+      {(subscribed) => (
+        <DataGridColumnHeaderMemo {...props} subscribedState={subscribed} />
+      )}
+    </Subscribe>
+  )
+}
 
 export { DataGridColumnHeader, type DataGridColumnHeaderProps }

@@ -1,9 +1,8 @@
+import type { HTMLAttributes, ReactElement } from "react"
 import {
   Children,
   createContext,
-  HTMLAttributes,
   isValidElement,
-  ReactElement,
   useCallback,
   useContext,
   useEffect,
@@ -11,6 +10,8 @@ import {
   useRef,
   useState,
 } from "react"
+import { mergeProps } from "@base-ui/react/merge-props"
+import { useRender } from "@base-ui/react/use-render"
 
 import { cn } from "#lib/utils"
 
@@ -211,15 +212,13 @@ function StepperItem({
   )
 }
 
-interface StepperTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  asChild?: boolean
-}
+type StepperTriggerProps = useRender.ComponentProps<"button">
 
 function StepperTrigger({
-  asChild = false,
   className,
   children,
   tabIndex,
+  render,
   ...props
 }: StepperTriggerProps) {
   const { state, isLoading } = useStepItem()
@@ -282,42 +281,32 @@ function StepperTrigger({
     }
   }
 
-  if (asChild) {
-    return (
-      <span
-        data-slot="stepper-trigger"
-        data-state={state}
-        className={className}
-      >
-        {children}
-      </span>
-    )
+  const defaultProps = {
+    role: "tab",
+    id,
+    "aria-selected": isSelected,
+    "aria-controls": panelId,
+    tabIndex: typeof tabIndex === "number" ? tabIndex : isSelected ? 0 : -1,
+    "data-slot": "stepper-trigger",
+    "data-state": state,
+    "data-loading": isLoading,
+    className: cn(
+      "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-60",
+      "gap-2.5 rounded-full",
+      className
+    ),
+    onClick: () => setActiveStep(step),
+    onKeyDown: handleKeyDown,
+    disabled: isDisabled,
+    children,
   }
 
-  return (
-    <button
-      ref={btnRef}
-      role="tab"
-      id={id}
-      aria-selected={isSelected}
-      aria-controls={panelId}
-      tabIndex={typeof tabIndex === "number" ? tabIndex : isSelected ? 0 : -1}
-      data-slot="stepper-trigger"
-      data-state={state}
-      data-loading={isLoading}
-      className={cn(
-        "focus-visible:border-ring focus-visible:ring-ring/50 inline-flex cursor-pointer items-center outline-none focus-visible:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:opacity-60",
-        "gap-2.5 rounded-full",
-        className
-      )}
-      onClick={() => setActiveStep(step)}
-      onKeyDown={handleKeyDown}
-      disabled={isDisabled}
-      {...props}
-    >
-      {children}
-    </button>
-  )
+  return useRender({
+    defaultTagName: "button",
+    render,
+    ref: btnRef,
+    props: mergeProps<"button">(defaultProps, props),
+  })
 }
 
 function StepperIndicator({
@@ -361,7 +350,7 @@ function StepperSeparator({ className }: React.ComponentProps<"div">) {
       data-slot="stepper-separator"
       data-state={state}
       className={cn(
-        "bg-muted rounded-sm group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5 m-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1",
+        "bg-muted rounded-sm m-0.5 group-data-[orientation=horizontal]/stepper-nav:h-0.5 group-data-[orientation=horizontal]/stepper-nav:flex-1 group-data-[orientation=vertical]/stepper-nav:h-12 group-data-[orientation=vertical]/stepper-nav:w-0.5",
         className
       )}
     />
@@ -375,10 +364,7 @@ function StepperTitle({ children, className }: React.ComponentProps<"h3">) {
     <h3
       data-slot="stepper-title"
       data-state={state}
-      className={cn(
-        "text-sm leading-none font-medium",
-        className
-      )}
+      className={cn("text-sm leading-none font-medium", className)}
     >
       {children}
     </h3>
@@ -395,10 +381,7 @@ function StepperDescription({
     <div
       data-slot="stepper-description"
       data-state={state}
-      className={cn(
-        "text-muted-foreground text-sm",
-        className
-      )}
+      className={cn("text-muted-foreground text-sm", className)}
     >
       {children}
     </div>

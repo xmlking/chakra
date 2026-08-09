@@ -1,6 +1,4 @@
-"use no memo"
-
-import React, { ReactNode } from "react"
+import type { JSX, ReactNode } from "react"
 import { useDataGrid } from "#components/reui/data-grid/data-grid"
 
 import { cn } from "#lib/utils"
@@ -32,7 +30,7 @@ interface DataGridPaginationProps {
   ellipsisText?: string
 }
 
-function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
+function DataGridPagination(props: DataGridPaginationProps): JSX.Element {
   const { table, recordCount, isLoading } = useDataGrid()
 
   const defaultProps: Partial<DataGridPaginationProps> = {
@@ -51,8 +49,8 @@ function DataGridPagination(props: DataGridPaginationProps): React.JSX.Element {
 
   const btnBaseClasses = "p-0 text-sm"
   const btnArrowClasses = btnBaseClasses + " rtl:transform rtl:rotate-180"
-  const pageIndex = table.getState().pagination.pageIndex
-  const pageSize = table.getState().pagination.pageSize
+  const pageIndex = table.state.pagination.pageIndex
+  const pageSize = table.state.pagination.pageSize
   const from = recordCount === 0 ? 0 : pageIndex * pageSize + 1
   const to = Math.min((pageIndex + 1) * pageSize, recordCount)
   const pageCount = table.getPageCount()
