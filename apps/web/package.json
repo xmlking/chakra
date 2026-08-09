@@ -87,7 +87,7 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
-    "@assistant-ui/vite": "0.0.11",
+    "@assistant-ui/vite": "0.0.12",
     "@rolldown/plugin-babel": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
