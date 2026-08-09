@@ -1,3 +1,5 @@
+"use client"
+
 import { getAuthLinkURL } from "@better-auth-ui/core"
 import {
   type EmailOtpAuthClient,

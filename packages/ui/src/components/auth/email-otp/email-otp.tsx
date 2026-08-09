@@ -1,3 +1,5 @@
+"use client"
+
 import { authMutationKeys } from "@better-auth-ui/core"
 import {
   type EmailOtpAuthClient,
