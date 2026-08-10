@@ -1,17 +1,17 @@
 ---
 name: reui
-description: Use the ReUI registry from your AI agent - find, install, and correctly use ReUI components (the 17 free building blocks like data-grid, kanban, filters), their free examples, premium blocks, and Motion Icons. Applies in any project using ReUI, the @reui registry, REUI_LICENSE_KEY, or any shadcn project where the user asks for premium blocks, data grids, kanban boards, dashboards, or full pages. Pairs with the free ReUI MCP server for live, scored registry search and inline component APIs.
+description: Use the ReUI registry from your AI agent - find, install, and correctly use ReUI components (the 20 free building blocks like data-grid, kanban, filters), their free examples, premium blocks, and Motion Icons. Applies in any project using ReUI, the @reui registry, REUI_LICENSE_KEY, or any shadcn project where the user asks for premium blocks, data grids, kanban boards, dashboards, or full pages. Pairs with the free ReUI MCP server for live, scored registry search and inline component APIs.
 user-invocable: false
 allowed-tools: Bash(npx shadcn@latest *), Bash(pnpm dlx shadcn@latest *), Bash(bunx --bun shadcn@latest *)
 ---
 
-> **ReUI skill version `0e224b0281`.** If the ReUI MCP's `get_agent_skill` reports a newer `version`, re-run the ReUI installer (see `get_agent_skill` -> `install.recommended`) to update this skill. Cloud/tools-only agents have no local file and always read the latest - they can ignore this.
+> **ReUI skill version `668fb463eb`.** If the ReUI MCP's `get_agent_skill` reports a newer `version`, re-run the ReUI installer (see `get_agent_skill` -> `install.recommended`) to update this skill. Cloud/tools-only agents have no local file and always read the latest - they can ignore this.
 
 # ReUI for Agents
 
 ReUI is a shadcn-compatible registry. It ships four things you **reuse** - never redesign:
 
-- **components** - the 17 ReUI building blocks with real APIs: `data-grid`, `kanban`, `filters`, `date-selector`, `tree`, `stepper`, ... (free)
+- **components** - the 20 ReUI building blocks with real APIs: `data-grid`, `kanban`, `filters`, `date-selector`, `tree`, `stepper`, ... (free)
 - **examples** - free `c-*` single-pattern use-cases of a component (`c-kanban-1`); install one and read it to see exact composition
 - **blocks** - premium full-page sections that compose components (`data-grid-2`, `pricing-page-1`); Pro or Ultimate license at install
 - **icons** - Motion Icons in 4 styles, static + hover-animated variants; Ultimate license at install
@@ -58,7 +58,7 @@ Invocation differs slightly per agent (`/mcp__reui__build` in Claude Code/Cursor
 
 - [rules/registry.md](./rules/registry.md) - the four types, the @reui registry, base/radix, free vs premium + license
 - [rules/workflow.md](./rules/workflow.md) - the find -> install -> read-API -> adapt loop (most important)
-- [rules/components.md](./rules/components.md) - the 17 components, the data-grid contract, base vs radix
+- [rules/components.md](./rules/components.md) - the 20 components, the data-grid contract, base vs radix
 - [rules/adapting.md](./rules/adapting.md) - reuse-first: preserve the design (no over-customizing), reuse examples + a block's own elements, real data, don't invent APIs
 - [rules/craft.md](./rules/craft.md) - make it exceptional: point of view, hierarchy, density, states, responsive, motion, the bar
 - [rules/quality.md](./rules/quality.md) - security, accessibility, and scroll gates (the done gate)

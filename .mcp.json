@@ -18,10 +18,7 @@
     },
     "reui": {
       "type": "http",
-      "url": "https://mcp.reui.io",
-      "headers": {
-        "Authorization": "Bearer ${env:REUI_LICENSE_KEY}"
-      }
+      "url": "https://mcp.reui.io/api/mcp"
     },
     "mcp-toolbox": {
       "type": "http",

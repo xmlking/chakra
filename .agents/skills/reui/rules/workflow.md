@@ -8,7 +8,7 @@ The core ReUI loop. The MCP tells you what to install and gives you the API; the
 
 For everything else, call `search` with the user's intent. Pass structured hints whenever you can infer them - you are an LLM, so do the parsing the server cannot:
 
-- `type`: `"component"` (one of the 17 building blocks), `"example"` (a c-\* use-case), `"block"` (a full page/section), `"icon"`.
+- `type`: `"component"` (one of the 20 building blocks), `"example"` (a c-\* use-case), `"block"` (a full page/section), `"icon"`.
 - `component`: the ReUI component the request implies (`"data-grid"`, `"kanban"`, ...).
 - `category`, `features` (e.g. `["sortable","pagination"]`), `free`.
 
@@ -40,7 +40,7 @@ Before writing code against any component an item uses:
 
 Installing files is not the end, and redesigning them defeats the point. First note the project's **base** so you write the right API - read `components.json` -> `style` and take the segment before the first `-` (`base-nova` -> Base UI, `radix-nova` -> Radix UI), see [components.md](./components.md). After `add`:
 
-1. **Read the added files**; keep the composition intact. For a block, verify the components are wired correctly (for `data-grid`: a `useReactTable` instance passed as `table`, `recordCount` set - see [components.md](./components.md)).
+1. **Read the added files**; keep the composition intact. For a block, verify the components are wired correctly (for `data-grid`: a `useTable({ features: dataGridFeatures, ... })` instance passed as `table`, `recordCount` set - see [components.md](./components.md)).
 2. **Replace demo data with the user's real data** via typed structures (see [adapting.md](./adapting.md)).
 3. **Fix icon imports** to the project's icon library (see [icons.md](./icons.md)).
 4. **Align styling** to semantic tokens and the active theme - no raw colors (see [styling.md](./styling.md)).

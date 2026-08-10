@@ -1,24 +1,23 @@
 # ReUI components
 
-The 17 ReUI building blocks: `alert`, `autocomplete`, `badge`, `data-grid`, `date-selector`, `filters`, `frame`, `icon-stack`, `kanban`, `number-field`, `phone-input`, `rating`, `scrollspy`, `sortable`, `stepper`, `timeline`, `tree`. Examples and blocks are composed from these.
+The 20 ReUI building blocks: `alert`, `autocomplete`, `badge`, `data-grid`, `date-selector`, `event-calendar`, `filters`, `frame`, `gantt`, `icon-stack`, `icon-tile`, `kanban`, `number-field`, `phone-input`, `rating`, `scrollspy`, `sortable`, `stepper`, `timeline`, `tree`. Examples and blocks are composed from these.
 
 **Rule one: never guess a component's API. Read it first.** Call **`get_component(name)`** for its inline `api` (props + usage, no web fetch), and **share the result's `docsUrl`** (the component's API documentation page) with the user whenever you work with that component's API, so they have the full reference (the `/llms.txt` index is a further fallback). Then call **`get_examples(name)`** to install a worked example and copy real composition. The contracts below are first-try orientation (required props, composition shape, the one gotcha); the inline `api` is the full reference. No single block fits? Compose: search the components you need, read each `get_component`, install a `get_examples` example per component, and adapt.
 
 ## data-grid (the flagship - read its API every time)
 
-`data-grid` wraps TanStack Table v8. It is NOT a styled `<table>` and does NOT take `data`/`columns` props directly. The contract:
+`data-grid` wraps TanStack Table v9. It is NOT a styled `<table>` and does NOT take `data`/`columns` props directly. The contract:
 
-- Build a TanStack table instance with `useReactTable(...)` (columns, data, the feature models you need: sorting, pagination, row selection).
+- Build a TanStack table instance with `useTable({ features: dataGridFeatures, ... })` (columns, data). `dataGridFeatures` is exported by the primitive and already bundles sorting, filtering, pagination, row selection, expanding, pinning, resizing and faceting, so there are no per-table row models to wire.
 - Pass that instance to `<DataGrid table={table} recordCount={total}>`.
 - Compose the body with `DataGridTable` inside `DataGrid`, and enable features through `tableLayout` (e.g. `{ headerSticky: true, columnsResizable: true }`), not ad-hoc classes.
 - Server-side data uses the documented fetch shape (`recordCount` is the total for pagination).
 
 ```tsx
-const table = useReactTable({
+const table = useTable({
+  features: dataGridFeatures,
   data,
   columns,
-  getCoreRowModel: getCoreRowModel(),
-  // add sorting/pagination/selection models per the API
 })
 
 <DataGrid table={table} recordCount={data.length}>
@@ -28,9 +27,37 @@ const table = useReactTable({
 
 Common mistakes:
 
-- **Incorrect:** `<DataGrid data={rows} columns={cols} />` - these props do not exist. **Correct:** build a `useReactTable` instance and pass `table={table}` + `recordCount`.
+- **Incorrect:** `<DataGrid data={rows} columns={cols} />` - these props do not exist. **Correct:** build a `useTable({ features: dataGridFeatures, ... })` instance and pass `table={table}` + `recordCount`.
 - **Incorrect:** a raw `<table>` / hand-rolled pagination. **Correct:** use `data-grid`; read its API for sticky header, pagination, virtualization, row selection.
-- **Incorrect:** styling rows/cells with arbitrary classes. **Correct:** drive layout via `tableLayout` and the documented `ColumnMeta` (e.g. `cellClassName`, `headerTitle`).
+- **Incorrect:** styling rows/cells with arbitrary classes. **Correct:** drive layout via `tableLayout` and the primitive's `DataGridColumnMeta` (e.g. `cellClassName`, `headerTitle`), set through the bundle's `columnMeta` slot.
+
+## event-calendar
+
+**Required:** events via `events`/`onEventsChange` (controlled) or `defaultEvents` (uncontrolled), plus a height on the root.
+**Shape:**
+
+```tsx
+<EventCalendar defaultEvents={events} defaultView="month" className="h-[560px]">
+  <EventCalendarNav />
+  <EventCalendarContent />
+</EventCalendar>
+```
+
+**Gotcha:** headless-first: `EventCalendarContent` renders the active view (month/week/day/days/agenda; a resource view activates when `resources` is passed) - there is no per-view JSX to compose. Events are `{ id, title, start, end (exclusive), allDay?, color?, recurrence?, resourceId? }`. Mutations flow through `onEventUpdate`/`canDropEvent` (return `false` to reject); the root needs an explicit height because it is a min-h-0 flex column.
+
+## gantt
+
+**Required:** `resources` (the left tree) plus bars via `events`/`defaultEvents` attached by `resourceId`.
+**Shape:**
+
+```tsx
+<Gantt defaultEvents={bars} resources={tasks} defaultScale="month" className="h-[480px]">
+  <GanttNav />
+  <GanttView />
+</Gantt>
+```
+
+**Gotcha:** bars move along the time axis only (never across rows) and are all-day spans with exclusive `end`; `progress` is 0-100. Scales are `day | week | month | quarter | year`. Zoom control, infinite scroll, summary rollups, and row checkboxes are ON by default - turn off what you do not need. Same `onEventUpdate`/`canDropEvent` commit pipeline as `event-calendar`; the root needs an explicit height.
 
 ## kanban
 
@@ -283,6 +310,19 @@ const [value, setValue] = useState<DateSelectorValue | undefined>()
 ```
 
 **Gotcha:** isometric layered artwork for empty states and illustrations; style the inner icon via its own `className`. Mark purely decorative stacks `aria-hidden="true"` and keep the real label in surrounding copy.
+
+## icon-tile
+
+**Required:** one child icon
+**Shape:**
+
+```tsx
+<IconTile variant="elevated" size="lg">
+  <PackageIcon />
+</IconTile>
+```
+
+**Gotcha:** the square container an icon sits in, so every list row, feature card and empty state shares one affordance. `variant`: `outline` (default) | `elevated` (muted fill, raised ring) | `soft` (tinted nested, tone from currentColor) | `solid` (filled tone, contrasting glyph) | `frame` (double container). `soft` and `solid` retint from one text color class (they default to `text-primary`). `size`: `xs | sm | default | lg | xl` (24/32/40/48/64px tile, glyph scales 12/14/16/20/24px). `radius`: `default | full`. Do not set a `size-*` class on the child icon unless you mean to override the tile's glyph size; recolor with `className` on the tile, not the icon.
 
 ## alert
 
