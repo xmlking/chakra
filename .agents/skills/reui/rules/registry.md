@@ -2,7 +2,7 @@
 
 ReUI is a shadcn-compatible registry with four entity types. **Examples and blocks are built FROM components** - reuse them, don't rebuild.
 
-- **component** - one of the 17 ReUI building blocks with a real API (`data-grid`, `kanban`, `filters`, `date-selector`, `tree`, ...). Install directly (`@reui/data-grid`) or let it come in as a dependency of an example/block. Free. Read its API with `get_component(name)`.
+- **component** - one of the 20 ReUI building blocks with a real API (`data-grid`, `kanban`, `filters`, `date-selector`, `tree`, ...). Install directly (`@reui/data-grid`) or let it come in as a dependency of an example/block. Free. Read its API with `get_component(name)`.
 - **example** - a free `c-*` single-pattern use-case of a component (`c-kanban-1`, `c-data-grid-3`). Install one and read it to copy real composition. Find a component's examples with `get_examples(name)`.
 - **block** - a premium, full-page section that composes several components (`data-grid-2`, `pricing-page-1`). Pro or Ultimate license at install. Adapts to your active theme via semantic tokens.
 - **icon** - Motion Icons in 4 styles (outline, solid, duotone, filled), static (`@reui/icons/default/<style>/<name>`) and hover-animated (`@reui/icons/animated/<style>/<name>`). Ultimate license at install. See [icons.md](./icons.md).
@@ -27,7 +27,7 @@ Blocks adapt to your active theme through semantic tokens and CSS variables - ch
 
 ## Free vs premium
 
-- **Free, no key:** the 17 components, all `c-*` examples, the ReUI MCP, and this skill.
+- **Free, no key:** the 20 components, all `c-*` examples, the ReUI MCP, and this skill.
 - **Premium, license required at install:** blocks (Pro or Ultimate), Motion Icons and templates (Ultimate). Set `REUI_LICENSE_KEY` (see [cli.md](./cli.md)).
 
 ## Component API index

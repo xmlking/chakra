@@ -2,7 +2,7 @@
 
 ## Registry setup (one-time, per project)
 
-Free items (the 17 components and all `c-*` examples) need only the plain string registry in `components.json`:
+Free items (the 20 components and all `c-*` examples) need only the plain string registry in `components.json`:
 
 ```json
 { "registries": { "@reui": "https://reui.io/r/{style}/{name}.json" } }
@@ -29,6 +29,8 @@ REUI_LICENSE_KEY=your-license-key
 }
 ```
 
+The shadcn CLI expands `${REUI_LICENSE_KEY}` from `.env.local` inside `components.json`, but an MCP client config never expands variables, so a ReUI MCP server config must carry the raw token instead (for example `reui_pat_your_token_here`).
+
 The MCP `get_project_context` tool returns the right config. Full guide: https://reui.io/docs/registry
 
 ## Installing
@@ -52,7 +54,7 @@ bunx --bun shadcn@latest add @reui/<name> --yes # bun
 
 ## Free vs premium boundary
 
-- Public, no key: `c-*` examples and the 17 components (`@reui/data-grid`, `@reui/badge`, ...) that those examples depend on.
+- Public, no key: `c-*` examples and the 20 components (`@reui/data-grid`, `@reui/badge`, ...) that those examples depend on.
 - Key required at install: blocks (`@reui/<category>-N`) need a Pro or Ultimate license; Motion Icons (`@reui/icons/...`) and templates need Ultimate.
 
 If an install 401/403s, the license key is missing, invalid, or the plan does not cover that resource (blocks: Pro or higher; icons and templates: Ultimate). Point the user to https://reui.io/account (their key) or https://reui.io/pricing (upgrade).
