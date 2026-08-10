@@ -14,7 +14,6 @@ import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as appDragDropRouteImport } from './routes/(app)/drag-drop'
 import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
-import { Route as appOrdersRouteImport } from './routes/(app)/orders'
 import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
 import { Route as appRenewalsRiskRouteImport } from './routes/(app)/renewals-risk'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
@@ -26,7 +25,6 @@ import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
-import { Route as ApiOrdersRouteImport } from './routes/api/orders'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin/$page'
 import { Route as appAdminUsersRouteImport } from './routes/(app)/admin/users'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
@@ -69,11 +67,6 @@ const appDragDropRoute = appDragDropRouteImport.update({
 const appForbiddenRoute = appForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
-  getParentRoute: () => appRouteRoute,
-} as any)
-const appOrdersRoute = appOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appRenewalsRoute = appRenewalsRouteImport.update({
@@ -129,11 +122,6 @@ const ApiFilesTestRoute = ApiFilesTestRouteImport.update({
 const ApiImagesRoute = ApiImagesRouteImport.update({
   id: '/api/images',
   path: '/api/images',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiOrdersRoute = ApiOrdersRouteImport.update({
-  id: '/api/orders',
-  path: '/api/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appAdminPageRoute = appAdminPageRouteImport.update({
@@ -247,7 +235,6 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 export interface FileRoutesByFullPath {
   '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
-  '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
@@ -258,7 +245,6 @@ export interface FileRoutesByFullPath {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
-  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -285,7 +271,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
-  '/orders': typeof appOrdersRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
@@ -296,7 +281,6 @@ export interface FileRoutesByTo {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
-  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -327,7 +311,6 @@ export interface FileRoutesById {
   '/(public)': typeof publicRouteRouteWithChildren
   '/(app)/drag-drop': typeof appDragDropRoute
   '/(app)/forbidden': typeof appForbiddenRoute
-  '/(app)/orders': typeof appOrdersRoute
   '/(app)/renewals': typeof appRenewalsRoute
   '/(app)/renewals-risk': typeof appRenewalsRiskRoute
   '/(app2)/dashboard2': typeof app2Dashboard2Route
@@ -338,7 +321,6 @@ export interface FileRoutesById {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
-  '/api/orders': typeof ApiOrdersRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/admin/users': typeof appAdminUsersRoute
@@ -367,7 +349,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/drag-drop'
     | '/forbidden'
-    | '/orders'
     | '/renewals'
     | '/renewals-risk'
     | '/dashboard2'
@@ -378,7 +359,6 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
-    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -405,7 +385,6 @@ export interface FileRouteTypes {
   to:
     | '/drag-drop'
     | '/forbidden'
-    | '/orders'
     | '/renewals'
     | '/renewals-risk'
     | '/dashboard2'
@@ -416,7 +395,6 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
-    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -446,7 +424,6 @@ export interface FileRouteTypes {
     | '/(public)'
     | '/(app)/drag-drop'
     | '/(app)/forbidden'
-    | '/(app)/orders'
     | '/(app)/renewals'
     | '/(app)/renewals-risk'
     | '/(app2)/dashboard2'
@@ -457,7 +434,6 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
-    | '/api/orders'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/admin/users'
@@ -489,7 +465,6 @@ export interface RootRouteChildren {
   ApiFilesRoute: typeof ApiFilesRoute
   ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
-  ApiOrdersRoute: typeof ApiOrdersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
   ApiStudioSplatRoute: typeof ApiStudioSplatRoute
@@ -531,13 +506,6 @@ declare module '@tanstack/react-router' {
       path: '/forbidden'
       fullPath: '/forbidden'
       preLoaderRoute: typeof appForbiddenRouteImport
-      parentRoute: typeof appRouteRoute
-    }
-    '/(app)/orders': {
-      id: '/(app)/orders'
-      path: '/orders'
-      fullPath: '/orders'
-      preLoaderRoute: typeof appOrdersRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/renewals': {
@@ -615,13 +583,6 @@ declare module '@tanstack/react-router' {
       path: '/api/images'
       fullPath: '/api/images'
       preLoaderRoute: typeof ApiImagesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/orders': {
-      id: '/api/orders'
-      path: '/api/orders'
-      fullPath: '/api/orders'
-      preLoaderRoute: typeof ApiOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/admin/$page': {
@@ -777,7 +738,6 @@ declare module '@tanstack/react-router' {
 interface appRouteRouteChildren {
   appDragDropRoute: typeof appDragDropRoute
   appForbiddenRoute: typeof appForbiddenRoute
-  appOrdersRoute: typeof appOrdersRoute
   appRenewalsRoute: typeof appRenewalsRoute
   appRenewalsRiskRoute: typeof appRenewalsRiskRoute
   appAdminPageRoute: typeof appAdminPageRoute
@@ -801,7 +761,6 @@ interface appRouteRouteChildren {
 const appRouteRouteChildren: appRouteRouteChildren = {
   appDragDropRoute: appDragDropRoute,
   appForbiddenRoute: appForbiddenRoute,
-  appOrdersRoute: appOrdersRoute,
   appRenewalsRoute: appRenewalsRoute,
   appRenewalsRiskRoute: appRenewalsRiskRoute,
   appAdminPageRoute: appAdminPageRoute,
@@ -867,7 +826,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFilesRoute: ApiFilesRoute,
   ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,
-  ApiOrdersRoute: ApiOrdersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
   ApiStudioSplatRoute: ApiStudioSplatRoute,

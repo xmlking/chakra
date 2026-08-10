@@ -1,19 +1,19 @@
 // oxlint-disable typescript/no-base-to-string
 "use client";
-"use no memo";
 
 import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
+  type ColumnVisibilityState,
   type PaginationState,
   type RowPinningState,
   type SortingState,
-  type VisibilityState,
 } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
-import { DataGrid, DataGridContainer } from "@workspace/ui/components/reui/data-grid/data-grid";
+import {
+  DataGrid,
+  DataGridContainer,
+  dataGridFeatures,
+} from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
@@ -60,16 +60,15 @@ import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import {
-  Building2Icon,
-  UserRoundIcon,
-  GitBranchIcon,
-  TriangleAlertIcon,
   BellRingIcon,
-  PlusIcon,
+  Building2Icon,
   FilterIcon,
-  Settings2Icon,
-  CheckIcon,
+  GitBranchIcon,
+  PlusIcon,
   SearchIcon,
+  Settings2Icon,
+  TriangleAlertIcon,
+  UserRoundIcon,
   XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -298,7 +297,7 @@ function sanitizeRowPinning(
 
 export function DataTable() {
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
-  const [columnsResizable, setColumnsResizable] = useState(false);
+  const [columnsResizable, setColumnsResizable] = useState(true);
   const [columnsMovable, setColumnsMovable] = useState(true);
   const [visibleProperties, setVisibleProperties] = useState<Record<DisplayProperty, boolean>>({
     stage: true,
@@ -311,7 +310,7 @@ export function DataTable() {
   });
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 7,
   });
   const [sorting, setSorting] = useState<SortingState>([{ id: "renewalWindow", desc: false }]);
   const [rowPinning, setRowPinning] = useState<RowPinningState>({
@@ -342,7 +341,7 @@ export function DataTable() {
     [filteredRenewals, rowPinning],
   );
 
-  const columnVisibility = useMemo<VisibilityState>(
+  const columnVisibility = useMemo<ColumnVisibilityState>(
     () => ({
       stage: visibleProperties.stage,
       owner: visibleProperties.owner,
@@ -406,7 +405,8 @@ export function DataTable() {
     [],
   );
 
-  const table = useReactTable({
+  const table = useTable({
+    features: dataGridFeatures,
     data: filteredRenewals,
     columns,
     state: {
@@ -423,9 +423,6 @@ export function DataTable() {
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     onRowPinningChange: setRowPinning,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const ownerOptions = useMemo(
@@ -717,7 +714,6 @@ export function DataTable() {
                           <Select
                             value={tableDensity}
                             onValueChange={(value) => setTableDensity(value as TableDensity)}
-                            items={TABLE_DENSITY_OPTIONS}
                           >
                             <SelectTrigger size="sm" className="w-[132px] shrink-0">
                               <SelectValue />
@@ -760,32 +756,27 @@ export function DataTable() {
                       </div>
                     </div>
 
-                    <FieldSeparator className="-mx-3.5" />
+                    <FieldSeparator />
 
-                    <div className="space-y-2.5">
-                      <div className="text-xs font-medium text-muted-foreground">
-                        Display columns
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {DISPLAY_PROPERTIES.map((property) => {
-                          const active = visibleProperties[property.key];
-
-                          return (
-                            <Button
-                              key={property.key}
-                              type="button"
-                              size="xs"
-                              variant={active ? "secondary" : "outline"}
-                              className={cn("rounded-full", active && "border-foreground/10")}
-                              onClick={() => toggleProperty(property.key)}
-                            >
-                              {active ? (
-                                <CheckIcon className="size-3.5" aria-hidden="true" />
-                              ) : null}
+                    <div className="space-y-2">
+                      <div className="text-xs font-medium text-muted-foreground">Columns</div>
+                      <div className="space-y-0">
+                        {DISPLAY_PROPERTIES.map((property) => (
+                          <Field
+                            key={property.key}
+                            orientation="horizontal"
+                            className="min-h-9 items-center justify-between gap-3"
+                          >
+                            <FieldLabel className="text-sm font-normal">
                               {property.label}
-                            </Button>
-                          );
-                        })}
+                            </FieldLabel>
+                            <Switch
+                              size="sm"
+                              checked={visibleProperties[property.key]}
+                              onCheckedChange={() => toggleProperty(property.key)}
+                            />
+                          </Field>
+                        ))}
                       </div>
                     </div>
                   </FieldGroup>

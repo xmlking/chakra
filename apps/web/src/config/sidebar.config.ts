@@ -1,7 +1,6 @@
 import {
   LayoutDashboardIcon,
   FolderKanbanIcon,
-  InboxIcon,
   UsersIcon,
   BarChart3Icon,
   FileTextIcon,
@@ -47,7 +46,6 @@ export const navGroups: NavGroup[] = [
         url: "/renewals-risk",
         icon: TableIcon,
       },
-      { title: "Orders", url: "/orders", icon: InboxIcon },
       { title: "Team", url: "/dashboard/team", icon: UsersIcon },
       {
         title: "Analytics",

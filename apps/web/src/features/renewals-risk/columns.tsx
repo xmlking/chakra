@@ -1,7 +1,8 @@
-"use no memo";
+"use client";
 
 import type { Row, ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
+import { type DataGridFeatures } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridColumnHeader } from "@workspace/ui/components/reui/data-grid/data-grid-column-header";
 import { DataGridTableRowPin } from "@workspace/ui/components/reui/data-grid/data-grid-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/shadcn/avatar";
@@ -24,7 +25,7 @@ import { Progress, ProgressLabel, ProgressValue } from "@workspace/ui/components
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
-import { MoreHorizontalIcon, EyeIcon, FlagIcon, CalendarDaysIcon, CopyIcon } from "lucide-react";
+import { CalendarDaysIcon, CopyIcon, EyeIcon, FlagIcon, MoreHorizontalIcon } from "lucide-react";
 import { memo, type ComponentProps } from "react";
 
 import { useCopyToClipboard } from "#hooks/use-copy-to-clipboard";
@@ -159,7 +160,11 @@ const SignalsCell = memo(function SignalsCell({
   );
 });
 
-const AccountCell = memo(function AccountCell({ row }: { row: Row<IRenewalRiskRecord> }) {
+const AccountCell = memo(function AccountCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRiskRecord>;
+}) {
   const renewal = row.original;
 
   return (
@@ -204,7 +209,11 @@ const StageCell = memo(function StageCell({ stage }: { stage: IRenewalRiskRecord
   );
 });
 
-const OwnerCell = memo(function OwnerCell({ row }: { row: Row<IRenewalRiskRecord> }) {
+const OwnerCell = memo(function OwnerCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRiskRecord>;
+}) {
   const owner = row.original.owner;
 
   return (
@@ -241,7 +250,7 @@ const HealthCell = memo(function HealthCell({ health }: { health: number }) {
 const RenewalWindowCell = memo(function RenewalWindowCell({
   row,
 }: {
-  row: Row<IRenewalRiskRecord>;
+  row: Row<DataGridFeatures, IRenewalRiskRecord>;
 }) {
   const renewal = row.original;
   const dateLabel = new Intl.DateTimeFormat("en-US", {
@@ -260,7 +269,11 @@ const RenewalWindowCell = memo(function RenewalWindowCell({
   );
 });
 
-const AlertsCell = memo(function AlertsCell({ row }: { row: Row<IRenewalRiskRecord> }) {
+const AlertsCell = memo(function AlertsCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRiskRecord>;
+}) {
   const renewal = row.original;
 
   return (
@@ -284,7 +297,7 @@ function ActionsCell({
   row,
   onAction,
 }: {
-  row: Row<IRenewalRiskRecord>;
+  row: Row<DataGridFeatures, IRenewalRiskRecord>;
   onAction: (action: RenewalAction, renewal: IRenewalRiskRecord) => void;
 }) {
   const { copyToClipboard } = useCopyToClipboard({
@@ -530,5 +543,5 @@ export function createRenewalRiskColumns({
         cellClassName: "pe-5!",
       },
     },
-  ] satisfies ColumnDef<IRenewalRiskRecord>[];
+  ] satisfies ColumnDef<DataGridFeatures, IRenewalRiskRecord>[];
 }

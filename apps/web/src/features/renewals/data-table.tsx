@@ -1,17 +1,14 @@
-// oxlint-disable typescript/no-base-to-string react-doctor/react-compiler-no-manual-memoization
+// oxlint-disable typescript/no-base-to-string
 "use client";
 
 import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
+  useTable,
+  type ColumnVisibilityState,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
-  type VisibilityState,
 } from "@tanstack/react-table";
-import { DataGrid } from "@workspace/ui/components/reui/data-grid/data-grid";
+import { DataGrid, dataGridFeatures } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
@@ -22,15 +19,7 @@ import {
   type FilterFieldConfig,
 } from "@workspace/ui/components/reui/filters";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/shadcn/card";
+import { CardContent, CardFooter } from "@workspace/ui/components/shadcn/card";
 import {
   Field,
   FieldGroup,
@@ -57,17 +46,17 @@ import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { toast } from "@workspace/ui/components/shadcn/toast";
 import { cn } from "@workspace/ui/lib/utils";
 import {
-  FilterIcon,
-  Settings2Icon,
-  CheckIcon,
   Building2Icon,
-  LayersIcon,
-  GitBranchIcon,
-  TriangleAlertIcon,
   CalendarClockIcon,
-  UserRoundIcon,
+  CheckIcon,
+  FilterIcon,
+  GitBranchIcon,
+  LayersIcon,
   PlusIcon,
   SearchIcon,
+  Settings2Icon,
+  TriangleAlertIcon,
+  UserRoundIcon,
   XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
@@ -85,6 +74,7 @@ import {
   type RenewalRisk,
   type RenewalStage,
 } from "./data";
+import { CommandCard } from "./ui/command-card";
 import { SelectionBar } from "./ui/selection-bar";
 
 function getActiveFilters(filters: Filter[]) {
@@ -309,7 +299,6 @@ function Toolbar({
             </InputGroupAddon>
           )}
         </InputGroup>
-
         <Filters
           filters={filters}
           fields={fields}
@@ -441,7 +430,7 @@ export function DataTable() {
     { id: "renewalWindow", desc: false },
     { id: "arr", desc: true },
   ]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
+  const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityState>({
     health: true,
     stage: true,
     risk: true,
@@ -636,7 +625,13 @@ export function DataTable() {
     [handleCreateBrief, handleEscalateReview, handleOpenAccount],
   );
 
-  const table = useReactTable({
+  const table = useTable({
+    features: dataGridFeatures,
+    // No pagination row model on v8, so every row rendered. The shared
+    // bundle registers one, and manualPagination is v9's way to say the
+    // data is already the page - it keeps the pagination APIs while
+    // leaving the rows unsliced.
+    manualPagination: true,
     columns,
     data: filteredData,
     getRowId: (row) => row.id,
@@ -654,9 +649,6 @@ export function DataTable() {
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     onRowSelectionChange: setRowSelection,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original.id);
@@ -723,33 +715,26 @@ export function DataTable() {
         width: "auto",
       }}
     >
-      <Card className={cn("w-full gap-0 p-0")}>
-        {/* Header */}
-        <CardHeader className="flex flex-row items-center justify-between gap-4 border-b px-5 py-4">
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <CardTitle>Renewals Review</CardTitle>
-            <CardDescription className="text-xs">{`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}</CardDescription>
-          </div>
-          <CardAction className="self-center">
-            <Button
-              type="button"
-              size="sm"
-              onClick={() =>
-                toast.add({
-                  title: "Transaction started",
-                  description: "New renewal entry opened.",
-                  type: "success",
-                })
-              }
-            >
-              <PlusIcon aria-hidden="true" />
-              New item
-            </Button>
-          </CardAction>
-        </CardHeader>
-
-        {/* Content */}
-
+      <CommandCard
+        title="Renewals Review"
+        description={`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
+        action={
+          <Button
+            type="button"
+            size="sm"
+            onClick={() =>
+              toast.add({
+                title: "Transaction started",
+                description: "New renewal entry opened.",
+                type: "success",
+              })
+            }
+          >
+            <PlusIcon aria-hidden="true" />
+            New transaction
+          </Button>
+        }
+      >
         <Toolbar
           filters={filters}
           fields={filterFields}
@@ -783,7 +768,7 @@ export function DataTable() {
           <Separator />
         )}
         <CardContent className={cn("p-0")}>
-          <DataGridScrollArea>
+          <DataGridScrollArea className="h-[540px]">
             <DataGridTable />
           </DataGridScrollArea>
         </CardContent>
@@ -792,7 +777,7 @@ export function DataTable() {
             <DataGridPagination />
           </div>
         </CardFooter>
-      </Card>
+      </CommandCard>
     </DataGrid>
   );
 }

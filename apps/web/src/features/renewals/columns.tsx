@@ -1,5 +1,8 @@
+"use client";
+
 import type { Row, ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
+import type { DataGridFeatures } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridColumnHeader } from "@workspace/ui/components/reui/data-grid/data-grid-column-header";
 import {
   DataGridTableRowSelect,
@@ -25,10 +28,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/shadcn/dropdown-menu";
+import { Item, ItemMedia } from "@workspace/ui/components/shadcn/item";
 import { Progress, ProgressLabel, ProgressValue } from "@workspace/ui/components/shadcn/progress";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 import { cn } from "@workspace/ui/lib/utils";
-import { MoreHorizontalIcon, EyeIcon, FileTextIcon, TriangleAlertIcon } from "lucide-react";
+import {
+  EyeIcon,
+  FileTextIcon,
+  MoreHorizontalIcon,
+  PlusCircle,
+  TriangleAlertIcon,
+} from "lucide-react";
 import { memo, useMemo, useState, type ComponentProps } from "react";
 
 import {
@@ -130,18 +140,27 @@ function initials(name: string) {
     .join("");
 }
 
-const AccountCell = memo(function AccountCell({ row }: { row: Row<IRenewalRecord> }) {
+const AccountCell = memo(function AccountCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRecord>;
+}) {
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Avatar className="size-8">
-        <AvatarImage src={row.original.ownerAvatar} alt="" />
-        <AvatarFallback className="text-[9px] font-medium">
-          {initials(row.original.ownerName)}
-        </AvatarFallback>
-      </Avatar>
+      <Item className="flex size-6 shrink-0 items-center justify-center border-0 p-0 [&_svg]:size-5">
+        <ItemMedia variant="icon" className="size-auto">
+          <PlusCircle />
+        </ItemMedia>
+      </Item>
       <div className="flex min-w-0 flex-col gap-0.5">
         <div className="truncate font-medium text-foreground">{row.original.accountName}</div>
         <div className="flex min-w-0 items-center gap-1.5 text-xs text-muted-foreground">
+          <Avatar className="size-4">
+            <AvatarImage src={row.original.ownerAvatar} alt="" />
+            <AvatarFallback className="text-[9px] font-medium">
+              {initials(row.original.ownerName)}
+            </AvatarFallback>
+          </Avatar>
           <span className="truncate">{row.original.ownerName}</span>
           <span className="size-1 shrink-0 rounded-full bg-input" aria-hidden="true" />
           <span className="truncate">{row.original.segment}</span>
@@ -151,7 +170,11 @@ const AccountCell = memo(function AccountCell({ row }: { row: Row<IRenewalRecord
   );
 });
 
-const RenewalWindowCell = memo(function RenewalWindowCell({ row }: { row: Row<IRenewalRecord> }) {
+const RenewalWindowCell = memo(function RenewalWindowCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRecord>;
+}) {
   const dueSoon = row.original.daysToRenewal <= 30;
   const urgencyTone =
     row.original.daysToRenewal <= 14
@@ -172,7 +195,11 @@ const RenewalWindowCell = memo(function RenewalWindowCell({ row }: { row: Row<IR
   );
 });
 
-const RevenueCell = memo(function RevenueCell({ row }: { row: Row<IRenewalRecord> }) {
+const RevenueCell = memo(function RevenueCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRecord>;
+}) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
       <span className="font-medium text-foreground tabular-nums">
@@ -193,7 +220,11 @@ const RevenueCell = memo(function RevenueCell({ row }: { row: Row<IRenewalRecord
   );
 });
 
-const HealthCell = memo(function HealthCell({ row }: { row: Row<IRenewalRecord> }) {
+const HealthCell = memo(function HealthCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRecord>;
+}) {
   const score = row.original.healthScore;
   const label = score >= 75 ? "Healthy" : score >= 55 ? "Watchlist" : "At risk";
   const indicatorClass =
@@ -244,7 +275,11 @@ function buildSmoothLinePath(points: { x: number; y: number }[]) {
   return path;
 }
 
-const UsageTrendCell = memo(function UsageTrendCell({ row }: { row: Row<IRenewalRecord> }) {
+const UsageTrendCell = memo(function UsageTrendCell({
+  row,
+}: {
+  row: Row<DataGridFeatures, IRenewalRecord>;
+}) {
   const data = row.original.usageTrend;
   const width = 92;
   const height = 26;
@@ -312,7 +347,7 @@ function RenewalActionsCell({
   onCreateBrief,
   onEscalateReview,
 }: {
-  row: Row<IRenewalRecord>;
+  row: Row<DataGridFeatures, IRenewalRecord>;
   onOpenAccount: (renewal: IRenewalRecord) => void;
   onCreateBrief: (renewal: IRenewalRecord) => void;
   onEscalateReview: (renewal: IRenewalRecord) => void;
@@ -582,5 +617,5 @@ export function createRenewalColumns({
         headerClassName: "pe-4!",
       },
     },
-  ] satisfies ColumnDef<IRenewalRecord>[];
+  ] satisfies ColumnDef<DataGridFeatures, IRenewalRecord>[];
 }

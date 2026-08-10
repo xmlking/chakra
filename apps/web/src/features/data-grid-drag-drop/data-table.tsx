@@ -1,66 +1,28 @@
-// oxlint-disable typescript/no-base-to-string react-doctor/react-compiler-no-manual-memoization
 "use client";
-"use no memo";
 
 import { type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { useTable, type ColumnDef } from "@tanstack/react-table";
 import {
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-  type PaginationState,
-  type ColumnDef,
-  type SortingState,
-  type VisibilityState,
-} from "@tanstack/react-table";
-import { Badge } from "@workspace/ui/components/reui/badge";
-import { DataGrid } from "@workspace/ui/components/reui/data-grid/data-grid";
-import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
+  DataGrid,
+  dataGridFeatures,
+  type DataGridFeatures,
+} from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTableDndRows } from "@workspace/ui/components/reui/data-grid/data-grid-table-dnd-rows";
 import {
-  createFilter,
-  Filters,
-  type Filter,
-  type FilterFieldConfig,
-} from "@workspace/ui/components/reui/filters";
+  Frame,
+  FrameDescription,
+  FrameHeader,
+  FramePanel,
+  FrameTitle,
+} from "@workspace/ui/components/reui/frame";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/shadcn/card";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldSeparator,
-} from "@workspace/ui/components/shadcn/field";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupInput,
-} from "@workspace/ui/components/shadcn/input-group";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/shadcn/popover";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/shadcn/select";
-import { Separator } from "@workspace/ui/components/shadcn/separator";
-import { Switch } from "@workspace/ui/components/shadcn/switch";
-import { toast } from "@workspace/ui/components/shadcn/toast";
-import { cn } from "@workspace/ui/lib/utils";
-import { CheckIcon, FilterIcon, PlusIcon, SearchIcon, Settings2Icon, XIcon } from "lucide-react";
+import { RotateCcwIcon } from "lucide-react";
+// Reorderable sprint backlog grid. Drag the row handle (or the row menu's
+// move actions) to set delivery priority; the rank column reflects the live
+// order. Manual order is the single source of truth, so the grid runs without
+// sorting, filtering, or pagination, which would all fight row reordering.
 import { useCallback, useMemo, useState } from "react";
 
 import { BacklogEmptyState } from "../empty-state";
@@ -76,363 +38,16 @@ function normalizeOrder(items: BacklogItem[]) {
   return items.map((item, index) => ({ ...item, displayOrder: index + 1 }));
 }
 
-function getActiveFilters(filters: Filter[]) {
-  return filters.filter((filter) => {
-    const { operator, values } = filter;
-    if (operator === "empty" || operator === "not_empty") return true;
-    if (!values || values.length === 0) return false;
-    if (values.every((value) => typeof value === "string" && value.trim() === "")) {
-      return false;
-    }
-    if (values.every((value) => value == null)) return false;
-
-    if (values.every((value) => Array.isArray(value) && value.length === 0)) {
-      return false;
-    }
-    return true;
-  });
-}
-
-function applyFiltersToData(data: BacklogItem[], filters: Filter[]) {
-  const active = getActiveFilters(filters);
-
-  return active.reduce(
-    (result, filter) => {
-      const { field, operator, values } = filter;
-
-      return result.filter((item) => {
-        const fieldValue = item[field as keyof BacklogItem];
-
-        switch (operator) {
-          case "is":
-            return values.includes(fieldValue);
-          case "is_not":
-            return !values.includes(fieldValue);
-          case "is_any_of":
-            return values.some((value) => fieldValue === value);
-          case "is_not_any_of":
-            return !values.some((value) => fieldValue === value);
-          case "contains": {
-            const tokens = values.map((value) => String(value).trim()).filter(Boolean);
-            if (tokens.length === 0) return true;
-            return tokens.some((token) =>
-              String(fieldValue).toLowerCase().includes(token.toLowerCase()),
-            );
-          }
-          case "not_contains":
-            return !values.some((value) =>
-              String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
-            );
-          case "starts_with":
-            return values.some((value) =>
-              String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
-            );
-          case "ends_with":
-            return values.some((value) =>
-              String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
-            );
-          case "equals":
-            return fieldValue === values[0];
-          case "not_equals":
-            return fieldValue !== values[0];
-          case "greater_than":
-            return Number(fieldValue) > Number(values[0]);
-          case "less_than":
-            return Number(fieldValue) < Number(values[0]);
-          case "greater_than_or_equal":
-            return Number(fieldValue) >= Number(values[0]);
-          case "less_than_or_equal":
-            return Number(fieldValue) <= Number(values[0]);
-          case "between":
-            if (values.length >= 2) {
-              const min = Number(values[0]);
-              const max = Number(values[1]);
-              return Number(fieldValue) >= min && Number(fieldValue) <= max;
-            }
-            return true;
-          case "not_between":
-            if (values.length >= 2) {
-              const min = Number(values[0]);
-              const max = Number(values[1]);
-              return Number(fieldValue) < min || Number(fieldValue) > max;
-            }
-            return true;
-          case "empty":
-            return fieldValue === "" || fieldValue == null;
-          case "not_empty":
-            return fieldValue !== "" && fieldValue != null;
-          default:
-            return true;
-        }
-      });
-    },
-    [...data],
-  );
-}
-
-function createDefaultFilters(): Filter[] {
-  return [createFilter("title", "contains", [""])];
-}
-
 const SEED_ITEMS = normalizeOrder(sortByOrder(BACKLOG_ITEMS));
-
-type TableDensity = "compact" | "comfortable";
-type DisplayColumn = "status" | "type" | "owner" | "team" | "cycle" | "effort";
-
-const TABLE_DENSITY_OPTIONS: { value: TableDensity; label: string }[] = [
-  { value: "compact", label: "Compact" },
-  { value: "comfortable", label: "Comfortable" },
-];
-
-const DISPLAY_COLUMNS: { key: DisplayColumn; label: string }[] = [
-  { key: "status", label: "Status" },
-  { key: "type", label: "Type" },
-  { key: "owner", label: "Owner" },
-  { key: "team", label: "Team" },
-  { key: "cycle", label: "Cycle" },
-  { key: "effort", label: "Effort" },
-];
-
-interface ToolbarProps {
-  filters: Filter[];
-  fields: FilterFieldConfig[];
-  onFiltersChange: (filters: Filter[]) => void;
-  onClearFilters: () => void;
-  showClearButton: boolean;
-  searchQuery: string;
-  onSearchChange: (query: string) => void;
-  tableDensity: TableDensity;
-  onTableDensityChange: (value: TableDensity) => void;
-  columnsResizable: boolean;
-  onColumnsResizableChange: (value: boolean) => void;
-  columnsMovable: boolean;
-  onColumnsMovableChange: (value: boolean) => void;
-  visibleColumns: Record<DisplayColumn, boolean>;
-  onToggleColumn: (columnId: DisplayColumn) => void;
-}
-
-function Toolbar({
-  filters,
-  fields,
-  onFiltersChange,
-  onClearFilters,
-  showClearButton,
-  searchQuery,
-  onSearchChange,
-  tableDensity,
-  onTableDensityChange,
-  columnsResizable,
-  onColumnsResizableChange,
-  columnsMovable,
-  onColumnsMovableChange,
-  visibleColumns,
-  onToggleColumn,
-}: ToolbarProps) {
-  const activeFilters = useMemo(() => getActiveFilters(filters), [filters]);
-
-  return (
-    <div className="flex flex-col gap-3 px-5 py-3 lg:flex-row lg:items-center lg:justify-between">
-      {/* Actions */}
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-        <InputGroup className="w-48">
-          <InputGroupAddon align="inline-start">
-            <SearchIcon className="size-4" />
-          </InputGroupAddon>
-          <InputGroupInput
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(event) => onSearchChange(event.target.value)}
-          />
-          {searchQuery.length > 0 ? (
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton
-                size="sm"
-                variant="ghost"
-                className="size-6 p-0.5"
-                onClick={() => onSearchChange("")}
-              >
-                <XIcon className="size-3.5" aria-hidden="true" />
-              </InputGroupButton>
-            </InputGroupAddon>
-          ) : null}
-        </InputGroup>
-
-        <Filters
-          filters={filters}
-          fields={fields}
-          onChange={onFiltersChange}
-          size="default"
-          trigger={
-            <Button type="button" variant="outline" aria-label="Backlog filters">
-              <FilterIcon aria-hidden="true" />
-              Filters
-              {activeFilters.length > 0 ? (
-                <Badge size="sm" variant="secondary" radius="full">
-                  {activeFilters.length}
-                </Badge>
-              ) : null}
-            </Button>
-          }
-        />
-
-        {showClearButton ? (
-          <Button type="button" variant="outline" onClick={onClearFilters}>
-            Clear filters
-          </Button>
-        ) : null}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-2 lg:justify-end">
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button type="button" variant="outline" aria-label="Table settings">
-                <Settings2Icon className="size-4" aria-hidden="true" />
-                Settings
-              </Button>
-            }
-          />
-          <PopoverContent align="end" className="w-[320px] p-0">
-            <FieldGroup className="gap-3 px-3.5 py-3">
-              <div className="space-y-2">
-                <div className="text-xs font-medium text-muted-foreground">Table</div>
-                <div className="space-y-0">
-                  <Field
-                    orientation="horizontal"
-                    className="min-h-9 items-center justify-between gap-3"
-                  >
-                    <FieldLabel className="text-sm font-normal">Density</FieldLabel>
-                    <Select
-                      value={tableDensity}
-                      onValueChange={(value) => onTableDensityChange(value as TableDensity)}
-                      items={TABLE_DENSITY_OPTIONS}
-                    >
-                      <SelectTrigger size="sm" className="w-[132px] shrink-0">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent align="end">
-                        <SelectGroup>
-                          {TABLE_DENSITY_OPTIONS.map((option) => (
-                            <SelectItem key={option.value} value={option.value}>
-                              {option.label}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </Field>
-
-                  <Field
-                    orientation="horizontal"
-                    className="min-h-9 items-center justify-between gap-3"
-                  >
-                    <FieldLabel className="text-sm font-normal">Resizable columns</FieldLabel>
-                    <Switch
-                      size="sm"
-                      checked={columnsResizable}
-                      onCheckedChange={onColumnsResizableChange}
-                    />
-                  </Field>
-
-                  <Field
-                    orientation="horizontal"
-                    className="min-h-9 items-center justify-between gap-3"
-                  >
-                    <FieldLabel className="text-sm font-normal">Movable columns</FieldLabel>
-                    <Switch
-                      size="sm"
-                      checked={columnsMovable}
-                      onCheckedChange={onColumnsMovableChange}
-                    />
-                  </Field>
-                </div>
-              </div>
-
-              <FieldSeparator className="-mx-3.5" />
-
-              <div className="space-y-2.5">
-                <div className="text-xs font-medium text-muted-foreground">Display columns</div>
-                <div className="flex flex-wrap gap-1.5">
-                  {DISPLAY_COLUMNS.map((column) => {
-                    const active = visibleColumns[column.key];
-
-                    return (
-                      <Button
-                        key={column.key}
-                        type="button"
-                        size="xs"
-                        variant={active ? "secondary" : "outline"}
-                        className={cn("rounded-full", active && "border-foreground/10")}
-                        onClick={() => onToggleColumn(column.key)}
-                      >
-                        {active ? <CheckIcon className="size-3.5" aria-hidden="true" /> : null}
-                        {column.label}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </div>
-            </FieldGroup>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </div>
-  );
-}
+const SEED_SIGNATURE = SEED_ITEMS.map((item) => item.id).join("|");
 
 export function DataTable() {
   const [items, setItems] = useState<BacklogItem[]>(SEED_ITEMS);
-  const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
-  const [columnsResizable, setColumnsResizable] = useState(false);
-  const [columnsMovable, setColumnsMovable] = useState(false);
-  const [filters, setFilters] = useState<Filter[]>(createDefaultFilters());
-  const [searchQuery, setSearchQuery] = useState("");
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 5,
-  });
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({
-    status: true,
-    type: true,
-    owner: true,
-    team: true,
-    cycle: true,
-    effort: true,
-  });
 
-  const filteredItems = useMemo(() => {
-    const filterResult = applyFiltersToData(items, filters);
+  const dataIds = useMemo<UniqueIdentifier[]>(() => items.map((item) => item.id), [items]);
 
-    // Apply search query
-    if (!searchQuery) {
-      return filterResult;
-    }
-
-    const searchLower = searchQuery.toLowerCase();
-    return filterResult.filter((item) =>
-      Object.values(item).join(" ").toLowerCase().includes(searchLower),
-    );
-  }, [filters, items, searchQuery]);
-
-  const dataIds = useMemo<UniqueIdentifier[]>(
-    () => filteredItems.map((item) => item.id),
-    [filteredItems],
-  );
-
-  const visibleColumns = useMemo<Record<DisplayColumn, boolean>>(
-    () => ({
-      status: columnVisibility.status !== false,
-      type: columnVisibility.type !== false,
-      owner: columnVisibility.owner !== false,
-      team: columnVisibility.team !== false,
-      cycle: columnVisibility.cycle !== false,
-      effort: columnVisibility.effort !== false,
-    }),
-    [columnVisibility],
-  );
-
-  const showClearButton = filters.length > 0;
+  // Pristine = same items in the same order as the seed; gates the reset action.
+  const isPristine = dataIds.join("|") === SEED_SIGNATURE;
 
   const handleAction = useCallback((action: BacklogRowAction, item: BacklogItem) => {
     setItems((current) => {
@@ -448,116 +63,22 @@ export function DataTable() {
     });
   }, []);
 
-  const handleFiltersChange = useCallback((nextFilters: Filter[]) => {
-    setFilters(nextFilters);
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    setFilters(createDefaultFilters());
-  }, []);
-
-  const handleToggleColumn = useCallback((property: DisplayColumn) => {
-    setColumnVisibility((current) => ({
-      ...current,
-      [property]: !current[property],
-    }));
-  }, []);
-
-  const typeOptions = useMemo(
-    () => [
-      { value: "Feature", label: "Feature" },
-      { value: "Improvement", label: "Improvement" },
-      { value: "Research", label: "Research" },
-      { value: "Security", label: "Security" },
-    ],
-    [],
-  );
-
-  const statusOptions = useMemo(
-    () => [
-      { value: "In Progress", label: "In Progress" },
-      { value: "In Review", label: "In Review" },
-      { value: "Ready", label: "Ready" },
-      { value: "Blocked", label: "Blocked" },
-      { value: "Planned", label: "Planned" },
-    ],
-    [],
-  );
-
-  const teamOptions = useMemo(
-    () => [
-      { value: "Collaboration", label: "Collaboration" },
-      { value: "Identity", label: "Identity" },
-      { value: "Platform", label: "Platform" },
-      { value: "Compliance", label: "Compliance" },
-      { value: "Revenue", label: "Revenue" },
-      { value: "Search", label: "Search" },
-      { value: "Mobile", label: "Mobile" },
-      { value: "Security", label: "Security" },
-    ],
-    [],
-  );
-
-  const filterFields: FilterFieldConfig[] = useMemo(
-    () => [
-      {
-        key: "title",
-        label: "Title",
-        type: "text",
-        className: "w-40",
-        placeholder: "Search...",
-      },
-      {
-        key: "type",
-        label: "Type",
-        type: "select",
-        searchable: true,
-        className: "w-40",
-        options: typeOptions,
-      },
-      {
-        key: "status",
-        label: "Status",
-        type: "select",
-        searchable: false,
-        className: "w-44",
-        options: statusOptions,
-      },
-      {
-        key: "team",
-        label: "Team",
-        type: "select",
-        searchable: true,
-        className: "w-44",
-        options: teamOptions,
-      },
-    ],
-    [statusOptions, teamOptions, typeOptions],
-  );
-
-  const columns = useMemo<ColumnDef<BacklogItem>[]>(
-    () => createBacklogColumns({ total: filteredItems.length, onAction: handleAction }),
-    [filteredItems.length, handleAction],
+  const columns = useMemo<ColumnDef<DataGridFeatures, BacklogItem>[]>(
+    () => createBacklogColumns({ total: items.length, onAction: handleAction }),
+    [items.length, handleAction],
   );
 
   // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
-    data: filteredItems,
+  const table = useTable({
+    features: dataGridFeatures,
+    // No pagination row model on v8, so every row rendered. The shared
+    // bundle registers one, and manualPagination is v9's way to say the
+    // data is already the page - it keeps the pagination APIs while
+    // leaving the rows unsliced.
+    manualPagination: true,
+    data: items,
     columns,
-    state: {
-      pagination,
-      sorting,
-      columnVisibility: Object.fromEntries(
-        Object.entries(columnVisibility).map(([key, value]) => [key, value]),
-      ),
-    },
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setColumnVisibility,
     getRowId: (row) => row.id,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   });
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -571,83 +92,60 @@ export function DataTable() {
     setItems((current) => normalizeOrder(arrayMove(current, oldIndex, newIndex)));
   };
 
+  const handleReset = () => setItems(SEED_ITEMS);
+
   return (
     <DataGrid
       table={table}
-      recordCount={filteredItems.length}
-      emptyMessage={<BacklogEmptyState />}
+      recordCount={items.length}
+      emptyMessage={<BacklogEmptyState onRestore={handleReset} />}
       tableLayout={{
-        dense: tableDensity === "compact",
+        dense: true,
         rowsDraggable: true,
-        columnsResizable,
-        columnsMovable,
-        columnsVisibility: true,
+        // Off, and it does more than hide the grips. It also picks the sizing
+        // regime: on, the declared widths hold and a `meta.autoSize` column
+        // swallows whatever the container has spare, which needs that column to
+        // be resizable and so left a dead strip at the end once Task was fixed.
+        // Off, every column shares the surplus in proportion, so the table
+        // still fills its panel and the columns keep their relative weights.
+        columnsResizable: false,
+        columnsMovable: false,
+        columnsVisibility: false,
         width: "fixed",
       }}
       tableClassNames={{
         bodyRow: "[&[style*='cursor:_grabbing']>td]:border-t",
       }}
     >
-      <Card className={cn("w-full gap-0 p-0")}>
-        <CardHeader className="flex flex-row items-center justify-between gap-4 border-b px-5 py-4">
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <CardTitle>Sprint Backlog</CardTitle>
-            <CardDescription className="flex items-center gap-1.5 text-xs">
+      <Frame variant="default" spacing="sm" className="w-full bg-card!">
+        <FrameHeader className="flex-row items-center justify-between gap-3 text-foreground">
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <FrameTitle>Sprint Backlog</FrameTitle>
+            <FrameDescription className="flex items-center gap-1.5 text-xs">
               Drag to prioritize
               <span aria-hidden className="size-1 shrink-0 rounded-full bg-muted-foreground/40" />
-              <span className="whitespace-nowrap">{filteredItems.length} items</span>
-            </CardDescription>
+              <span className="whitespace-nowrap">{items.length} items</span>
+            </FrameDescription>
           </div>
-          <CardAction className="self-center">
-            <Button
-              type="button"
-              size="sm"
-              onClick={() =>
-                toast.add({
-                  title: "New backlog item created",
-                  description: "Item added to sprint backlog.",
-                  type: "success",
-                })
-              }
-            >
-              <PlusIcon aria-hidden="true" />
-              New item
-            </Button>
-          </CardAction>
-        </CardHeader>
 
-        {/* Content */}
+          <Button
+            type="button"
+            variant="outline"
+            className="text-foreground"
+            disabled={isPristine}
+            onClick={handleReset}
+          >
+            <RotateCcwIcon aria-hidden="true" />
+            Reset order
+          </Button>
+        </FrameHeader>
 
-        <Toolbar
-          filters={filters}
-          fields={filterFields}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          showClearButton={showClearButton}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          tableDensity={tableDensity}
-          onTableDensityChange={setTableDensity}
-          columnsResizable={columnsResizable}
-          onColumnsResizableChange={setColumnsResizable}
-          columnsMovable={columnsMovable}
-          onColumnsMovableChange={setColumnsMovable}
-          visibleColumns={visibleColumns}
-          onToggleColumn={handleToggleColumn}
-        />
-
-        <Separator />
-        <CardContent className={cn("p-0")}>
+        <FramePanel className="bg-card p-0! shadow-none!">
           <DataGridScrollArea>
             <DataGridTableDndRows dataIds={dataIds} handleDragEnd={handleDragEnd} />
           </DataGridScrollArea>
-        </CardContent>
-        <CardFooter className={cn("border-t px-5 py-3")}>
-          <div className="flex w-full justify-end">
-            <DataGridPagination />
-          </div>
-        </CardFooter>
-      </Card>
+        </FramePanel>
+      </Frame>
     </DataGrid>
   );
 }
