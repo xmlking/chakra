@@ -1,8 +1,8 @@
-"use no memo";
+"use client";
 
 import type { Row, ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/reui/badge";
-import { DataGridColumnHeader } from "@workspace/ui/components/reui/data-grid/data-grid-column-header";
+import { type DataGridFeatures } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridTableDndRowHandle } from "@workspace/ui/components/reui/data-grid/data-grid-table-dnd-rows";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/shadcn/avatar";
 import { Button } from "@workspace/ui/components/shadcn/button";
@@ -16,15 +16,15 @@ import {
 } from "@workspace/ui/components/shadcn/dropdown-menu";
 import { Item, ItemMedia } from "@workspace/ui/components/shadcn/item";
 import {
-  SparklesIcon,
-  ShieldCheckIcon,
-  FlaskConicalIcon,
-  WrenchIcon,
-  FlagIcon,
-  MoreHorizontalIcon,
-  ArrowUpIcon,
   ArrowDownIcon,
+  ArrowUpIcon,
+  FlagIcon,
+  FlaskConicalIcon,
+  MoreHorizontalIcon,
+  ShieldCheckIcon,
+  SparklesIcon,
   Trash2Icon,
+  WrenchIcon,
 } from "lucide-react";
 
 import { type BacklogItem, type BacklogStatus, type BacklogType } from "./data";
@@ -186,7 +186,7 @@ export function createBacklogColumns({
 }: {
   total: number;
   onAction: (action: BacklogRowAction, item: BacklogItem) => void;
-}): ColumnDef<BacklogItem>[] {
+}): ColumnDef<DataGridFeatures, BacklogItem>[] {
   return [
     {
       id: "drag",
@@ -204,8 +204,13 @@ export function createBacklogColumns({
     {
       id: "rank",
       header: "#",
-      cell: ({ row }: { row: Row<BacklogItem> }) => <RankCell rank={row.index + 1} />,
-      size: 56,
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <RankCell rank={row.index + 1} />
+      ),
+      // Sized to its widest cell: the flagged first rank measures 27px and the
+      // cell carries 8px of trailing padding, so 40 fits it with slack while
+      // giving the space back to Task.
+      size: 40,
       enableSorting: false,
       enableHiding: false,
       enableResizing: false,
@@ -218,30 +223,28 @@ export function createBacklogColumns({
     {
       accessorKey: "title",
       id: "task",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Task" visibility={true} column={column} />
+      header: "Task",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <TaskCell item={row.original} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <TaskCell item={row.original} />,
       size: 260,
-      minSize: 200,
-      enableSorting: true,
-      enableHiding: true,
-      enableResizing: true,
+      enableSorting: false,
+      enableHiding: false,
+      enableResizing: false,
       meta: {
         headerTitle: "Task",
-        autoSize: true,
       },
     },
     {
       accessorKey: "owner",
       id: "owner",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Owner" visibility={true} column={column} />
+      header: "Owner",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <OwnerCell item={row.original} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <OwnerCell item={row.original} />,
       size: 165,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Owner",
@@ -250,13 +253,13 @@ export function createBacklogColumns({
     {
       accessorKey: "team",
       id: "team",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Team" visibility={true} column={column} />
+      header: "Team",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <TeamCell item={row.original} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <TeamCell item={row.original} />,
       size: 130,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Team",
@@ -265,13 +268,13 @@ export function createBacklogColumns({
     {
       accessorKey: "cycle",
       id: "cycle",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Cycle" visibility={true} column={column} />
+      header: "Cycle",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <CycleCell item={row.original} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <CycleCell item={row.original} />,
       size: 110,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Cycle",
@@ -280,13 +283,13 @@ export function createBacklogColumns({
     {
       accessorKey: "dueDate",
       id: "dueDate",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Due" visibility={true} column={column} />
+      header: "Due",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <DueDateCell item={row.original} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <DueDateCell item={row.original} />,
       size: 90,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Due",
@@ -295,13 +298,13 @@ export function createBacklogColumns({
     {
       accessorKey: "status",
       id: "status",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Status" visibility={true} column={column} />
+      header: "Status",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
+        <StatusBadge status={row.original.status} />
       ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => <StatusBadge status={row.original.status} />,
       size: 125,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Status",
@@ -310,18 +313,16 @@ export function createBacklogColumns({
     {
       accessorKey: "effort",
       id: "effort",
-      header: ({ column }) => (
-        <DataGridColumnHeader title="Effort" visibility={true} column={column} />
-      ),
-      cell: ({ row }: { row: Row<BacklogItem> }) => (
+      header: "Effort",
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
         <span className="text-sm text-foreground tabular-nums">
           {row.original.effort}
           <span className="ms-1 text-xs text-muted-foreground">pts</span>
         </span>
       ),
       size: 80,
-      enableSorting: true,
-      enableHiding: true,
+      enableSorting: false,
+      enableHiding: false,
       enableResizing: false,
       meta: {
         headerTitle: "Effort",
@@ -330,7 +331,7 @@ export function createBacklogColumns({
     {
       id: "actions",
       header: () => <span className="sr-only">Actions</span>,
-      cell: ({ row }: { row: Row<BacklogItem> }) => (
+      cell: ({ row }: { row: Row<DataGridFeatures, BacklogItem> }) => (
         <ActionsCell item={row.original} rank={row.index + 1} total={total} onAction={onAction} />
       ),
       size: 56,

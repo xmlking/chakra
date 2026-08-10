@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncExternalStore } from "react";
 
-import { DataTableSkeleton } from "#features/data-table-skeleton.tsx";
+import { DataTableSkeleton } from "#features/data-table-skeleton";
 import { DataTable } from "#features/renewals-risk/data-table";
 
 export const Route = createFileRoute("/(app)/renewals-risk")({
