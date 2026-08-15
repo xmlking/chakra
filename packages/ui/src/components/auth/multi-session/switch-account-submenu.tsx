@@ -1,5 +1,3 @@
-"use client"
-
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react"
 import { ArrowLeftRight } from "lucide-react"
 

@@ -1,5 +1,3 @@
-"use client"
-
 import type { ComponentProps } from "react"
 
 import { Skeleton } from "#components/shadcn/skeleton"

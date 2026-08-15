@@ -1,5 +1,3 @@
-"use client"
-
 import { useCallback, useEffect, useState } from "react"
 
 /** Seconds a resend button stays disabled to keep users off the rate limit. */
