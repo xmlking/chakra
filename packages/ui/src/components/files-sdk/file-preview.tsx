@@ -66,7 +66,7 @@ const Body = ({
     return (
       <object
         aria-label="PDF preview"
-        className="h-72 w-full"
+        className="h-[640px] w-full"
         data={src}
         type="application/pdf"
       >
