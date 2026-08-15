@@ -1,5 +1,3 @@
-"use client"
-
 import { getAuthLinkURL } from "@better-auth-ui/core"
 import { useAuth } from "@better-auth-ui/react"
 import { useEffect, useState } from "react"

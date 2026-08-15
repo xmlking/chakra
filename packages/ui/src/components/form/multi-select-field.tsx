@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";

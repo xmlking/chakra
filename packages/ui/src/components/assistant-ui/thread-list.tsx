@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
 import { Skeleton } from "#components/shadcn/skeleton";

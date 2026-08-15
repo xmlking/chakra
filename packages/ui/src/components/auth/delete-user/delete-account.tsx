@@ -1,5 +1,3 @@
-"use client"
-
 import { authQueryKeys } from "@better-auth-ui/core"
 import {
   useAuth,

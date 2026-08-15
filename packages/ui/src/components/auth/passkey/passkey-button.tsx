@@ -1,5 +1,3 @@
-"use client"
-
 import { type AuthView, authMutationKeys } from "@better-auth-ui/core"
 import {
   type PasskeyAuthClient,

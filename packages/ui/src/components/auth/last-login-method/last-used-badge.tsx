@@ -1,5 +1,3 @@
-"use client"
-
 import { useLastLoginMethod } from "@better-auth-ui/react"
 
 import { Badge } from "#components/shadcn/badge"

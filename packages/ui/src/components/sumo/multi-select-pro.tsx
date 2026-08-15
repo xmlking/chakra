@@ -3,7 +3,6 @@
  * Docs: https://shadcnui-expansions.typeart.cc/docs/multiple-selector
  * Source: https://github.com/hsuanyi-chou/shadcn-ui-expansions/blob/main/components/ui/multiple-selector.tsx
  */
-"use client";
 
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
 import { ChevronDownIcon, X } from "lucide-react";

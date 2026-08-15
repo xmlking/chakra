@@ -1,5 +1,3 @@
-"use client"
-
 import { useMemo, useState } from "react"
 import { Badge } from "#components/reui/badge"
 import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"

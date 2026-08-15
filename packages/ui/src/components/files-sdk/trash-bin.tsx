@@ -1,5 +1,3 @@
-"use client";
-
 import type { TrashedFile, UseFilesResult } from "files-sdk/react";
 import {
   Loader2Icon,

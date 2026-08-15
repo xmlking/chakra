@@ -1,5 +1,4 @@
 // oxlint-disable react-doctor/no-multi-comp react-doctor/no-react19-deprecated-apis
-"use client";
 
 import { Tabs } from "@base-ui/react";
 import React from "react";

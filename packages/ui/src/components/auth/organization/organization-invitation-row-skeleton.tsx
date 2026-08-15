@@ -1,5 +1,3 @@
-"use client"
-
 import { Skeleton } from "#components/shadcn/skeleton"
 import { TableCell, TableRow } from "#components/shadcn/table"
 

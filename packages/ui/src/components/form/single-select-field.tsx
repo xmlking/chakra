@@ -1,5 +1,3 @@
-"use client";
-
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar";
 import { Button } from "#components/shadcn/button";
 import {

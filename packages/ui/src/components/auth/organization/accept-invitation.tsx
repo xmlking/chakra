@@ -1,5 +1,3 @@
-"use client"
-
 import { getSafeRedirectTo } from "@better-auth-ui/core"
 import {
   type OrganizationAuthClient,

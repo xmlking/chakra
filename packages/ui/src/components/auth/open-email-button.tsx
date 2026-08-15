@@ -1,5 +1,3 @@
-"use client"
-
 import { createQrCodeSvgData, getEmailProviderLink } from "@better-auth-ui/core"
 import { useAuth } from "@better-auth-ui/react"
 import type { VariantProps } from "class-variance-authority"

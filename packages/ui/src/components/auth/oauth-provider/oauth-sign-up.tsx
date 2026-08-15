@@ -1,5 +1,3 @@
-"use client"
-
 import {
   hasOAuthPrompt,
   type OAuthAuthorizationRequest,

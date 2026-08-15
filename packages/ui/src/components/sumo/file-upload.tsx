@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * Source: https://github.com/Ali-Hussein-dev/formcn/blob/main/apps/web/src/components/form-fields/file-upload.tsx
  */

@@ -1,5 +1,3 @@
-"use client";
-
 import type { SearchMatch, StoredFile } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import { FileIcon, Loader2Icon, SearchIcon } from "lucide-react";

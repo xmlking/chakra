@@ -1,5 +1,3 @@
-"use client";
-
 import type { FileUploadState, UseFilesResult } from "files-sdk/react";
 import { CheckCircle2Icon, Loader2Icon, XCircleIcon } from "lucide-react";
 
