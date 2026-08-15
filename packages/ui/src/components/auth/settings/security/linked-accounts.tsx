@@ -1,5 +1,3 @@
-"use client"
-
 import { useAuth, useListAccounts } from "@better-auth-ui/react"
 import { Fragment } from "react"
 import { Card, CardContent } from "#components/shadcn/card"

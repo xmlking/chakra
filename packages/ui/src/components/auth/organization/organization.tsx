@@ -1,5 +1,3 @@
-"use client"
-
 import type { OrganizationView } from "@better-auth-ui/core/plugins"
 import {
   type OrganizationAuthClient,
