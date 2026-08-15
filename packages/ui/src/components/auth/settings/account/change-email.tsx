@@ -1,5 +1,3 @@
-"use client"
-
 import { getViewURL } from "@better-auth-ui/core"
 import { useAuth, useChangeEmail, useSession } from "@better-auth-ui/react"
 import { type SyntheticEvent, useState } from "react"

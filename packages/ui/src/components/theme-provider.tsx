@@ -1,5 +1,3 @@
-"use client";
-
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ReactNode } from "react";
 import { allThemeValues, DEFAULT_THEME } from "#lib/themes-config";

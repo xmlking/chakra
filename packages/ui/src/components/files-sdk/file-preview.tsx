@@ -1,5 +1,3 @@
-"use client";
-
 import type { StoredFile } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import { FileIcon, Loader2Icon } from "lucide-react";

@@ -1,5 +1,3 @@
-"use client"
-
 import { createQrCodeSvgData } from "@better-auth-ui/core"
 import {
   type TwoFactorAuthClient,

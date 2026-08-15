@@ -1,5 +1,3 @@
-"use client"
-
 import { isImpersonatingSession } from "@better-auth-ui/core/plugins"
 import {
   type AdminAuthClient,

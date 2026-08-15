@@ -1,5 +1,3 @@
-"use client"
-
 import type { AuthorizedOAuthApplication } from "@better-auth-ui/core/plugins"
 import {
   type OAuthProviderAuthClient,

@@ -1,5 +1,3 @@
-"use client"
-
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useEffect, useState } from "react"
 

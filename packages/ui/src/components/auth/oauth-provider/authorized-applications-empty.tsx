@@ -1,5 +1,3 @@
-"use client"
-
 import { useAuthPlugin } from "@better-auth-ui/react"
 import { ShieldCheck } from "lucide-react"
 

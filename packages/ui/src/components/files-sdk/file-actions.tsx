@@ -1,5 +1,3 @@
-"use client";
-
 import type { UseFilesResult } from "files-sdk/react";
 import {
   CopyIcon,

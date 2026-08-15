@@ -1,5 +1,3 @@
-"use client";
-
 import type { UseFilesResult } from "files-sdk/react";
 import { FileIcon, Loader2Icon, UploadIcon, XIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";

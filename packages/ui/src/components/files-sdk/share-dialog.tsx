@@ -1,5 +1,3 @@
-"use client";
-
 import type { AdapterCapabilities } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import { CheckIcon, CopyIcon, Link2Icon, Loader2Icon } from "lucide-react";

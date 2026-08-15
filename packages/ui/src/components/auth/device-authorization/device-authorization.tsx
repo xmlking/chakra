@@ -1,5 +1,3 @@
-"use client"
-
 import type { DeviceAuthorizationLocalization } from "@better-auth-ui/core/plugins"
 import {
   type DeviceAuthorizationAuthClient,

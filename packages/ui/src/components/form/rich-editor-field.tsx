@@ -1,4 +1,3 @@
-"use client";
 import Placeholder from "@tiptap/extension-placeholder";
 /**
  * TODO: https://www.shadcn.io/components/forms/editor
