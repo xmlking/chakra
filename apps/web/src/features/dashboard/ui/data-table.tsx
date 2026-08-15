@@ -619,11 +619,13 @@ function TableCellViewer({ item }: { item: z.infer<typeof schema> }) {
 
   return (
     <Drawer>
-      <DrawerTrigger>
-        <Button variant="link" className="w-fit px-0 text-left text-foreground">
-          {item.header}
-        </Button>
-      </DrawerTrigger>
+      <DrawerTrigger
+        render={
+          <Button variant="link" className="w-fit px-0 text-left text-foreground">
+            {item.header}
+          </Button>
+        }
+      />
       <DrawerContent>
         <DrawerHeader className="gap-1">
           <DrawerTitle>{item.header}</DrawerTitle>
