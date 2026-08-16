@@ -31,6 +31,7 @@ import {
   rowPaginationFeature,
   rowSelectionFeature,
   rowSortingFeature,
+  Subscribe,
   tableFeatures,
   useTable,
   type ColumnFiltersState,
@@ -38,6 +39,7 @@ import {
   type Row,
   type SortingState,
 } from "@tanstack/react-table";
+import { useTanStackTableDevtools } from "@tanstack/react-table-devtools/production";
 import { Badge } from "@workspace/ui/components/shadcn/badge";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import {
@@ -159,24 +161,37 @@ const columns = columnHelper.columns([
   }),
   columnHelper.display({
     id: "select",
+    // `Subscribe` gives the React Compiler a visible dependency on the row-selection
+    // atom. Without it, `table`/`row` are stable across renders inside a column
+    // template, so the compiler memoizes this JSX and never re-runs
+    // getIsAllPageRowsSelected()/getIsSelected(), leaving checkboxes stuck.
     header: ({ table }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
+      <Subscribe source={table.atoms.rowSelection}>
+        {() => (
+          <div className="flex items-center justify-center">
+            <Checkbox
+              checked={table.getIsAllPageRowsSelected()}
+              indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
+              onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+              aria-label="Select all"
+            />
+          </div>
+        )}
+      </Subscribe>
     ),
     cell: ({ row }) => (
-      <div className="flex items-center justify-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
+      <Subscribe source={row.table.atoms.rowSelection}>
+        {() => (
+          <div className="flex items-center justify-center">
+            <Checkbox
+              checked={row.getIsSelected()}
+              disabled={!row.getCanSelect()}
+              onCheckedChange={(value) => row.toggleSelected(!!value)}
+              aria-label="Select row"
+            />
+          </div>
+        )}
+      </Subscribe>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -365,6 +380,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
   const dataIds = React.useMemo<UniqueIdentifier[]>(() => data?.map(({ id }) => id) || [], [data]);
 
   const table = useTable({
+    key: "dashboard-data-table",
+    // debugTable: true, // optionally, enable console logging debug messages
     features,
     data,
     columns,
@@ -383,6 +400,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
     onColumnVisibilityChange: setColumnVisibility,
     onPaginationChange: setPagination,
   });
+
+  useTanStackTableDevtools(table, { enabled: import.meta.env.DEV });
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
