@@ -3,6 +3,7 @@
 import { type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useTable, type ColumnDef } from "@tanstack/react-table";
+import { useTanStackTableDevtools } from "@tanstack/react-table-devtools";
 import {
   DataGrid,
   dataGridFeatures,
@@ -70,6 +71,7 @@ export function DataTable() {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useTable({
+    key: "drag-drop-data-table",
     features: dataGridFeatures,
     // No pagination row model on v8, so every row rendered. The shared
     // bundle registers one, and manualPagination is v9's way to say the
@@ -80,6 +82,7 @@ export function DataTable() {
     columns,
     getRowId: (row) => row.id,
   });
+  useTanStackTableDevtools(table, { enabled: import.meta.env.DEV });
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
