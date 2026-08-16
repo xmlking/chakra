@@ -1,6 +1,6 @@
 import type { StudioConfig } from "better-auth-studio";
 
-import { auth } from "./src/index.tsx";
+import { auth } from "./src/index";
 
 const config: StudioConfig = {
   auth,

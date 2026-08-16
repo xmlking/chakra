@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 // import { auth } from "@workspace/auth";
 
-import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton.tsx";
+import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton";
 
 export const Route = createFileRoute("/(app)/admin/users")({
   staticData: {
