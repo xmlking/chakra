@@ -39,7 +39,7 @@ import {
   type Row,
   type SortingState,
 } from "@tanstack/react-table";
-import { useTanStackTableDevtools } from "@tanstack/react-table-devtools/production";
+import { useTanStackTableDevtools } from "@tanstack/react-table-devtools";
 import { Badge } from "@workspace/ui/components/shadcn/badge";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import {
@@ -360,7 +360,7 @@ function DraggableRow({ row }: { row: Row<typeof features, z.infer<typeof schema
   );
 }
 
-export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+export function DataGridView({ data: initialData }: { data: z.infer<typeof schema>[] }) {
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<ColumnVisibilityState>({});

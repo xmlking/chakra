@@ -296,7 +296,7 @@ function sanitizeRowPinning(
   };
 }
 
-export function DataTable() {
+export function DataGridView() {
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
   const [columnsResizable, setColumnsResizable] = useState(true);
   const [columnsMovable, setColumnsMovable] = useState(true);

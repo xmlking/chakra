@@ -418,7 +418,7 @@ function Toolbar({
   );
 }
 
-export function DataTable() {
+export function DataGridView() {
   const [items, setItems] = useState<IRenewalRecord[]>(RENEWAL_RECORDS);
   const [tableDensity, setTableDensity] = useState<TableDensity>("compact");
   const [columnsResizable, setColumnsResizable] = useState(false);

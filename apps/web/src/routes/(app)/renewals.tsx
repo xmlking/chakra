@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSyncExternalStore } from "react";
 
-import { DataTableSkeleton } from "#features/data-table-skeleton.tsx";
-import { DataTable } from "#features/renewals/data-table";
+import { DataGridSkeleton } from "#features/data-grid-skeleton";
+import { DataGridView } from "#features/renewals/data-grid-view";
 
 export const Route = createFileRoute("/(app)/renewals")({
   staticData: {
@@ -37,7 +37,7 @@ function RouteComponent() {
       <h1 id="page-heading" className="sr-only">
         Renewals command data grid
       </h1>
-      {isReady ? <DataTable /> : <DataTableSkeleton />}
+      {isReady ? <DataGridView /> : <DataGridSkeleton />}
     </div>
     // </main>
   );
