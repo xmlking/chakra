@@ -8,6 +8,7 @@ import {
   type RowPinningState,
   type SortingState,
 } from "@tanstack/react-table";
+import { useTanStackTableDevtools } from "@tanstack/react-table-devtools";
 import { Badge } from "@workspace/ui/components/reui/badge";
 import {
   DataGrid,
@@ -406,6 +407,7 @@ export function DataTable() {
   );
 
   const table = useTable({
+    key: "renewals-risk-data-table",
     features: dataGridFeatures,
     data: filteredRenewals,
     columns,
@@ -424,6 +426,7 @@ export function DataTable() {
     onPaginationChange: setPagination,
     onRowPinningChange: setRowPinning,
   });
+  useTanStackTableDevtools(table, { enabled: import.meta.env.DEV });
 
   const ownerOptions = useMemo(
     () =>

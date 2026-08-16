@@ -8,6 +8,7 @@ import {
   type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table";
+import { useTanStackTableDevtools } from "@tanstack/react-table-devtools";
 import { DataGrid, dataGridFeatures } from "@workspace/ui/components/reui/data-grid/data-grid";
 import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
@@ -626,6 +627,7 @@ export function DataTable() {
   );
 
   const table = useTable({
+    key: "renewals-data-table",
     features: dataGridFeatures,
     // No pagination row model on v8, so every row rendered. The shared
     // bundle registers one, and manualPagination is v9's way to say the
@@ -650,6 +652,7 @@ export function DataTable() {
     onColumnOrderChange: setColumnOrder,
     onRowSelectionChange: setRowSelection,
   });
+  useTanStackTableDevtools(table, { enabled: import.meta.env.DEV });
 
   const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original.id);
 
