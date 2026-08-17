@@ -244,7 +244,8 @@ export function ChartAreaInteractive() {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+                    if (value === undefined) return "";
+                    return new Date(value as string | number).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     });

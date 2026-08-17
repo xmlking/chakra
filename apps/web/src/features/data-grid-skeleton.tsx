@@ -3,7 +3,7 @@
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 
-export function DataTableSkeleton() {
+export function DataGridSkeleton() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       {/* Header */}
