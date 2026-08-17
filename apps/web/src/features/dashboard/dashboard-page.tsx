@@ -1,6 +1,6 @@
 import data from "./api/data.json";
 import { ChartAreaInteractive } from "./ui/chart-area-interactive";
-import { DataTable } from "./ui/data-table";
+import { DataGridView } from "./ui/data-grid-view";
 import { SectionCards } from "./ui/section-cards";
 
 export function DashboardPage() {
@@ -13,7 +13,7 @@ export function DashboardPage() {
             <div className="px-4 lg:px-6">
               <ChartAreaInteractive />
             </div>
-            <DataTable data={data} />
+            <DataGridView data={data} />
           </div>
         </div>
       </div>
