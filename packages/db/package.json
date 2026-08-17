@@ -22,7 +22,7 @@
     "seed": "bun x vite-node@latest scripts/seed.ts",
     "skills": "dotenv-run -f ../../.env -v -- drizzle-kit skills --config=drizzle-tools.config.ts",
     "studio": "dotenv-run -f ../../.env -v -- drizzle-kit studio --config=drizzle-tools.config.ts",
-    "typecheck": "tsgo --noEmit",
+    "typecheck": "tsc --noEmit",
     "up": "dotenv-run -f ../../.env -v -- drizzle-kit up --config=drizzle-tools.config.ts"
   },
   "dependencies": {
