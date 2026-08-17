@@ -10,7 +10,7 @@
   },
   "scripts": {
     "clean": "git clean -xdf dist test-results coverage node_modules",
-    "typecheck": "tsgo --noEmit"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "better-result": "catalog:",
