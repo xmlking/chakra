@@ -1,0 +1,49 @@
+// @ts-nocheck https://github.com/wakujs/waku/issues/1812
+import tailwindcss from "@tailwindcss/vite";
+import { fumadocsMdx } from "fumadocs-mdx/vite";
+import press from "fumapress/vite";
+import { defineConfig } from "vite-plus";
+
+export default defineConfig({
+  envDir: "../..", // HINT: use workspace root .env files
+  press: {
+    basePath: import.meta.env.VITE_DOCS_BASE_PATH || "/",
+  },
+  resolve: {
+    tsconfigPaths: true,
+    // Content MDX lives outside this package (../../content/docs) and the
+    // isolated bun linker keeps react only in apps/docs/node_modules.
+    // dedupe makes react/jsx-runtime resolve from the app root so the
+    // compiled MDX (mode: "static") can be bundled.
+    // @fuma-translate/react ships "use client" modules and is imported by
+    // bare specifier from virtual:vite-rsc/client-references, so it must
+    // resolve from the app root (and be a direct dependency below).
+    dedupe: [
+      "fumadocs-ui",
+      "fumadocs-core",
+      "react",
+      "react-dom",
+      "lucide-react",
+      "@thesvg/react",
+      "@fuma-translate/react",
+    ],
+  },
+  // @takumi-rs/core is a native napi module (used by takumiPlugin for OG
+  // images). Keep it external in the server-side environments so its loader
+  // resolves the platform .node package from its own node_modules location
+  // (the bun isolated store) at runtime, instead of being bundled into
+  // dist/server where the dynamic require can't find the platform package.
+  environments: {
+    rsc: { resolve: { external: ["@takumi-rs/core"] } },
+    ssr: { resolve: { external: ["@takumi-rs/core"] } },
+  },
+  ssr: {
+    external: ["typescript", "twoslash", "shiki", "@takumi-rs/core"],
+  },
+  optimizeDeps: {
+    include: ["use-sync-external-store/shim/with-selector", "use-sync-external-store/shim"],
+    exclude: ["@base-ui/react", "@base-ui/utils", "@fuma-translate/react", "lucide-react"],
+  },
+
+  plugins: [press(), fumadocsMdx(), tailwindcss()],
+});

@@ -60,7 +60,7 @@ export default defineEnv({
 ```typescript
 // vite.config.ts
 import ViteEnv from "@vite-env/core/plugin";
-import { defineConfig } from "vite";
+import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   plugins: [ViteEnv()],

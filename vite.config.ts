@@ -28,7 +28,6 @@ const ignorePatterns = [
   "!packages/ui/src/components/form/**",
   "!packages/ui/src/components/sumo/**",
   "packages/ui/src/styles/**",
-  "apps/docs/waku.config.ts",
 ];
 export default defineConfig({
   staged: {
