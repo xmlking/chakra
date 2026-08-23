@@ -1,4 +1,3 @@
-
 import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useIsUsernameAvailable } from "@better-auth-ui/react/plugins/username"

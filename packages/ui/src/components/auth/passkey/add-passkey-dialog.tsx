@@ -28,7 +28,8 @@ export function AddPasskeyDialog({
   onOpenChange
 }: AddPasskeyDialogProps) {
   const { authClient, localization } = useAuth<PasskeyAuthClient>()
-  const { localization: passkeyLocalization } = useAuthPlugin(passkeyPlugin)
+  const { authenticatorAttachment, localization: passkeyLocalization } =
+    useAuthPlugin(passkeyPlugin)
 
   const { mutate: addPasskey, isPending: isAdding } = useAddPasskey(authClient)
 
@@ -38,9 +39,13 @@ export function AddPasskeyDialog({
     const formData = new FormData(e.target as HTMLFormElement)
     const name = (formData.get("name") as string)?.trim()
 
-    addPasskey(name ? { name } : undefined, {
-      onSuccess: () => onOpenChange(false)
-    })
+    addPasskey(
+      {
+        ...(name ? { name } : {}),
+        ...(authenticatorAttachment ? { authenticatorAttachment } : {})
+      },
+      { onSuccess: () => onOpenChange(false) }
+    )
   }
 
   return (
@@ -48,7 +53,7 @@ export function AddPasskeyDialog({
       <DialogContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
               <Fingerprint />
               {passkeyLocalization.addPasskey}
             </DialogTitle>

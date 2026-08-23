@@ -99,7 +99,7 @@ export function CreateOrganizationDialog({
       <DialogContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
               <Briefcase />
               {organizationLocalization.createOrganization}
             </DialogTitle>

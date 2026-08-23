@@ -25,7 +25,7 @@ bunx --bun shadcn@latest add aidenybai/cnfast/cn
 
 # better-auth-ui Components
 # bunx --bun shadcn@latest registry add @better-auth-ui=https://better-auth-ui.com/r/{style}/{name}.json
-bunx --bun shadcn@latest add @better-auth-ui/all
+bunx --bun shadcn@latest add @better-auth-ui/all --overwrite
 
 # Install the complete theme system with all 40+ themes:
 bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/nextjs/theme-system.json
