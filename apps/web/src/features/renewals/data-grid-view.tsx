@@ -1,4 +1,3 @@
-// oxlint-disable typescript/no-base-to-string
 "use client";
 
 import {
@@ -13,12 +12,15 @@ import { DataGrid, dataGridFeatures } from "@workspace/ui/components/reui/data-g
 import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
+import { Filters } from "@workspace/ui/components/reui/filters/filters";
 import {
-  createFilter,
-  Filters,
-  type Filter,
-  type FilterFieldConfig,
-} from "@workspace/ui/components/reui/filters";
+  countFilterRules,
+  createFilterQuery,
+  createFilterRule,
+  flattenFilterConditions,
+} from "@workspace/ui/components/reui/filters/filters-query";
+import type { FilterCondition } from "@workspace/ui/components/reui/filters/filters-query";
+import type { FilterField, FilterQuery } from "@workspace/ui/components/reui/filters/filters-types";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { CardContent, CardFooter } from "@workspace/ui/components/shadcn/card";
 import {
@@ -78,9 +80,13 @@ import {
 import { CommandCard } from "./ui/command-card";
 import { SelectionBar } from "./ui/selection-bar";
 
-function getActiveFilters(filters: Filter[]) {
+/** Operators that take no value, so an empty `values` list is expected. */
+const VALUELESS_OPERATORS = new Set(["empty", "not_empty"]);
+
+function getActiveFilters(filters: FilterCondition[]) {
   return filters.filter((filter) => {
-    const { values } = filter;
+    const { operator, values } = filter;
+    if (VALUELESS_OPERATORS.has(operator)) return true;
     if (!values || values.length === 0) return false;
     if (values.every((value) => typeof value === "string" && value.trim() === "")) {
       return false;
@@ -102,78 +108,82 @@ function filterFieldValue(item: IRenewalRecord, field: string): unknown {
   return item[field as keyof IRenewalRecord];
 }
 
-function applyFiltersToData(data: IRenewalRecord[], filters: Filter[]): IRenewalRecord[] {
+function matchesFilterCondition(fieldValue: unknown, operator: string, values: unknown[]): boolean {
+  switch (operator) {
+    case "is":
+      return values.includes(fieldValue);
+    case "is_not":
+      return !values.includes(fieldValue);
+    case "is_any_of":
+      return values.some((value) => fieldValue === value);
+    case "is_none_of":
+      return !values.some((value) => fieldValue === value);
+    case "contains": {
+      const tokens = values.map((value) => String(value).trim()).filter(Boolean);
+      if (tokens.length === 0) return true;
+      return tokens.some((token) => String(fieldValue).toLowerCase().includes(token.toLowerCase()));
+    }
+    case "not_contains":
+      return !values.some((value) =>
+        String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
+      );
+    case "starts_with":
+      return values.some((value) =>
+        String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
+      );
+    case "ends_with":
+      return values.some((value) =>
+        String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
+      );
+    case "eq":
+      return fieldValue === values[0];
+    case "neq":
+      return fieldValue !== values[0];
+    case "gt":
+      return Number(fieldValue) > Number(values[0]);
+    case "lt":
+      return Number(fieldValue) < Number(values[0]);
+    case "gte":
+      return Number(fieldValue) >= Number(values[0]);
+    case "lte":
+      return Number(fieldValue) <= Number(values[0]);
+    case "between":
+      if (values.length >= 2) {
+        const min = Number(values[0]);
+        const max = Number(values[1]);
+        return Number(fieldValue) >= min && Number(fieldValue) <= max;
+      }
+      return true;
+    case "not_between":
+      if (values.length >= 2) {
+        const min = Number(values[0]);
+        const max = Number(values[1]);
+        return Number(fieldValue) < min || Number(fieldValue) > max;
+      }
+      return true;
+    case "empty":
+      return fieldValue === "" || fieldValue == null;
+    case "not_empty":
+      return fieldValue !== "" && fieldValue != null;
+    default:
+      return true;
+  }
+}
+
+function applyFiltersToData(data: IRenewalRecord[], filters: FilterCondition[]): IRenewalRecord[] {
   const active = getActiveFilters(filters);
   let result = [...data];
 
   active.forEach((filter) => {
-    const { field, operator, values } = filter;
+    const { field, operator, values, negated } = filter;
 
     result = result.filter((item) => {
       const raw = filterFieldValue(item, field);
       const fieldValue = raw != null ? raw : "";
+      const matches = matchesFilterCondition(fieldValue, operator, values);
 
-      switch (operator) {
-        case "is":
-          return values.includes(fieldValue);
-        case "is_not":
-          return !values.includes(fieldValue);
-        case "is_any_of":
-          return values.some((value) => fieldValue === value);
-        case "is_not_any_of":
-          return !values.some((value) => fieldValue === value);
-        case "contains": {
-          const tokens = values.map((value) => String(value).trim()).filter(Boolean);
-          if (tokens.length === 0) return true;
-          return tokens.some((token) =>
-            String(fieldValue).toLowerCase().includes(token.toLowerCase()),
-          );
-        }
-        case "not_contains":
-          return !values.some((value) =>
-            String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
-          );
-        case "starts_with":
-          return values.some((value) =>
-            String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
-          );
-        case "ends_with":
-          return values.some((value) =>
-            String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
-          );
-        case "equals":
-          return fieldValue === values[0];
-        case "not_equals":
-          return fieldValue !== values[0];
-        case "greater_than":
-          return Number(fieldValue) > Number(values[0]);
-        case "less_than":
-          return Number(fieldValue) < Number(values[0]);
-        case "greater_than_or_equal":
-          return Number(fieldValue) >= Number(values[0]);
-        case "less_than_or_equal":
-          return Number(fieldValue) <= Number(values[0]);
-        case "between":
-          if (values.length >= 2) {
-            const min = Number(values[0]);
-            const max = Number(values[1]);
-            return Number(fieldValue) >= min && Number(fieldValue) <= max;
-          }
-          return true;
-        case "not_between":
-          if (values.length >= 2) {
-            const min = Number(values[0]);
-            const max = Number(values[1]);
-            return Number(fieldValue) < min || Number(fieldValue) > max;
-          }
-          return true;
-        case "empty":
-          return fieldValue === "" || fieldValue == null;
-        case "not_empty":
-          return fieldValue !== "" && fieldValue != null;
-        default:
-          return true;
-      }
+      // A chip negated from its menu keeps its operator and flips its meaning.
+      return negated ? !matches : matches;
     });
   });
 
@@ -195,8 +205,15 @@ function formatCompactCurrency(value: number) {
   }).format(value);
 }
 
-function createDefaultRenewalFilters(): Filter[] {
-  return [createFilter("accountName", "contains", [""])];
+function createDefaultRenewalFilters(): FilterQuery {
+  return createFilterQuery([
+    createFilterRule({
+      id: "accountName-1",
+      path: ["accountName"],
+      operator: "contains",
+      value: "",
+    }),
+  ]);
 }
 
 const DEFAULT_COLUMN_ORDER = [
@@ -240,9 +257,9 @@ const DISPLAY_COLUMNS: { key: DisplayColumn; label: string }[] = [
 ];
 
 interface ToolbarProps {
-  filters: Filter[];
-  fields: FilterFieldConfig[];
-  onFiltersChange: (filters: Filter[]) => void;
+  filterQuery: FilterQuery;
+  fields: FilterField[];
+  onFiltersChange: (query: FilterQuery) => void;
   onClearFilters: () => void;
   showClearButton: boolean;
   searchQuery: string;
@@ -258,7 +275,7 @@ interface ToolbarProps {
 }
 
 function Toolbar({
-  filters,
+  filterQuery,
   fields,
   onFiltersChange,
   onClearFilters,
@@ -301,9 +318,9 @@ function Toolbar({
           )}
         </InputGroup>
         <Filters
-          filters={filters}
+          query={filterQuery}
           fields={fields}
-          onChange={onFiltersChange}
+          onQueryChange={onFiltersChange}
           size="default"
           trigger={
             <Button type="button" variant="outline" aria-label="Renewal filters">
@@ -442,86 +459,81 @@ export function DataGridView() {
   });
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnOrder, setColumnOrder] = useState(DEFAULT_COLUMN_ORDER);
-  const [filters, setFilters] = useState<Filter[]>(createDefaultRenewalFilters);
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>(createDefaultRenewalFilters);
+  const filters = useMemo(() => flattenFilterConditions(filterQuery), [filterQuery]);
   const [searchQuery, setSearchQuery] = useState("");
   const [bulkOwnerValue, setBulkOwnerValue] = useState(RENEWAL_OWNERS[0].value);
   const [bulkStageValue, setBulkStageValue] = useState<RenewalStage>("Commercial review");
 
-  const filterFields: FilterFieldConfig[] = useMemo(
+  const filterFields: FilterField[] = useMemo(
     () => [
       {
-        key: "accountName",
+        id: "accountName",
         label: "Account",
         icon: <Building2Icon className="size-3.5" aria-hidden="true" />,
         type: "text",
-        className: "w-[200px]",
         placeholder: "Search...",
       },
       {
-        key: "segment",
+        id: "segment",
         label: "Segment",
         icon: <LayersIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-[160px]",
         options: RENEWAL_SEGMENT_ORDER.map((segment) => ({
           value: segment,
           label: segment,
         })),
       },
       {
-        key: "stage",
+        id: "stage",
         label: "Stage",
         icon: <GitBranchIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-[180px]",
         options: RENEWAL_STAGE_ORDER.map((stage) => ({
           value: stage,
           label: stage,
         })),
-        customValueRenderer: (values) => {
+        renderValue: ({ values }) => {
           const state = renderSelectedCount(values);
           if (state) return state;
           return <StageBadge stage={values[0] as RenewalStage} />;
         },
       },
       {
-        key: "risk",
+        id: "risk",
         label: "Risk",
         icon: <TriangleAlertIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-[140px]",
         options: RENEWAL_RISK_ORDER.map((risk) => ({
           value: risk,
           label: risk,
         })),
-        customValueRenderer: (values) => {
+        renderValue: ({ values }) => {
           const state = renderSelectedCount(values);
           if (state) return state;
           return <RiskBadge risk={values[0] as RenewalRisk} />;
         },
       },
       {
-        key: "renewalWindow",
+        id: "renewalWindow",
         label: "Renewal window",
         icon: <CalendarClockIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-[170px]",
         options: RENEWAL_WINDOW_OPTIONS.map((option) => ({
           value: option.value,
           label: option.label,
         })),
       },
       {
-        key: "ownerName",
+        id: "ownerName",
         label: "Owner",
         icon: <UserRoundIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-[170px]",
         options: RENEWAL_OWNERS.map((owner) => ({
           value: owner.label,
           label: owner.label,
@@ -657,14 +669,16 @@ export function DataGridView() {
   const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original.id);
 
   const selectedCount = selectedRows.length;
-  const showClearButton = filters.length > 0;
+  // Counted from the query rather than from `filters`, which drops the rules
+  // still waiting for a condition - those are clearable too.
+  const showClearButton = countFilterRules(filterQuery) > 0;
 
-  const handleFiltersChange = useCallback((nextFilters: Filter[]) => {
-    setFilters(nextFilters);
+  const handleFiltersChange = useCallback((nextQuery: FilterQuery) => {
+    setFilterQuery(nextQuery);
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    setFilters(createDefaultRenewalFilters());
+    setFilterQuery(createDefaultRenewalFilters());
   }, []);
 
   const handleClearSelection = useCallback(() => {
@@ -739,7 +753,7 @@ export function DataGridView() {
         }
       >
         <Toolbar
-          filters={filters}
+          filterQuery={filterQuery}
           fields={filterFields}
           onFiltersChange={handleFiltersChange}
           onClearFilters={handleClearFilters}

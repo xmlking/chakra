@@ -18,12 +18,14 @@ import {
 import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data-grid-pagination";
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
+import { Filters } from "@workspace/ui/components/reui/filters/filters";
 import {
-  createFilter,
-  Filters,
-  type Filter,
-  type FilterFieldConfig,
-} from "@workspace/ui/components/reui/filters";
+  createFilterQuery,
+  createFilterRule,
+  flattenFilterConditions,
+} from "@workspace/ui/components/reui/filters/filters-query";
+import type { FilterCondition } from "@workspace/ui/components/reui/filters/filters-query";
+import type { FilterField, FilterQuery } from "@workspace/ui/components/reui/filters/filters-types";
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/shadcn/avatar";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import {
@@ -166,7 +168,7 @@ function formatCompactCurrency(value: number) {
   }).format(value);
 }
 
-function getActiveFilters(filters: Filter[]) {
+function getActiveFilters(filters: FilterCondition[]) {
   return filters.filter((filter) => {
     const { operator, values } = filter;
 
@@ -200,82 +202,98 @@ function filterFieldValue(item: IRenewalRiskRecord, field: string): unknown {
   }
 }
 
-function applyFiltersToData(data: IRenewalRiskRecord[], filters: Filter[]) {
+// Whether one row satisfies one condition. `null` means this block has no
+// predicate for the operator, which keeps the row instead of guessing.
+function matchesRenewalFilter(raw: unknown, operator: string, values: unknown[]): boolean | null {
+  if (Array.isArray(raw)) {
+    switch (operator) {
+      case "has_any_of":
+        return values.some((value) => raw.includes(value as RiskTag));
+      case "has_all_of":
+        return values.every((value) => raw.includes(value as RiskTag));
+      case "has_none_of":
+        return !values.some((value) => raw.includes(value as RiskTag));
+      case "empty":
+        return raw.length === 0;
+      case "not_empty":
+        return raw.length > 0;
+      default:
+        return null;
+    }
+  }
+
+  const fieldValue = raw != null ? raw : "";
+
+  switch (operator) {
+    case "is":
+      return values.includes(fieldValue);
+    case "is_not":
+      return !values.includes(fieldValue);
+    case "is_any_of":
+      return values.some((value) => fieldValue === value);
+    case "is_none_of":
+      return !values.some((value) => fieldValue === value);
+    case "contains": {
+      const tokens = values.map((value) => String(value).trim()).filter(Boolean);
+
+      if (tokens.length === 0) return true;
+
+      return tokens.some((token) => String(fieldValue).toLowerCase().includes(token.toLowerCase()));
+    }
+    case "not_contains":
+      return !values.some((value) =>
+        String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
+      );
+    case "starts_with":
+      return values.some((value) =>
+        String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
+      );
+    case "ends_with":
+      return values.some((value) =>
+        String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
+      );
+    case "empty":
+      return fieldValue === "" || fieldValue == null;
+    case "not_empty":
+      return fieldValue !== "" && fieldValue != null;
+    default:
+      return null;
+  }
+}
+
+function applyFiltersToData(data: IRenewalRiskRecord[], filters: FilterCondition[]) {
   const active = getActiveFilters(filters);
 
   return active.reduce(
     (result, filter) => {
-      const { field, operator, values } = filter;
+      const { field, operator, values, negated } = filter;
 
       return result.filter((item) => {
-        const raw = filterFieldValue(item, field);
+        const matched = matchesRenewalFilter(filterFieldValue(item, field), operator, values);
 
-        if (Array.isArray(raw)) {
-          switch (operator) {
-            case "is_any_of":
-              return values.some((value) => raw.includes(value as RiskTag));
-            case "is_not_any_of":
-              return !values.some((value) => raw.includes(value as RiskTag));
-            case "includes_all":
-              return values.every((value) => raw.includes(value as RiskTag));
-            case "excludes_all":
-              return values.every((value) => !raw.includes(value as RiskTag));
-            case "empty":
-              return raw.length === 0;
-            case "not_empty":
-              return raw.length > 0;
-            default:
-              return true;
-          }
-        }
+        // An unanswered operator keeps the row, and keeps it when the rule is
+        // negated too: inverting "no opinion" would drop every row instead.
+        if (matched === null) return true;
 
-        const fieldValue = raw != null ? raw : "";
-
-        switch (operator) {
-          case "is":
-            return values.includes(fieldValue);
-          case "is_not":
-            return !values.includes(fieldValue);
-          case "is_any_of":
-            return values.some((value) => fieldValue === value);
-          case "is_not_any_of":
-            return !values.some((value) => fieldValue === value);
-          case "contains": {
-            const tokens = values.map((value) => String(value).trim()).filter(Boolean);
-
-            if (tokens.length === 0) return true;
-
-            return tokens.some((token) =>
-              String(fieldValue).toLowerCase().includes(token.toLowerCase()),
-            );
-          }
-          case "not_contains":
-            return !values.some((value) =>
-              String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
-            );
-          case "starts_with":
-            return values.some((value) =>
-              String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
-            );
-          case "ends_with":
-            return values.some((value) =>
-              String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
-            );
-          case "empty":
-            return fieldValue === "" || fieldValue == null;
-          case "not_empty":
-            return fieldValue !== "" && fieldValue != null;
-          default:
-            return true;
-        }
+        // "Starts with", "ends with" and "has all of" declare no inverse, so
+        // the chip's Negate action flips this flag rather than swapping the
+        // operator.
+        return negated ? !matched : matched;
       });
     },
     [...data],
   );
 }
 
-function createDefaultRenewalFilters(): Filter[] {
-  return [createFilter("account", "contains", [""])];
+function createDefaultRenewalFilters(): FilterQuery {
+  return createFilterQuery([
+    createFilterRule({
+      id: "account-1",
+      path: ["account"],
+      operator: "contains",
+      value: "",
+    }),
+  ]);
 }
 
 function renderSelectedCount(values: unknown[]) {
@@ -318,9 +336,9 @@ export function DataGridView() {
     top: DEFAULT_PINNED_RENEWAL_IDS,
     bottom: [],
   });
-  const [filters, setFilters] = useState<Filter[]>(createDefaultRenewalFilters);
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [filterQuery, setFilterQuery] = useState<FilterQuery>(createDefaultRenewalFilters);
+  const filters = useMemo(() => flattenFilterConditions(filterQuery), [filterQuery]);
   const activeFilters = useMemo(() => getActiveFilters(filters), [filters]);
 
   const filteredRenewals = useMemo(() => {
@@ -360,8 +378,8 @@ export function DataGridView() {
   }, []);
 
   const handleFiltersChange = useCallback(
-    (nextFilters: Filter[]) => {
-      setFilters(nextFilters);
+    (nextQuery: FilterQuery) => {
+      setFilterQuery(nextQuery);
       resetPagination();
     },
     [resetPagination],
@@ -476,25 +494,23 @@ export function DataGridView() {
     [],
   );
 
-  const filterFields: FilterFieldConfig[] = useMemo(
+  const filterFields: FilterField[] = useMemo(
     () => [
       {
-        key: "account",
+        id: "account",
         label: "Account",
         icon: <Building2Icon className="size-3.5" aria-hidden="true" />,
         type: "text",
-        className: "w-40",
         placeholder: "Search...",
       },
       {
-        key: "owner",
+        id: "owner",
         label: "Owner",
         icon: <UserRoundIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: true,
-        className: "w-44",
         options: ownerOptions,
-        customValueRenderer: (values, options) => {
+        renderValue: ({ values, options }) => {
           const state = renderSelectedCount(values);
           if (state) return state;
 
@@ -510,14 +526,13 @@ export function DataGridView() {
         },
       },
       {
-        key: "stage",
+        id: "stage",
         label: "Stage",
         icon: <GitBranchIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-44",
         options: stageOptions,
-        customValueRenderer: (values) => {
+        renderValue: ({ values }) => {
           const state = renderSelectedCount(values);
           if (state) return state;
 
@@ -535,14 +550,13 @@ export function DataGridView() {
         },
       },
       {
-        key: "signals",
+        id: "signals",
         label: "Signals",
         icon: <TriangleAlertIcon className="size-3.5" aria-hidden="true" />,
         type: "multiselect",
         searchable: true,
-        className: "w-44",
         options: signalOptions,
-        customValueRenderer: (values) => {
+        renderValue: ({ values }) => {
           const state = renderSelectedCount(values);
           if (state) return state;
 
@@ -556,12 +570,11 @@ export function DataGridView() {
         },
       },
       {
-        key: "alertState",
+        id: "alertState",
         label: "Alerts",
         icon: <BellRingIcon className="size-3.5" aria-hidden="true" />,
         type: "select",
         searchable: false,
-        className: "w-36",
         options: alertOptions,
       },
     ],
@@ -664,9 +677,9 @@ export function DataGridView() {
                 </InputGroup>
 
                 <Filters
-                  filters={filters}
+                  query={filterQuery}
                   fields={filterFields}
-                  onChange={handleFiltersChange}
+                  onQueryChange={handleFiltersChange}
                   trigger={
                     <Button
                       type="button"
