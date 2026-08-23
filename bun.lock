@@ -510,7 +510,7 @@
     "better-auth": "1.7.1",
     "better-auth-studio": "1.1.5",
     "better-inbox": "0.2.0",
-    "better-result": "2.10.0",
+    "better-result": "3.0.1",
     "bumpp": "12.2.1",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
@@ -2534,7 +2534,7 @@
 
     "better-inbox": ["better-inbox@0.2.0", "", { "dependencies": { "zod": "^4.4.3" }, "peerDependencies": { "better-auth": "^1.6.23", "react": ">=18" }, "optionalPeers": ["react"] }, "sha512-5lt1+i6uF4q31zHq6aoNUHUuZRiD3O8wQzDeQVsEik/sQQM47mxUWpVAajRE55MVMmwrAJXRBuS3Pzh82opqnQ=="],
 
-    "better-result": ["better-result@2.10.0", "", {}, "sha512-oQhh0y1qo2/ZKdAAEvHZAqKKiHOFU5k/bW96fE2ScgQOVkJRiHwB+nOS1SgFsYqRlxMDWvefXi9Q3px7QvgNDw=="],
+    "better-result": ["better-result@3.0.1", "", {}, "sha512-rnCeqEXkKPHmz5MO5ZroPRDyHe4YvlNPyy7qj8cVcWs/GnvSvC3086G74/220W+wWcIWlXgzvcjskFV0A4blUQ=="],
 
     "bezier-js": ["bezier-js@6.1.4", "", {}, "sha512-PA0FW9ZpcHbojUCMu28z9Vg/fNkwTj5YhusSAjHHDfHDGLxJ6YUKrAN2vk1fP2MMOxVw4Oko16FMlRGVBGqLKg=="],
 

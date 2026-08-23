@@ -443,12 +443,12 @@ export function getDbErrorMessage(error: unknown): ErrorHandler {
  * Usage: https://github.com/dmmulroy/better-result?tab=readme-ov-file#tagged-errors
  */
 
-// Factory API: TaggedError("Tag")<Props>()
+// Factory API: TaggedError("Tag")<Props>
 export class DbNotFoundError extends TaggedError("NotFoundError")<{
   readonly id: string;
   readonly entityType: string;
   message: string;
-}>() {
+}> {
   constructor(args: { id: string; entityType: string }) {
     super({ ...args, message: `Not found: ${args.id} ${args.entityType}` });
   }
@@ -456,6 +456,6 @@ export class DbNotFoundError extends TaggedError("NotFoundError")<{
 
 export class DbInternalError extends TaggedError("DbInternalError")<{
   message: string;
-}>() {}
+}> {}
 
 export type DbError = DbNotFoundError | DbInternalError;
