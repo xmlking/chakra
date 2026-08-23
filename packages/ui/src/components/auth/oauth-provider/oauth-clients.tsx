@@ -69,6 +69,7 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -118,6 +119,10 @@ export function OAuthClients({
   const [editingClient, setEditingClient] = useState<ManagedOAuthClient>()
   const [action, setAction] = useState<ClientAction>()
   const [secret, setSecret] = useState<ManagedOAuthClient>()
+  const applicationTypeItems = [
+    { label: oauthLocalization.webApplication, value: "web" },
+    { label: oauthLocalization.nativeApplication, value: "native" }
+  ]
   const { copied, copy, reset } = useCopyToClipboard({
     onError: (error) =>
       toast.error(error instanceof Error ? error.message : String(error))
@@ -310,7 +315,7 @@ export function OAuthClients({
         <DialogContent>
           <form onSubmit={handleEditorSubmit} className="flex flex-col gap-6">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
                 {editingClient ? <Pencil /> : <Plus />}
                 {editingClient
                   ? oauthLocalization.editClient
@@ -338,6 +343,7 @@ export function OAuthClients({
                   {oauthLocalization.applicationType}
                 </FieldLabel>
                 <Select
+                  items={applicationTypeItems}
                   name="applicationType"
                   defaultValue={editingClient?.application_type ?? "web"}
                 >
@@ -345,12 +351,13 @@ export function OAuthClients({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="web">
-                      {oauthLocalization.webApplication}
-                    </SelectItem>
-                    <SelectItem value="native">
-                      {oauthLocalization.nativeApplication}
-                    </SelectItem>
+                    <SelectGroup>
+                      {applicationTypeItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
                   </SelectContent>
                 </Select>
               </Field>
@@ -473,7 +480,7 @@ export function OAuthClients({
       >
         <DialogContent showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
               <Code2 />
               {secret?.client_name || oauthLocalization.clientSecret}
             </DialogTitle>

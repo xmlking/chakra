@@ -3,7 +3,10 @@ import type {
   OrganizationView
 } from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthenticate, useAuthPlugin } from "@better-auth-ui/react"
-import { useActiveOrganization } from "@better-auth-ui/react/plugins/organization"
+import {
+  useActiveOrganization,
+  useHasPermission
+} from "@better-auth-ui/react/plugins/organization"
 import {
   ShieldCheck as RolesIcon,
   Settings as SettingsIcon,
@@ -63,6 +66,11 @@ export function Organization({
     [plugins]
   )
   const rolesEnabled = dynamicAccessControl?.enabled === true
+  const canReadRoles = useHasPermission(authClient, {
+    organizationId: activeOrganization?.id,
+    permissions: { ac: ["read"] },
+    enabled: rolesEnabled && Boolean(activeOrganization?.id)
+  })
 
   useEffect(() => {
     if (!isPending && !activeOrganization) {
@@ -112,9 +120,16 @@ export function Organization({
     return null
   }
 
+  const selectedView =
+    currentView === "roles" &&
+    !canReadRoles.isPending &&
+    !canReadRoles.data?.success
+      ? "settings"
+      : currentView
+
   return (
     <Tabs
-      value={currentView}
+      value={selectedView}
       className={cn("w-full gap-4 md:gap-6", className)}
     >
       <div className={cn(hideNav && "hidden")}>
@@ -154,6 +169,7 @@ export function Organization({
 
           {rolesEnabled && (
             <TabsTrigger
+              disabled={canReadRoles.isPending || !canReadRoles.data?.success}
               value="roles"
               className="gap-1"
               onClick={() =>
@@ -224,7 +240,9 @@ export function Organization({
 
       {rolesEnabled && (
         <TabsContent value="roles" tabIndex={-1}>
-          <OrganizationRoles organizationId={activeOrganization?.id ?? ""} />
+          {canReadRoles.data?.success ? (
+            <OrganizationRoles organizationId={activeOrganization?.id ?? ""} />
+          ) : null}
         </TabsContent>
       )}
 

@@ -3,6 +3,7 @@ import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organi
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import {
   useActiveOrganization,
+  useHasPermission,
   useUpdateOrganization
 } from "@better-auth-ui/react/plugins/organization"
 import { type SyntheticEvent, useEffect, useState } from "react"
@@ -33,6 +34,9 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
     useAuthPlugin(organizationPlugin)
 
   const { data: activeOrganization } = useActiveOrganization(authClient)
+  const canUpdate = useHasPermission(authClient, {
+    permissions: { organization: ["update"] }
+  })
 
   const [slug, setSlug] = useState(activeOrganization?.slug ?? "")
 
@@ -50,7 +54,7 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
 
   async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
-    if (!activeOrganization) return
+    if (!activeOrganization || !canUpdate.data?.success) return
     const formData = new FormData(e.currentTarget)
     const name = formData.get("name") as string
     const additionalValues: Record<string, unknown> = {}
@@ -75,6 +79,8 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
 
   const nameInputId = `${activeOrganization?.id ?? "org"}-name`
   const slugInputId = `${activeOrganization?.id ?? "org"}-slug`
+  const formDisabled =
+    isPending || canUpdate.isPending || !canUpdate.data?.success
 
   return (
     <div>
@@ -100,7 +106,7 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
                   defaultValue={activeOrganization.name}
                   autoComplete="organization"
                   placeholder={organizationLocalization.namePlaceholder}
-                  disabled={isPending}
+                  disabled={formDisabled}
                 />
               ) : (
                 <Skeleton className="h-8 w-full rounded-md" />
@@ -115,7 +121,7 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
                 value={slug}
                 onChange={setSlug}
                 currentSlug={activeOrganization.slug}
-                disabled={isPending}
+                disabled={formDisabled}
               />
             ) : (
               <Field>
@@ -134,22 +140,24 @@ export function OrganizationProfile({ className }: OrganizationProfileProps) {
                       activeOrganization as Record<string, unknown>
                     )[field.name] as never
                   }}
-                  isPending={isPending}
+                  isPending={formDisabled}
                   name={field.name}
                   optionalLabel={localization.settings.optional}
                 />
               ))}
 
-            <Button
-              type="submit"
-              disabled={isPending || !activeOrganization}
-              size="sm"
-              className="mt-1 w-fit"
-            >
-              {isPending && <Spinner />}
+            {(canUpdate.isPending || canUpdate.data?.success) && (
+              <Button
+                type="submit"
+                disabled={formDisabled || !activeOrganization}
+                size="sm"
+                className="mt-1 w-fit"
+              >
+                {isPending && <Spinner />}
 
-              {localization.settings.saveChanges}
-            </Button>
+                {localization.settings.saveChanges}
+              </Button>
+            )}
           </form>
         </CardContent>
       </Card>

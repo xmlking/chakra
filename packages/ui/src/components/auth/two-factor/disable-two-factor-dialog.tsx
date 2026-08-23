@@ -1,3 +1,4 @@
+import type { TwoFactorAuthClient } from "@better-auth-ui/core/plugins/two-factor"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useDisableTwoFactor } from "@better-auth-ui/react/plugins/two-factor"
 import { ShieldAlert } from "lucide-react"

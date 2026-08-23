@@ -44,6 +44,7 @@ import { Progress } from "#components/shadcn/progress"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -213,6 +214,15 @@ export function BillingSettings({
   const resolvedInterval = intervals.includes(interval)
     ? interval
     : (intervals[0] ?? "month")
+  const intervalItems = intervals.map((value) => ({
+    label:
+      value === "month"
+        ? localization.perMonth
+        : value === "year"
+          ? localization.perYear
+          : localization.oneTime,
+    value
+  }))
   const isActionPending =
     cancelSubscription.isPending || restoreSubscription.isPending
 
@@ -363,22 +373,24 @@ export function BillingSettings({
           </h3>
           {intervals.length > 1 && (
             <Select
+              items={intervalItems}
               value={resolvedInterval}
-              onValueChange={(value) => setInterval(value as BillingInterval)}
+              onValueChange={(value) => {
+                if (!value) return
+                setInterval(value as BillingInterval)
+              }}
             >
               <SelectTrigger className="w-36" aria-label={localization.plans}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {intervals.map((entry) => (
-                  <SelectItem key={entry} value={entry}>
-                    {entry === "month"
-                      ? localization.perMonth
-                      : entry === "year"
-                        ? localization.perYear
-                        : localization.oneTime}
-                  </SelectItem>
-                ))}
+                <SelectGroup>
+                  {intervalItems.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
               </SelectContent>
             </Select>
           )}
