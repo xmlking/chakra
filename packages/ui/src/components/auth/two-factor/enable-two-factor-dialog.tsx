@@ -1,12 +1,14 @@
 import { createQrCodeSvgData } from "@better-auth-ui/core"
+import type { TwoFactorAuthClient } from "@better-auth-ui/core/plugins/two-factor"
 import {
-  type TwoFactorAuthClient,
   useAuth,
   useAuthPlugin,
-  useCopyToClipboard,
+  useCopyToClipboard
+} from "@better-auth-ui/react"
+import {
   useEnableTwoFactor,
   useVerifyTotp
-} from "@better-auth-ui/react"
+} from "@better-auth-ui/react/plugins/two-factor"
 import { Check, Copy, ShieldCheck } from "lucide-react"
 import { type SyntheticEvent, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -104,6 +106,8 @@ export function EnableTwoFactorDialog({
     reset: resetEnrollment
   } = useEnableTwoFactor(twoFactorClient, {
     onSuccess: (data) => {
+      if (data.method !== "totp") return
+
       setTotpUri(data.totpURI)
       setBackupCodes(data.backupCodes)
       setStep("verify")
@@ -161,7 +165,9 @@ export function EnableTwoFactorDialog({
     const formData = new FormData(e.currentTarget)
     const password = formData.get("password") as string
 
-    enableTwoFactor(requiresPassword ? { password } : {})
+    enableTwoFactor(
+      requiresPassword ? { method: "totp", password } : { method: "totp" }
+    )
   }
 
   const submitLabel =

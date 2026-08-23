@@ -1,8 +1,8 @@
 // "use client";
 
-import { captchaPlugin } from "@better-auth-ui/react/plugins";
-import { oneTapPlugin } from "@better-auth-ui/react/plugins";
-import { Link, useNavigate, useRouter } from "@tanstack/react-router";
+import { captchaPlugin } from "@better-auth-ui/react/plugins/captcha";
+import { oneTapPlugin } from "@better-auth-ui/react/plugins/one-tap";
+import { Link, useNavigate /* useRouter */ } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { AuthProvider } from "@workspace/ui/components/auth/auth-provider";
 import { Toaster as SonnerToster } from "@workspace/ui/components/shadcn/sonner";
@@ -28,7 +28,7 @@ import { RouteProgressController, RouteProgressProvider } from "./layout/route-p
 
 export function Providers({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <ThemeProvider>
@@ -44,9 +44,9 @@ export function Providers({ children }: { children: ReactNode }) {
                   // onSessionChange={() => {
                   //   queryClient.invalidateQueries({ queryKey: authQueryKeys.all })
                   // }}
-                  onSessionChange={async () => {
-                    await router.invalidate();
-                  }}
+                  // onSessionChange={async () => {
+                  //   await router.invalidate();
+                  // }}
                   // @ts-ignore : FIXME
                   authClient={authClient}
                   redirectTo="/dashboard"
@@ -60,7 +60,13 @@ export function Providers({ children }: { children: ReactNode }) {
                   // @ts-ignore : FIXME
                   navigate={navigate}
                   plugins={[
-                    adminPlugin(),
+                    adminPlugin({
+                      // defaultRole: "member",
+                      // impersonationRedirectTo: "/",
+                      // pageSize: 25,
+                      // roles: ["member", "support", "admin"],
+                      // showIpAddress: false,
+                    }),
                     lastLoginMethodPlugin(),
                     magicLinkPlugin(),
                     oneTapPlugin(),
@@ -72,6 +78,12 @@ export function Providers({ children }: { children: ReactNode }) {
                         defaultInterval: 30,
                         allowNever: true,
                       },
+                      configurations: [
+                        { id: "default", label: "Personal", organization: false },
+                        { id: "organization", label: "Organization", organization: true },
+                      ],
+                      pageSize: 20,
+                      // permissions: [{ resource: "webhooks", actions: ["read", "write"] }],
                     }),
                     // themePlugin({ useTheme }), // NOTE: we use tweakcn switcher
                     multiSessionPlugin({
@@ -94,6 +106,7 @@ export function Providers({ children }: { children: ReactNode }) {
                       },
                       // Add labels for custom server roles without redefining built-ins.
                       additionalRoles: { billing: "Billing" },
+                      teams: true,
                     }),
                     captchaPlugin({ render: TurnstileWidget }),
                   ]}

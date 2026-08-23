@@ -1,5 +1,5 @@
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
-import { Fingerprint, X } from "lucide-react"
+import { Fingerprint, Pencil, X } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
@@ -17,6 +17,7 @@ import {
   DeletePasskeyDialog,
   type ListedPasskey
 } from "./delete-passkey-dialog"
+import { RenamePasskeyDialog } from "./rename-passkey-dialog"
 
 export type PasskeyProps = {
   passkey: ListedPasskey
@@ -26,6 +27,7 @@ export function Passkey({ passkey }: PasskeyProps) {
   const { localization } = useAuth()
   const { localization: passkeyLocalization } = useAuthPlugin(passkeyPlugin)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [renameOpen, setRenameOpen] = useState(false)
 
   const passkeyName = passkey.name || passkeyLocalization.passkey
 
@@ -44,6 +46,10 @@ export function Passkey({ passkey }: PasskeyProps) {
         </ItemDescription>
       </ItemContent>
       <ItemActions>
+        <Button variant="outline" size="sm" onClick={() => setRenameOpen(true)}>
+          <Pencil />
+          {passkeyLocalization.renamePasskey}
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -61,6 +67,11 @@ export function Passkey({ passkey }: PasskeyProps) {
         <DeletePasskeyDialog
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
+          passkey={passkey}
+        />
+        <RenamePasskeyDialog
+          open={renameOpen}
+          onOpenChange={setRenameOpen}
           passkey={passkey}
         />
       </ItemActions>

@@ -1,9 +1,6 @@
-import {
-  type OrganizationAuthClient,
-  useActiveOrganization,
-  useAuth,
-  useAuthPlugin
-} from "@better-auth-ui/react"
+import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { useActiveOrganization } from "@better-auth-ui/react/plugins/organization"
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
@@ -14,13 +11,11 @@ import { LeaveOrganizationDialog } from "./leave-organization-dialog"
  * Danger-zone row to leave the active organization.
  */
 export function LeaveOrganization() {
-  const { authClient } = useAuth()
+  const { authClient } = useAuth<OrganizationAuthClient>()
   const { localization: organizationLocalization } =
     useAuthPlugin(organizationPlugin)
 
-  const { data: activeOrganization } = useActiveOrganization(
-    authClient as OrganizationAuthClient
-  )
+  const { data: activeOrganization } = useActiveOrganization(authClient)
 
   const [confirmOpen, setConfirmOpen] = useState(false)
 

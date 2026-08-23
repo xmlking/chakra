@@ -5,6 +5,7 @@ CREATE TYPE "setting_type" AS ENUM('user', 'org', 'system');--> statement-breakp
 CREATE TYPE "visibility" AS ENUM('public', 'private');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"issuer" text NOT NULL,
 	"account_id" text NOT NULL,
 	"provider_id" text NOT NULL,
 	"user_id" uuid NOT NULL,
@@ -87,6 +88,19 @@ CREATE TABLE "member" (
 	"created_at" timestamp NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "notification" (
+	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
+	"user_id" uuid NOT NULL,
+	"organization_id" text,
+	"type" text NOT NULL,
+	"title" text NOT NULL,
+	"body" text,
+	"href" text,
+	"data" jsonb,
+	"read" boolean DEFAULT false NOT NULL,
+	"created_at" timestamp NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "oauth_access_token" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
 	"token" text UNIQUE,
@@ -109,11 +123,13 @@ CREATE TABLE "oauth_client" (
 	"id" uuid PRIMARY KEY DEFAULT uuidv7(),
 	"client_id" text NOT NULL UNIQUE,
 	"client_secret" text,
+	"client_discovery_id" text,
 	"disabled" boolean DEFAULT false,
 	"skip_consent" boolean,
 	"enable_end_session" boolean,
 	"subject_type" text,
 	"scopes" text[],
+	"client_credentials_scopes" text[] DEFAULT '{}'::text[],
 	"user_id" uuid,
 	"created_at" timestamp,
 	"updated_at" timestamp,
@@ -131,12 +147,11 @@ CREATE TABLE "oauth_client" (
 	"backchannel_logout_uri" text,
 	"backchannel_logout_session_required" boolean,
 	"token_endpoint_auth_method" text,
+	"application_type" text,
 	"jwks" text,
 	"jwks_uri" text,
 	"grant_types" text[],
 	"response_types" text[],
-	"public" boolean,
-	"type" text,
 	"require_pkce" boolean,
 	"dpop_bound_access_tokens" boolean DEFAULT false,
 	"reference_id" text,
@@ -279,7 +294,7 @@ CREATE TABLE "user" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"last_login_method" text,
-	"role" text,
+	"role" text DEFAULT 'user',
 	"banned" boolean DEFAULT false,
 	"ban_reason" text,
 	"ban_expires" timestamp,
@@ -325,10 +340,13 @@ CREATE TABLE "embeddings" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE UNIQUE INDEX "account_issuer_accountId_uidx" ON "account" ("issuer","account_id");--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" ("user_id");--> statement-breakpoint
 CREATE INDEX "apikey_configId_idx" ON "apikey" ("config_id");--> statement-breakpoint
 CREATE INDEX "apikey_referenceId_idx" ON "apikey" ("reference_id");--> statement-breakpoint
 CREATE INDEX "apikey_key_idx" ON "apikey" ("key");--> statement-breakpoint
+CREATE UNIQUE INDEX "deviceCode_deviceCode_uidx" ON "device_code" ("device_code");--> statement-breakpoint
+CREATE UNIQUE INDEX "deviceCode_userCode_uidx" ON "device_code" ("user_code");--> statement-breakpoint
 CREATE INDEX "invitation_organizationId_idx" ON "invitation" ("organization_id");--> statement-breakpoint
 CREATE INDEX "invitation_email_idx" ON "invitation" ("email");--> statement-breakpoint
 CREATE INDEX "member_organizationId_idx" ON "member" ("organization_id");--> statement-breakpoint
@@ -339,6 +357,7 @@ CREATE INDEX "oauthAccessToken_userId_idx" ON "oauth_access_token" ("user_id");-
 CREATE INDEX "oauthAccessToken_authorizationCodeId_idx" ON "oauth_access_token" ("authorization_code_id");--> statement-breakpoint
 CREATE INDEX "oauthAccessToken_refreshId_idx" ON "oauth_access_token" ("refresh_id");--> statement-breakpoint
 CREATE INDEX "oauthClient_userId_idx" ON "oauth_client" ("user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "oauthClientResource_clientId_resourceId_uidx" ON "oauth_client_resource" ("client_id","resource_id");--> statement-breakpoint
 CREATE INDEX "oauthClientResource_clientId_idx" ON "oauth_client_resource" ("client_id");--> statement-breakpoint
 CREATE INDEX "oauthClientResource_resourceId_idx" ON "oauth_client_resource" ("resource_id");--> statement-breakpoint
 CREATE INDEX "oauthConsent_clientId_idx" ON "oauth_consent" ("client_id");--> statement-breakpoint
@@ -363,6 +382,7 @@ ALTER TABLE "invitation" ADD CONSTRAINT "invitation_organization_id_organization
 ALTER TABLE "invitation" ADD CONSTRAINT "invitation_inviter_id_user_id_fkey" FOREIGN KEY ("inviter_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "member" ADD CONSTRAINT "member_organization_id_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "organization"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "member" ADD CONSTRAINT "member_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "notification" ADD CONSTRAINT "notification_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_client_id_oauth_client_client_id_fkey" FOREIGN KEY ("client_id") REFERENCES "oauth_client"("client_id") ON DELETE CASCADE;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_session_id_session_id_fkey" FOREIGN KEY ("session_id") REFERENCES "session"("id") ON DELETE SET NULL;--> statement-breakpoint
 ALTER TABLE "oauth_access_token" ADD CONSTRAINT "oauth_access_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint

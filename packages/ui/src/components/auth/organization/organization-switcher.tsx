@@ -1,12 +1,10 @@
+import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization"
+import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react"
 import {
-  type OrganizationAuthClient,
   useActiveOrganization,
-  useAuth,
-  useAuthPlugin,
   useListOrganizations,
-  useSession,
   useSetActiveOrganization
-} from "@better-auth-ui/react"
+} from "@better-auth-ui/react/plugins/organization"
 import type { Organization } from "better-auth/client"
 import {
   ChevronsUpDown,
@@ -28,6 +26,7 @@ import { cn } from "#lib/utils"
 import { UserView } from "../user/user-view"
 import { CreateOrganizationDialog } from "./create-organization-dialog"
 import { OrganizationView } from "./organization-view"
+import { useRouter } from "@tanstack/react-router";
 
 /** Props for the `OrganizationSwitcher` component. */
 export type OrganizationSwitcherProps = {
@@ -60,7 +59,7 @@ export function OrganizationSwitcher({
   trigger
 }: OrganizationSwitcherProps) {
   const { authClient, navigate, basePaths, localization, viewPaths, Link } =
-    useAuth()
+    useAuth<OrganizationAuthClient>()
   const { data: session, isPending: sessionPending } = useSession(authClient)
   const {
     localization: organizationLocalization,
@@ -70,14 +69,12 @@ export function OrganizationSwitcher({
   } = useAuthPlugin(organizationPlugin)
 
   const { data: activeOrganization, isPending: activeOrganizationPending } =
-    useActiveOrganization(authClient as OrganizationAuthClient)
+    useActiveOrganization(authClient)
 
   const { data: organizations, isPending: organizationsPending } =
-    useListOrganizations(authClient as OrganizationAuthClient)
+    useListOrganizations(authClient)
 
-  const { mutate: setActiveOrganization } = useSetActiveOrganization(
-    authClient as OrganizationAuthClient
-  )
+  const { mutate: setActiveOrganization } = useSetActiveOrganization(authClient)
 
   const isPending =
     sessionPending ||
@@ -94,7 +91,9 @@ export function OrganizationSwitcher({
   const hasOtherEntries =
     otherOrganizations.length > 0 || (!!activeOrganization && !hidePersonal)
 
-  function handleSetActive(organization: Organization | null) {
+  const router = useRouter()
+
+  async function handleSetActive(organization: Organization | null) {
     setDropdownOpen(false)
 
     if (setActive) {
@@ -107,6 +106,7 @@ export function OrganizationSwitcher({
       })
     } else {
       setActiveOrganization({ organizationId: organization?.id ?? null })
+       await router.invalidate()
     }
   }
 

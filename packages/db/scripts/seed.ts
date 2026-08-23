@@ -1,4 +1,4 @@
-// import { auth } from "@workspace/auth";
+import { hashPassword } from "@better-auth/utils/password";
 import { reset, seed } from "drizzle-seed";
 import { env } from "virtual:env/server";
 
@@ -13,12 +13,9 @@ import {
   verification,
 } from "../src/schema/auth";
 import { settings } from "../src/schema/settings";
-import { hashPassword } from "./password";
 
 const pool = db.$client;
 const superAdminPasswordHash = await hashPassword(env.BETTER_AUTH_ADMIN_PASSWORD as string);
-// const authCtx = await auth.$context;
-// const superAdminPasswordHash = authCtx.password.hash(env.BETTER_AUTH_ADMIN_PASSWORD as string)
 
 const settingKeys = [
   "THEME_COLOR",
@@ -83,7 +80,10 @@ async function run() {
     },
     account: {
       columns: {
+        issuer: f.default({ defaultValue: "local:credential" }),
         providerId: f.default({ defaultValue: "credential" }),
+        accountId: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
+        userId: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
         accessToken: f.default({ defaultValue: null }),
         refreshToken: f.default({ defaultValue: null }),
         idToken: f.default({ defaultValue: null }),

@@ -73,6 +73,7 @@ const owner = ac.newRole({
   tools: ["view", "manage"],
   chats: ["manage"],
   models: ["view", "manage"],
+  //  Organization owners automatically have full access to all API key operations, regardless of explicit permission configuration.
   apiKey: ["create", "read", "update", "delete"],
   featureFlag: ["create", "read", "update", "delete"],
   agents: ["read", "create", "update", "delete"],

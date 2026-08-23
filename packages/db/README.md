@@ -70,6 +70,7 @@ To apply `migrations` to local database and `seed` sample data
 
 ```shell
 # Apply migrations to local database
+# vp run @workspace/db#push
 vp run @workspace/db#migrate
 # Apply migrations to local database
 vp run @workspace/db#seed

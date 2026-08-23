@@ -1,11 +1,13 @@
-import type { OrganizationLocalization } from "@better-auth-ui/core/plugins"
 import {
+  hasMemberRole,
   type OrganizationAuthClient,
-  useAuth,
-  useAuthPlugin,
+  type OrganizationLocalization
+} from "@better-auth-ui/core/plugins/organization"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import {
   useHasPermission,
   useListOrganizationInvitations
-} from "@better-auth-ui/react"
+} from "@better-auth-ui/react/plugins/organization"
 import { ChevronUp, Filter, Search, X } from "lucide-react"
 import { type ComponentProps, type ReactNode, useMemo, useState } from "react"
 
@@ -58,18 +60,15 @@ export function OrganizationInvitations({
   className,
   ...props
 }: OrganizationInvitationsProps & ComponentProps<"div">) {
-  const { authClient, localization } = useAuth()
+  const { authClient, localization } = useAuth<OrganizationAuthClient>()
   const { localization: organizationLocalization, roles } =
     useAuthPlugin(organizationPlugin)
-
   const { data: invitations, isPending: invitationsPending } =
-    useListOrganizationInvitations(authClient as OrganizationAuthClient)
+    useListOrganizationInvitations(authClient)
 
   const { isPending: invitationPermissionPending } = useHasPermission(
-    authClient as OrganizationAuthClient,
-    {
-      permissions: { invitation: ["cancel"] }
-    }
+    authClient,
+    { permissions: { invitation: ["cancel"] } }
   )
 
   const isPending = invitationsPending || invitationPermissionPending
@@ -82,7 +81,7 @@ export function OrganizationInvitations({
   const filteredInvitations = useMemo(() => {
     return invitations?.filter(
       (invitation) =>
-        (roleFilter === "all" || invitation.role === roleFilter) &&
+        (roleFilter === "all" || hasMemberRole(invitation.role, roleFilter)) &&
         (statusFilter === "all" || invitation.status === statusFilter) &&
         invitation.email.toLowerCase().includes(search.toLowerCase())
     )

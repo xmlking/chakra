@@ -13,6 +13,7 @@ import {
   organizationClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
+import { inboxClient } from "better-inbox/client";
 import env from "virtual:env/client";
 
 import type { auth } from ".";
@@ -31,6 +32,7 @@ export const authClient = createAuthClient({
     },
   },
   plugins: [
+    inboxClient(),
     lastLoginMethodClient(),
     passkeyClient(),
     oauthProviderClient(),

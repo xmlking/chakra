@@ -1,15 +1,18 @@
+import { useRouter } from "@tanstack/react-router";
+import { authClient } from "@workspace/auth/client";
 import { UserButton } from "@workspace/ui/components/auth/user/user-button";
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
-import { BellIcon } from "lucide-react";
+import { InboxButton } from "better-inbox/react";
 
 import { LayoutToggle } from "#components/layout-toggle";
 import { LocaleSwitcher } from "#components/locale-switcher";
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
 
 export function AppHeader() {
+  const router = useRouter();
   return (
     // to make header sticky, added: `sticky top-0 z-50 bg-background rounded-t-xl`
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -31,7 +34,7 @@ export function AppHeader() {
           {/* <ModeToggle /> */}
           <ThemeSwitcher />
           <Button variant="ghost" size="icon" aria-label="Notifications">
-            <BellIcon />
+            <InboxButton client={authClient} onNavigate={(href) => router.navigate({ to: href })} />
             <span className="sr-only">Notifications</span>
           </Button>
           <UserButton size="icon" align="end" />

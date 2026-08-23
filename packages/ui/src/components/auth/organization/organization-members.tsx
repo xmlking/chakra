@@ -1,15 +1,23 @@
 import {
-  type OrganizationAuthClient,
+  hasMemberRole,
+  type OrganizationAuthClient
+} from "@better-auth-ui/core/plugins/organization"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import {
+  useActiveMemberRole,
   useActiveOrganization,
-  useAuth,
-  useAuthPlugin,
   useHasPermission,
-  useListOrganizationMembers,
-  useSession
-} from "@better-auth-ui/react"
+  useListOrganizationMembers
+} from "@better-auth-ui/react/plugins/organization"
 import type { Member } from "better-auth/client"
 import { ChevronUp, Filter, Search, X } from "lucide-react"
-import { type ComponentProps, type ReactNode, useMemo, useState } from "react"
+import {
+  type ComponentProps,
+  type ReactNode,
+  useEffect,
+  useMemo,
+  useState
+} from "react"
 
 import { Badge } from "#components/shadcn/badge"
 import { Button, buttonVariants } from "#components/shadcn/button"
@@ -49,6 +57,27 @@ type SortDescriptor = {
 /** Props for the `OrganizationMembers` component. */
 export type OrganizationMembersProps = {
   className?: string
+  /**
+   * Number of rows per page. This value must be a positive integer. Setting it
+   * moves paging, role filtering, and role sorting
+   * onto the server, which is what large organizations want: without it the
+   * endpoint caps the response at 100 members with no indication.
+   *
+   * Leave it unset to keep the whole list in memory and filter it in the
+   * browser.
+   */
+  pageSize?: number
+}
+
+function validatePageSize(pageSize?: number) {
+  if (
+    pageSize !== undefined &&
+    (!Number.isInteger(pageSize) || pageSize <= 0)
+  ) {
+    throw new RangeError("pageSize must be a positive integer")
+  }
+
+  return pageSize
 }
 
 /**
@@ -56,30 +85,65 @@ export type OrganizationMembersProps = {
  */
 export function OrganizationMembers({
   className,
+  pageSize,
   ...props
 }: OrganizationMembersProps & ComponentProps<"div">) {
-  const { authClient } = useAuth()
-  const { localization: organizationLocalization, roles } =
-    useAuthPlugin(organizationPlugin)
+  const validatedPageSize = validatePageSize(pageSize)
+  const { authClient } = useAuth<OrganizationAuthClient>()
+  const {
+    localization: organizationLocalization,
+    membershipLimit,
+    roles
+  } = useAuthPlugin(organizationPlugin)
 
-  const { data: session } = useSession(authClient)
   const { data: activeOrganization, isPending: activeOrganizationPending } =
-    useActiveOrganization(authClient as OrganizationAuthClient)
-  const { data: membersData, isPending: membersPending } =
-    useListOrganizationMembers(authClient as OrganizationAuthClient)
+    useActiveOrganization(authClient)
 
-  const { isPending: updatePermissionPending } = useHasPermission(
-    authClient as OrganizationAuthClient,
-    {
-      permissions: { member: ["update"] }
-    }
-  )
-  const { isPending: deletePermissionPending } = useHasPermission(
-    authClient as OrganizationAuthClient,
-    {
-      permissions: { member: ["delete"] }
-    }
-  )
+  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>()
+  const [roleFilter, setRoleFilter] = useState("all")
+  const [search, setSearch] = useState("")
+  const [page, setPage] = useState(0)
+
+  const paged = validatedPageSize !== undefined
+
+  const { data: membersData, isPending: membersPending } =
+    useListOrganizationMembers(authClient, {
+      query: paged
+        ? {
+            limit: validatedPageSize,
+            offset: page * validatedPageSize,
+            ...(roleFilter === "all"
+              ? {}
+              : {
+                  filterField: "role",
+                  filterValue: roleFilter,
+                  // Roles are stored comma-joined, so an exact match would
+                  // drop anyone holding more than one.
+                  filterOperator: "contains" as const
+                }),
+            ...(sortDescriptor?.column === "role"
+              ? {
+                  sortBy: "role",
+                  sortDirection:
+                    sortDescriptor.direction === "descending"
+                      ? ("desc" as const)
+                      : ("asc" as const)
+                }
+              : {})
+          }
+        : undefined
+    })
+
+  // The signed-in user need not be on the loaded page, so their own role comes
+  // from a dedicated endpoint rather than from the member list.
+  const { data: activeMemberRole } = useActiveMemberRole(authClient)
+
+  const { isPending: updatePermissionPending } = useHasPermission(authClient, {
+    permissions: { member: ["update"] }
+  })
+  const { isPending: deletePermissionPending } = useHasPermission(authClient, {
+    permissions: { member: ["delete"] }
+  })
 
   const isPending =
     activeOrganizationPending ||
@@ -87,20 +151,22 @@ export function OrganizationMembers({
     updatePermissionPending ||
     deletePermissionPending
 
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>()
-  const [roleFilter, setRoleFilter] = useState("all")
-  const [search, setSearch] = useState("")
-
   const filteredMembers = useMemo(() => {
+    // The server already applied the role filter when paging, and it has no
+    // parameter for name or email search, so both stay here only in the
+    // unpaged mode where the whole list is present.
+    if (paged) return membersData?.members
+
     return membersData?.members.filter(
       (member) =>
-        (roleFilter === "all" || member.role === roleFilter) &&
+        (roleFilter === "all" || hasMemberRole(member.role, roleFilter)) &&
         (member.user.name.toLowerCase().includes(search.toLowerCase()) ||
           member.user.email.toLowerCase().includes(search.toLowerCase()))
     )
-  }, [search, membersData?.members, roleFilter])
+  }, [paged, search, membersData?.members, roleFilter])
 
   const sortedMembers = useMemo(() => {
+    if (paged) return filteredMembers
     if (!sortDescriptor) return filteredMembers
     if (!filteredMembers) return filteredMembers
 
@@ -118,13 +184,26 @@ export function OrganizationMembers({
 
       return cmp
     })
-  }, [sortDescriptor, filteredMembers])
+  }, [paged, sortDescriptor, filteredMembers])
 
   const [inviteOpen, setInviteOpen] = useState(false)
 
-  const isOwner = membersData?.members.some(
-    (member) => member.role === "owner" && member.userId === session?.user.id
-  )
+  const isOwner = hasMemberRole(activeMemberRole?.role, "owner")
+
+  const total = membersData?.total ?? membersData?.members.length ?? 0
+
+  const atMembershipLimit =
+    membershipLimit !== undefined && total >= membershipLimit
+
+  // Any change to what the server is being asked for invalidates the cursor.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: resets on query change
+  useEffect(() => {
+    setPage(0)
+  }, [roleFilter, sortDescriptor, activeOrganization?.id])
+
+  const pageStart = page * (validatedPageSize ?? 0)
+  const pageEnd = pageStart + (sortedMembers?.length ?? 0)
+  const hasNextPage = pageEnd < total
 
   function toggleSort(column: string) {
     setSortDescriptor((current) => {
@@ -148,7 +227,7 @@ export function OrganizationMembers({
         <Button
           className="shrink-0"
           size="sm"
-          disabled={isPending}
+          disabled={isPending || atMembershipLimit}
           onClick={() => setInviteOpen(true)}
         >
           {organizationLocalization.inviteMember}
@@ -157,20 +236,24 @@ export function OrganizationMembers({
 
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          <InputGroup className="min-w-0 sm:w-[220px]">
-            <InputGroupInput
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label={organizationLocalization.search}
-              placeholder={organizationLocalization.search}
-              disabled={isPending}
-            />
+          {/* list-members has no search parameter, so a search box would
+              only ever filter the page in front of you. */}
+          {!paged && (
+            <InputGroup className="min-w-0 sm:w-[220px]">
+              <InputGroupInput
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                aria-label={organizationLocalization.search}
+                placeholder={organizationLocalization.search}
+                disabled={isPending}
+              />
 
-            <InputGroupAddon>
-              <Search className="text-muted-foreground" />
-            </InputGroupAddon>
-          </InputGroup>
+              <InputGroupAddon>
+                <Search className="text-muted-foreground" />
+              </InputGroupAddon>
+            </InputGroup>
+          )}
 
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -224,16 +307,22 @@ export function OrganizationMembers({
           <Table aria-label={organizationLocalization.members}>
             <TableHeader>
               <TableRow>
-                <SortableTableHead
-                  sortDirection={
-                    sortDescriptor?.column === "user"
-                      ? sortDescriptor.direction
-                      : undefined
-                  }
-                  onClick={() => toggleSort("user")}
-                >
-                  {organizationLocalization.member}
-                </SortableTableHead>
+                {/* Name and email live on the joined user row, which
+                    list-members cannot sort by. */}
+                {paged ? (
+                  <TableHead>{organizationLocalization.member}</TableHead>
+                ) : (
+                  <SortableTableHead
+                    sortDirection={
+                      sortDescriptor?.column === "user"
+                        ? sortDescriptor.direction
+                        : undefined
+                    }
+                    onClick={() => toggleSort("user")}
+                  >
+                    {organizationLocalization.member}
+                  </SortableTableHead>
+                )}
 
                 <SortableTableHead
                   sortDirection={
@@ -269,6 +358,37 @@ export function OrganizationMembers({
             </TableBody>
           </Table>
         </Card>
+
+        {paged && total > 0 && (
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-muted-foreground text-sm tabular-nums">
+              {organizationLocalization.paginationRange
+                .replace("{{from}}", String(pageStart + 1))
+                .replace("{{to}}", String(pageEnd))
+                .replace("{{total}}", String(total))}
+            </p>
+
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={isPending || page === 0}
+                onClick={() => setPage((current) => Math.max(0, current - 1))}
+              >
+                {organizationLocalization.previousPage}
+              </Button>
+
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={isPending || !hasNextPage}
+                onClick={() => setPage((current) => current + 1)}
+              >
+                {organizationLocalization.nextPage}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />

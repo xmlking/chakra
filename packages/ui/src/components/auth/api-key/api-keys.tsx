@@ -1,14 +1,19 @@
-import {
-  type ApiKeyAuthClient,
-  useAuth,
-  useAuthPlugin,
-  useListApiKeys
-} from "@better-auth-ui/react"
+import type { ApiKeyAuthClient } from "@better-auth-ui/core/plugins/api-key"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { useListApiKeys } from "@better-auth-ui/react/plugins/api-key"
 import { Fragment, useState } from "react"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "#components/shadcn/select"
 import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
 import { cn } from "#lib/utils"
 import { ApiKey } from "./api-key"
@@ -35,16 +40,30 @@ export function ApiKeys({
   hideCreate,
   hideDelete
 }: ApiKeysProps) {
-  const { authClient } = useAuth()
-  const { localization: apiKeyLocalization } = useAuthPlugin(apiKeyPlugin)
+  const { authClient } = useAuth<ApiKeyAuthClient>()
+  const { localization: apiKeyLocalization, pageSize } =
+    useAuthPlugin(apiKeyPlugin)
+  const [page, setPage] = useState(0)
+  const [sort, setSort] = useState("createdAt:desc")
+  const [sortBy, sortDirection] = sort.split(":") as [string, "asc" | "desc"]
+  const sortItems = [
+    { label: apiKeyLocalization.newest, value: "createdAt:desc" },
+    { label: apiKeyLocalization.oldest, value: "createdAt:asc" },
+    { label: apiKeyLocalization.nameAscending, value: "name:asc" },
+    { label: apiKeyLocalization.nameDescending, value: "name:desc" }
+  ]
 
   const { data: listData, isPending: isListPending } = useListApiKeys(
-    authClient as ApiKeyAuthClient,
+    authClient,
     {
       enabled: !isPendingProp,
-      ...(organizationId
-        ? { query: { organizationId, configId: "organization" } }
-        : {})
+      query: {
+        limit: pageSize,
+        offset: page * pageSize,
+        sortBy,
+        sortDirection,
+        ...(organizationId ? { organizationId, configId: "organization" } : {})
+      }
     }
   )
 
@@ -71,6 +90,28 @@ export function ApiKeys({
         )}
       </div>
 
+      <Select
+        items={sortItems}
+        value={sort}
+        onValueChange={(value) => {
+          setSort(value ?? "createdAt:desc")
+          setPage(0)
+        }}
+      >
+        <SelectTrigger aria-label={apiKeyLocalization.sortBy}>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {sortItems.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+
       <Card className="p-0">
         <CardContent className="p-0">
           {isPending ? (
@@ -96,6 +137,27 @@ export function ApiKeys({
           )}
         </CardContent>
       </Card>
+
+      {(page > 0 || (listData?.apiKeys.length ?? 0) === pageSize) && (
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={page === 0}
+            onClick={() => setPage((value) => Math.max(0, value - 1))}
+          >
+            {apiKeyLocalization.previousPage}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={(listData?.apiKeys.length ?? 0) < pageSize}
+            onClick={() => setPage((value) => value + 1)}
+          >
+            {apiKeyLocalization.nextPage}
+          </Button>
+        </div>
+      )}
 
       {!hideCreate && (
         <CreateApiKeyDialog
