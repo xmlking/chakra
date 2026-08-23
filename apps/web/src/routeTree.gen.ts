@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
-import { Route as appDragDropRouteImport } from './routes/(app)/drag-drop'
 import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
 import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
 import { Route as appRenewalsRiskRouteImport } from './routes/(app)/renewals-risk'
@@ -58,11 +57,6 @@ const app2RouteRoute = app2RouteRouteImport.update({
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
-} as any)
-const appDragDropRoute = appDragDropRouteImport.update({
-  id: '/drag-drop',
-  path: '/drag-drop',
-  getParentRoute: () => appRouteRoute,
 } as any)
 const appForbiddenRoute = appForbiddenRouteImport.update({
   id: '/forbidden',
@@ -233,7 +227,6 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
@@ -269,7 +262,6 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
-  '/drag-drop': typeof appDragDropRoute
   '/forbidden': typeof appForbiddenRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
@@ -309,7 +301,6 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
-  '/(app)/drag-drop': typeof appDragDropRoute
   '/(app)/forbidden': typeof appForbiddenRoute
   '/(app)/renewals': typeof appRenewalsRoute
   '/(app)/renewals-risk': typeof appRenewalsRiskRoute
@@ -347,7 +338,6 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/drag-drop'
     | '/forbidden'
     | '/renewals'
     | '/renewals-risk'
@@ -383,7 +373,6 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/drag-drop'
     | '/forbidden'
     | '/renewals'
     | '/renewals-risk'
@@ -422,7 +411,6 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app2)'
     | '/(public)'
-    | '/(app)/drag-drop'
     | '/(app)/forbidden'
     | '/(app)/renewals'
     | '/(app)/renewals-risk'
@@ -493,13 +481,6 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/(app)/drag-drop': {
-      id: '/(app)/drag-drop'
-      path: '/drag-drop'
-      fullPath: '/drag-drop'
-      preLoaderRoute: typeof appDragDropRouteImport
-      parentRoute: typeof appRouteRoute
     }
     '/(app)/forbidden': {
       id: '/(app)/forbidden'
@@ -736,7 +717,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
-  appDragDropRoute: typeof appDragDropRoute
   appForbiddenRoute: typeof appForbiddenRoute
   appRenewalsRoute: typeof appRenewalsRoute
   appRenewalsRiskRoute: typeof appRenewalsRiskRoute
@@ -759,7 +739,6 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
-  appDragDropRoute: appDragDropRoute,
   appForbiddenRoute: appForbiddenRoute,
   appRenewalsRoute: appRenewalsRoute,
   appRenewalsRiskRoute: appRenewalsRiskRoute,

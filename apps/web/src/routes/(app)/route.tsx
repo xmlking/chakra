@@ -1,10 +1,9 @@
 import { viewPaths } from "@better-auth-ui/core";
-import {
-  ensureSession as ensureSessionClient,
-  useAuth,
-  useAuthenticate,
-} from "@better-auth-ui/react";
-import { ensureSession as ensureSessionServer } from "@better-auth-ui/react/server";
+import { ensureSession } from "@better-auth-ui/core";
+// import { ensureActiveOrganization } from "@better-auth-ui/core/plugins/organization";
+// import { ensureActiveOrganization as ensureActiveOrganizationServer } from "@better-auth-ui/core/plugins/organization/server";
+import { ensureSessionServer } from "@better-auth-ui/core/server";
+import { useAuth, useAuthenticate } from "@better-auth-ui/react";
 import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import { createIsomorphicFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
@@ -22,12 +21,12 @@ const SIDEBAR_COOKIE_NAME = "sidebar_state";
 
 export const Route = createFileRoute("/(app)")({
   async beforeLoad({ context: { queryClient }, location }) {
-    const ensureSession = createIsomorphicFn()
+    const ensureSessionIso = createIsomorphicFn()
       .server(() => ensureSessionServer(queryClient, auth, { headers: getRequestHeaders() }))
       // @ts-ignore
-      .client(() => ensureSessionClient(queryClient, authClient));
+      .client(() => ensureSession(queryClient, authClient));
 
-    const session = await ensureSession();
+    const session = await ensureSessionIso();
 
     const redirectTarget = safeRedirect(location.href);
     if (!session) {
@@ -38,6 +37,14 @@ export const Route = createFileRoute("/(app)")({
         search: { redirectTo: redirectTarget },
       });
     }
+
+    // https://github.com/better-auth-ui/better-auth-ui/blob/main/apps/docs/content/docs/react/queries/active-organization.mdx
+    // const ensureActiveOrganization1 = createIsomorphicFn()
+    //   .server(() =>
+    //     ensureActiveOrganizationServer(queryClient, auth, "userId",  { headers: getRequestHeaders() }),
+    //   )
+    //   // @ts-ignore
+    //   .client(() => ensureActiveOrganization(queryClient, authClient, "userId"));
 
     const isSidebarOpen = createIsomorphicFn()
       .server(async () => getCookie(SIDEBAR_COOKIE_NAME) === "true")

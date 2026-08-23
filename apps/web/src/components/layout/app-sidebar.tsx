@@ -20,7 +20,6 @@ import { navGroups } from "#config/sidebar.config";
 // import { NavDocuments } from "./nav-documents"
 import { NavGroup } from "./nav-group";
 // import { NavUser } from "./nav-user";
-// import { OrganizationSwitcher } from "./organization-switcher";
 import { SidebarSearch } from "./sidebar-search";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

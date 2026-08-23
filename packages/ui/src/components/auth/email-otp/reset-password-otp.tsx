@@ -1,10 +1,10 @@
-import { getAuthLinkURL } from "@better-auth-ui/core"
 import {
-  type EmailOtpAuthClient,
-  useAuth,
-  useAuthPlugin,
-  useResetPasswordOtp
-} from "@better-auth-ui/react"
+  getAuthLinkURL,
+  isPasswordCompromisedError
+} from "@better-auth-ui/core"
+import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { useResetPasswordOtp } from "@better-auth-ui/react/plugins/email-otp"
 import { Eye, EyeOff } from "lucide-react"
 import { type SyntheticEvent, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -36,6 +36,7 @@ import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
 import { cn } from "#lib/utils"
 import { OpenEmailButton } from "../open-email-button"
 import { OtpField } from "../otp-field"
+import { PasswordStrengthMeter } from "../password-strength-meter"
 import { useIsHydrated } from "../use-is-hydrated"
 import { RESET_PASSWORD_OTP_STORAGE_KEY } from "./forgot-password-otp"
 
@@ -74,6 +75,7 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
   const [email, setEmail] = useState(initialEmail)
   const [hasStoredEmail, setHasStoredEmail] = useState(Boolean(initialEmail))
   const [code, setCode] = useState("")
+  const [password, setPassword] = useState("")
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const submissionLockedRef = useRef(false)
@@ -92,7 +94,16 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
   const { mutate: resetPasswordOtp, isPending } = useResetPasswordOtp(
     authClient as EmailOtpAuthClient,
     {
-      onError: () => {
+      onError: (error) => {
+        // The haveIBeenPwned plugin rejects on the password itself, so it
+        // belongs against the field rather than in a toast.
+        if (isPasswordCompromisedError(error)) {
+          setFieldErrors((prev) => ({
+            ...prev,
+            password: localization.auth.passwordCompromised
+          }))
+        }
+
         submissionLockedRef.current = false
         setCode("")
       },
@@ -235,9 +246,11 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
                   minLength={emailAndPassword?.minPasswordLength}
                   maxLength={emailAndPassword?.maxPasswordLength}
                   disabled={isPending}
-                  onChange={() =>
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+
                     setFieldErrors((prev) => ({ ...prev, password: undefined }))
-                  }
+                  }}
                   onInvalid={(e) => {
                     e.preventDefault()
                     const el = e.target as HTMLInputElement
@@ -281,6 +294,8 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
               </InputGroup>
 
               <FieldError>{fieldErrors.password}</FieldError>
+
+              <PasswordStrengthMeter password={password} />
             </Field>
 
             {emailAndPassword?.confirmPassword && (

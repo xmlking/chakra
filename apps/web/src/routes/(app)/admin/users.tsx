@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 // import { auth } from "@workspace/auth";
+import { Admin } from "@workspace/ui/components/auth/admin/admin";
 
 import { DashboardPageSkeleton } from "#features/dashboard/dashboard-page-skeleton";
 
@@ -42,9 +43,13 @@ export const Route = createFileRoute("/(app)/admin/users")({
     meta: [{ title: "Users | Admin" }],
   }),
   pendingComponent: DashboardPageSkeleton,
-  component: UsersPage,
+  component: AdminUsersPage,
 });
 
-function UsersPage() {
-  return <div>Hello "/(app)/admin/users"!</div>;
+function AdminUsersPage() {
+  return (
+    <div className="container-wrapper">
+      <Admin view="users" />
+    </div>
+  );
 }

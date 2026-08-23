@@ -28,6 +28,7 @@ import {
   testUtils,
 } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
+import { inbox } from "better-inbox";
 import { env } from "virtual:env/server";
 
 import { additionalSessionFields, additionalUserFields } from "./additional-fields";
@@ -226,10 +227,10 @@ export const auth = betterAuth({
     max: 100, // max requests in the window
   },
   plugins: [
+    inbox(),
     lastLoginMethod({
       storeInDatabase: true,
     }),
-    // FIXME: https://github.com/better-auth/better-auth/issues/9422
     deviceAuthorization({ schema: {} }),
     ...(env.VITE_GOOGLE_CLIENT_ID
       ? [
@@ -467,11 +468,12 @@ export const auth = betterAuth({
             ...roles.member.statements,
           },
         },
+        // storage: "database", // Default, can be omitted
       },
       {
         configId: "organization",
         references: "organization", // Owned by organizations
-        // enableSessionForAPIKeys: true, // Required for getSession to work with API Keys
+        // enableSessionForAPIKeys: true, // Organization-owned keys cannot mock user sessions.
         enableMetadata: true,
         defaultPrefix: "org_",
         requireName: true,
@@ -487,6 +489,7 @@ export const auth = betterAuth({
            */
           defaultPermissions: {
             agents: ["read", "create", "update", "delete"],
+            webhooks: ["read", "write"],
           },
         },
       },
@@ -504,6 +507,7 @@ export const auth = betterAuth({
     captcha({
       provider: "cloudflare-turnstile", // or google-recaptcha, hcaptcha, captchafox
       secretKey: env.TURNSTILE_SECRET_KEY,
+      // endpoints: ["/sign-up/*", "/sign-in/*", "/request-password-reset"],
       endpoints: [
         "/sign-up/email",
         "/sign-in/email",

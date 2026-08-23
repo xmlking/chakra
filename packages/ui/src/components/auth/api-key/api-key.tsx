@@ -1,9 +1,6 @@
-import {
-  type ListedApiKey,
-  useAuth,
-  useAuthPlugin
-} from "@better-auth-ui/react"
-import { Key, X } from "lucide-react"
+import type { ListedApiKey } from "@better-auth-ui/core/plugins/api-key"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { Key, Pencil, X } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
@@ -17,6 +14,7 @@ import {
 } from "#components/shadcn/item"
 import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
 import { DeleteApiKeyDialog } from "./delete-api-key-dialog"
+import { EditApiKeyDialog } from "./edit-api-key-dialog"
 
 export type ApiKeyProps = {
   apiKey: ListedApiKey
@@ -30,6 +28,7 @@ export function ApiKey({ apiKey, hideDelete, organizationId }: ApiKeyProps) {
   const { localization } = useAuth()
   const { localization: apiKeyLocalization } = useAuthPlugin(apiKeyPlugin)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const preview = `${apiKey.start}${"*".repeat(16)}`
 
@@ -58,8 +57,32 @@ export function ApiKey({ apiKey, hideDelete, organizationId }: ApiKeyProps) {
               })}`
             : apiKeyLocalization.neverExpires}
         </ItemDescription>
+        <ItemDescription>
+          {apiKey.enabled
+            ? apiKeyLocalization.enabled
+            : apiKeyLocalization.disabled}
+          {` · ${apiKeyLocalization.requests}: ${apiKey.requestCount}`}
+          {apiKey.remaining === null
+            ? ""
+            : ` · ${apiKeyLocalization.remaining}: ${apiKey.remaining}`}
+        </ItemDescription>
+        <ItemDescription>
+          {apiKeyLocalization.lastRequest}:{" "}
+          {apiKey.lastRequest
+            ? new Date(apiKey.lastRequest).toLocaleString()
+            : apiKeyLocalization.neverRequested}
+        </ItemDescription>
       </ItemContent>
       <ItemActions>
+        <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+          <Pencil />
+          {apiKeyLocalization.editApiKey}
+        </Button>
+        <EditApiKeyDialog
+          apiKey={apiKey}
+          open={editOpen}
+          onOpenChange={setEditOpen}
+        />
         {!hideDelete && (
           <>
             <Button

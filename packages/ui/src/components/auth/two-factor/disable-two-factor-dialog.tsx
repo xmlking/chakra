@@ -1,9 +1,5 @@
-import {
-  type TwoFactorAuthClient,
-  useAuth,
-  useAuthPlugin,
-  useDisableTwoFactor
-} from "@better-auth-ui/react"
+import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { useDisableTwoFactor } from "@better-auth-ui/react/plugins/two-factor"
 import { ShieldAlert } from "lucide-react"
 import type { SyntheticEvent } from "react"
 import { toast } from "sonner"

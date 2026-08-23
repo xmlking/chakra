@@ -25,7 +25,7 @@ export const user = pgTable("user", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
   lastLoginMethod: text("last_login_method"),
-  role: text("role"),
+  role: text("role").default("user"),
   banned: boolean("banned").default(false),
   banReason: text("ban_reason"),
   banExpires: timestamp("ban_expires"),
@@ -62,6 +62,7 @@ export const account = pgTable(
     id: uuid("id")
       .default(sql`uuidv7()`)
       .primaryKey(),
+    issuer: text("issuer").notNull(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: uuid("user_id")
@@ -79,7 +80,10 @@ export const account = pgTable(
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index("account_userId_idx").on(table.userId)],
+  (table) => [
+    uniqueIndex("account_issuer_accountId_uidx").on(table.issuer, table.accountId),
+    index("account_userId_idx").on(table.userId),
+  ],
 );
 
 export const verification = pgTable(
@@ -100,20 +104,44 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const deviceCode = pgTable("device_code", {
+export const notification = pgTable("notification", {
   id: uuid("id")
     .default(sql`uuidv7()`)
     .primaryKey(),
-  deviceCode: text("device_code").notNull(),
-  userCode: text("user_code").notNull(),
-  userId: text("user_id"),
-  expiresAt: timestamp("expires_at").notNull(),
-  status: text("status").notNull(),
-  lastPolledAt: timestamp("last_polled_at"),
-  pollingInterval: integer("polling_interval"),
-  clientId: text("client_id"),
-  scope: text("scope"),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  organizationId: text("organization_id"),
+  type: text("type").notNull(),
+  title: text("title").notNull(),
+  body: text("body"),
+  href: text("href"),
+  data: jsonb("data"),
+  read: boolean("read").default(false).notNull(),
+  createdAt: timestamp("created_at").notNull(),
 });
+
+export const deviceCode = pgTable(
+  "device_code",
+  {
+    id: uuid("id")
+      .default(sql`uuidv7()`)
+      .primaryKey(),
+    deviceCode: text("device_code").notNull(),
+    userCode: text("user_code").notNull(),
+    userId: text("user_id"),
+    expiresAt: timestamp("expires_at").notNull(),
+    status: text("status").notNull(),
+    lastPolledAt: timestamp("last_polled_at"),
+    pollingInterval: integer("polling_interval"),
+    clientId: text("client_id"),
+    scope: text("scope"),
+  },
+  (table) => [
+    uniqueIndex("deviceCode_deviceCode_uidx").on(table.deviceCode),
+    uniqueIndex("deviceCode_userCode_uidx").on(table.userCode),
+  ],
+);
 
 export const jwks = pgTable("jwks", {
   id: uuid("id")
@@ -135,11 +163,13 @@ export const oauthClient = pgTable(
       .primaryKey(),
     clientId: text("client_id").notNull().unique(),
     clientSecret: text("client_secret"),
+    clientDiscoveryId: text("client_discovery_id"),
     disabled: boolean("disabled").default(false),
     skipConsent: boolean("skip_consent"),
     enableEndSession: boolean("enable_end_session"),
     subjectType: text("subject_type"),
     scopes: text("scopes").array(),
+    clientCredentialsScopes: text("client_credentials_scopes").array().default([]),
     userId: uuid("user_id").references(() => user.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at"),
     updatedAt: timestamp("updated_at"),
@@ -157,12 +187,11 @@ export const oauthClient = pgTable(
     backchannelLogoutUri: text("backchannel_logout_uri"),
     backchannelLogoutSessionRequired: boolean("backchannel_logout_session_required"),
     tokenEndpointAuthMethod: text("token_endpoint_auth_method"),
+    applicationType: text("application_type"),
     jwks: text("jwks"),
     jwksUri: text("jwks_uri"),
     grantTypes: text("grant_types").array(),
     responseTypes: text("response_types").array(),
-    public: boolean("public"),
-    type: text("type"),
     requirePKCE: boolean("require_pkce"),
     dpopBoundAccessTokens: boolean("dpop_bound_access_tokens").default(false),
     referenceId: text("reference_id"),
@@ -207,6 +236,10 @@ export const oauthClientResource = pgTable(
     createdAt: timestamp("created_at"),
   },
   (table) => [
+    uniqueIndex("oauthClientResource_clientId_resourceId_uidx").on(
+      table.clientId,
+      table.resourceId,
+    ),
     index("oauthClientResource_clientId_idx").on(table.clientId),
     index("oauthClientResource_resourceId_idx").on(table.resourceId),
   ],
@@ -501,6 +534,7 @@ export const authRelations = defineRelationsPart(
     session,
     account,
     verification,
+    notification,
     deviceCode,
     jwks,
     oauthClient,
@@ -528,6 +562,10 @@ export const authRelations = defineRelationsPart(
       accounts: r.many.account({
         from: r.user.id,
         to: r.account.userId,
+      }),
+      notifications: r.many.notification({
+        from: r.user.id,
+        to: r.notification.userId,
       }),
       oauthClients: r.many.oauthClient({
         from: r.user.id,
@@ -579,6 +617,12 @@ export const authRelations = defineRelationsPart(
     account: {
       user: r.one.user({
         from: r.account.userId,
+        to: r.user.id,
+      }),
+    },
+    notification: {
+      user: r.one.user({
+        from: r.notification.userId,
         to: r.user.id,
       }),
     },
