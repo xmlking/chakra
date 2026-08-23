@@ -77,9 +77,9 @@ Developer workflow skills for **Spec Driven Development (SDD)**
   - Official skills [vpx drizzle-kit skills](https://github.com/drizzle-team/drizzle-orm/tree/v1.0.0-rc.4/drizzle-kit). also available via `vpx @tanstack/intent@latest list`
 - [better-auth](https://better-auth.com/docs/ai-resources/skills): Install Better Auth agent skills so your coding assistant follows library conventions and patterns.
 - [evlog](https://www.evlog.dev/reference/agent-skills): AI-assisted code review and evlog adoption using Agent Skills. Let AI review your logging patterns and guide migration to wide events.
-- [better-result](https://github.com/dmmulroy/better-result): Lightweight Result type for TypeScript with generator-based composition.
-  - **better-result-adopt** — adopt `better-result` in an existing codebase
-  - **better-result-migrate-v2** — migrate v1 `TaggedError` usage to the v2 API
+- [better-result](https://github.com/dmmulroy/better-result/tree/main/skills): Lightweight Result type for TypeScript with generator-based composition.
+  - **[adopt-better-result](https://github.com/dmmulroy/better-result/blob/main/skills/adopt-better-result/SKILL.md)** — audit repository-wide error handling and propose an adoption plan, or implement one named vertical migration slice.
+  - **[migrate-better-result-3](https://github.com/dmmulroy/better-result/blob/main/skills/migrate-better-result-3/SKILL.md)** — migrate a TypeScript codebase from better-result 2.x to 3.0, including TaggedError syntax and validated Result codecs.
 - [data-table-filters](https://data-table.openstatus.dev/): Ships with an [AI agent skill](https://data-table.openstatus.dev/docs/ai-filters) that understands the full project structure — it can scaffold, configure, and extend data tables end-to-end. Because every component is installed via the shadcn CLI, agents know exactly how to add and compose pieces without custom tooling. Also includes an [MCP server](https://data-table.openstatus.dev/docs/mcp) that lets AI assistants query and filter your actual table data directly.
   - Then just say "add a filterable data table" — the skill detects your stack, installs the right blocks, generates a schema, and wires everything up.
 - [files-sdk](https://files-sdk.dev/): Use files-sdk to add file storage to a TypeScript/JavaScript app with a unified API across S3, R2, GCS, Azure, Vercel Blob, the local filesystem, and 40+ other providers.
@@ -129,7 +129,3 @@ Once installed, your AI assistant will understand everything about assistant-ui 
 - [5 Agent Skills I Use Every Day](https://www.aihero.dev/5-agent-skills-i-use-every-day)
 - All mattpocock's [skill](https://www.aihero.dev/skills)
 - `.well-known skills discovery` [RFC 8615 Well-Known URI](https://github.com/cloudflare/agent-skills-discovery-rfc)
-
-```
-
-```

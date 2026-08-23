@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "adopt-better-result": {
+      "source": "dmmulroy/better-result",
+      "sourceType": "github",
+      "skillPath": "skills/adopt-better-result/SKILL.md",
+      "computedHash": "42e83fd4ddf2f289bbffb01d45a7a14dd596b1d40e285823b34a41987fca8772"
+    },
     "better-auth-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
@@ -12,12 +18,6 @@
       "sourceType": "github",
       "skillPath": "security/SKILL.md",
       "computedHash": "7a230edf3a24ce18162cb4379f59b6a19b8d24ca04db530609d0f15cede556dc"
-    },
-    "better-result-adopt": {
-      "source": "dmmulroy/better-result",
-      "sourceType": "github",
-      "skillPath": "skills/better-result-adopt/SKILL.md",
-      "computedHash": "bb2cff6d6db16f141cf2d2789a87e0f4a54992f1839a33dc623a434ac49d6115"
     },
     "create-auth-skill": {
       "source": "better-auth/skills",
@@ -78,6 +78,12 @@
       "sourceType": "github",
       "skillPath": "skills/improve-react/SKILL.md",
       "computedHash": "ee6095448a511e2507528caae7ba91c5dc462464b603196c5b1931d4924a371a"
+    },
+    "migrate-better-result-3": {
+      "source": "dmmulroy/better-result",
+      "sourceType": "github",
+      "skillPath": "skills/migrate-better-result-3/SKILL.md",
+      "computedHash": "daa235f2d76591add83d874729af3485a52f5cf8711ff356907e4412cbf285d3"
     },
     "migrate-radix-to-base": {
       "source": "shadcn/ui",
