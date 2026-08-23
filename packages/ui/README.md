@@ -55,13 +55,10 @@ bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upl
 bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/paste-upload-area
 # kibo-ui (optional)
 bunx --bun shadcn@latest add @kibo-ui/gantt
-# reui data-grid
+# reui
 bunx --bun shadcn@latest add @reui/data-grid
 bunx --bun shadcn@latest add @reui/filters
 bunx --bun shadcn@latest add @reui/rating
-# reui kanban (optional)
-bunx --bun shadcn@latest add @reui/kanban
-# reui (base-ui) Async Search Autocomplete  (optional)
 bunx --bun shadcn@latest add @reui/icon-tile
 bunx --bun shadcn@latest add @reui/alert
 bunx --bun shadcn@latest add @reui/autocomplete
@@ -70,6 +67,8 @@ bunx --bun shadcn@latest add @reui/sortable
 bunx --bun shadcn@latest add @reui/timeline
 bunx --bun shadcn@latest add @reui/tree
 bunx --bun shadcn@latest add @reui/use-file-upload
+# reui kanban (optional)
+bunx --bun shadcn@latest add @reui/kanban
 # diceui Action Bar, mask-input, listbox etc (optional)
 bun x shadcn@latest add -p src/components/diceui @diceui/action-bar
 bun x shadcn@latest add -p src/components/diceui @diceui/badge-overflow
