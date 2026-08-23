@@ -17,6 +17,7 @@ const ignorePatterns = [
   "TODO/**",
   "CHANGELOG.md",
   ".agents/skills",
+  ".claude/skills",
   "**/vite-env.d.ts",
   "**/src/routeTree.gen.ts",
   "packages/db/drizzle/**",
