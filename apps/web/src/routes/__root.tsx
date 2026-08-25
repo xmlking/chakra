@@ -6,7 +6,7 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { HeadContent, Scripts, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { createMiddleware } from "@tanstack/react-start";
-import { tableDevtoolsPlugin } from "@tanstack/react-table-devtools/production";
+import { tableDevtoolsPlugin } from "@tanstack/react-table-devtools";
 import { getLocale } from "@workspace/i18n/runtime";
 import { evlogErrorHandler } from "evlog/nitro/v3";
 
