@@ -56,6 +56,7 @@
         "tailwind-merge": "catalog:",
         "tegami": "1.4.0",
         "use-sync-external-store": "1.6.0",
+        "waku": "^1.0.0-beta.9",
         "zod": "catalog:",
       },
       "devDependencies": {
