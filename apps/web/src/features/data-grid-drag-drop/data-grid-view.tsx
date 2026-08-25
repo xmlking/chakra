@@ -42,7 +42,7 @@ function normalizeOrder(items: BacklogItem[]) {
 const SEED_ITEMS = normalizeOrder(sortByOrder(BACKLOG_ITEMS));
 const SEED_SIGNATURE = SEED_ITEMS.map((item) => item.id).join("|");
 
-export function DataTable() {
+export function DataGridView() {
   const [items, setItems] = useState<BacklogItem[]>(SEED_ITEMS);
 
   const dataIds = useMemo<UniqueIdentifier[]>(() => items.map((item) => item.id), [items]);
