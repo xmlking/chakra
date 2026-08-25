@@ -3,6 +3,7 @@ import { reset, seed } from "drizzle-seed";
 import { env } from "virtual:env/server";
 
 import { db } from "../src";
+import * as schema from "../src/schema";
 import {
   account,
   member,
@@ -34,29 +35,25 @@ async function run() {
 
   console.time("🧹 Cleaned up the database...");
 
-  await reset(db, {
-    account,
-    member,
-    organization,
-    session,
-    team,
-    user,
-    verification,
-    settings,
-  });
+  await reset(db, schema);
   console.timeEnd("🧹 Cleaned up the database...");
 
-  await seed(db, {
-    account,
-    member,
-    organization,
-    session,
-    team,
-    user,
-    verification,
-    settings,
-  }).refine((f) => ({
+  await seed(
+    db,
+    {
+      account,
+      member,
+      organization,
+      session,
+      team,
+      user,
+      verification,
+      settings,
+    },
+    { seed: 20_260_727 },
+  ).refine((f) => ({
     user: {
+      count: 1,
       columns: {
         id: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
         name: f.default({ defaultValue: "Super User" }),
@@ -73,7 +70,6 @@ async function run() {
         banExpires: f.default({ defaultValue: null }),
         lang: f.valuesFromArray({ values: ["en", "es"] }),
       },
-      count: 1,
       with: {
         account: 1,
       },
@@ -94,6 +90,7 @@ async function run() {
       },
     },
     organization: {
+      count: 1,
       columns: {
         id: f.default({ defaultValue: env.SHARED_ORGANIZATION_ID }),
         name: f.default({ defaultValue: "Chakra" }),
@@ -101,13 +98,12 @@ async function run() {
         logo: f.default({ defaultValue: null }),
         metadata: f.default({ defaultValue: null }),
       },
-      count: 1,
     },
     member: {
+      count: 1,
       columns: {
         role: f.default({ defaultValue: "owner" }),
       },
-      count: 1,
     },
     team: {
       count: 3,

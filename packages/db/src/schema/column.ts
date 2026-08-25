@@ -1,7 +1,14 @@
 import { sql } from "drizzle-orm";
-import { jsonb, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { customType, jsonb, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 import { member, organization } from "./auth";
+
+/** Postgres native `jsonpath` type, used to locate a value within a JSON document. */
+export const jsonpath = customType<{ data: string }>({
+  dataType() {
+    return "jsonpath";
+  },
+});
 
 /**
  * Usage:
