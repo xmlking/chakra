@@ -1,3 +1,4 @@
+// oxlint-disable react-doctor/jsx-no-new-array-as-prop react-doctor/jsx-no-new-function-as-prop react-doctor/no-unstable-nested-components react-doctor/jsx-no-new-object-as-prop react-doctor/jsx-max-depth
 // "use client";
 
 import { captchaPlugin } from "@better-auth-ui/react/plugins/captcha";
@@ -98,15 +99,20 @@ export function Providers({ children }: { children: ReactNode }) {
                     organizationPlugin({
                       // Override path segments (defaults shown).
                       viewPaths: {
+                        auth: { acceptInvitation: "accept-invitation" },
                         settings: { organizations: "organizations" },
                         organization: { settings: "settings", people: "people" },
                       },
                       localization: {
                         createOrganization: "Create Organization",
                       },
+                      // Disable logo upload, or customize the resize / size.
+                      // logo: { enabled: false },
                       // Add labels for custom server roles without redefining built-ins.
                       additionalRoles: { billing: "Billing" },
                       teams: true,
+                      // Limit invitations and members to one role.
+                      allowMultipleRoles: false,
                     }),
                     captchaPlugin({ render: TurnstileWidget }),
                   ]}
