@@ -10,7 +10,6 @@
         "@vitest/browser-playwright": "catalog:",
         "@vitest/coverage-v8": "catalog:",
         "@vitest/ui": "catalog:",
-        "babel-plugin-react-compiler": "catalog:",
         "oxlint-plugin-react-doctor": "catalog:",
         "playwright": "1.62.1",
         "shadcn": "catalog:",
@@ -145,7 +144,6 @@
       },
       "devDependencies": {
         "@assistant-ui/vite": "0.0.14",
-        "@rolldown/plugin-babel": "catalog:",
         "@tailwindcss/vite": "catalog:",
         "@tanstack/devtools-vite": "catalog:",
         "@tanstack/react-devtools": "catalog:",
@@ -155,7 +153,6 @@
         "@types/react-dom": "catalog:",
         "@vite-env/cli": "catalog:",
         "@vitejs/plugin-react": "catalog:",
-        "babel-plugin-react-compiler": "catalog:",
         "class-variance-authority": "catalog:",
         "nitro": "catalog:",
         "tailwindcss": "catalog:",
@@ -473,7 +470,6 @@
     "@opencoredev/email-sdk": "1.1.0",
     "@playwright/test": "1.62.1",
     "@react-email/ui": "6.9.3",
-    "@rolldown/plugin-babel": "0.2.3",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/devtools-a11y": "0.2.2",
     "@tanstack/devtools-vite": "0.8.5",
@@ -508,7 +504,6 @@
     "@vitest/ui": "4.1.11",
     "ai": "7.0.79",
     "auth": "1.7.1",
-    "babel-plugin-react-compiler": "1.0.0",
     "better-auth": "1.7.1",
     "better-auth-studio": "1.1.5",
     "better-inbox": "0.2.0",
@@ -1615,8 +1610,6 @@
 
     "@rolldown/binding-win32-x64-msvc": ["@rolldown/binding-win32-x64-msvc@1.2.6", "", { "os": "win32", "cpu": "x64" }, "sha512-np8iZSLfXlAD4kWhiyq/u0Yt8oZDtRQ8lGhQaCXo2rl37KNjeU0GjJuwr4P3oeZ++ROfofsKNBqR5LTO8aXyWQ=="],
 
-    "@rolldown/plugin-babel": ["@rolldown/plugin-babel@0.2.3", "", { "dependencies": { "picomatch": "^4.0.4" }, "peerDependencies": { "@babel/core": "^7.29.0 || ^8.0.0-rc.1", "@babel/plugin-transform-runtime": "^7.29.0 || ^8.0.0-rc.1", "@babel/runtime": "^7.27.0 || ^8.0.0-rc.1", "rolldown": "^1.0.0-rc.5", "vite": "^8.0.0" }, "optionalPeers": ["@babel/plugin-transform-runtime", "@babel/runtime", "vite"] }, "sha512-+zEk16yGlz1F9STiRr6uG9hmIXb6nprjLczV/htGptYuLoCuxb+itZ03RKCEeOhBpDDd1NU7qF6x1VLMUp62bw=="],
-
     "@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.1", "", {}, "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw=="],
 
     "@scalar/helpers": ["@scalar/helpers@0.11.1", "", {}, "sha512-Knwbe0IYqFk0PPDoOKLasqglBHfyf9/zwWWqFsSNi/AtdjM29wSZXN6p8DFid6iB5B9epYH9YiSgJ6tpD00TEw=="],
@@ -2548,8 +2541,6 @@
     "b4a": ["b4a@1.8.1", "", { "peerDependencies": { "react-native-b4a": "*" }, "optionalPeers": ["react-native-b4a"] }, "sha512-aiqre1Nr0B/6DgE2N5vwTc+2/oQZ4Wh1t4NznYY4E00y8LCt6NqdRv81so00oo27D8MVKTpUa/MwUUtBLXCoDw=="],
 
     "babel-dead-code-elimination": ["babel-dead-code-elimination@1.0.12", "", { "dependencies": { "@babel/core": "^7.23.7", "@babel/parser": "^7.23.6", "@babel/traverse": "^7.23.7", "@babel/types": "^7.23.6" } }, "sha512-GERT7L2TiYcYDtYk1IpD+ASAYXjKbLTDPhBtYj7X1NuRMDTMtAx9kyBenub1Ev41lo91OHCKdmP+egTDmfQ7Ig=="],
-
-    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@1.0.0", "", { "dependencies": { "@babel/types": "^7.26.0" } }, "sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw=="],
 
     "bail": ["bail@2.0.2", "", {}, "sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw=="],
 

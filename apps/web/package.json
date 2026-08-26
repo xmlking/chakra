@@ -89,7 +89,6 @@
   },
   "devDependencies": {
     "@assistant-ui/vite": "0.0.14",
-    "@rolldown/plugin-babel": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
     "@tanstack/react-devtools": "catalog:",
@@ -99,7 +98,6 @@
     "@types/react-dom": "catalog:",
     "@vite-env/cli": "catalog:",
     "@vitejs/plugin-react": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
     "class-variance-authority": "catalog:",
     "nitro": "catalog:",
     "tailwindcss": "catalog:",
