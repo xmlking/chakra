@@ -119,6 +119,12 @@
       "sourceType": "github",
       "skillPath": "vite-env/SKILL.md",
       "computedHash": "a41fce151bf6638ff37633859effbc82368c2a2d176d0fb6979c6071f09a2827"
+    },
+    "workflow": {
+      "source": "vercel/workflow",
+      "sourceType": "github",
+      "skillPath": "skills/workflow/SKILL.md",
+      "computedHash": "a6cadffb4a30e982ebc0c1a66ad259effbba18eea0b67960cc2bdd106a3ddb3b"
     }
   }
 }
