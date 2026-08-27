@@ -1,0 +1,54 @@
+---
+title: TanStack Start
+description: Full-stack, file-based React framework built on TanStack Router, Vite, and Nitro.
+icon: Route
+---
+
+import { Tanstack } from "@thesvg/react";
+
+[TanStack Start](https://tanstack.com/start) is a full-stack React framework built on top of [TanStack Router](https://tanstack.com/router), [Vite](https://vite.dev), and [Nitro](https://nitro.build). It gives us file-based routing, server-side rendering, isomorphic loaders, and type-safe server functions in a single toolchain — this is the framework the whole app is built on.
+
+<Card
+  href="https://tanstack.com/start"
+  title="TanStack Start"
+  description="tanstack.com/start"
+  icon={<Tanstack />}
+/>
+
+## Core concepts
+
+- **File-based routing** — routes are files under `src/routes`; the router generates a fully type-safe route tree from the file structure.
+- **Loaders** — run isomorphically (both server and client) before a route renders. They can't touch server-only APIs directly.
+- **Server functions** — created with `createServerFn`, these are the only place server-only code (database, filesystem, secrets) is safe to call from route/component code.
+- **Environment shaking** — Vite strips anything not reachable from a `createServerFn` handler out of the client bundle, so server-only code never ships to the browser.
+
+```typescript
+import { createServerFn } from "@tanstack/react-start";
+
+export const $getTodos = createServerFn({ method: "GET" }).handler(async () => {
+  return db.select().from(todos); // Server-only, stripped from the client bundle
+});
+```
+
+```typescript
+// Route loaders should call server functions, not server-only code directly
+export const Route = createFileRoute("/todos")({
+  loader: async () => $getTodos(),
+});
+```
+
+<Callout>
+  Prefer wrapping server functions in TanStack Query (`queryClient.ensureQueryData`) instead of
+  calling them directly in a loader — it gives you caching and reuse across routes for free.
+</Callout>
+
+## In this repo
+
+- Routes live under `apps/web/src/routes/**`; protected routes sit behind the `_auth` layout group and guest-only routes behind `_guest`, both enforced via `beforeLoad`.
+- Server functions are prefixed with `$` (e.g. `$getUser`) and imported statically — never dynamically — so the bundler can shake them correctly.
+- Server-only code (DB clients, `fs`) may only live inside a `createServerFn` handler or a `*.server.ts` file.
+- The framework is wired into `apps/web/vite.config.ts` via the `tanstackStart()` plugin, running on the `nitro()` server plugin for the underlying request handling.
+
+See [TanStack patterns](/docs/developer/patterns) for the full set of routing, loader, and server-function conventions, and the [auth guide](/docs/developer/auth/overview) for route-guard and middleware details.
+
+For up-to-date TanStack API docs, agents run `vpx @tanstack/cli@latest doc router ... --json` rather than relying on built-in knowledge, since TanStack's APIs move quickly.
