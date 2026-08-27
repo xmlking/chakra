@@ -22,6 +22,9 @@ import { ac, roles } from "./permissions";
 
 export const authClient = createAuthClient({
   baseURL: env.VITE_BETTER_AUTH_URL,
+  // sessionOptions: {
+  //   refetchOnWindowFocus: false,
+  // },
   fetchOptions: {
     onSuccess: (ctx) => {
       const jwtToken = ctx.response.headers.get("set-auth-jwt");
