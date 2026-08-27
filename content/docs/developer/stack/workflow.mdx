@@ -1,0 +1,123 @@
+---
+title: Vercel Workflow
+description: Durable, resumable orchestration for long-running, multi-step processes.
+icon: Workflow
+---
+
+import { Vercel } from "@thesvg/react";
+
+[Vercel Workflow](https://workflow-sdk.dev) is a TypeScript SDK that makes async functions durable: progress is persisted step-by-step, failed steps retry automatically, and a workflow can suspend indefinitely (waiting on a timer or an external event) without holding compute. We use it for orchestration that needs to survive process restarts and coordinate work over time, such as human-in-the-loop approval flows.
+
+<Card
+  href="https://workflow-sdk.dev"
+  title="Vercel Workflow"
+  description="workflow-sdk.dev"
+  icon={<Vercel />}
+/>
+
+## Core concepts
+
+Two directives turn plain async functions into durable primitives:
+
+```typescript
+async function orchestrate() {
+  "use workflow"; // Durable orchestration - runs in a sandboxed VM
+}
+
+async function doWork() {
+  "use step"; // Cached, retryable unit of work - full Node.js access
+}
+```
+
+- **`"use workflow"`** functions run in a sandboxed VM and coordinate steps. They can't use `fetch`, `setTimeout`, or Node.js built-ins directly.
+- **`"use step"`** functions have full Node.js and npm access, are memoized, and retry automatically on failure. Application logic (API calls, database writes, AI calls) belongs in steps; the workflow function stays a thin orchestrator.
+
+Workflows can also pause and resume via `createHook()` / `resumeHook()` for external events, `sleep()` for durable delays, and `FatalError` / `RetryableError` to control retry behavior.
+
+<Callout>
+  Only import the `workflow` APIs you actually use — unused imports in a workflow module can cause
+  500 errors.
+</Callout>
+
+## In this repo
+
+Workflow entrypoints live under `apps/web/src/workflows/*.workflow.ts`, with side-effecting logic (DB writes, external API calls) kept in server-side services under `apps/web/src/server/workflows/*` so it can be called from steps. The Vite plugin (`workflow/vite`) compiles the `"use workflow"` / `"use step"` directives, and durable state is persisted via `@workflow/world-postgres` in its own `workflow.*` Postgres schema, separate from the Drizzle domain tables.
+
+See the [document sampling workflow spec](/docs/developer/specifications/workflows) for a concrete, end-to-end example (triggers, hooks, webhooks, and local setup).
+
+For implementation guidance, agents load `.agents/skills/workflow/SKILL.md`, which points at the bundled docs in `node_modules/workflow/docs/` for the exact installed API surface.
+
+## Postgres world setup
+
+The **world** is the durable backend that stores workflow runs, events, steps, and hooks. We use [`@workflow/world-postgres`](https://github.com/vercel/workflow/tree/main/packages/world-postgres) — a self-hosted world backed by PostgreSQL for storage and [graphile-worker](https://github.com/graphile/worker) for job processing — rather than the Vercel-managed world, since this app runs as a long-lived server outside Vercel.
+
+<Callout type="warn">
+  The Postgres world requires a long-running process that polls the database for jobs. It is **not**
+  compatible with serverless platforms, including Vercel — use the managed Vercel World there
+  instead.
+</Callout>
+
+### Environment variables
+
+```bash title=".env"
+WORKFLOW_TARGET_WORLD="@workflow/world-postgres"
+WORKFLOW_POSTGRES_URL="postgres://user:password@host:5432/database"
+```
+
+`WORKFLOW_POSTGRES_URL` falls back to `DATABASE_URL` if unset, and defaults to `postgres://world:world@localhost:5432/world` if neither is set.
+
+| Variable                               | Purpose                                                                                 | Default                      |
+| -------------------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- |
+| `WORKFLOW_POSTGRES_URL`                | Postgres connection string for the durable world                                        | falls back to `DATABASE_URL` |
+| `WORKFLOW_POSTGRES_JOB_PREFIX`         | Prefix for graphile-worker queue job names — useful when sharing a database across apps | —                            |
+| `WORKFLOW_POSTGRES_WORKER_CONCURRENCY` | Number of workers concurrently polling for jobs                                         | `10`                         |
+| `WORKFLOW_POSTGRES_MAX_POOL_SIZE`      | Max size of the internal `pg.Pool`                                                      | `10`                         |
+
+### Bootstrap the schema
+
+Run this once against `WORKFLOW_POSTGRES_URL` to create the `workflow.*` tables. The migration is idempotent, so it's also safe to run as a post-deploy step:
+
+```bash
+bunx --package @workflow/world-postgres bootstrap
+```
+
+### Start the world on server init
+
+The Postgres world needs `start()` called once when the server boots, so it can subscribe to the graphile-worker queue. The SDK ships framework recipes for Next.js, SvelteKit, and Nitro; TanStack Start has no built-in hook for this, so call it from server startup code (e.g. a Vite/Nitro plugin or the server entry) instead:
+
+Create a plugin to start the world on server initialization:
+
+```typescript title="src/server/plugins/start-pg-world.ts"
+import { defineNitroPlugin } from "nitro/~internal/runtime/plugin";
+export default defineNitroPlugin(async () => {
+  const { getWorld } = await import("workflow/runtime");
+  const world = await getWorld();
+  await world.start?.();
+});
+```
+
+Register the plugin in your config:
+
+```typescript title="nitro.config.ts"
+import { defineNitroPlugin } from "nitro/~internal/runtime/plugin";
+export default defineNitroPlugin(async () => {
+  const { getWorld } = await import("workflow/runtime");
+  const world = await getWorld();
+  await world.start?.();
+});
+```
+
+### Programmatic configuration
+
+Options can also be passed directly to `createWorld()` instead of (or to override) the environment variables above:
+
+```typescript
+import { createWorld } from "@workflow/world-postgres";
+
+const world = createWorld({
+  connectionString: "postgres://user:password@host:5432/database",
+  jobPrefix: "myapp_",
+  queueConcurrency: 20,
+  maxPoolSize: 20,
+});
+```
