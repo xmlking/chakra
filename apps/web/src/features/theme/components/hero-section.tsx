@@ -49,7 +49,9 @@ export function HeroSection() {
       );
       return () => clearTimeout(timeout);
     } else {
+      // oxlint-disable-next-line react/set-state-in-effect
       setIsTyping(false);
+      // oxlint-disable-next-line react/immutability
       const timeout = setTimeout(() => showTerminalLinesSequence(), 400);
       return () => clearTimeout(timeout);
     }

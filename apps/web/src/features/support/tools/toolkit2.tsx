@@ -1,3 +1,4 @@
+// oxlint-disable react/only-export-components react-doctor/only-export-components
 "use generative";
 
 import { defineToolkit } from "@assistant-ui/react";

@@ -108,6 +108,7 @@
         "@tanstack/react-store": "catalog:",
         "@tanstack/react-table": "catalog:",
         "@tanstack/react-table-devtools": "catalog:",
+        "@thesvg/react": "catalog:",
         "@unpic/react": "catalog:",
         "@vite-env/core": "catalog:",
         "@workspace/auth": "workspace:*",

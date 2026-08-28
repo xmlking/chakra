@@ -1,3 +1,4 @@
+// oxlint-disable react/only-export-components react-doctor/only-export-components
 "use client";
 
 import type { Row, ColumnDef } from "@tanstack/react-table";

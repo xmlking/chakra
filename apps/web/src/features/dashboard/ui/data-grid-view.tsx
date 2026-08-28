@@ -1,4 +1,4 @@
-// oxlint-disable react-doctor/prefer-useReducer react-doctor/react-compiler-no-manual-memoization react-doctor/js-combine-iterations
+// oxlint-disable react-doctor/prefer-useReducer react-doctor/react-compiler-no-manual-memoization react-doctor/js-combine-iterations react/only-export-components react-doctor/only-export-components
 "use client";
 
 import {

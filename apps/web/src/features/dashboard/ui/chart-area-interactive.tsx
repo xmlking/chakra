@@ -25,7 +25,7 @@ import * as React from "react";
 // oxlint-disable-next-line react-doctor/prefer-dynamic-import TODO
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-// oxlint-disable-next-line react/only-export-components OK
+// oxlint-disable-next-line react/only-export-components react-doctor/only-export-components OK
 export const description = "An interactive area chart";
 
 const chartData = [
@@ -142,6 +142,7 @@ export function ChartAreaInteractive() {
 
   React.useEffect(() => {
     if (isMobile) {
+      // oxlint-disable-next-line react/set-state-in-effect
       setTimeRange("7d");
     }
   }, [isMobile]);
