@@ -21,7 +21,6 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/shadcn/sheet";
 import { Spinner } from "@workspace/ui/components/shadcn/spinner";
-import { TooltipProvider } from "@workspace/ui/components/shadcn/tooltip";
 import { cn } from "@workspace/ui/lib/utils";
 import { Trash2Icon, XIcon, CalendarIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
@@ -282,372 +281,361 @@ export function CompanyDetailsSheet({
   }
 
   return (
-    <TooltipProvider delay={180}>
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent
-          side="right"
-          showCloseButton={false}
-          className="inset-y-4 right-4 left-auto h-[calc(100svh-2rem)] w-[min(32rem,calc(100vw-2rem))] max-w-none overflow-hidden rounded-xl p-0 outline-none"
-        >
-          {/* Header */}
-          <SheetHeader className="shrink-0 p-0">
-            <div className="flex min-h-14 items-center justify-between gap-2 border-b px-4">
-              <div className="flex min-w-0 items-center gap-2.5">
-                {company.logo ? (
-                  <span className="flex size-6 shrink-0 items-center justify-center">
-                    {company.logo}
-                  </span>
-                ) : (
-                  <Avatar className="size-6 shrink-0">
-                    <AvatarFallback className="text-[10px]">
-                      {company.name.slice(0, 1)}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-                <div className="min-w-0">
-                  <SheetTitle className="truncate text-base font-semibold">
-                    {company.name}
-                  </SheetTitle>
-                  <span className="block truncate text-xs text-muted-foreground">
-                    {company.domain}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex shrink-0 items-center gap-1">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={`Delete ${company.name}`}
-                  className="text-muted-foreground hover:text-destructive"
-                  onClick={() => onDelete(company)}
-                >
-                  <Trash2Icon aria-hidden="true" />
-                </Button>
-                <SheetClose
-                  render={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label="Close details"
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <XIcon aria-hidden="true" />
-                    </Button>
-                  }
-                />
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent
+        side="right"
+        showCloseButton={false}
+        className="inset-y-4 right-4 left-auto h-[calc(100svh-2rem)] w-[min(32rem,calc(100vw-2rem))] max-w-none overflow-hidden rounded-xl p-0 outline-none"
+      >
+        {/* Header */}
+        <SheetHeader className="shrink-0 p-0">
+          <div className="flex min-h-14 items-center justify-between gap-2 border-b px-4">
+            <div className="flex min-w-0 items-center gap-2.5">
+              {company.logo ? (
+                <span className="flex size-6 shrink-0 items-center justify-center">
+                  {company.logo}
+                </span>
+              ) : (
+                <Avatar className="size-6 shrink-0">
+                  <AvatarFallback className="text-[10px]">
+                    {company.name.slice(0, 1)}
+                  </AvatarFallback>
+                </Avatar>
+              )}
+              <div className="min-w-0">
+                <SheetTitle className="truncate text-base font-semibold">{company.name}</SheetTitle>
+                <span className="block truncate text-xs text-muted-foreground">
+                  {company.domain}
+                </span>
               </div>
             </div>
-            <SheetDescription className="sr-only">
-              Review and edit this company record.
-            </SheetDescription>
-          </SheetHeader>
 
-          {/* Content */}
-          <div className="min-h-0 flex-1">
-            <ScrollArea className="h-full">
-              <div className="flex min-h-full flex-col px-2 pt-3 pb-6">
-                <EditableDetailRow
-                  label="Stage"
-                  {...getEditableRowProps("stage")}
-                  display={
-                    <Badge variant={stageBadgeVariant[company.stage]}>{company.stage}</Badge>
-                  }
-                  renderEdit={(active) => (
-                    <SelectEditor
-                      id="columns-5-stage"
-                      value={draft.stage}
-                      options={STAGE_OPTIONS}
-                      disabled={!active}
-                      renderValue={(value) => (
-                        <Badge variant={stageBadgeVariant[value]}>{value}</Badge>
-                      )}
-                      renderOption={(option) => (
-                        <Badge variant={stageBadgeVariant[option.value]}>{option.label}</Badge>
-                      )}
-                      onValueChange={(value) => updateDraft("stage", value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Status"
-                  hint="Drives the health rollup on the pipeline dashboard."
-                  {...getEditableRowProps("status")}
-                  display={
-                    <Badge variant={statusConfig[company.status].variant}>
-                      <span
-                        className={cn(
-                          "size-1.5 shrink-0 rounded-full!",
-                          statusConfig[company.status].dot,
-                        )}
-                        aria-hidden="true"
-                      />
-                      {company.status}
-                    </Badge>
-                  }
-                  renderEdit={(active) => (
-                    <SelectEditor
-                      id="columns-5-status"
-                      value={draft.status}
-                      options={STATUS_OPTIONS}
-                      disabled={!active}
-                      renderValue={(value) => (
-                        <Badge variant={statusConfig[value].variant}>
-                          <span
-                            className={cn(
-                              "size-1.5 shrink-0 rounded-full!",
-                              statusConfig[value].dot,
-                            )}
-                            aria-hidden="true"
-                          />
-                          {value}
-                        </Badge>
-                      )}
-                      renderOption={(option) => (
-                        <Badge variant={statusConfig[option.value].variant}>
-                          <span
-                            className={cn(
-                              "size-1.5 shrink-0 rounded-full!",
-                              statusConfig[option.value].dot,
-                            )}
-                            aria-hidden="true"
-                          />
-                          {option.label}
-                        </Badge>
-                      )}
-                      onValueChange={(value) => updateDraft("status", value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Priority"
-                  {...getEditableRowProps("priority")}
-                  display={
-                    <Badge variant={priorityConfig[company.priority].variant}>
-                      {company.priority}
-                    </Badge>
-                  }
-                  renderEdit={(active) => (
-                    <SelectEditor
-                      id="columns-5-priority"
-                      value={draft.priority}
-                      options={PRIORITY_OPTIONS}
-                      disabled={!active}
-                      renderValue={(value) => (
-                        <Badge variant={priorityConfig[value].variant}>{value}</Badge>
-                      )}
-                      renderOption={(option) => (
-                        <Badge variant={priorityConfig[option.value].variant}>{option.label}</Badge>
-                      )}
-                      onValueChange={(value) => updateDraft("priority", value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Owner"
-                  {...getEditableRowProps("ownerId")}
-                  display={<OwnerValue ownerId={company.ownerId} />}
-                  renderEdit={(active) => (
-                    <SelectEditor
-                      id="columns-5-owner"
-                      value={draft.ownerId}
-                      options={ownerOptions}
-                      disabled={!active}
-                      renderValue={(value) => <OwnerValue ownerId={value} />}
-                      renderOption={(option) => <OwnerValue ownerId={option.value} />}
-                      onValueChange={(value) => updateDraft("ownerId", value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="ARR"
-                  hint="Annual recurring revenue booked against this account."
-                  {...getEditableRowProps("arr")}
-                  display={<DetailValue>{formatExactCurrency(company.arr)}</DetailValue>}
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-arr"
-                      type="number"
-                      min={0}
-                      step={1000}
-                      value={draft.arr}
-                      disabled={!active}
-                      aria-label="ARR"
-                      onChange={(event) => updateDraft("arr", Number(event.target.value))}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Health"
-                  {...getEditableRowProps("health")}
-                  display={<DetailValue>{company.health} of 100</DetailValue>}
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-health"
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={draft.health}
-                      disabled={!active}
-                      aria-label="Health score"
-                      onChange={(event) => updateDraft("health", Number(event.target.value))}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Next renewal"
-                  {...getEditableRowProps("renewalDate")}
-                  display={
-                    <DetailValue icon={<CalendarIcon className="size-4" aria-hidden="true" />}>
-                      {formatDate(company.renewalDate)}
-                    </DetailValue>
-                  }
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-renewal"
-                      type="date"
-                      value={draft.renewalDate}
-                      disabled={!active}
-                      aria-label="Next renewal"
-                      onChange={(event) => updateDraft("renewalDate", event.target.value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Notes"
-                  align="start"
-                  {...getEditableRowProps("notes")}
-                  display={
-                    company.notes ? (
-                      <span className="text-sm leading-relaxed text-pretty text-foreground">
-                        {company.notes}
-                      </span>
-                    ) : (
-                      <span className="text-sm text-muted-foreground/60">No notes yet</span>
-                    )
-                  }
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-notes"
-                      value={draft.notes}
-                      disabled={!active}
-                      placeholder="Add a note"
-                      aria-label="Notes"
-                      onChange={(event) => updateDraft("notes", event.target.value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Industry"
-                  {...getEditableRowProps("industry")}
-                  display={<DetailValue>{company.industry}</DetailValue>}
-                  renderEdit={(active) => (
-                    <SelectEditor
-                      id="columns-5-industry"
-                      value={draft.industry}
-                      options={INDUSTRY_OPTIONS}
-                      disabled={!active}
-                      onValueChange={(value) => updateDraft("industry", value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Employees"
-                  {...getEditableRowProps("employees")}
-                  display={<DetailValue>{company.employees.toLocaleString("en-US")}</DetailValue>}
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-employees"
-                      type="number"
-                      min={0}
-                      step={10}
-                      value={draft.employees}
-                      disabled={!active}
-                      aria-label="Employees"
-                      onChange={(event) => updateDraft("employees", Number(event.target.value))}
-                    />
-                  )}
-                />
-                <EditableDetailRow
-                  label="Location"
-                  {...getEditableRowProps("location")}
-                  display={
-                    <DetailValue icon={<MapPinIcon className="size-4" aria-hidden="true" />}>
-                      {company.location}
-                    </DetailValue>
-                  }
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-location"
-                      value={draft.location}
-                      disabled={!active}
-                      placeholder="City, country"
-                      aria-label="Location"
-                      onChange={(event) => updateDraft("location", event.target.value)}
-                    />
-                  )}
-                />
-
-                <EditableDetailRow
-                  label="Last activity"
-                  hint="Days before the reference date, so the relative label needs no clock."
-                  {...getEditableRowProps("lastActivityDays")}
-                  display={
-                    <DetailValue>{formatRelativeDays(company.lastActivityDays)}</DetailValue>
-                  }
-                  renderEdit={(active) => (
-                    <InputGroupInput
-                      id="columns-5-last-activity"
-                      type="number"
-                      min={0}
-                      value={draft.lastActivityDays}
-                      disabled={!active}
-                      aria-label="Days since last activity"
-                      onChange={(event) =>
-                        updateDraft("lastActivityDays", Number(event.target.value))
-                      }
-                    />
-                  )}
-                />
-              </div>
-            </ScrollArea>
+            <div className="flex shrink-0 items-center gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label={`Delete ${company.name}`}
+                className="text-muted-foreground hover:text-destructive"
+                onClick={() => onDelete(company)}
+              >
+                <Trash2Icon aria-hidden="true" />
+              </Button>
+              <SheetClose
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Close details"
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <XIcon aria-hidden="true" />
+                  </Button>
+                }
+              />
+            </div>
           </div>
+          <SheetDescription className="sr-only">
+            Review and edit this company record.
+          </SheetDescription>
+        </SheetHeader>
 
-          {/* Footer */}
-          <SheetFooter className="shrink-0 border-t bg-background">
-            <form onSubmit={handleSubmit} className="w-full">
-              <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  disabled={!hasEditingRows || isSaving}
-                  className="min-w-0 flex-1"
-                >
-                  {isSaving ? <Spinner className="size-4" /> : null}
-                  {isSaving ? "Saving" : "Save changes"}
-                </Button>
-                <SheetClose
-                  render={
-                    <Button type="button" variant="outline" className="min-w-0 flex-1">
-                      Close
-                    </Button>
-                  }
-                />
-              </div>
-            </form>
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
-    </TooltipProvider>
+        {/* Content */}
+        <div className="min-h-0 flex-1">
+          <ScrollArea className="h-full">
+            <div className="flex min-h-full flex-col px-2 pt-3 pb-6">
+              <EditableDetailRow
+                label="Stage"
+                {...getEditableRowProps("stage")}
+                display={<Badge variant={stageBadgeVariant[company.stage]}>{company.stage}</Badge>}
+                renderEdit={(active) => (
+                  <SelectEditor
+                    id="columns-5-stage"
+                    value={draft.stage}
+                    options={STAGE_OPTIONS}
+                    disabled={!active}
+                    renderValue={(value) => (
+                      <Badge variant={stageBadgeVariant[value]}>{value}</Badge>
+                    )}
+                    renderOption={(option) => (
+                      <Badge variant={stageBadgeVariant[option.value]}>{option.label}</Badge>
+                    )}
+                    onValueChange={(value) => updateDraft("stage", value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Status"
+                hint="Drives the health rollup on the pipeline dashboard."
+                {...getEditableRowProps("status")}
+                display={
+                  <Badge variant={statusConfig[company.status].variant}>
+                    <span
+                      className={cn(
+                        "size-1.5 shrink-0 rounded-full!",
+                        statusConfig[company.status].dot,
+                      )}
+                      aria-hidden="true"
+                    />
+                    {company.status}
+                  </Badge>
+                }
+                renderEdit={(active) => (
+                  <SelectEditor
+                    id="columns-5-status"
+                    value={draft.status}
+                    options={STATUS_OPTIONS}
+                    disabled={!active}
+                    renderValue={(value) => (
+                      <Badge variant={statusConfig[value].variant}>
+                        <span
+                          className={cn("size-1.5 shrink-0 rounded-full!", statusConfig[value].dot)}
+                          aria-hidden="true"
+                        />
+                        {value}
+                      </Badge>
+                    )}
+                    renderOption={(option) => (
+                      <Badge variant={statusConfig[option.value].variant}>
+                        <span
+                          className={cn(
+                            "size-1.5 shrink-0 rounded-full!",
+                            statusConfig[option.value].dot,
+                          )}
+                          aria-hidden="true"
+                        />
+                        {option.label}
+                      </Badge>
+                    )}
+                    onValueChange={(value) => updateDraft("status", value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Priority"
+                {...getEditableRowProps("priority")}
+                display={
+                  <Badge variant={priorityConfig[company.priority].variant}>
+                    {company.priority}
+                  </Badge>
+                }
+                renderEdit={(active) => (
+                  <SelectEditor
+                    id="columns-5-priority"
+                    value={draft.priority}
+                    options={PRIORITY_OPTIONS}
+                    disabled={!active}
+                    renderValue={(value) => (
+                      <Badge variant={priorityConfig[value].variant}>{value}</Badge>
+                    )}
+                    renderOption={(option) => (
+                      <Badge variant={priorityConfig[option.value].variant}>{option.label}</Badge>
+                    )}
+                    onValueChange={(value) => updateDraft("priority", value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Owner"
+                {...getEditableRowProps("ownerId")}
+                display={<OwnerValue ownerId={company.ownerId} />}
+                renderEdit={(active) => (
+                  <SelectEditor
+                    id="columns-5-owner"
+                    value={draft.ownerId}
+                    options={ownerOptions}
+                    disabled={!active}
+                    renderValue={(value) => <OwnerValue ownerId={value} />}
+                    renderOption={(option) => <OwnerValue ownerId={option.value} />}
+                    onValueChange={(value) => updateDraft("ownerId", value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="ARR"
+                hint="Annual recurring revenue booked against this account."
+                {...getEditableRowProps("arr")}
+                display={<DetailValue>{formatExactCurrency(company.arr)}</DetailValue>}
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-arr"
+                    type="number"
+                    min={0}
+                    step={1000}
+                    value={draft.arr}
+                    disabled={!active}
+                    aria-label="ARR"
+                    onChange={(event) => updateDraft("arr", Number(event.target.value))}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Health"
+                {...getEditableRowProps("health")}
+                display={<DetailValue>{company.health} of 100</DetailValue>}
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-health"
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={draft.health}
+                    disabled={!active}
+                    aria-label="Health score"
+                    onChange={(event) => updateDraft("health", Number(event.target.value))}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Next renewal"
+                {...getEditableRowProps("renewalDate")}
+                display={
+                  <DetailValue icon={<CalendarIcon className="size-4" aria-hidden="true" />}>
+                    {formatDate(company.renewalDate)}
+                  </DetailValue>
+                }
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-renewal"
+                    type="date"
+                    value={draft.renewalDate}
+                    disabled={!active}
+                    aria-label="Next renewal"
+                    onChange={(event) => updateDraft("renewalDate", event.target.value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Notes"
+                align="start"
+                {...getEditableRowProps("notes")}
+                display={
+                  company.notes ? (
+                    <span className="text-sm leading-relaxed text-pretty text-foreground">
+                      {company.notes}
+                    </span>
+                  ) : (
+                    <span className="text-sm text-muted-foreground/60">No notes yet</span>
+                  )
+                }
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-notes"
+                    value={draft.notes}
+                    disabled={!active}
+                    placeholder="Add a note"
+                    aria-label="Notes"
+                    onChange={(event) => updateDraft("notes", event.target.value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Industry"
+                {...getEditableRowProps("industry")}
+                display={<DetailValue>{company.industry}</DetailValue>}
+                renderEdit={(active) => (
+                  <SelectEditor
+                    id="columns-5-industry"
+                    value={draft.industry}
+                    options={INDUSTRY_OPTIONS}
+                    disabled={!active}
+                    onValueChange={(value) => updateDraft("industry", value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Employees"
+                {...getEditableRowProps("employees")}
+                display={<DetailValue>{company.employees.toLocaleString("en-US")}</DetailValue>}
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-employees"
+                    type="number"
+                    min={0}
+                    step={10}
+                    value={draft.employees}
+                    disabled={!active}
+                    aria-label="Employees"
+                    onChange={(event) => updateDraft("employees", Number(event.target.value))}
+                  />
+                )}
+              />
+              <EditableDetailRow
+                label="Location"
+                {...getEditableRowProps("location")}
+                display={
+                  <DetailValue icon={<MapPinIcon className="size-4" aria-hidden="true" />}>
+                    {company.location}
+                  </DetailValue>
+                }
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-location"
+                    value={draft.location}
+                    disabled={!active}
+                    placeholder="City, country"
+                    aria-label="Location"
+                    onChange={(event) => updateDraft("location", event.target.value)}
+                  />
+                )}
+              />
+
+              <EditableDetailRow
+                label="Last activity"
+                hint="Days before the reference date, so the relative label needs no clock."
+                {...getEditableRowProps("lastActivityDays")}
+                display={<DetailValue>{formatRelativeDays(company.lastActivityDays)}</DetailValue>}
+                renderEdit={(active) => (
+                  <InputGroupInput
+                    id="columns-5-last-activity"
+                    type="number"
+                    min={0}
+                    value={draft.lastActivityDays}
+                    disabled={!active}
+                    aria-label="Days since last activity"
+                    onChange={(event) =>
+                      updateDraft("lastActivityDays", Number(event.target.value))
+                    }
+                  />
+                )}
+              />
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Footer */}
+        <SheetFooter className="shrink-0 border-t bg-background">
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex gap-2">
+              <Button
+                type="submit"
+                disabled={!hasEditingRows || isSaving}
+                className="min-w-0 flex-1"
+              >
+                {isSaving ? <Spinner className="size-4" /> : null}
+                {isSaving ? "Saving" : "Save changes"}
+              </Button>
+              <SheetClose
+                render={
+                  <Button type="button" variant="outline" className="min-w-0 flex-1">
+                    Close
+                  </Button>
+                }
+              />
+            </div>
+          </form>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
   );
 }
