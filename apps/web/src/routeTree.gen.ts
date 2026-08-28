@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as appRouteRouteImport } from './routes/(app)/route'
 import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
+import { Route as appCompanyRouteImport } from './routes/(app)/company'
 import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
 import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
 import { Route as appRenewalsRiskRouteImport } from './routes/(app)/renewals-risk'
@@ -57,6 +58,11 @@ const app2RouteRoute = app2RouteRouteImport.update({
 const publicRouteRoute = publicRouteRouteImport.update({
   id: '/(public)',
   getParentRoute: () => rootRouteImport,
+} as any)
+const appCompanyRoute = appCompanyRouteImport.update({
+  id: '/company',
+  path: '/company',
+  getParentRoute: () => appRouteRoute,
 } as any)
 const appForbiddenRoute = appForbiddenRouteImport.update({
   id: '/forbidden',
@@ -227,6 +233,7 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
@@ -262,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
+  '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
@@ -301,6 +309,7 @@ export interface FileRoutesById {
   '/(app)': typeof appRouteRouteWithChildren
   '/(app2)': typeof app2RouteRouteWithChildren
   '/(public)': typeof publicRouteRouteWithChildren
+  '/(app)/company': typeof appCompanyRoute
   '/(app)/forbidden': typeof appForbiddenRoute
   '/(app)/renewals': typeof appRenewalsRoute
   '/(app)/renewals-risk': typeof appRenewalsRiskRoute
@@ -338,6 +347,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/company'
     | '/forbidden'
     | '/renewals'
     | '/renewals-risk'
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/company'
     | '/forbidden'
     | '/renewals'
     | '/renewals-risk'
@@ -411,6 +422,7 @@ export interface FileRouteTypes {
     | '/(app)'
     | '/(app2)'
     | '/(public)'
+    | '/(app)/company'
     | '/(app)/forbidden'
     | '/(app)/renewals'
     | '/(app)/renewals-risk'
@@ -481,6 +493,13 @@ declare module '@tanstack/react-router' {
       fullPath: ''
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/(app)/company': {
+      id: '/(app)/company'
+      path: '/company'
+      fullPath: '/company'
+      preLoaderRoute: typeof appCompanyRouteImport
+      parentRoute: typeof appRouteRoute
     }
     '/(app)/forbidden': {
       id: '/(app)/forbidden'
@@ -717,6 +736,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface appRouteRouteChildren {
+  appCompanyRoute: typeof appCompanyRoute
   appForbiddenRoute: typeof appForbiddenRoute
   appRenewalsRoute: typeof appRenewalsRoute
   appRenewalsRiskRoute: typeof appRenewalsRiskRoute
@@ -739,6 +759,7 @@ interface appRouteRouteChildren {
 }
 
 const appRouteRouteChildren: appRouteRouteChildren = {
+  appCompanyRoute: appCompanyRoute,
   appForbiddenRoute: appForbiddenRoute,
   appRenewalsRoute: appRenewalsRoute,
   appRenewalsRiskRoute: appRenewalsRiskRoute,

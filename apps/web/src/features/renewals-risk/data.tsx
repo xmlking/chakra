@@ -1,3 +1,4 @@
+// oxlint-disable react/only-export-components react-doctor/only-export-components
 import { AnthropicBlack } from "@workspace/ui/components/reui/svgs/anthropicBlack";
 import { AnthropicWhite } from "@workspace/ui/components/reui/svgs/anthropicWhite";
 import { Convex } from "@workspace/ui/components/reui/svgs/convex";

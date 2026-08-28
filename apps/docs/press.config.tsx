@@ -1,3 +1,4 @@
+// oxlint-disable react/only-export-components react-doctor/only-export-components
 import { changelogPlugin, createChangelogIndexPage } from "@fumapress/tegami";
 import { getPageTreePeers } from "fumadocs-core/page-tree";
 import { lucideIconsPlugin } from "fumadocs-core/source/plugins/lucide-icons";

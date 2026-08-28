@@ -261,6 +261,7 @@ export function CreatableMultiSelectField({
           <DialogDescription>Add a new label to select.</DialogDescription>
           <form onSubmit={handleCreateSubmit}>
             <Input
+              // oxlint-disable-next-line react/refs
               defaultValue={pendingQueryRef.current}
               placeholder="Label name"
               ref={createInputRef}

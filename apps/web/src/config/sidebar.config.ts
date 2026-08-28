@@ -46,6 +46,11 @@ export const navGroups: NavGroup[] = [
         url: "/renewals-risk",
         icon: TableIcon,
       },
+      {
+        title: "Company",
+        url: "/company",
+        icon: Building2Icon,
+      },
       { title: "Team", url: "/dashboard/team", icon: UsersIcon },
       {
         title: "Analytics",

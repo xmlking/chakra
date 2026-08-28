@@ -29,6 +29,7 @@ export function JSONField({
   useEffect(() => {
     const value = field.state.value;
     const next = value ? JSON.stringify(value, null, 2) : "";
+    // oxlint-disable-next-line react/set-state-in-effect
     setText(next);
   }, [field.state.value]);
 

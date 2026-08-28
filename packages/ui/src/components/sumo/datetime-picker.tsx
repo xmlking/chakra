@@ -718,6 +718,7 @@ function DateTimePicker({
    * parent component
    */
   React.useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect
     setDisplayDate(value);
   }, [value]);
 
