@@ -28,7 +28,7 @@
     "@basecn": "https://basecn.dev/r/{name}.json",
     "@assistant-ui": "https://r.assistant-ui.com/styles/{style}/{name}.json",
     "@reui": {
-      "url": "https://reui.io/r/{style}/{name}.json",
+      "url": "https://reui.io/r/base-nova/{name}.json",
       "headers": {
         "Authorization": "Bearer ${REUI_LICENSE_KEY}"
       }

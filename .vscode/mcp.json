@@ -1,4 +1,12 @@
 {
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "reui-token",
+      "description": "ReUI personal token (reui_pat_...)",
+      "password": true
+    }
+  ],
   "servers": {
     "better-auth": {
       "type": "http",
@@ -20,7 +28,7 @@
       "type": "http",
       "url": "https://mcp.reui.io",
       "headers": {
-        "Authorization": "Bearer ${env:REUI_LICENSE_KEY}"
+        "Authorization": "Bearer ${input:reui-token}"
       }
     },
     "mcp-toolbox": {
