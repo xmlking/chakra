@@ -3,7 +3,7 @@ telemetry = false
 
 # scripts to run before `bun run`-ing a file or script
 # register plugins by adding them to this list
-preload = ["zod/compile"]
+# preload = ["zod/compile"]
 
 [test]
 coverage = false

@@ -62,10 +62,11 @@ export function Providers({ children }: { children: ReactNode }) {
                   navigate={navigate}
                   plugins={[
                     adminPlugin({
-                      // defaultRole: "member",
+                      allowMultipleRoles: false,
+                      defaultRole: "user",
                       // impersonationRedirectTo: "/",
                       // pageSize: 25,
-                      // roles: ["member", "support", "admin"],
+                      // roles: ["guest", "user", "admin"],
                       // showIpAddress: false,
                     }),
                     lastLoginMethodPlugin(),
