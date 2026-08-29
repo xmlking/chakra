@@ -9,14 +9,12 @@ import evlog from "evlog/nitro/v3";
 import ViteEvlog from "evlog/vite";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
-import zodCompiler from "zod-compiler/vite";
 
 const config = defineConfig({
   envDir: "../..", // HINT: use workspace root .env files
   resolve: { tsconfigPaths: true },
   plugins: [
     aui(),
-    zodCompiler(),
     ViteEnv(),
     devtools(),
     ViteEvlog({
