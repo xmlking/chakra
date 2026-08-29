@@ -104,8 +104,7 @@
     "tailwindcss": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:",
-    "vitest": "catalog:",
-    "zod-compiler": "catalog:"
+    "vitest": "catalog:"
   },
   "peerDependencies": {
     "@base-ui/react": "catalog:",
