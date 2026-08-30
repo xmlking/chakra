@@ -25,6 +25,7 @@ import { Route as publicVersionRouteImport } from './routes/(public)/version'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
+import { Route as ApiOrdersRouteImport } from './routes/api/orders'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin/$page'
 import { Route as appAdminUsersRouteImport } from './routes/(app)/admin/users'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
@@ -122,6 +123,11 @@ const ApiFilesTestRoute = ApiFilesTestRouteImport.update({
 const ApiImagesRoute = ApiImagesRouteImport.update({
   id: '/api/images',
   path: '/api/images',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiOrdersRoute = ApiOrdersRouteImport.update({
+  id: '/api/orders',
+  path: '/api/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appAdminPageRoute = appAdminPageRouteImport.update({
@@ -245,6 +251,7 @@ export interface FileRoutesByFullPath {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -281,6 +288,7 @@ export interface FileRoutesByTo {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -321,6 +329,7 @@ export interface FileRoutesById {
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
+  '/api/orders': typeof ApiOrdersRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/admin/users': typeof appAdminUsersRoute
@@ -359,6 +368,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -395,6 +405,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -434,6 +445,7 @@ export interface FileRouteTypes {
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
+    | '/api/orders'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/admin/users'
@@ -465,6 +477,7 @@ export interface RootRouteChildren {
   ApiFilesRoute: typeof ApiFilesRoute
   ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
+  ApiOrdersRoute: typeof ApiOrdersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
   ApiStudioSplatRoute: typeof ApiStudioSplatRoute
@@ -583,6 +596,13 @@ declare module '@tanstack/react-router' {
       path: '/api/images'
       fullPath: '/api/images'
       preLoaderRoute: typeof ApiImagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/orders': {
+      id: '/api/orders'
+      path: '/api/orders'
+      fullPath: '/api/orders'
+      preLoaderRoute: typeof ApiOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/admin/$page': {
@@ -826,6 +846,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFilesRoute: ApiFilesRoute,
   ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,
+  ApiOrdersRoute: ApiOrdersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
   ApiStudioSplatRoute: ApiStudioSplatRoute,

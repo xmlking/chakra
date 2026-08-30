@@ -9,7 +9,8 @@ import type { TaskPayload } from "nitro/types";
  * Note: Using context.waitUntil?.() is essential to prevent serverless environments
  * (like Cloudflare Workers or Vercel) from shutting down before your background task completes
  */
-export const onrampWebhooksCheckTask = defineTask({
+// oxlint-disable-next-line import/no-default-export
+export default defineTask({
   meta: {
     name: "onramp-webhooks-check",
     description: "Check for onramp webhooks",

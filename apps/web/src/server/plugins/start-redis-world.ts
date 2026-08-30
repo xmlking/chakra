@@ -2,7 +2,8 @@
 
 // import { env } from "virtual:env/server";
 
-// export const redisWorldPlugin = definePlugin(async () => {
+// oxlint-disable-next-line import/no-default-export
+// export default definePlugin(async () => {
 //   if (env.WORKFLOW_TARGET_WORLD === "@workflow-worlds/redis") {
 //     if (!env.REDIS_URI) {
 //       console.error("REDIS_URI is not set, skipping Redis World...");
