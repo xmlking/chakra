@@ -2,7 +2,8 @@ import { log } from "evlog";
 import { definePlugin } from "nitro";
 import { env } from "virtual:env/server";
 
-export const postgresWorldPlugin = definePlugin(async () => {
+// oxlint-disable-next-line import/no-default-export
+export default definePlugin(async () => {
   if (env.WORKFLOW_TARGET_WORLD === "@workflow/world-postgres") {
     // Dynamic import to avoid edge runtime bundling issues
     log.info("start-pg-world", "Starting Postgres World...");

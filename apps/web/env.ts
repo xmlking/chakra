@@ -23,7 +23,7 @@ export default defineEnv({
     // postgres workflow
     WORKFLOW_TARGET_WORLD: z.string().min(1).default("@workflow/world-postgres"),
     WORKFLOW_POSTGRES_URL: z.string().min(1),
-    WORKFLOW_POSTGRES_JOB_PREFIX: z.string().min(1).default("docuflow_job_"),
+    WORKFLOW_POSTGRES_JOB_PREFIX: z.string().min(1).default("chakra_job_"),
     WORKFLOW_POSTGRES_WORKER_CONCURRENCY: z.coerce.number().int().min(1).default(10),
     WORKFLOW_POSTGRES_MAX_POOL_SIZE: z.coerce.number().int().min(1).default(12),
   },
