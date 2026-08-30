@@ -22,6 +22,7 @@
       "#hooks/*": ["./src/hooks/*.ts"],
       "#lib/*": ["./src/lib/*.ts"],
       "#server/*": ["./src/server/*"],
+      "#workflows/*": ["./src/workflows/*"],
       "#types": ["./src/types/index.ts"]
     },
 
