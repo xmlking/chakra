@@ -25,7 +25,7 @@
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "clean": "git clean -xdf vite-env.d.ts coverage .evlog .workflow-* node_modules",
+    "clean": "git clean -xdf vite-env.d.ts .workflow-* coverage .evlog .workflow-* node_modules",
     "prepare": "vp config",
     "ready": "vp check && vp test && vp run -r build"
   },

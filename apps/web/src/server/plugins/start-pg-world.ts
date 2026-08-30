@@ -9,7 +9,7 @@ export default definePlugin(async () => {
     log.info("start-pg-world", "Starting Postgres World...");
     const { createWorld } = await import("@workflow/world-postgres");
     await createWorld({
-      connectionString: env.WORKFLOW_POSTGRES_URL,
+      connectionString: env.WORKFLOW_POSTGRES_URL ?? env.DATABASE_URL,
       jobPrefix: env.WORKFLOW_POSTGRES_JOB_PREFIX,
       queueConcurrency: env.WORKFLOW_POSTGRES_WORKER_CONCURRENCY,
       maxPoolSize: env.WORKFLOW_POSTGRES_MAX_POOL_SIZE,
