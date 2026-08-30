@@ -1,7 +1,7 @@
-import { sleep } from "@workspace/shared";
 import { log } from "evlog";
 import { defineTask } from "nitro/task";
-import type { TaskPayload } from "nitro/types";
+
+import { doBackgroundWork } from "#server/services/bg";
 
 /**
  * A task that can be scheduled to run in the background
@@ -24,8 +24,3 @@ export default defineTask({
     return { result: "Success" };
   },
 });
-
-async function doBackgroundWork(payload: TaskPayload) {
-  log.info({ action: "doBackgroundWork", job: "onramp-webhooks-check", payload });
-  await sleep(1000); // Sleep for 1 second
-}
