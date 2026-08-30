@@ -13,7 +13,7 @@ import { workflow } from "workflow/vite";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, "../..", "");
-  const CRON = env.ONRAMP_SCHEDULER_CRON || "* * * * *";
+  const ONRAMP_SCHEDULER_CRON = env.ONRAMP_SCHEDULER_CRON || "* * * * *";
 
   return {
     envDir: "../..", // HINT: use workspace root .env files
@@ -53,7 +53,7 @@ export default defineConfig(({ mode }) => {
         },
         scheduledTasks: {
           // Run `onramp-webhooks-check` task on schedule
-          [CRON]: ["work:onramp-webhooks-check"],
+          [ONRAMP_SCHEDULER_CRON]: ["work:onramp-webhooks-check"],
         },
         // preset: "bun",
         // compressPublicAssets: { brotli: true },
