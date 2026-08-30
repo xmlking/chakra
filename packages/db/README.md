@@ -69,6 +69,8 @@ vp run @workspace/db#generate
 To apply `migrations` to local database and `seed` sample data
 
 ```shell
+# workflow schema setup: https://workflow-sdk.dev/worlds/postgres
+vp run @workspace/db#workflow:bootstrap
 # Apply migrations to local database
 # vp run @workspace/db#push
 vp run @workspace/db#migrate
@@ -80,6 +82,12 @@ Start DB Viewer App to see the data
 
 ```shell
 vp run @workspace/db#studio
+```
+
+Check if local database is in sync with drizzle schema
+
+```shell
+vpr @workspace/db#check
 ```
 
 ### Production Database Setup

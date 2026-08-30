@@ -9,6 +9,7 @@ import evlog from "evlog/nitro/v3";
 import ViteEvlog from "evlog/vite";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite-plus";
+import { workflow } from "workflow/vite";
 
 const config = defineConfig({
   envDir: "../..", // HINT: use workspace root .env files
@@ -30,13 +31,31 @@ const config = defineConfig({
       },
     }),
     nitro({
-      plugins: ["./src/server/plugins/evlog-auth.ts", "./src/server/plugins/evlog-drain.ts"],
-      // preset: "bun",
-      // compressPublicAssets: { brotli: true },
       experimental: {
         asyncContext: true,
+        envExpansion: true,
+        tasks: true,
       },
+      plugins: [
+        "./src/server/plugins/evlog-auth.ts",
+        "./src/server/plugins/evlog-drain.ts",
+        "./src/server/plugins/start-pg-world.ts"
+      ],
+      tasks: {
+        "work:onramp-webhooks-check": {
+          handler: "#server/tasks/onramp-webhooks-check.ts",
+          description: "Run onramp webhooks check",
+        },
+      },
+      scheduledTasks: {
+        // Run `onramp-webhooks-check` task every minute
+        "* * * * *": ["work:onramp-webhooks-check"],
+      },
+      // preset: "bun",
+      // compressPublicAssets: { brotli: true },
       modules: [
+        // this is the plugin that enables path aliases
+        "workflow/nitro",
         evlog({
           env: { service: "chakra" },
           exclude: [
@@ -58,6 +77,7 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     react({ compiler: true }),
+    workflow(),
   ],
   define: getBuildInfo(),
 });

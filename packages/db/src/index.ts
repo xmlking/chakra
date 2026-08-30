@@ -15,7 +15,7 @@ const pool = new Pool({
 export const db = drizzle({
   client: pool,
   relations: { ...relations, ...authRelations },
-  logger: import.meta.env.DEV ? new DrizzleQueryLogger() : false,
+  logger: process.env.NODE_ENV !== "production" ? new DrizzleQueryLogger() : false,
   jit: true,
 });
 

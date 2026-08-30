@@ -7,7 +7,7 @@ Welcome to your new TanStack Start app!
 To run this application:
 
 ```shell
-vp dev apps/web
+vp run web#dev
 ```
 
 ## Building For Production
@@ -15,7 +15,7 @@ vp dev apps/web
 To build this application for production:
 
 ```shell
-vp build apps/web
+vp run web#build
 ```
 
 ## Testing
@@ -50,14 +50,42 @@ If you prefer not to use Tailwind CSS:
 3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
 4. Uninstall the packages: `bun install @tailwindcss/vite tailwindcss -D`
 
+## Workflow
+
+### Observability
+
+Inspect, monitor, and debug workflows through the CLI and web UI.
+
+```shell
+# Open the observability Web UI on http://localhost:3456
+bunx workflow web
+# or if you prefer a terminal interface, use the CLI inspect command
+bunx workflow inspect runs
+```
+
+More options...
+
+```shell
+# See all available commands
+bunx workflow inspect --help
+# List recent workflow runs
+bunx workflow inspect runs
+# Launch the web UI for visual exploration
+bunx workflow inspect runs --web
+# Print the deep-link URL for a run (no browser, no server)
+bunx workflow inspect run <run_id> --url
+# Vercel runs: add the backend (and --env preview for preview deployments)
+bunx workflow inspect run <run_id> --backend vercel --url
+```
+
 ## Deploy with Nitro
 
 This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
 
 ```shell
-vp build apps/web
-vp preview apps/web
-vp deploy apps/web
+vp run web#build
+vp run web#preview
+vp run web#deploy
 ```
 
 The build output is a self-contained Node server. To deploy, push the `.output` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.

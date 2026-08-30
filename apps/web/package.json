@@ -9,9 +9,8 @@
     "#features/*": "./src/features/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
-    "#server/*": [
-      "./src/server/*"
-    ],
+    "#server/*": "./src/server/*",
+    "#workflows/*": "./src/workflows/*",
     "#types": [
       "./src/types/index.ts"
     ]
@@ -19,10 +18,12 @@
   "scripts": {
     "build": "vp build",
     "check": "vite-env check && vp check",
-    "clean": "git clean -xdf vite-env.d.ts .output .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
+    "clean": "git clean -xdf vite-env.d.ts .output .workflow-* *.log .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
     "dev": "vp dev",
     "postinstall": "vite-env types && vite-env generate",
-    "preview": "vp preview"
+    "preview": "vp preview",
+    "workflow:observe": "dotenv-run -f ../../.env -v -- workflow inspect runs",
+    "workflow:observe:web": "dotenv-run -f ../../.env -v -- workflow web"
   },
   "dependencies": {
     "@ai-sdk/openai": "catalog:",
@@ -56,6 +57,7 @@
     "@thesvg/react": "catalog:",
     "@unpic/react": "catalog:",
     "@vite-env/core": "catalog:",
+    "@workflow/world-postgres": "catalog:",
     "@workspace/auth": "workspace:*",
     "@workspace/db": "workspace:*",
     "@workspace/email": "workspace:*",
@@ -99,6 +101,7 @@
     "@types/react-dom": "catalog:",
     "@vite-env/cli": "catalog:",
     "@vitejs/plugin-react": "catalog:",
+    "@workflow/vitest": "catalog:",
     "class-variance-authority": "catalog:",
     "nitro": "catalog:",
     "tailwindcss": "catalog:",

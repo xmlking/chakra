@@ -1,4 +1,5 @@
 import ViteEnv from "@vite-env/core/plugin";
+import { workflow as workflowTest } from "@workflow/vitest";
 import {
   RECOMMENDED_RULES,
   TANSTACK_QUERY_RULES,
@@ -137,7 +138,7 @@ export default defineConfig({
     exclude: ["**/.react-email/*"],
     projects: [
       {
-        plugins: [ViteEnv({ configFile: "apps/web/env.ts" })],
+        plugins: [ViteEnv({ configFile: "apps/web/env.ts" }), workflowTest()],
         test: {
           name: "server",
           include: ["**/{src,tests}/**/*.{test,spec}.ts"],
