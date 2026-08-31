@@ -1,3 +1,4 @@
+import { AssistantChatTransport, useChatRuntime } from "@assistant-ui/ai-sdk";
 import {
   AuiProvider,
   AuiConfig,
@@ -7,31 +8,12 @@ import {
   useAui,
   WebSpeechDictationAdapter,
 } from "@assistant-ui/react";
-import { AssistantChatTransport, useChatRuntime } from "@assistant-ui/react-ai-sdk";
-import { McpManagerResource, defineConnector } from "@assistant-ui/react-mcp";
 import { createFileRoute } from "@tanstack/react-router";
-import { ModelSelector } from "@workspace/ui/components/assistant-ui/model-selector";
-import { Thread } from "@workspace/ui/components/assistant-ui/thread";
-import { ThreadListSidebar } from "@workspace/ui/components/assistant-ui/threadlist-sidebar";
-import type { FC } from "react";
+import { ModelSelector } from "@workspace/ui/components/assistant-ui/elements/model-selector.aui";
+import { Thread } from "@workspace/ui/components/assistant-ui/elements/thread.aui";
+import { ThreadListSidebar } from "@workspace/ui/components/assistant-ui/elements/threadlist-sidebar.aui";
 
 import toolkit from "#features/support/tools/toolkit";
-
-const MCP_CONNECTORS = [
-  defineConnector({
-    id: "better-auth",
-    name: "Better Auth",
-    url: "https://mcp.better-auth.com/mcp",
-    auth: { type: "none" },
-  }),
-  defineConnector({
-    id: "mcp-toolbox",
-    name: "MCP Toolbox",
-    url: "http://127.0.0.1:5010/mcp",
-    auth: { type: "none" },
-  }),
-];
-
 // @ts-ignore TODO
 // oxlint-disable-next-line no-unused-vars
 const ComposerAction: FC = () => {
@@ -58,7 +40,6 @@ export const Route = createFileRoute("/(app)/support/")({
 function SupportChat() {
   const aui = useAui();
   const config = AuiConfig({
-    mcp: McpManagerResource({ connectors: MCP_CONNECTORS }),
     tools: Tools({ toolkit }),
     suggestions: Suggestions([
       {
@@ -106,7 +87,7 @@ function SupportChat() {
           // }
           />
         </div>
-        <ThreadListSidebar side="right" showHeader={false} showFooter={false} className="h-full" />
+        <ThreadListSidebar side="right" className="h-full" />
       </main>
     </AuiProvider>
   );

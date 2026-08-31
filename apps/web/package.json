@@ -10,10 +10,10 @@
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
     "#server/*": "./src/server/*",
-    "#workflows/*": "./src/workflows/*",
     "#types": [
       "./src/types/index.ts"
-    ]
+    ],
+    "#workflows/*": "./src/workflows/*"
   },
   "scripts": {
     "build": "vp build",
@@ -27,8 +27,8 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "catalog:",
+    "@assistant-ui/ai-sdk": "catalog:",
     "@assistant-ui/react": "catalog:",
-    "@assistant-ui/react-ai-sdk": "catalog:",
     "@assistant-ui/react-mcp": "catalog:",
     "@better-auth-ui/core": "catalog:",
     "@better-auth-ui/react": "catalog:",

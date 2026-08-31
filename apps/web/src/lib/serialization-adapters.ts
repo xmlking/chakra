@@ -6,9 +6,9 @@ import { ZodError } from "zod";
 export const evlogErrorAdapter = createSerializationAdapter({
   key: "evlogError",
   test: (error: unknown): error is EvlogError => error instanceof EvlogError,
-  toSerializable: (error) => {
+  toSerializable: (error: EvlogError) => {
     const { raw: _raw, ...rest } = parseError(error);
-    return rest;
+    return rest as any;
   },
   fromSerializable: (value) => createError(value),
 });
@@ -18,12 +18,12 @@ import { isTaggedError } from "better-result";
 export const taggedErrorAdapter = createSerializationAdapter({
   key: "taggedError",
   test: isTaggedError,
-  toSerializable: (err) => ({
+  toSerializable: (err: any) => ({
     _tag: err._tag,
     message: err.message,
     stack: err.stack,
   }),
-  fromSerializable: (pojo) => {
+  fromSerializable: (pojo: any) => {
     const ErrorClass = TAGGED_ERROR_CONSTRUCTORS[pojo._tag];
     if (ErrorClass) {
       const err = new ErrorClass({ message: pojo.message }) as any;
@@ -44,6 +44,6 @@ export const zodErrorAdapter = createSerializationAdapter({
   key: "zodError",
   test: (value: unknown): value is ZodError => value instanceof ZodError,
 
-  toSerializable: (error) => error.issues as any[], // Serialize issues array
-  fromSerializable: (issues) => new ZodError(issues), // Reconstruct client-side error
+  toSerializable: (error: ZodError) => error.issues as any[], // Serialize issues array
+  fromSerializable: (issues: any) => new ZodError(issues), // Reconstruct client-side error
 });
