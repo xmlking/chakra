@@ -59,7 +59,7 @@ export default defineConfig(({ mode }) => {
         // compressPublicAssets: { brotli: true },
         modules: [
           // this is the plugin that enables path aliases
-          "workflow/nitro",
+          // "workflow/nitro",
           evlog({
             env: { service: "chakra" },
             exclude: [
@@ -77,6 +77,12 @@ export default defineConfig(({ mode }) => {
           }),
         ],
         rollupConfig: { external: [/^@sentry\//, "motion"] },
+        // Nitro enables wasm by default, which adds the "unwasm" export
+        // condition. That routes `shiki/wasm` to its raw `onig.wasm` file, which
+        // Vite/Rolldown cannot load during the SSR build ([UNLOADABLE_DEPENDENCY]).
+        // Disabling it resolves `shiki/wasm` to its base64-inlined default — same
+        // Oniguruma engine, no separate .wasm asset.
+        wasm: false,
       }),
       tailwindcss(),
       tanstackStart(),
@@ -84,5 +90,13 @@ export default defineConfig(({ mode }) => {
       workflow(),
     ],
     define: getBuildInfo(),
+    build: {
+      rolldownOptions: {
+        external: ["shiki/wasm"],
+      },
+    },
+    ssr: {
+      external: ["shiki/wasm"],
+    },
   };
 });

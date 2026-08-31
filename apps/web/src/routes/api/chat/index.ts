@@ -1,5 +1,5 @@
 import { openai } from "@ai-sdk/openai";
-import { AISDKToolkit, type AISDKToolkitToolsOptions } from "@assistant-ui/react-ai-sdk";
+import { AISDKToolkit, type AISDKToolkitToolsOptions } from "@assistant-ui/ai-sdk";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   streamText,

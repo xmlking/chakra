@@ -1,5 +1,6 @@
+"use client";
+
 import {
-  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -12,7 +13,6 @@ import {
 } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
-import { useAui } from "@assistant-ui/react";
 import { cn } from "#lib/utils";
 import {
   Popover,
@@ -135,7 +135,7 @@ const ModelSelectorContext = createContext<ModelSelectorContextValue | null>(
   null,
 );
 
-function useModelSelectorContext() {
+export function useModelSelectorContext() {
   const ctx = useContext(ModelSelectorContext);
   if (!ctx) {
     throw new Error(
@@ -239,7 +239,7 @@ function ModelSelectorRoot({
 }
 
 export const modelSelectorTriggerVariants = cva(
-  "focus-visible:ring-ring/50 flex w-fit items-center justify-between gap-2 overflow-hidden rounded-md text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+  "focus-visible:ring-ring/50 flex w-fit items-center justify-between gap-2 overflow-hidden rounded-md text-sm whitespace-nowrap transition-colors outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
   {
     variants: {
       variant: {
@@ -448,7 +448,7 @@ function ModelSelectorContent({
       side={renderedSide ?? side ?? "bottom"}
       sideOffset={sideOffset}
       className={cn(
-        "bg-popover/95 w-72 min-w-(--anchor-width) overflow-hidden rounded-xl p-0 shadow-lg backdrop-blur-sm",
+        "bg-popover w-72 min-w-(--anchor-width) overflow-hidden rounded-xl p-0",
         className,
       )}
       {...props}
@@ -681,7 +681,7 @@ function ModelSelectorEffort({
             key={option.id}
             value={option.id}
             className={cn(
-              "focus-visible:ring-ring/50 text-muted-foreground hover:text-foreground rounded-md px-2 py-1 text-xs transition-colors outline-none focus-visible:ring-2",
+              "focus-visible:ring-ring/50 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer rounded-md px-2 py-1 text-xs transition-colors outline-none focus-visible:ring-1",
               "data-checked:bg-accent data-checked:text-accent-foreground data-checked:font-medium",
             )}
           >
@@ -704,90 +704,7 @@ export type ModelSelectorProps = Omit<ModelSelectorRootProps, "children"> &
     contentClassName?: string;
   };
 
-/** Registers the selection with assistant-ui's ModelContext system. The
- * context's effort is already resolved against the selected model. */
-function ModelSelectorModelContext() {
-  const { value, effort } = useModelSelectorContext();
-  const api = useAui();
-
-  useEffect(() => {
-    if (value === undefined) return;
-    const config = {
-      config: {
-        modelName: value,
-        ...(effort !== undefined ? { reasoningEffort: effort } : undefined),
-      },
-    };
-    return api.modelContext.register({
-      getModelContext: () => config,
-    });
-  }, [api, value, effort]);
-
-  return null;
-}
-
-const ModelSelectorImpl = ({
-  searchable,
-  variant,
-  size,
-  align,
-  className,
-  contentClassName,
-  ...rootProps
-}: ModelSelectorProps) => {
-  return (
-    <ModelSelectorRoot {...rootProps}>
-      <ModelSelectorModelContext />
-      <ModelSelectorTrigger
-        variant={variant}
-        size={size}
-        className={className}
-      />
-      <ModelSelectorContent
-        {...(align !== undefined ? { align } : {})}
-        className={contentClassName}
-        searchable={searchable ?? false}
-      />
-    </ModelSelectorRoot>
-  );
-};
-
-type ModelSelectorComponent = typeof ModelSelectorImpl & {
-  displayName?: string;
-  Root: typeof ModelSelectorRoot;
-  Trigger: typeof ModelSelectorTrigger;
-  Value: typeof ModelSelectorValue;
-  Content: typeof ModelSelectorContent;
-  Search: typeof ModelSelectorSearch;
-  FocusAnchor: typeof ModelSelectorFocusAnchor;
-  List: typeof ModelSelectorList;
-  Empty: typeof ModelSelectorEmpty;
-  Group: typeof ModelSelectorGroup;
-  Separator: typeof ModelSelectorSeparator;
-  Item: typeof ModelSelectorItem;
-  Effort: typeof ModelSelectorEffort;
-};
-
-const ModelSelector = memo(
-  ModelSelectorImpl,
-) as unknown as ModelSelectorComponent;
-
-ModelSelector.displayName = "ModelSelector";
-ModelSelector.Root = ModelSelectorRoot;
-ModelSelector.Trigger = ModelSelectorTrigger;
-ModelSelector.Value = ModelSelectorValue;
-ModelSelector.Content = ModelSelectorContent;
-ModelSelector.Search = ModelSelectorSearch;
-ModelSelector.FocusAnchor = ModelSelectorFocusAnchor;
-ModelSelector.List = ModelSelectorList;
-ModelSelector.Empty = ModelSelectorEmpty;
-ModelSelector.Group = ModelSelectorGroup;
-ModelSelector.Separator = ModelSelectorSeparator;
-ModelSelector.Item = ModelSelectorItem;
-ModelSelector.Effort = ModelSelectorEffort;
-
 export {
-  ModelSelector,
   ModelSelectorRoot,
   ModelSelectorTrigger,
   ModelSelectorValue,

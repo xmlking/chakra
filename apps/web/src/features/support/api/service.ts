@@ -1,6 +1,6 @@
 import { openai } from "@ai-sdk/openai";
-import { type AISDKToolkitToolsOptions } from "@assistant-ui/react-ai-sdk";
-import { AISDKToolkit } from "@assistant-ui/react-ai-sdk";
+import { type AISDKToolkitToolsOptions } from "@assistant-ui/ai-sdk";
+import { AISDKToolkit } from "@assistant-ui/ai-sdk";
 import { createServerFn } from "@tanstack/react-start";
 import {
   streamText,
