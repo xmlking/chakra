@@ -120,8 +120,8 @@
     "@vitest/browser-playwright": "4.1.11",
     "@vitest/coverage-v8": "4.1.11",
     "@vitest/ui": "4.1.11",
-    "@workflow/vitest": "5.0.0-beta.44",
-    "@workflow/world-postgres": "5.0.0-beta.36",
+    "@workflow/vitest": "5.0.0-beta.47",
+    "@workflow/world-postgres": "5.0.0-beta.39",
     "ai": "7.0.85",
     "auth": "1.7.2",
     "better-auth": "1.7.2",
@@ -170,7 +170,7 @@
     "vite-plus": "0.3.0",
     "vitest": "4.1.11",
     "vitest-browser-react": "2.2.0",
-    "workflow": "5.0.0-beta.44",
+    "workflow": "5.0.0-beta.47",
     "zod": "4.5.4",
     "zustand": "5.0.15"
   }
