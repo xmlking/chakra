@@ -44,7 +44,6 @@ import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
 import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
-import { Route as ApiStudioSplatRouteImport } from './routes/api/studio/$'
 import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
 import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
 
@@ -221,11 +220,6 @@ const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
   path: '/api/health/live',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiStudioSplatRoute = ApiStudioSplatRouteImport.update({
-  id: '/api/studio/$',
-  path: '/api/studio/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const appsecurityOrganizationPathRoute =
   appsecurityOrganizationPathRouteImport.update({
     id: '/(security)/organization/$path',
@@ -268,7 +262,6 @@ export interface FileRoutesByFullPath {
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/api/studio/$': typeof ApiStudioSplatRoute
   '/dashboard/': typeof appDashboardIndexRoute
   '/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
@@ -305,7 +298,6 @@ export interface FileRoutesByTo {
   '/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/api/studio/$': typeof ApiStudioSplatRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/support': typeof appSupportIndexRoute
   '/api/chat': typeof ApiChatIndexRoute
@@ -346,7 +338,6 @@ export interface FileRoutesById {
   '/(public)/auth/$path': typeof publicAuthPathRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
-  '/api/studio/$': typeof ApiStudioSplatRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
@@ -385,7 +376,6 @@ export interface FileRouteTypes {
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/api/studio/$'
     | '/dashboard/'
     | '/support/'
     | '/api/chat/'
@@ -422,7 +412,6 @@ export interface FileRouteTypes {
     | '/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/api/studio/$'
     | '/dashboard'
     | '/support'
     | '/api/chat'
@@ -462,7 +451,6 @@ export interface FileRouteTypes {
     | '/(public)/auth/$path'
     | '/api/auth/$'
     | '/api/health/live'
-    | '/api/studio/$'
     | '/(app)/dashboard/'
     | '/(app)/support/'
     | '/api/chat/'
@@ -480,7 +468,6 @@ export interface RootRouteChildren {
   ApiOrdersRoute: typeof ApiOrdersRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
-  ApiStudioSplatRoute: typeof ApiStudioSplatRoute
   ApiChatIndexRoute: typeof ApiChatIndexRoute
 }
 
@@ -731,13 +718,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiHealthLiveRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/studio/$': {
-      id: '/api/studio/$'
-      path: '/api/studio/$'
-      fullPath: '/api/studio/$'
-      preLoaderRoute: typeof ApiStudioSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/(app)/(security)/organization/$path': {
       id: '/(app)/(security)/organization/$path'
       path: '/organization/$path'
@@ -849,7 +829,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiOrdersRoute: ApiOrdersRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
-  ApiStudioSplatRoute: ApiStudioSplatRoute,
   ApiChatIndexRoute: ApiChatIndexRoute,
 }
 export const routeTree = rootRouteImport
