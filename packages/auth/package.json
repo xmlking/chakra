@@ -17,7 +17,6 @@
     "generate-schema": "bun x vite-node@latest scripts/generate-better-auth-schemas.ts",
     "generate-schema-ori": "dotenv-run -f ../../.env -v auth@latest generate --config src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
     "postinstall": "vite-env types && vite-env generate",
-    "studio": "dotenv-run -f ../../.env -v -- better-auth-studio start --port 3002 --config ./src/index.tsx",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -33,7 +32,6 @@
     "@workspace/email": "workspace:*",
     "@workspace/shared": "workspace:*",
     "better-auth": "catalog:",
-    "better-auth-studio": "catalog:",
     "better-inbox": "catalog:",
     "react": "catalog:",
     "zod": "catalog:"
