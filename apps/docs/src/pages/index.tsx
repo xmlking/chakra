@@ -1,11 +1,10 @@
 import { Badge } from "@workspace/ui/components/shadcn/badge";
 import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { Card, CardHeader, CardTitle, CardDescription } from "@workspace/ui/components/shadcn/card";
+import { cn } from "@workspace/ui/lib/utils";
 // oxlint-disable react-doctor/jsx-pascal-case
 import { Database, Plug, Zap, Lock, Shuffle, Globe, Star } from "lucide-react";
 import { Link } from "waku";
-
-import { cn } from "@/lib/utils";
 
 // oxlint-disable-next-line import/no-default-export
 export default function Page() {
