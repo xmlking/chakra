@@ -1,6 +1,5 @@
+import { cn } from "@workspace/ui/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
-
-import { cn } from "@/lib/utils";
 
 export function Video(props: ComponentPropsWithoutRef<"video">) {
   return (

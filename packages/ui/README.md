@@ -20,8 +20,8 @@ To `add/update` **shadcn** `components`, run the following commands:
 cd packages/ui
 # SHADCN Components
 bunx --bun shadcn@latest add --all --overwrite
-# Switch utils.ts from clsx + twMerge to [cnfast](https://github.com/aidenybai/cnfast)
-bunx --bun shadcn@latest add aidenybai/cnfast/cn
+# Switch utils.ts from clsx + twMerge to [cn](https://github.com/shadcn-ui/cn)
+bunx shadcn@latest migrate cn
 
 # better-auth-ui Components
 # bunx --bun shadcn@latest registry add @better-auth-ui=https://better-auth-ui.com/r/{style}/{name}.json
