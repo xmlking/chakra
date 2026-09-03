@@ -92,7 +92,7 @@ After collecting answers, present a concise implementation plan as a markdown ch
 - **UI:** Custom forms
 
 ### Steps
-1. Install `better-auth` and `@better-auth/cli`
+1. Install `better-auth` and `auth` CLI
 2. Create `lib/auth.ts` with server config
 3. Create `lib/auth-client.ts` with React client
 4. Set up route handler at `app/api/auth/[...all]/route.ts`
@@ -234,9 +234,9 @@ Add OAuth secrets as needed: `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GOOGLE
 
 | Adapter | Command |
 |---------|---------|
-| Built-in Kysely | `npx @better-auth/cli@latest migrate` (applies directly) |
-| Prisma | `npx @better-auth/cli@latest generate --output prisma/schema.prisma` then `npx prisma migrate dev` |
-| Drizzle | `npx @better-auth/cli@latest generate --output src/db/auth-schema.ts` then `npx drizzle-kit push` |
+| Built-in Kysely | `npx auth@latest migrate` (applies directly) |
+| Prisma | `npx auth@latest generate --output prisma/schema.prisma` then `npx prisma migrate dev` |
+| Drizzle | `npx auth@latest generate --output src/db/auth-schema.ts` then `npx drizzle-kit push` |
 
 **Re-run after adding plugins.**
 

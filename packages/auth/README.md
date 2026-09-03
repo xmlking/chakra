@@ -15,7 +15,7 @@ vp run @workspace/auth#generate-schema
 Alternative way to generate updated `better-auth` database schema, run from product **root**:
 
 ```shell
-bunx @better-auth/cli@latest generate --config packages/auth/src/index.ts --output packages/db/src/schema/copy_me_auth.ts -y
+bunx auth@latest generate --config packages/auth/src/index.ts --output packages/db/src/schema/copy_me_auth.ts -y
 ```
 
 Tests
