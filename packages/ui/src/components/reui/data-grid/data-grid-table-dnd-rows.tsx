@@ -105,7 +105,7 @@ type DataGridTableDndRowDecoration<TData extends object> = (context: {
 function DataGridTableDndRowHandle({
   className,
   disabled,
-  disabledLabel = "Reordering unavailable",
+  disabledLabel,
 }: {
   className?: string
   /**
@@ -118,7 +118,10 @@ function DataGridTableDndRowHandle({
   /** Announced and shown on hover in place of the drag affordance. */
   disabledLabel?: string
 }) {
+  const { i18n } = useDataGrid()
   const context = useContext(SortableRowContext)
+  const resolvedDisabledLabel =
+    disabledLabel ?? i18n.labels.reorderingUnavailable
 
   if (!context || disabled) {
     return (
@@ -133,8 +136,8 @@ function DataGridTableDndRowHandle({
           disabled && "cursor-not-allowed",
           className
         )}
-        aria-label={disabled ? disabledLabel : "Drag to reorder row"}
-        title={disabled ? disabledLabel : undefined}
+        aria-label={disabled ? resolvedDisabledLabel : i18n.labels.dragToReorderRow}
+        title={disabled ? resolvedDisabledLabel : undefined}
         disabled
       >
         <GripHorizontalIcon aria-hidden="true" />
@@ -150,7 +153,7 @@ function DataGridTableDndRowHandle({
         "size-7 cursor-grab opacity-70 hover:bg-transparent hover:opacity-100 active:cursor-grabbing",
         className
       )}
-      aria-label="Drag to reorder row"
+      aria-label={i18n.labels.dragToReorderRow}
       {...context.attributes}
       {...context.listeners}
     >
