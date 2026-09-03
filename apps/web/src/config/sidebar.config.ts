@@ -1,6 +1,7 @@
 import {
   LayoutDashboardIcon,
   FolderKanbanIcon,
+  InboxIcon,
   UsersIcon,
   BarChart3Icon,
   FileTextIcon,
@@ -14,8 +15,8 @@ import {
   HomeIcon,
   UserIcon,
   LandmarkIcon,
-  GripHorizontalIcon,
   TableIcon,
+  GripHorizontalIcon,
 } from "lucide-react";
 
 import type { NavGroup } from "#types";
@@ -45,24 +46,6 @@ export const navGroups: NavGroup[] = [
         title: "Renewals Risk",
         url: "/renewals-risk",
         icon: TableIcon,
-      },
-      {
-        title: "Company",
-        url: "/company",
-        icon: Building2Icon,
-      },
-      { title: "Team", url: "/dashboard/team", icon: UsersIcon },
-      {
-        title: "Analytics",
-        url: "/dashboard/analytics",
-        icon: BarChart3Icon,
-        // icon: ChartBarIcon,
-        shortcut: ["g", "a"],
-      },
-      {
-        title: "Drag Drop",
-        url: "/drag-drop",
-        icon: GripHorizontalIcon,
       },
     ],
   },
@@ -153,6 +136,41 @@ export const navGroups: NavGroup[] = [
           {
             title: "Version",
             url: "/api/health/live",
+          },
+          {
+            title: "Analytics",
+            url: "/dashboard/analytics",
+            icon: BarChart3Icon,
+            // icon: ChartBarIcon,
+            shortcut: ["g", "a"],
+          },
+          {
+            title: "Renewals",
+            url: "/renewals",
+            icon: FolderKanbanIcon, // FolderIcon
+            shortcut: ["g", "p"],
+          },
+          {
+            title: "Renewals Risk",
+            url: "/renewals-risk",
+            icon: TableIcon,
+          },
+          {
+            title: "Company",
+            url: "/company",
+            icon: Building2Icon,
+          },
+          {
+            title: "Grouping",
+            url: "/grouping",
+            icon: Building2Icon,
+          },
+          { title: "Orders", url: "/orders", icon: InboxIcon },
+          { title: "Team", url: "/dashboard/team", icon: UsersIcon },
+          {
+            title: "Drag Drop",
+            url: "/drag-drop",
+            icon: GripHorizontalIcon,
           },
         ],
       },

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react"
 import { Badge } from "#components/reui/badge"
+import { useDataGrid } from "#components/reui/data-grid/data-grid"
 import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"
 import type { Column } from "@tanstack/react-table"
 
@@ -29,6 +30,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
   title,
   options,
 }: DataGridColumnFilterProps<TData, TValue>) {
+  const { i18n } = useDataGrid()
   const facets = column?.getFacetedUniqueValues()
   const filterValue = column?.getFilterValue()
   const selectedValues = new Set(
@@ -62,7 +64,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
                 <div className="hidden space-x-1 lg:flex">
                   {selectedValues.size > 2 ? (
                     <Badge variant="secondary" className="px-1 font-normal">
-                      {selectedValues.size} selected
+                      {i18n.labels.filterSelectedCount(selectedValues.size)}
                     </Badge>
                   ) : (
                     options
@@ -95,7 +97,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
         <div className="max-h-[300px] overflow-y-auto">
           {filteredOptions.length === 0 ? (
             <div className="text-muted-foreground py-6 text-center text-sm">
-              No results found.
+              {i18n.labels.filterNoResults}
             </div>
           ) : (
             <div className="p-1">
@@ -171,7 +173,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
                   }}
                   className="hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground rounded-md relative flex cursor-pointer items-center justify-center px-2 py-1.5 text-sm outline-hidden select-none"
                 >
-                  Clear filters
+                  {i18n.labels.filterClear}
                 </div>
               </div>
             </>
