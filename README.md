@@ -220,7 +220,7 @@ pnpm dlx shadcn@latest add button
 1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
 
    ```shell
-   bunx --bun @better-auth/cli secret
+   bunx --bun auth@latest secret
    ```
 
 2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
@@ -245,7 +245,7 @@ export const auth = betterAuth({
 Then run migrations:
 
 ```shell
-bunx --bun @better-auth/cli migrate
+bunx --bun auth@latest migrate
 ```
 
 ## Features

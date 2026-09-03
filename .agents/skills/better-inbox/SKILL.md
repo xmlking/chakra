@@ -41,7 +41,7 @@ export const auth = betterAuth({
 Then run the Better Auth migration:
 
 ```bash
-npx @better-auth/cli migrate
+npx auth@latest migrate
 ```
 
 This creates the `notification` table.
@@ -274,7 +274,7 @@ The package has zero runtime dependencies and does not require shadcn.
 |---|---|
 | Install | `npm install better-inbox` |
 | Server plugin | `inbox()` |
-| Migration | `npx @better-auth/cli migrate` |
+| Migration | `npx auth@latest migrate` |
 | Client plugin | `inboxClient()` |
 | Send notification | `auth.api.notify()` |
 | List | `auth.api.listNotifications()` |

@@ -8,7 +8,7 @@ icon: Wrench
 
 ## Better Auth
 
-Using [@better-auth/cli](https://www.better-auth.com/docs/concepts/cli) to initialize and setup **[Better Auth](https://www.better-auth.com)**
+Using [auth@latest](https://www.better-auth.com/docs/concepts/cli) to initialize and setup **[Better Auth](https://www.better-auth.com)**
 
 ### Init
 
@@ -18,7 +18,7 @@ This will generate `auth-client.ts` , `auth.ts` and add dependencies.
 
 ```shell
 cd apps/web
-bunx @better-auth/cli@latest init
+bunx auth@latest init
 ```
 
 ### Generate
@@ -29,7 +29,7 @@ Generate better auth database schema for [Drizzle ORL](https://orm.drizzle.team/
 
 ```shell
 cd packages/db
-dotenv-run -v -- bunx @better-auth/cli generate --config ../../apps/web/src/lib/auth.ts --output src/schema/auth.ts
+dotenv-run -v -- bunx auth@latest generate --config ../../apps/web/src/lib/auth.ts --output src/schema/auth.ts
 ```
 
 ## React Email
