@@ -12,7 +12,7 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
     // Content MDX lives outside this package (../../content/docs) and the
-    // isolated bun linker keeps react only in apps/docs/node_modules.
+    // isolated package linker keeps react only in apps/docs/node_modules.
     // dedupe makes react/jsx-runtime resolve from the app root so the
     // compiled MDX (mode: "static") can be bundled.
     // @fuma-translate/react ships "use client" modules and is imported by
@@ -31,7 +31,7 @@ export default defineConfig({
   // @takumi-rs/core is a native napi module (used by takumiPlugin for OG
   // images). Keep it external in the server-side environments so its loader
   // resolves the platform .node package from its own node_modules location
-  // (the bun isolated store) at runtime, instead of being bundled into
+  // (the isolated store) at runtime, instead of being bundled into
   // dist/server where the dynamic require can't find the platform package.
   environments: {
     rsc: { resolve: { external: ["@takumi-rs/core"] } },
