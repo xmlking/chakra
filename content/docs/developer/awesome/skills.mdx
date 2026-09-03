@@ -60,6 +60,40 @@ migrate alert-dialog to base ui
 /migrate-radix-to-base alert-dialog
 ```
 
+## TanStack Intent
+
+[@tanstack/intent](https://tanstack.com/intent/latest) is a command-line interface (CLI) tool that lets library maintainers create and ship versioned "Agent Skills" directly inside their npm packages.
+
+Add the scope to your application's Intent allowlist in `package.json`. Preserve any existing entries:
+
+```json
+{
+  "intent": {
+    "skills": ["@better-auth-ui/*"]
+  }
+}
+```
+
+Install the agent guidance, then list the available skills:
+
+```shell
+bunx @tanstack/intent@latest install
+bunx @tanstack/intent@latest list
+```
+
+Load the skill for your package. For example:
+
+```shell
+bunx @tanstack/intent@latest load @better-auth-ui/react#better-auth-ui-react
+
+```
+
+Intent reads the skill from the installed package version. If the package has no skills, update it or use the GitHub install path.
+
+Read the [TanStack Intent documentation](https://tanstack.com/intent/latest/docs/overview) for supported agents and project configuration.
+
+## Recommended Skills
+
 ### Workflow
 
 Developer workflow skills for **Spec Driven Development (SDD)**
@@ -142,3 +176,7 @@ Once installed, your AI assistant will understand everything about assistant-ui 
 - [5 Agent Skills I Use Every Day](https://www.aihero.dev/5-agent-skills-i-use-every-day)
 - All mattpocock's [skill](https://www.aihero.dev/skills)
 - `.well-known skills discovery` [RFC 8615 Well-Known URI](https://github.com/cloudflare/agent-skills-discovery-rfc)
+
+```
+
+```
