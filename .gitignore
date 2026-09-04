@@ -24,6 +24,7 @@ build
 !.env.local.example
 !.env.production.example
 !.env.test.example
+!.env.build.example
 !.env.docker.example
 !.env.vault
 

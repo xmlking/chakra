@@ -9,14 +9,23 @@ instructions to build docker image locally
 
 ```shell
 # debug build
-docker build --no-cache --progress=plain -f apps/web/Dockerfile  -t astra-web:latest .
+docker build --no-cache --progress=plain -f apps/web/Dockerfile  -t chakra-web:latest .
 # regular build
-docker build -f apps/web/Dockerfile  -t astra-web:latest .
+docker build -f apps/web/Dockerfile  -t chakra-web:latest .
+```
 
-# debug run
-docker run --init -it --entrypoint sh astra-web:latest
-# regular run
-docker run --init -it -p 3000:3000 astra-web:latest
+Run image
+
+```shell
+docker run --init -it -p 3000:3000 chakra-web:latest
+```
+
+Access Debug Shell (with Docker Desktop Pro/Business or OrbStack)
+
+```shell
+# docker debug <container name or ID>
+# orb debug <container name or ID>
+orb debug chakra-web:latest
 ```
 
 ## Reference

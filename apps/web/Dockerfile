@@ -1,26 +1,51 @@
-FROM oven/bun:1.3.11-alpine AS base
+# syntax=docker/dockerfile:1
 
-# Install and build
-FROM base AS build
+FROM oven/bun:1-alpine AS base
 WORKDIR /app
-COPY . .
-RUN bun ci
-RUN bun run --filter web --filter @workspace/db build
 
-# Run
-FROM base AS runner
+# -----------------------------------------------------------
+# Dependencies stage - cached when package.json files unchanged
+# -----------------------------------------------------------
+FROM base AS deps
 
-RUN apk --no-cache add curl
-HEALTHCHECK --interval=1s --timeout=10s CMD [ "curl", "http://localhost:3000/api/health/live" ]
+# This layer only invalidates when dependencies change, not on source changes.
+# --parents preserves directory structure, picking up all workspace packages automatically.
+COPY --parents **/package.json bun.lock ./
 
+RUN bun install --ignore-scripts --frozen-lockfile
+
+# -----------------------------------------------------------
+# Build stage - copy source and build the app
+# -----------------------------------------------------------
+FROM deps AS build
+
+COPY --link . .
+COPY .env.build.example .env
+
+RUN bun --filter web build
+
+# -----------------------------------------------------------
+# Production stage - minimal runtime image
+# -----------------------------------------------------------
+FROM oven/bun:1-distroless AS production
+
+WORKDIR /app
+
+COPY --link --from=build /app/apps/web/.output .
+
+# Set the default fallback path for evlog
+ENV EVLOG_FS_DIR=/app/logs
 ENV NODE_ENV=production
+ENV HOST=0.0.0.0
+ENV PORT=3000
 
-WORKDIR /app
-COPY /packages/db/drizzle ./packages/db/drizzle
-COPY --from=build /app/packages/db/dist ./packages/db
-COPY --from=build /app/apps/web/dist ./apps/web
-
-WORKDIR /app/apps/web
-USER bun
 EXPOSE 3000
-CMD [ "bun", "run", "./server/index.mjs" ]
+
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD bun -e "const res = await fetch('http://localhost:3000/health'); process.exit(res.ok ? 0 : 1);"
+
+CMD ["server/index.mjs"]
+
+
+
+

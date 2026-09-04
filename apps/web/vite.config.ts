@@ -52,6 +52,7 @@ export default defineConfig(({ mode }) => {
           },
         },
         scheduledTasks: {
+          // FIXME: https://github.com/nitrojs/nitro/pull/4416
           // Run `onramp-webhooks-check` task on schedule
           [ONRAMP_SCHEDULER_CRON]: ["work:onramp-webhooks-check"],
         },
