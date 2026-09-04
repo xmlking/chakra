@@ -8,8 +8,14 @@ services:
   ###########################################################################
   web:
     image: chakra-web:latest
+    hostname: web
+    container_name: web
+    restart: always
+    env_file:
+      - ../../.env
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+      WORKFLOW_POSTGRES_URL: postgresql://postgres:postgres@postgres:5432/postgres
     depends_on:
       postgres:
         condition: service_healthy
