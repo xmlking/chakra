@@ -67,7 +67,7 @@ function DataGridTableDndHeader<TData extends object>({
 }: {
   header: Header<DataGridFeatures, TData, unknown>
 }) {
-  const { props } = useDataGrid()
+  const { i18n, props } = useDataGrid()
   const { column } = header
 
   // Check if column ordering is enabled for this column
@@ -113,7 +113,7 @@ function DataGridTableDndHeader<TData extends object>({
             className={`-ms-2 size-6 ${isDragging ? "cursor-grabbing" : "cursor-grab active:cursor-grabbing"}`}
             {...attributes}
             {...listeners}
-            aria-label="Drag to reorder"
+            aria-label={i18n.labels.dragToReorder}
           >
             <GripVerticalIcon className="opacity-60 hover:opacity-100" aria-hidden="true" />
           </Button>

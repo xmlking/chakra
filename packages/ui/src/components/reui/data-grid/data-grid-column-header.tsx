@@ -47,7 +47,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
   filter,
   visibility = false,
 }: DataGridColumnHeaderProps<TData, TValue>) {
-  const { isLoading, table, props } = useDataGrid()
+  const { i18n, isLoading, table, props } = useDataGrid()
   const resolvedTitle = title ?? getColumnHeaderLabel(column)
 
   // TanStack's columnOrder defaults to [] until a consumer seeds it; fall
@@ -139,7 +139,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           disabled={!canSort}
         >
           <ArrowUpIcon className="size-3.5!" />
-          <span className="grow">Asc</span>
+          <span className="grow">{i18n.labels.sortAscending}</span>
           {isSorted === "asc" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
@@ -156,7 +156,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           disabled={!canSort}
         >
           <ArrowDownIcon className="size-3.5!" />
-          <span className="grow">Desc</span>
+          <span className="grow">{i18n.labels.sortDescending}</span>
           {isSorted === "desc" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
@@ -176,7 +176,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           onClick={() => column.pin(isPinned === "start" ? false : "start")}
         >
           <ArrowLeftToLineIcon className="size-3.5!" aria-hidden="true" />
-          <span className="grow">Pin to left</span>
+          <span className="grow">{i18n.labels.pinColumnStart}</span>
           {isPinned === "start" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
@@ -186,7 +186,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           onClick={() => column.pin(isPinned === "end" ? false : "end")}
         >
           <ArrowRightToLineIcon className="size-3.5!" aria-hidden="true" />
-          <span className="grow">Pin to right</span>
+          <span className="grow">{i18n.labels.pinColumnEnd}</span>
           {isPinned === "end" && (
             <CheckIcon className="text-primary size-4 opacity-100!" />
           )}
@@ -214,7 +214,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           disabled={!canMoveLeft || isPinned !== false}
         >
           <ArrowLeftIcon className="size-3.5!" aria-hidden="true" />
-          <span>Move to Left</span>
+          <span>{i18n.labels.moveColumnStart}</span>
         </DropdownMenuItem>,
         <DropdownMenuItem
           key="move-right"
@@ -229,7 +229,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
           disabled={!canMoveRight || isPinned !== false}
         >
           <ArrowRightIcon className="size-3.5!" aria-hidden="true" />
-          <span>Move to Right</span>
+          <span>{i18n.labels.moveColumnEnd}</span>
         </DropdownMenuItem>
       )
       hasPreviousSection = true
@@ -244,7 +244,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
         <DropdownMenuSub key="visibility">
           <DropdownMenuSubTrigger>
             <Settings2Icon className="size-3.5!" />
-            <span>Columns</span>
+            <span>{i18n.labels.columnsMenu}</span>
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent side="right">
             {table
@@ -314,8 +314,8 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
             variant="ghost"
             className="rounded-lg -me-1 size-7"
             onClick={() => column.pin(false)}
-            aria-label={`Unpin ${resolvedTitle} column`}
-            title={`Unpin ${resolvedTitle} column`}
+            aria-label={i18n.labels.unpinColumn(resolvedTitle)}
+            title={i18n.labels.unpinColumn(resolvedTitle)}
           >
             <PinOffIcon className="size-3.5! opacity-50!" aria-hidden="true" />
           </Button>
