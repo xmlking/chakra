@@ -1,0 +1,30 @@
+# Database Services
+# Postgres, redis, mongo, clickhouse, etc.
+
+services:
+  ###########################################################################
+  # web app
+  # orb debug chakra-web:latest
+  ###########################################################################
+  web:
+    image: chakra-web:latest
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bun",
+          "-e",
+          "const res = await fetch('http://localhost:3000/health'); process.exit(res.ok ? 0 : 1);",
+        ]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - /app/logs # Explicitly handles the anonymous volume safeguard locally

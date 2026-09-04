@@ -24,3 +24,4 @@ include:
   - path: infra/compose/storage.yml
   - path: infra/compose/mcp-toolbox.yml
   # - path: infra/compose/broker.yml
+  - path: infra/compose/web.yml
