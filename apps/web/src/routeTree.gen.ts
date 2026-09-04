@@ -14,6 +14,7 @@ import { Route as app2RouteRouteImport } from './routes/(app2)/route'
 import { Route as publicRouteRouteImport } from './routes/(public)/route'
 import { Route as appCompanyRouteImport } from './routes/(app)/company'
 import { Route as appForbiddenRouteImport } from './routes/(app)/forbidden'
+import { Route as appGroupingRouteImport } from './routes/(app)/grouping'
 import { Route as appRenewalsRouteImport } from './routes/(app)/renewals'
 import { Route as appRenewalsRiskRouteImport } from './routes/(app)/renewals-risk'
 import { Route as app2Dashboard2RouteImport } from './routes/(app2)/dashboard2'
@@ -67,6 +68,11 @@ const appCompanyRoute = appCompanyRouteImport.update({
 const appForbiddenRoute = appForbiddenRouteImport.update({
   id: '/forbidden',
   path: '/forbidden',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appGroupingRoute = appGroupingRouteImport.update({
+  id: '/grouping',
+  path: '/grouping',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appRenewalsRoute = appRenewalsRouteImport.update({
@@ -235,6 +241,7 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 export interface FileRoutesByFullPath {
   '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
+  '/grouping': typeof appGroupingRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
@@ -271,6 +278,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
+  '/grouping': typeof appGroupingRoute
   '/renewals': typeof appRenewalsRoute
   '/renewals-risk': typeof appRenewalsRiskRoute
   '/dashboard2': typeof app2Dashboard2Route
@@ -311,6 +319,7 @@ export interface FileRoutesById {
   '/(public)': typeof publicRouteRouteWithChildren
   '/(app)/company': typeof appCompanyRoute
   '/(app)/forbidden': typeof appForbiddenRoute
+  '/(app)/grouping': typeof appGroupingRoute
   '/(app)/renewals': typeof appRenewalsRoute
   '/(app)/renewals-risk': typeof appRenewalsRiskRoute
   '/(app2)/dashboard2': typeof app2Dashboard2Route
@@ -349,6 +358,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/company'
     | '/forbidden'
+    | '/grouping'
     | '/renewals'
     | '/renewals-risk'
     | '/dashboard2'
@@ -385,6 +395,7 @@ export interface FileRouteTypes {
   to:
     | '/company'
     | '/forbidden'
+    | '/grouping'
     | '/renewals'
     | '/renewals-risk'
     | '/dashboard2'
@@ -424,6 +435,7 @@ export interface FileRouteTypes {
     | '/(public)'
     | '/(app)/company'
     | '/(app)/forbidden'
+    | '/(app)/grouping'
     | '/(app)/renewals'
     | '/(app)/renewals-risk'
     | '/(app2)/dashboard2'
@@ -506,6 +518,13 @@ declare module '@tanstack/react-router' {
       path: '/forbidden'
       fullPath: '/forbidden'
       preLoaderRoute: typeof appForbiddenRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/grouping': {
+      id: '/(app)/grouping'
+      path: '/grouping'
+      fullPath: '/grouping'
+      preLoaderRoute: typeof appGroupingRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/renewals': {
@@ -738,6 +757,7 @@ declare module '@tanstack/react-router' {
 interface appRouteRouteChildren {
   appCompanyRoute: typeof appCompanyRoute
   appForbiddenRoute: typeof appForbiddenRoute
+  appGroupingRoute: typeof appGroupingRoute
   appRenewalsRoute: typeof appRenewalsRoute
   appRenewalsRiskRoute: typeof appRenewalsRiskRoute
   appAdminPageRoute: typeof appAdminPageRoute
@@ -761,6 +781,7 @@ interface appRouteRouteChildren {
 const appRouteRouteChildren: appRouteRouteChildren = {
   appCompanyRoute: appCompanyRoute,
   appForbiddenRoute: appForbiddenRoute,
+  appGroupingRoute: appGroupingRoute,
   appRenewalsRoute: appRenewalsRoute,
   appRenewalsRiskRoute: appRenewalsRiskRoute,
   appAdminPageRoute: appAdminPageRoute,
