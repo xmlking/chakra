@@ -30,5 +30,5 @@ export default defineEventHandler(async (event) => {
   // oxlint-disable-next-line react-doctor/rules-of-hooks
   const logger = useLogger(event);
 
-  await getIdentify()(logger, event.headers, event.path);
+  await getIdentify()(logger, event.req.headers, event.url.pathname);
 });
