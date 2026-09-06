@@ -16,6 +16,8 @@ export const images = createFiles({
     accessKeyId: ENV.S3_ACCESS_KEY_ID,
     secretAccessKey: ENV.S3_SECRET_ACCESS_KEY,
     region: ENV.S3_REGION,
+    // MinIO does not provide per-bucket DNS for virtual-hosted addressing.
+    forcePathStyle: true,
   }),
   plugins: [
     signedUrlPolicy({
@@ -50,6 +52,8 @@ export const files = createFiles({
     accessKeyId: ENV.S3_ACCESS_KEY_ID,
     secretAccessKey: ENV.S3_SECRET_ACCESS_KEY,
     region: ENV.S3_REGION,
+    // MinIO does not provide per-bucket DNS for virtual-hosted addressing.
+    forcePathStyle: true,
   }),
   plugins: [
     signedUrlPolicy({
