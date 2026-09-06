@@ -16,6 +16,7 @@ brew install vite-plus
 vp env off
 
 brew install dmno-dev/tap/varlock
+varlock telemetry disable
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
