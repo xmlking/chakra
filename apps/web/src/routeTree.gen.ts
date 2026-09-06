@@ -27,6 +27,7 @@ import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiOrdersRouteImport } from './routes/api/orders'
+import { Route as ApiPublicEnvRouteImport } from './routes/api/public-env'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin/$page'
 import { Route as appAdminUsersRouteImport } from './routes/(app)/admin/users'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
@@ -133,6 +134,11 @@ const ApiImagesRoute = ApiImagesRouteImport.update({
 const ApiOrdersRoute = ApiOrdersRouteImport.update({
   id: '/api/orders',
   path: '/api/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicEnvRoute = ApiPublicEnvRouteImport.update({
+  id: '/api/public-env',
+  path: '/api/public-env',
   getParentRoute: () => rootRouteImport,
 } as any)
 const appAdminPageRoute = appAdminPageRouteImport.update({
@@ -253,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/api/public-env': typeof ApiPublicEnvRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -290,6 +297,7 @@ export interface FileRoutesByTo {
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/api/public-env': typeof ApiPublicEnvRoute
   '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
   '/admin/users': typeof appAdminUsersRoute
@@ -331,6 +339,7 @@ export interface FileRoutesById {
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
   '/api/orders': typeof ApiOrdersRoute
+  '/api/public-env': typeof ApiPublicEnvRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
   '/(app)/admin/users': typeof appAdminUsersRoute
@@ -370,6 +379,7 @@ export interface FileRouteTypes {
     | '/api/files-test'
     | '/api/images'
     | '/api/orders'
+    | '/api/public-env'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -407,6 +417,7 @@ export interface FileRouteTypes {
     | '/api/files-test'
     | '/api/images'
     | '/api/orders'
+    | '/api/public-env'
     | '/'
     | '/admin/$page'
     | '/admin/users'
@@ -447,6 +458,7 @@ export interface FileRouteTypes {
     | '/api/files-test'
     | '/api/images'
     | '/api/orders'
+    | '/api/public-env'
     | '/(public)/'
     | '/(app)/admin/$page'
     | '/(app)/admin/users'
@@ -478,6 +490,7 @@ export interface RootRouteChildren {
   ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
   ApiOrdersRoute: typeof ApiOrdersRoute
+  ApiPublicEnvRoute: typeof ApiPublicEnvRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
   ApiChatIndexRoute: typeof ApiChatIndexRoute
@@ -609,6 +622,13 @@ declare module '@tanstack/react-router' {
       path: '/api/orders'
       fullPath: '/api/orders'
       preLoaderRoute: typeof ApiOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public-env': {
+      id: '/api/public-env'
+      path: '/api/public-env'
+      fullPath: '/api/public-env'
+      preLoaderRoute: typeof ApiPublicEnvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/admin/$page': {
@@ -848,6 +868,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,
   ApiOrdersRoute: ApiOrdersRoute,
+  ApiPublicEnvRoute: ApiPublicEnvRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
   ApiChatIndexRoute: ApiChatIndexRoute,

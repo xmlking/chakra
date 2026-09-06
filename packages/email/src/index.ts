@@ -2,7 +2,8 @@ import { createEmailClient, type EmailMessage } from "@opencoredev/email-sdk";
 import { resend } from "@opencoredev/email-sdk/resend";
 import { smtp } from "@opencoredev/email-sdk/smtp";
 import { render } from "react-email";
-import { env } from "virtual:env/server";
+
+import { ENV } from "../env";
 
 /**
  * Usage:
@@ -17,15 +18,15 @@ import { env } from "virtual:env/server";
 export const email = createEmailClient({
   telemetry: false,
   adapters: [
-    resend({ apiKey: env.RESEND_API_KEY! }),
+    resend({ apiKey: ENV.RESEND_API_KEY! }),
     smtp({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      ...(env.SMTP_USER &&
-        env.SMTP_PASS && {
+      host: ENV.SMTP_HOST,
+      port: ENV.SMTP_PORT,
+      ...(ENV.SMTP_USER &&
+        ENV.SMTP_PASS && {
           auth: {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS,
+            user: ENV.SMTP_USER,
+            pass: ENV.SMTP_PASS,
           },
         }),
     }),

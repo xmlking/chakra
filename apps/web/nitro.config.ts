@@ -1,8 +1,9 @@
 import evlog from "evlog/nitro/v3";
 import { defineConfig } from "nitro";
-// import { ENV } from "varlock/env";
 
-// const ONRAMP_SCHEDULER_CRON = ENV.ONRAMP_SCHEDULER_CRON || "* * * * *";
+import { ENV } from "./env";
+
+const ONRAMP_SCHEDULER_CRON = ENV.ONRAMP_SCHEDULER_CRON || "* * * * *";
 
 export default defineConfig({
   // Nitro 3 defaults this to false, so `server/` is not scanned at all and
@@ -28,7 +29,7 @@ export default defineConfig({
   scheduledTasks: {
     // FIXME: https://github.com/nitrojs/nitro/pull/4416
     // Run `onramp-webhooks-check` task on schedule
-    "* * * * *": ["work:onramp-webhooks-check"],
+    [ONRAMP_SCHEDULER_CRON]: ["work:onramp-webhooks-check"],
   },
   // preset: "bun",
   // compressPublicAssets: { brotli: true },

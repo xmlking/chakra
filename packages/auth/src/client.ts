@@ -14,14 +14,14 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { inboxClient } from "better-inbox/client";
-import env from "virtual:env/client";
 
 import type { auth } from ".";
+import { ENV } from "../env";
 import { additionalUserFields } from "./additional-fields";
 import { ac, roles } from "./permissions";
 
 export const authClient = createAuthClient({
-  baseURL: env.VITE_BETTER_AUTH_URL,
+  baseURL: ENV.BETTER_AUTH_URL,
   // sessionOptions: {
   //   refetchOnWindowFocus: false,
   // },
@@ -40,11 +40,11 @@ export const authClient = createAuthClient({
     passkeyClient(),
     oauthProviderClient(),
     deviceAuthorizationClient(),
-    ...(env.VITE_GOOGLE_CLIENT_ID
+    ...(ENV.GOOGLE_CLIENT_ID
       ? [
           oneTapClient({
             // HINT: https://developers.google.com/identity/sign-in/web/gsi-with-fedcm
-            clientId: env.VITE_GOOGLE_CLIENT_ID,
+            clientId: ENV.GOOGLE_CLIENT_ID,
             // Optional client configuration:
             autoSelect: false,
             cancelOnTapOutside: true,

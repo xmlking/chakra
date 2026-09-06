@@ -1,0 +1,68 @@
+---
+title: varlock owns the environment contract
+description: Replace @vite-env/core Zod presets with per-package varlock schemas and a shared root schema
+---
+
+## Summary
+
+### Issue
+
+Environment variables were declared as Zod "presets" in six `env.ts` files (`packages/{db,email,storage,auth}`, `apps/{web,docs}`), composed by hand, validated by the `@vite-env/core` Vite plugin and read through `virtual:env/server` and `virtual:env/client`.
+
+That worked inside Vite only. Everything else bypassed the schema:
+
+- drizzle-kit and the workflow CLI ran through `dotenv-run -f ../../.env`, against an unvalidated twin config (`drizzle-tools.config.ts`) that read `process.env.DATABASE_URL!`.
+- `apps/docs` had an `env.ts` but never registered the plugin, so nothing was validated there.
+- Docker builds copied `.env.build.example` in as `.env` to satisfy validation.
+- The `OPENAI_API_KEY` had to be written back into `process.env` by hand because the AI SDK reads it from there.
+- Types were regenerated on every `postinstall` and git-ignored.
+
+### Decision
+
+Every environment variable is declared once, in a committed `.env.schema`, and varlock validates, resolves, types and injects it everywhere.
+
+- **Per-package schemas, shared root.** Each package/app keeps a `.env.schema` beside its code declaring exactly what it reads. The root `.env.schema` holds shared items (`APP_ENV`, `APP_NAME`). Every schema starts with `@import(../../, pick=[...])`, which also loads the git-ignored root `.env.local` but only for the keys that schema declares, so developer secrets stay in one file without leaking into unrelated apps. `packages/auth` additionally imports `db` and `email`; `apps/web` imports all four packages. Imports flow root ← packages ← apps only.
+- **One access path.** `@generateTsTypes(path=./env.ts, exposeEnv=local)` generates a package-local `env.ts` exporting a typed `ENV` (git-ignored, produced by `postinstall`). Code imports `ENV` from its own package (`#env` in `apps/web`). `virtual:env/*` and `process.env` reads are gone.
+- **`@public` replaces the `VITE_` prefix.** Everything is sensitive unless marked otherwise: `@public` marks browser-facing items, `@sensitive=false` marks plain server config so varlock does not redact values like `10` or `files` from every log line. Client-facing names lost their prefix (`VITE_BETTER_AUTH_URL` → `BETTER_AUTH_URL`).
+- **Every process is wrapped.** The Vite plugin covers dev, build and vitest. Scripts run via `varlock run --`. The container's `ENTRYPOINT` is `varlock run`, with `varlock flatten` making the import graph self-contained inside the image.
+- **`APP_ENV` is the switch.** A committed `apps/web/.env.build` holds placeholders loaded only when `APP_ENV=build`, and the Dockerfile copies it to the workspace root for imported schemas. `NODE_ENV` is left alone.
+
+### Status
+
+Decided and implemented.
+
+## Details
+
+### Assumptions
+
+- One root `.env.local` per developer is the desired workflow (it was already the case via `envDir: "../.."`).
+- Library packages never run on their own except for the drizzle-kit / seed / admin scripts, which start from the package directory.
+- Most public values are inlined at build time, as before. The ones that vary per deployment (`BETTER_AUTH_URL`, `TURNSTILE_SITE_KEY`) and the feature flags are `@dynamic`: the server resolves them at boot, the root document inlines them into a boot script for the browser, and `/api/public-env` serves them for runtime refresh.
+
+### Positions
+
+- **Keep `@vite-env/core`.** Rejected: no story outside Vite, no secret handling, no leak scanning for non-`VITE_` values in non-Vite processes, types not shareable across packages without the preset ceremony.
+- **`envin`.** Rejected: same in-process-only shape as vite-env; a dead catalog entry already existed.
+- **varlock with a single root schema.** Rejected: packages would compile against variables they do not declare, and running `packages/db` scripts would need the whole app's env.
+- **varlock with per-package schemas and a shared root (chosen).** Each package's `env.ts` types only what that package declares, the app's schema is the union via `@import`, and secrets still live in one root file.
+
+### Argument
+
+Declaring the contract in a data file that a CLI can validate outside any bundler is what lets one mechanism cover Vite, drizzle-kit, Bun scripts, vitest, Docker builds and the running container. Package-local generated types keep each package honest about what it reads without global `ProcessEnv` augmentation conflicts. Marking sensitivity explicitly is stricter than a naming prefix and is enforced by the bundler plugin.
+
+### Implications
+
+- A process started without `varlock run` (or the Vite plugin) fails on the first `ENV` access with a clear error. This is intended.
+- Generated `env.ts` files are git-ignored and regenerated on install. Committing them was considered and rejected: varlock folds every key (and comment) found in a developer's `.env.local` into the graph, so the generated output is not deterministic across machines.
+- Root imports are filtered with `pick`. Unfiltered directory imports were tried first: every key in the shared `.env.local` became an undeclared sensitive item in every app, an empty one counted as required, and the leak scanner failed the docs build because the bucket name `files` appeared in its output. With `pick`, adding a variable means adding it to the owning schema's pick list as well.
+- The Docker runtime image carries `node_modules/varlock` (dependency-free) and the flattened env files. Because the host-specific public values are `@dynamic`, the same image can be pointed at any `BETTER_AUTH_URL` through the container environment.
+- `varlock scan --staged` runs from the `staged` block in `vite.config.ts` on every commit, using the app schemas as entry points, and fails the commit if a resolved secret appears in a staged file.
+- `bunfig.toml` disables Bun's own `.env` loading so two resolvers never disagree.
+- varlock's `uuid` type only accepts RFC4122 v1–v5, so the UUIDv7 admin and organization ids use a regex string type.
+- `.env.example` files are gone; `.env.schema` is the documentation.
+
+## Related
+
+- [Environment variables](/docs/developer/configuration/environment-variables) — how-to for day-to-day use.
+- [varlock monorepo guide](https://varlock.dev/guides/monorepos/), [Vite integration](https://varlock.dev/integrations/vite/), [TanStack Start integration](https://varlock.dev/integrations/tanstack-start/), [Docker](https://varlock.dev/integrations/docker/).
+- Prior art with the same stack: [hadronomy/mze-store](https://github.com/hadronomy/mze-store).

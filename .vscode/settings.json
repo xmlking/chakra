@@ -105,11 +105,10 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    ".env": ".env*",
+    ".env.schema": ".env*",
     ".gitignore": ".gitattributes,.vercelignore",
     "AGENTS.md": "CLAUDE.md",
     "Dockerfile": "*.Dockerfile,Dockerfile.*,.dockerignore",
-    "compose*.yml": ".env.docker*",
     "flake.nix": "flake.lock",
     "package.json": ".npmrc,bun.lock,bunfig.toml",
     "README.md": "DEVELOPERS.md,CHANGELOG.md,CODE_OF_CONDUCT.md,CONTRIBUTING.md,LICENSE",

@@ -11,12 +11,12 @@
     "./studio.config": "./studio.config.ts"
   },
   "scripts": {
-    "clean": "git clean -xdf vite-env.d.ts dist test-results coverage node_modules",
-    "create-admin-user": "bun x vite-node@latest scripts/create-admin-user.ts",
-    "create-admin-user-ori": "dotenv-run -f ../../.env -v auth@latest create-admin --config src/index.tsx --email $BETTER_AUTH_ADMIN_EMAIL --name 'Super Admin' --role admin",
-    "generate-schema": "bun x vite-node@latest scripts/generate-better-auth-schemas.ts",
-    "generate-schema-ori": "dotenv-run -f ../../.env -v auth@latest generate --config src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
-    "postinstall": "vite-env types && vite-env generate",
+    "clean": "git clean -xdf env.ts dist test-results coverage node_modules",
+    "codegen": "varlock codegen",
+    "create-admin-user": "varlock run -- bun scripts/create-admin-user.ts",
+    "create-admin-user-ori": "varlock run -- bunx auth@latest create-admin -c src/index.tsx --email $BETTER_AUTH_ADMIN_EMAIL --name=\"Super Admin\" --role admin",
+    "generate-schema": "varlock run -- bunx auth@latest generate -c src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
+    "postinstall": "varlock codegen",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
@@ -27,20 +27,19 @@
     "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:",
     "@better-auth/stripe": "catalog:",
-    "@vite-env/core": "catalog:",
     "@workspace/db": "workspace:*",
     "@workspace/email": "workspace:*",
     "@workspace/shared": "workspace:*",
     "better-auth": "catalog:",
     "better-inbox": "catalog:",
     "react": "catalog:",
+    "varlock": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "@vite-env/cli": "catalog:",
     "auth": "catalog:",
     "uuid": "catalog:",
     "vite": "catalog:",

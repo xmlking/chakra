@@ -1,6 +1,10 @@
 logLevel = "error" # "debug" | "warn" | "error"
 telemetry = false
 
+# varlock owns every .env file (see .env.schema). Bun's own loader would read the
+# same files with different precedence, so it is disabled.
+env = false
+
 # scripts to run before `bun run`-ing a file or script
 # register plugins by adding them to this list
 # preload = ["zod/compile"]

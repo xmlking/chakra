@@ -12,7 +12,12 @@
 !/packages
 !/patches
 # !/content
-!.env.build.example
+!.env.schema
+!.env.build
+
+# never ship developer secrets into the build context
+**/.env.local
+**/.env.*.local
 
 **/build
 **/dist

@@ -12,6 +12,7 @@ import { evlogErrorHandler } from "evlog/nitro/v3";
 
 import { Providers } from "#components/providers";
 import { siteConfig } from "#config/site.config";
+import { publicEnvBootScript } from "#lib/public-env";
 
 // import appCss from "@workspace/ui/globals.css?url";
 import appCss from "../styles.css?url";
@@ -64,6 +65,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       { rel: "icon", href: "/favicon.ico" },
     ],
     scripts: [
+      // Hydrates varlock's ENV with the @public @dynamic values (BETTER_AUTH_URL,
+      // TURNSTILE_SITE_KEY, feature flags) before any module script runs.
+      { children: publicEnvBootScript() },
       {
         children: `(function(){var s=localStorage.getItem('theme');if(s){document.documentElement.setAttribute('data-theme',s);}else{var d=window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.setAttribute('data-theme',d?'default-dark':'default-light');}})();`,
       },

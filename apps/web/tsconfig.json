@@ -19,6 +19,7 @@
       "#features/*": ["./src/features/*"],
       "#components/*": ["./src/components/*.tsx"],
       "#config/*": ["./src/config/*"],
+      "#env": ["./env.ts"],
       "#hooks/*": ["./src/hooks/*.ts"],
       "#lib/*": ["./src/lib/*.ts"],
       "#server/*": ["./src/server/*"],

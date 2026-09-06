@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "fumapress build",
-    "clean": "git clean -xdf vite-env.d.ts .output .tanstack .source dist test-results coverage node_modules",
+    "clean": "git clean -xdf env.ts .output .tanstack .source dist test-results coverage node_modules",
+    "codegen": "varlock codegen",
     "dev": "fumapress dev --port=3001",
-    "postinstall": "vite-env types && vite-env generate && fumadocs-mdx",
+    "postinstall": "varlock codegen && fumadocs-mdx",
     "start": "fumapress start",
     "types:check": "fumadocs-mdx && tsc --noEmit"
   },
@@ -18,7 +19,6 @@
     "@fumapress/tegami": "1.1.2",
     "@takumi-rs/core": "2.13.5",
     "@thesvg/react": "catalog:",
-    "@vite-env/core": "catalog:",
     "@workspace/i18n": "workspace:*",
     "@workspace/shared": "workspace:*",
     "@workspace/ui": "workspace:*",
@@ -42,6 +42,7 @@
     "shiki": "4.4.3",
     "tegami": "1.4.0",
     "use-sync-external-store": "1.6.0",
+    "varlock": "catalog:",
     "waku": "1.0.0-rc.0",
     "zod": "catalog:"
   },
@@ -53,7 +54,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vite-env/cli": "catalog:",
+    "@varlock/vite-integration": "catalog:",
     "tailwindcss": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"

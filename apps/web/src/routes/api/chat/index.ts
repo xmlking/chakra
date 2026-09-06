@@ -10,7 +10,6 @@ import {
   type UIMessage,
   type ToolSet,
 } from "ai";
-import { env } from "virtual:env/server";
 
 import toolkit from "#features/support/tools/toolkit";
 // import toolkit from "#features/support/toolkit2";
@@ -21,9 +20,6 @@ type ChatInput = {
 };
 
 const aiToolkit = new AISDKToolkit({ toolkit });
-
-// HINT: OPENAI_API_KEY is not prefixed with VITE_ , so we have to do:
-process.env.OPENAI_API_KEY = env.OPENAI_API_KEY;
 
 const system = `
 You are a helpful assistant with access to tools.

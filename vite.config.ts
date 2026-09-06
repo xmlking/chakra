@@ -1,4 +1,4 @@
-import ViteEnv from "@vite-env/core/plugin";
+import { varlockVitePlugin } from "@varlock/vite-integration";
 import { workflow as workflowTest } from "@workflow/vitest";
 import {
   RECOMMENDED_RULES,
@@ -19,7 +19,8 @@ const ignorePatterns = [
   "CHANGELOG.md",
   ".agents/skills",
   ".claude/skills",
-  "**/vite-env.d.ts",
+  "apps/*/env.ts",
+  "packages/*/env.ts",
   "**/src/routeTree.gen.ts",
   "packages/db/drizzle/**",
   "apps/web/src/lib/gen/**",
@@ -34,6 +35,9 @@ const ignorePatterns = [
 export default defineConfig({
   staged: {
     "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md,mdx}": "vp check --fix",
+    // Fail the commit if any resolved sensitive value appears in a staged file.
+    // The root schema declares no secrets, so the app schemas are the entry points.
+    // "*": " varlock scan --staged --path apps/web/ --path apps/docs/",
   },
   fmt: {
     sortPackageJson: {
@@ -97,13 +101,7 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: [
-          "apps/*/src/router.tsx",
-          "apps/*/src/server.ts",
-          "*.config.ts",
-          "*.config.ts",
-          "env.ts",
-        ],
+        files: ["apps/*/src/router.tsx", "apps/*/src/server.ts", "*.config.ts", "*.config.ts"],
         rules: {
           "no-default-export": "off",
         },
@@ -138,7 +136,7 @@ export default defineConfig({
     exclude: ["**/.react-email/*"],
     projects: [
       {
-        plugins: [ViteEnv({ configFile: "apps/web/env.ts" }), workflowTest()],
+        plugins: [varlockVitePlugin({ rootDir: "apps/web" }), workflowTest()],
         test: {
           name: "server",
           include: ["**/{src,tests}/**/*.{test,spec}.ts"],

@@ -29,15 +29,14 @@ import {
 } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { inbox } from "better-inbox";
-import { env } from "virtual:env/server";
 
+import { ENV } from "../env";
 import { additionalSessionFields, additionalUserFields } from "./additional-fields";
 import { ac, roles } from "./permissions";
 
 const MAGIC_LINK_EXPIRES_SECONDS = 300;
-const from = env.EMAIL_FROM;
-// const to = env.EMAIL_TO || "";
-const adminUserIds = env.BETTER_AUTH_ADMINS as unknown as string[];
+const from = ENV.EMAIL_FROM;
+// const to = ENV.EMAIL_TO || "";
 
 /**
  * By default, Better Auth trusts the base URL of your app,
@@ -59,8 +58,8 @@ if (import.meta.env.DEV) {
   trustedOrigins.push("http://localhost:3000", "https://console-127-0-0-1.nip.io");
 }
 
-const baseURL = env.VITE_BETTER_AUTH_URL;
-const appName = env.VITE_APP_NAME;
+const baseURL = ENV.BETTER_AUTH_URL;
+const appName = ENV.APP_NAME;
 
 export const auth = betterAuth({
   appName,
@@ -77,7 +76,7 @@ export const auth = betterAuth({
   },
   experimental: { joins: true },
   telemetry: { enabled: false },
-  secret: env.BETTER_AUTH_SECRET,
+  secret: ENV.BETTER_AUTH_SECRET,
   baseURL,
   // baseURL: {
   //   allowedHosts: ["localhost:3000", "localhost:5173", "myapp.com", "*.vercel.app"],
@@ -102,7 +101,7 @@ export const auth = betterAuth({
   },
 
   emailAndPassword: {
-    enabled: Boolean(env.SMTP_HOST || env.RESEND_API_KEY),
+    enabled: Boolean(ENV.SMTP_HOST || ENV.RESEND_API_KEY),
     requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
     async sendResetPassword({ user, url }) {
@@ -193,31 +192,31 @@ export const auth = betterAuth({
     },
   },
   socialProviders: {
-    ...(env.GITHUB_CLIENT_ID &&
-      env.GITHUB_CLIENT_SECRET && {
+    ...(ENV.GITHUB_CLIENT_ID &&
+      ENV.GITHUB_CLIENT_SECRET && {
         github: {
-          clientId: env.GITHUB_CLIENT_ID,
-          clientSecret: env.GITHUB_CLIENT_SECRET,
+          clientId: ENV.GITHUB_CLIENT_ID,
+          clientSecret: ENV.GITHUB_CLIENT_SECRET,
           scope: ["user:email", "read:user"],
           requireEmailVerification: true,
         },
       }),
-    ...(env.VITE_GOOGLE_CLIENT_ID &&
-      env.GOOGLE_CLIENT_SECRET && {
+    ...(ENV.GOOGLE_CLIENT_ID &&
+      ENV.GOOGLE_CLIENT_SECRET && {
         google: {
-          clientId: env.VITE_GOOGLE_CLIENT_ID,
-          clientSecret: env.GOOGLE_CLIENT_SECRET,
+          clientId: ENV.GOOGLE_CLIENT_ID,
+          clientSecret: ENV.GOOGLE_CLIENT_SECRET,
           scope: ["openid", "email", "profile"],
           requireEmailVerification: true,
         },
       }),
-    ...(env.MICROSOFT_CLIENT_ID &&
-      env.MICROSOFT_CLIENT_SECRET &&
-      env.MICROSOFT_TENANT_ID && {
+    ...(ENV.MICROSOFT_CLIENT_ID &&
+      ENV.MICROSOFT_CLIENT_SECRET &&
+      ENV.MICROSOFT_TENANT_ID && {
         microsoft: {
-          clientId: env.MICROSOFT_CLIENT_ID,
-          clientSecret: env.MICROSOFT_CLIENT_SECRET,
-          tenantId: env.MICROSOFT_TENANT_ID,
+          clientId: ENV.MICROSOFT_CLIENT_ID,
+          clientSecret: ENV.MICROSOFT_CLIENT_SECRET,
+          tenantId: ENV.MICROSOFT_TENANT_ID,
           // requireEmailVerification: false,
           // overrideUserInfoOnSignIn: true,
         },
@@ -233,11 +232,11 @@ export const auth = betterAuth({
       storeInDatabase: true,
     }),
     deviceAuthorization({ schema: {} }),
-    ...(env.VITE_GOOGLE_CLIENT_ID
+    ...(ENV.GOOGLE_CLIENT_ID
       ? [
           oneTap({
             disableSignup: true,
-            clientId: env.VITE_GOOGLE_CLIENT_ID,
+            clientId: ENV.GOOGLE_CLIENT_ID,
           }),
         ]
       : []),
@@ -272,14 +271,14 @@ export const auth = betterAuth({
             orgMemberId: member?.id,
           };
         },
-        expirationTime: env.BETTER_AUTH_JWT_EXPIRATION_TIME, // Extend from default 15 minutes to 1 hour for better UX
+        expirationTime: ENV.BETTER_AUTH_JWT_EXPIRATION_TIME, // Extend from default 15 minutes to 1 hour for better UX
       },
     }),
     oauthProvider({
       loginPage: "/auth/sign-in",
       consentPage: "/auth/consent",
       scopes: ["openid", "profile", "email", "offline_access"] as const,
-      // resources: [env.API_SERVER_URL, `${env.API_SERVER_URL}/`],
+      // resources: [ENV.API_SERVER_URL, `${ENV.API_SERVER_URL}/`],
       accessTokenExpiresIn: 3600, // (1 hour)
       refreshTokenExpiresIn: 2592000, // (30 days)
       responseTypes: ["authorization_code", "refresh_token"] as const,
@@ -441,7 +440,7 @@ export const auth = betterAuth({
     admin({
       ac,
       roles,
-      adminUserIds,
+      adminUserIds: ENV.BETTER_AUTH_ADMINS,
     }),
     /**
      * Permission: By default, organization **owners** have full access to all API key operations.
@@ -497,9 +496,9 @@ export const auth = betterAuth({
     ]),
 
     passkey({
-      // rpID: env.WEB_BASE_URL,
+      // rpID: ENV.WEB_BASE_URL,
       // rpName: 'astra',
-      // origin: env.WEB_BASE_URL,
+      // origin: ENV.WEB_BASE_URL,
     }),
     openAPI(),
     // haveIBeenPwned({
@@ -507,7 +506,7 @@ export const auth = betterAuth({
     // }),
     captcha({
       provider: "cloudflare-turnstile", // or google-recaptcha, hcaptcha, captchafox
-      secretKey: env.TURNSTILE_SECRET_KEY,
+      secretKey: ENV.TURNSTILE_SECRET_KEY,
       // endpoints: ["/sign-up/*", "/sign-in/*", "/request-password-reset"],
       endpoints: [
         "/sign-up/email",
