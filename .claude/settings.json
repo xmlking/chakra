@@ -17,7 +17,14 @@
       "Skill(claude-code-settings:autonomous-skill)",
       "Bash(codex:*)"
     ],
-    "deny": ["Bash(rm -rf:*)", "Bash(rm -fr:*)", "Read(**/*.pem)", "Read(**/*.key)"],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -fr:*)",
+      "Read(**/.env.local)",
+      "Read(**/.env.*.local)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)"
+    ],
     "ask": [
       "Bash(sudo:*)",
       "Bash(chmod 777:*)",
