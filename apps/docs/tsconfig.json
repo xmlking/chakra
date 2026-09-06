@@ -15,7 +15,14 @@
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "#features/*": ["./src/features/*"],
+      "#components/*": ["./src/components/*.tsx"],
+      "#config/*": ["./src/config/*"],
+      "#env": ["./env.ts"],
+      "#hooks/*": ["./src/hooks/*.ts"],
+      "#lib/*": ["./src/lib/*.ts"],
+      "#server/*": ["./src/server/*"],
+      "#types": ["./src/types/index.ts"]
     },
     "noEmit": true
   },

@@ -3,6 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "imports": {
+    "#components/*": "./src/components/*.tsx",
+    "#config/*": "./src/config/*",
+    "#env": "./env.ts",
+    "#features/*": "./src/features/*",
+    "#hooks/*": "./src/hooks/*.ts",
+    "#lib/*": "./src/lib/*.ts",
+    "#server/*": "./src/server/*",
+    "#types": [
+      "./src/types/index.ts"
+    ]
+  },
   "scripts": {
     "build": "fumapress build",
     "clean": "git clean -xdf .output .tanstack .source dist test-results coverage node_modules",

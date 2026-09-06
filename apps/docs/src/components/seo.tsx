@@ -1,4 +1,4 @@
-import { OG_IMAGE, SITE_URL } from "@/layout-config";
+import { OG_IMAGE, SITE_URL } from "../layout-config";
 
 export function Seo({
   title,

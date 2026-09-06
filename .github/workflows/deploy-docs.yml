@@ -40,6 +40,8 @@ jobs:
         working-directory: apps/docs
         env:
           DOCS_BASE_PATH: "/chakra/"
+          # GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
+          # GITHUB_PRIVATE_KEY: ${{ secrets.GITHUB_PRIVATE_KEY }}
         run: bun run build
 
       - name: 📤 Upload artifact
