@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "fumapress build",
-    "clean": "git clean -xdf env.ts .output .tanstack .source dist test-results coverage node_modules",
+    "clean": "git clean -xdf .output .tanstack .source dist test-results coverage node_modules",
     "codegen": "varlock codegen",
     "dev": "fumapress dev --port=3001",
     "postinstall": "varlock codegen && fumadocs-mdx",

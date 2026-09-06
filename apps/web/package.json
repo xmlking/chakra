@@ -19,7 +19,7 @@
   "scripts": {
     "build": "vp build",
     "check": "varlock load && vp check",
-    "clean": "git clean -xdf env.ts .output .workflow-* *.log .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
+    "clean": "git clean -xdf .output '.workflow-*' '*.log' .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
     "codegen": "varlock codegen",
     "dev": "vp dev",
     "postinstall": "varlock codegen",

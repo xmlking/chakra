@@ -23,9 +23,11 @@
 **/dist
 **/.source
 **/.evlog
+**/.swc
 **/.output
 **/.tanstack
 **/.workflow-*/
+**/*.logs
 **/node_modules
 **/README.md
 **/CHANGELOG.md

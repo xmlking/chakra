@@ -25,7 +25,7 @@
   "type": "module",
   "scripts": {
     "check": "vp check",
-    "clean": "git clean -xdf coverage .evlog .workflow-* node_modules",
+    "clean": "git clean -xdf coverage .evlog '.workflow-*' node_modules",
     "codegen": "vp run --filter './apps/*' --filter './packages/*' codegen",
     "prepare": "vp config",
     "ready": "vp check && vp test && vp run -r build"
