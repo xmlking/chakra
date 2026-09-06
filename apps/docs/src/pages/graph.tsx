@@ -1,5 +1,5 @@
-import { GraphView } from "@/components/graph-view";
-import { buildGraph } from "@/lib/build-graph";
+import { GraphView } from "#components/graph-view";
+import { buildGraph } from "#lib/build-graph";
 
 // oxlint-disable-next-line import/no-default-export
 export default async function GraphPage() {

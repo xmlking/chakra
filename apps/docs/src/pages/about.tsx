@@ -2,6 +2,8 @@ import { Banner } from "fumadocs-ui/components/banner";
 import { GithubInfo } from "fumadocs-ui/components/github-info";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 
+import { ENV } from "#env";
+
 // oxlint-disable-next-line import/no-default-export
 export default function Page() {
   return (
@@ -37,7 +39,7 @@ export default function Page() {
         owner="xmlking"
         repo="chakra"
         // your own GitHub access token (optional)
-        token={process.env.GITHUB_TOKEN}
+        token={ENV.GITHUB_TOKEN}
       />
     </main>
   );

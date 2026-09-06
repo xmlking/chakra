@@ -23,12 +23,12 @@ import { openapiPlugin } from "fumapress/plugins/openapi";
 import { sitemapPlugin } from "fumapress/plugins/sitemap";
 import { takumiPlugin } from "fumapress/plugins/takumi";
 
-import { Mermaid } from "@/components/mdx/mermaid";
-import { OpenAPIPage } from "@/components/openapi";
-import { Video } from "@/components/video";
-import { baseOptions } from "@/layout-config";
+import { Mermaid } from "#components/mdx/mermaid";
+import { OpenAPIPage } from "#components/openapi";
+import { Video } from "#components/video";
 
 import { blog, changelog, docs } from "./.source/server";
+import { baseOptions } from "./src/layout-config";
 
 // HINT: use `basePath` setting in waku.config.ts. Defaults to  "/".
 const basePath = import.meta.env.BASE_URL;
@@ -150,13 +150,13 @@ const config = defineConfig({
      */
     // imagePlugin({ allowedHosts: ["xmlking.github.io"] }),
     // githubFeedbackPlugin({
-    //   appId: import.meta.env.GITHUB_APP_ID,
-    //   privateKey: import.meta.env.GITHUB_PRIVATE_KEY,
+    //   appId: ENV.GITHUB_APP_ID,
+    //   privateKey: ENV.GITHUB_PRIVATE_KEY,
     //   // your repository info, e.g.
     //   storage: {
-    //     owner: "xmlking",
-    //     repo: "chakra",
-    //     category: "Feedback",
+    //     owner: ENV.GITHUB_OWNER,
+    //     repo: ENV.GITHUB_REPO,
+    //     category: ENV.DOCS_CATEGORY,
     //   },
     // }),
   )
