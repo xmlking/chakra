@@ -69,13 +69,6 @@ bunx --bun shadcn@latest add @reui/tree
 bunx --bun shadcn@latest add @reui/use-file-upload
 # reui kanban (optional)
 bunx --bun shadcn@latest add @reui/kanban
-# diceui Action Bar, mask-input, listbox etc (optional)
-bun x shadcn@latest add -p src/components/diceui @diceui/action-bar
-bun x shadcn@latest add -p src/components/diceui @diceui/badge-overflow
-bun x shadcn@latest add -p src/components/diceui @diceui/editable
-bun x shadcn@latest add -p src/components/diceui @diceui/listbox
-bun x shadcn@latest add -p src/components/diceui @diceui/mask-input
-bun x shadcn@latest add -p src/components/diceui @diceui/status
 # tiptap from https://tiptap.niazmorshed.dev/ (optional)
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/toolbar-provider.json
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/starter-kit.json
