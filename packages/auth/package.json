@@ -11,7 +11,7 @@
     "./studio.config": "./studio.config.ts"
   },
   "scripts": {
-    "clean": "git clean -xdf env.ts dist test-results coverage node_modules",
+    "clean": "git clean -xdf dist test-results coverage node_modules",
     "codegen": "varlock codegen",
     "create-admin-user": "varlock run -- bun scripts/create-admin-user.ts",
     "create-admin-user-ori": "varlock run -- bunx auth@latest create-admin -c src/index.tsx --email $BETTER_AUTH_ADMIN_EMAIL --name=\"Super Admin\" --role admin",
