@@ -1,5 +1,4 @@
 import { log } from "evlog";
-// import { env } from "virtual:env/server";
 import { sleep } from "workflow";
 
 export async function processOrder(id: string) {

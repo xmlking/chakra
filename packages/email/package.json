@@ -16,20 +16,20 @@
   },
   "scripts": {
     "build": "email build",
-    "clean": "git clean -xdf vite-env.d.ts .react-email dist out node_modules",
+    "clean": "git clean -xdf env.ts .react-email dist out node_modules",
     "cli": "bunx email-sdk",
+    "codegen": "varlock codegen",
     "dev": "email dev --port 3010",
     "export": "email export",
-    "postinstall": "vite-env types && vite-env generate"
+    "postinstall": "varlock codegen"
   },
   "dependencies": {
     "@opencoredev/email-sdk": "catalog:",
-    "@vite-env/core": "catalog:",
     "@workspace/ui": "workspace:*",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-email": "catalog:",
-    "zod": "catalog:"
+    "varlock": "catalog:"
   },
   "devDependencies": {
     "@react-email/ui": "catalog:",
@@ -37,7 +37,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vite-env/cli": "catalog:",
     "vite": "catalog:",
     "vite-plus": "catalog:"
   },

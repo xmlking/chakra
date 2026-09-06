@@ -1,13 +1,15 @@
 // @ts-nocheck https://github.com/wakujs/waku/issues/1812
 import tailwindcss from "@tailwindcss/vite";
+import { varlockVitePlugin } from "@varlock/vite-integration";
 import { fumadocsMdx } from "fumadocs-mdx/vite";
 import press from "fumapress/vite";
 import { defineConfig } from "vite-plus";
 
+import { ENV } from "./env";
+
 export default defineConfig({
-  envDir: "../..", // HINT: use workspace root .env files
   press: {
-    basePath: import.meta.env.VITE_DOCS_BASE_PATH || "/",
+    basePath: ENV.DOCS_BASE_PATH,
   },
   resolve: {
     tsconfigPaths: true,
@@ -45,5 +47,5 @@ export default defineConfig({
     exclude: ["@base-ui/react", "@base-ui/utils", "@fuma-translate/react", "lucide-react"],
   },
 
-  plugins: [press(), fumadocsMdx(), tailwindcss()],
+  plugins: [varlockVitePlugin(), press(), fumadocsMdx(), tailwindcss()],
 });

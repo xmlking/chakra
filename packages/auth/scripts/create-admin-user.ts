@@ -1,6 +1,6 @@
 import { APIError } from "better-auth/api";
-import { env } from "virtual:env/server";
 
+import { ENV } from "../env";
 import { auth } from "../src/index";
 
 function exitWithError(message: string): never {
@@ -12,8 +12,8 @@ async function run() {
   try {
     const result = await auth.api.createUser({
       body: {
-        email: env.BETTER_AUTH_ADMIN_EMAIL,
-        password: env.BETTER_AUTH_ADMIN_PASSWORD,
+        email: ENV.BETTER_AUTH_ADMIN_EMAIL,
+        password: ENV.BETTER_AUTH_ADMIN_PASSWORD,
         name: "Super Admin",
         role: "admin",
         data: {

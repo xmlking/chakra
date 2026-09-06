@@ -15,18 +15,20 @@ build
 .vercel
 .wrangler
 
-# Environment variables
+# Environment variables (managed by varlock — see .env.schema files)
 .env
 .env.*
 .env.local
 .env.*.local
-!.env.example
+!.env.schema
+!.env.build
+!.env.production
 !.env.local.example
 !.env.production.example
 !.env.test.example
-!.env.build.example
-!.env.docker.example
+!.env.compose.example
 !.env.vault
+.env-flat/
 
 # Editor directories and files
 .vscode/*
@@ -72,7 +74,6 @@ lerna-debug.log*
 
 # Project
 TODO/
-**/vite-env.d.ts
 **/*.db
 packages/db/src/schema/copy_me_auth.ts
 infra/traefik/acme.json

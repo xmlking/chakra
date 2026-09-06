@@ -1,101 +1,149 @@
 ---
 title: Environment variables
-description: Learn how to configure environment variables.
+description: How environment variables are declared, validated, typed and loaded with varlock.
 ---
 
-Environment variables are defined in the `.env` file in the root of the repository and in the root of the `apps/web` package.
+Environment variables are managed by [varlock](https://varlock.dev). Every package and app declares
+the variables it needs in a committed `.env.schema` file. varlock validates values against that
+schema, generates TypeScript types from it, keeps secrets out of logs and browser bundles, and
+injects the resolved values into every process.
 
-- **Shared environment variables**: Defined in the **root** `.env` file. These are shared between environments (e.g., development, staging, production) and apps (e.g., web, mobile).
-- **Environment-specific variables**: Defined in `.env.development` and `.env.production` files. These are specific to the development and production environments.
-- **App-specific variables**: Defined in the app-specific directory (e.g., `apps/web`). These are specific to the app and are not shared between apps.
-- **Secret keys**: Not stored in the `.env` file. Instead, they are stored in the environment variables of the CI/CD system.
-- **Local secret keys**: If you need to use secret keys locally, you can store them in the `.env.local` file. This file is not committed to Git, making it safe for sensitive information.
+See [ADR 0005](/docs/developer/architecture/adr/0005-varlock-environment-contract) for why this
+replaced the previous Zod-based `env.ts` presets.
 
-## Shared variables
+## Layout
 
-Here you can add all the environment variables that are shared across all the apps. This file should be located in the **root** of the project.
-
-To override these variables in a specific environment, please add them to the specific environment file (e.g. `.env.development`, `.env.production`).
-
-```dotenv title=".env.local"
-# Shared environment variables
-
-# The database URL is used to connect to your database.
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-
-# The name of the product. This is used in various places across the apps.
-PRODUCT_NAME="Astra"
-
-# The url of the web app. Used mostly to link between apps.
-URL="http://localhost:3000"
-
-...
+```
+.env.schema                  # shared items (APP_ENV, APP_NAME); imported by every schema below
+apps/web/.env.build          # committed placeholders, loaded only when APP_ENV=build
+.env.local                   # git-ignored; your developer secrets live here
+packages/db/.env.schema      # + generated env.ts
+packages/email/.env.schema
+packages/storage/.env.schema
+packages/auth/.env.schema    # imports packages/db and packages/email
+apps/web/.env.schema         # imports root + all four packages
+apps/docs/.env.schema        # imports root
 ```
 
-If you're using Supabase for your database, the [Supabase recipe](/docs/web/recipes/supabase#configure-environment-variables) shows the exact `DATABASE_URL` format and how to set it in your `.env.local`.
+Each schema starts with `@import(../../, pick=[...])`, which pulls in the root schema **and** the
+root `.env.local`, filtered to the keys that schema declares. That is why a single root `.env.local`
+is enough for the whole workspace: values are declared where they are used, but stored in one place,
+and a key that no schema declares is simply ignored.
 
-## App-specific variables
+Imports flow in one direction (root ← packages ← apps). Never import an app from a package.
 
-Here you can add all the environment variables that are specific to the app (e.g. `apps/web`).
+## Reading variables in code
 
-You can also override the shared variables defined in the root `.env` file.
+Each schema has `@generateTsTypes(path=./env.ts, exposeEnv=local)`, which generates an `env.ts`
+next to it exporting a typed `ENV` object. The file is git-ignored and produced by each package's
+`postinstall` (`varlock codegen`); the Vite plugin also refreshes it on dev/build. Import it from the
+package you are in:
 
-```dotenv title="apps/web/.env.local"
-# App-specific environment variables
+```ts title="packages/db/src/index.ts"
+import { ENV } from "../env";
 
-# Env variables extracted from shared to be exposed to the client in Next.js app
-NEXT_PUBLIC_PRODUCT_NAME="${PRODUCT_NAME}"
-NEXT_PUBLIC_URL="${URL}"
-NEXT_PUBLIC_DEFAULT_LOCALE="${DEFAULT_LOCALE}"
-
-# Theme mode and color
-NEXT_PUBLIC_THEME_MODE="system"
-NEXT_PUBLIC_THEME_COLOR="orange"
-
-...
+const pool = new Pool({ connectionString: ENV.DATABASE_URL, min: ENV.DB_POOL_MIN });
 ```
 
-<Callout title="NEXT_PUBLIC_ prefix">
-  To make environment variables available in the Next.js **client-side** app code, you need to prefix them with `NEXT_PUBLIC_`. They will be injected to the code during the build process.
-
-Only environment variables prefixed with `NEXT_PUBLIC_` will be injected, so don't use this prefix for environment variables that should be used only in the server-side code.
-
-[Read more about Next.js environment variables.](https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables)
-
-</Callout>
-
-## Secret keys
-
-Secret keys and sensitive information are to be never stored in the `.env` file. Instead, **they are stored in the environment variables of the CI/CD system.**
-
-<Callout title="What does this mean?">
-  It means that you will need to add the secret keys to the environment variables of your CI/CD
-  system (e.g., GitHub Actions, Vercel, Cloudflare, your VPS, Netlify, etc.). This is not a
-  Astra-specific requirement, but a best practice for security for any application. Ultimately, it's
-  your choice.
-</Callout>
-
-Below is some examples of "what is a secret key?" in practice.
-
-```dotenv title=".env.local"
-# Secret keys
-
-# The database URL is used to connect to your database.
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-
-# Stripe server config - required only if you use Stripe as a billing provider
-STRIPE_WEBHOOK_SECRET=""
-STRIPE_SECRET_KEY=""
-
-# Lemon Squeezy server config - required only if you use Lemon Squeezy as a billing provider
-LEMON_SQUEEZY_API_KEY=""
-LEMON_SQUEEZY_SIGNING_SECRET=""
-LEMON_SQUEEZY_STORE_ID=""
-
-...
+```ts title="apps/web/src/routes/api/files.ts"
+import { ENV } from "#env"; // apps/web maps #env to ./env.ts
 ```
 
-<Callout title="Secrets used locally">
-  If you need to use secret keys locally, you can store them in the `.env.local` file. This file is
-  not committed to Git, therefore it is safe to store sensitive information in it.
+Types are coerced: `@type=number` items are numbers, `@type=boolean` items are booleans, and
+`@type=array(...)` items are arrays. Do not read `process.env` directly in application code; `ENV`
+fails loudly when varlock has not loaded, while `process.env.X` silently returns `undefined`.
+
+## Public vs sensitive
+
+Every item is **sensitive** unless marked otherwise. Sensitive values are redacted from logs and
+the Vite plugin refuses to build if one would leak into the client bundle. Two markers relax that:
+
+- `@public`: the item is meant for browser code and gets inlined into the client bundle.
+- `@sensitive=false`: plain server config (pool sizes, bucket names, hosts) that is not a secret and
+  should stay readable in logs. Keep it out of browser code by convention.
+
+There is no `VITE_` prefix convention any more; the decorator is the contract.
+
+```dotenv
+# @public @dynamic @type=url
+BETTER_AUTH_URL=
+
+# @sensitive=false @type=number(isInt=true, min=1, max=200)
+DB_POOL_MIN=10
+
+BETTER_AUTH_SECRET=
+```
+
+## Static vs dynamic public values
+
+A `@public` item is inlined into the client bundle at build time. Add `@dynamic` when the value
+must be resolved when the server boots instead: `BETTER_AUTH_URL`, `TURNSTILE_SITE_KEY` and the
+`FF_*` feature flags are dynamic, so one Docker image serves any host and flags can change without
+a rebuild. Browser code still reads them as `ENV.X`. Delivery is handled in `apps/web`:
+
+- `src/lib/public-env.ts` builds an inline boot script from `getPublicDynamicEnv()`; the root route
+  renders it in `<head>` so `ENV` is hydrated before any module script runs.
+- `src/routes/api/public-env.ts` serves the same values at `/api/public-env`, and
+  `refreshPublicEnv()` re-fetches them, which is how a flipped feature flag can be picked up at
+  runtime.
+
+To add a flag: declare it `@public @dynamic @type=boolean` in `apps/web/.env.schema`, add it to the
+pick list, and read `ENV.FF_YOUR_FLAG` anywhere. Nothing else is needed.
+
+## Adding or changing a variable
+
+1. Edit the `.env.schema` of the package that reads the variable. Use `@type=...` for anything that
+   is not a plain string and put defaults as the value. Items with a value are required; an empty
+   item is optional unless you add `@required`. Add the key to that schema's root `pick=[...]` list
+   (globs like `S3_*` work) so its value is read from `.env.local`.
+2. After any `.env.schema` change, run `vp run -w codegen` from the workspace root to regenerate every `env.ts`.
+3. If the value is required and has no default, add a placeholder to `apps/web/.env.build` so Docker
+   builds and `vp test` still validate.
+4. Set the real value in your root `.env.local`.
+5. Run `varlock load` from the package directory to confirm the schema resolves.
+
+Never put a real secret in `.env.schema`, `.env.build`, or any other committed file.
+`varlock scan --staged` can be used before committing to check for leaks.
+
+<Callout title="Why pick lists?">
+  Without `pick`, every key in the shared `.env.local` would become an undeclared, sensitive item in
+  every app, and varlock would redact its value from logs and flag it as a leak if it appeared in
+  build output (a bucket named `files` broke the docs build this way). Filtering keeps each app's
+  env to exactly what it declares.
 </Callout>
+
+## Running things
+
+| Context                                | How env is loaded                                           |
+| -------------------------------------- | ----------------------------------------------------------- |
+| `vp run web#dev`, `vp run web#build`   | `varlockVitePlugin` in `apps/web/vite.config.ts`            |
+| `vp run docs#dev`, `vp run docs#build` | `varlockVitePlugin` in `apps/docs/vite.config.ts`           |
+| `vp test`                              | `varlockVitePlugin({ rootDir: "apps/web" })` in root config |
+| drizzle-kit, seed and admin scripts    | `varlock run -- <command>` in the package's scripts         |
+| Production container                   | `varlock run` is the image `ENTRYPOINT`                     |
+
+Anything that runs outside Vite must be started through `varlock run --`; otherwise `ENV` throws on
+first access.
+
+## Environments
+
+`APP_ENV` (declared in the root schema) selects extra files: `.env.[APP_ENV]` and
+`.env.[APP_ENV].local` are loaded on top of the schema. Today only `apps/web/.env.build` exists. The
+Dockerfile sets `APP_ENV=build` for the build stage and `APP_ENV=production` for the runtime image.
+`NODE_ENV` is left to the frameworks and is not used as an environment switch.
+
+Values from the process environment always win over files, which is how compose and CI supply
+runtime configuration without any file in the image.
+
+## Useful commands
+
+```bash
+varlock load                     # validate and print resolved values (secrets masked)
+varlock load --agent             # same, JSON, safe for agents
+varlock reveal BETTER_AUTH_SECRET
+varlock explain DATABASE_URL     # where a value comes from
+varlock encrypt --file .env.local
+vp run -w codegen                # regenerate all env.ts files after schema changes
+```
+
+Install the `varlock.env-spec-language` VS Code extension for `.env.schema` syntax support.

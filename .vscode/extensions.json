@@ -3,6 +3,7 @@
   "recommendations": [
     "VoidZero.vite-plus-extension-pack",
     "bradlc.vscode-tailwindcss",
-    "typescriptteam.native-preview"
+    "typescriptteam.native-preview",
+    "varlock.env-spec-language"
   ]
 }

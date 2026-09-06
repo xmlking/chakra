@@ -32,27 +32,15 @@ To get started with Astra, ensure you have the following installed and set up:
   <Step>
     ### Setup environment variables
 
-    Create a `.env.local` files from `.env.example` files and fill in the required environment variables.
+    Environment variables are declared in the committed `.env.schema` files (one per package, plus a shared one at the root). Create a single git-ignored `.env.local` at the workspace root and fill in the required values listed in those schemas; every package imports the root directory, so this one file serves the whole monorepo.
 
-    You can use the following command to recursively copy the `.env.example` files to the `.env.local` files:
+    Validate your setup from the web app directory (secrets are masked in the output):
 
-    <Tabs items={["Unix (MacOS/Linux)", "Windows"]}>
-      <Tab value="Unix (MacOS/Linux)">
-        ```bash
-        find . -name ".env.example" -exec sh -c 'cp "$1" "${1%.example}.local"' _ {} \;
-        ```
-      </Tab>
+    ```bash
+    cd apps/web && varlock load
+    ```
 
-      <Tab value="Windows">
-        ```bash
-        Get-ChildItem -Recurse -Filter ".env.example" | ForEach-Object {
-            Copy-Item $_.FullName ($\_.FullName -replace '\.example$', '.local')
-        }
-        ```
-      </Tab>
-    </Tabs>
-
-    Check [Environment variables](/docs/web/configuration/environment-variables) for more details on setting up environment variables.
+    Check [Environment variables](/docs/web/configuration/environment-variables) for the full layout, how to add a variable, and how to run scripts with `varlock run`.
 
   </Step>
 

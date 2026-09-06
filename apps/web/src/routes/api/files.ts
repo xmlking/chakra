@@ -6,13 +6,14 @@ import { log } from "evlog";
 import { FilesError } from "files-sdk";
 import { createFilesRouter } from "files-sdk/api";
 import { createRouteHandler } from "files-sdk/tanstack-start";
-import { env } from "virtual:env/server";
+
+import { ENV } from "#env";
 
 /**
  * Ref: https://files-sdk.dev/docs/ui/server/tanstack-start
  */
 
-const allowedOrigins = ["https://chakra.ai", "https://www.chakra.ai", env.VITE_BETTER_AUTH_URL];
+const allowedOrigins = ["https://chakra.ai", "https://www.chakra.ai", ENV.BETTER_AUTH_URL];
 if (import.meta.env.DEV) {
   allowedOrigins.push(
     "http://localhost:3000",
@@ -30,7 +31,7 @@ const router = createFilesRouter({
   //     : filesInstance,
   allowedOrigins,
   // defaultExpiresIn: 300, // Default 300
-  secret: env.FILES_API_SECRET,
+  secret: ENV.FILES_API_SECRET,
   authorize: async ({ key, operation, from, to }) => {
     log.info({ key, operation, from, to });
     /* throw to deny, or return a per-user constraint — see /ui/server/authorization */

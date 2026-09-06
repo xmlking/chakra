@@ -114,11 +114,11 @@
       "skillPath": "better-auth/twoFactor/SKILL.md",
       "computedHash": "5bc3051aef5060db013f0b3cbe812c40dbae5c22d6ba3ddde4b941158362a197"
     },
-    "vite-env": {
-      "source": "pyyupsk/skills",
+    "varlock": {
+      "source": "dmno-dev/varlock",
       "sourceType": "github",
-      "skillPath": "vite-env/SKILL.md",
-      "computedHash": "a41fce151bf6638ff37633859effbc82368c2a2d176d0fb6979c6071f09a2827"
+      "skillPath": "skills/varlock/SKILL.md",
+      "computedHash": "243e80968182a042d53681116a24a93ad41faf26512d5894b9cbfcb92014ce88"
     },
     "workflow": {
       "source": "vercel/workflow",

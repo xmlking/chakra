@@ -9,20 +9,19 @@
     "./env": "./env.ts"
   },
   "scripts": {
-    "clean": "git clean -xdf vite-env.d.ts dist test-results coverage node_modules",
-    "postinstall": "vite-env types && vite-env generate",
+    "clean": "git clean -xdf env.ts dist test-results coverage node_modules",
+    "codegen": "varlock codegen",
+    "postinstall": "varlock codegen",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@vite-env/core": "catalog:",
     "@workspace/shared": "workspace:*",
     "evlog": "catalog:",
-    "zod": "catalog:"
+    "varlock": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
-    "@vite-env/cli": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

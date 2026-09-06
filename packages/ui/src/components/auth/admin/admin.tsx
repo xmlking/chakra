@@ -39,6 +39,7 @@ export function Admin({ className, hideNav, path, view }: AdminProps) {
           <Button
             aria-current={currentView === "users" ? "page" : undefined}
             className="rounded-b-none"
+            nativeButton={false}
             render={<a href={`${basePaths.admin}/${viewPaths.admin.users}`} />}
             variant={currentView === "users" ? "secondary" : "ghost"}
           >
@@ -51,6 +52,7 @@ export function Admin({ className, hideNav, path, view }: AdminProps) {
               key={`${tab.id}-${tab.path}`}
               aria-current={currentView === tab.id ? "page" : undefined}
               className="rounded-b-none"
+              nativeButton={false}
               render={<a href={`${basePaths.admin}/${tab.path}`} />}
               variant={currentView === tab.id ? "secondary" : "ghost"}
             >

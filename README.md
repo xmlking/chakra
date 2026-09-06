@@ -14,10 +14,8 @@ brew install bun
 
 brew install vite-plus
 vp env off
-```
 
-```shell
-bun add -g @dotenv-run/cli
+brew install dmno-dev/tap/varlock
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
@@ -50,6 +48,7 @@ Open the URL printed in the terminal (Vite’s default is usually `http://localh
 | `vp run web#dev`     | Start the dev server (web) with HMR                              |
 | `vp run web#build`   | Production build (web)                                           |
 | `vp run web#preview` | Preview the production build locally (web)                       |
+| `vp run -w codegen`  | Regenerate all `env.ts` files after changing `.env.schema` files |
 | `vp check`           | Format, lint, and type-check (fix with `--fix` where applicable) |
 | `vp test`            | Run tests                                                        |
 | `vp help`            | List built-in commands and options                               |
@@ -102,6 +101,12 @@ docker compose down
 
 # (Danger) you can remove all data and reset database with:
 docker compose down -v
+
+# list running services
+docker compose ps
+
+# show resolved environment variables
+docker compose config
 ```
 
 Start `web` App in dev mode

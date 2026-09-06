@@ -1,6 +1,6 @@
 // import { definePlugin } from "nitro";
 
-// import { env } from "virtual:env/server";
+// import { ENV } from "#env";
 
 // oxlint-disable-next-line import/no-default-export
 // export default definePlugin(async () => {

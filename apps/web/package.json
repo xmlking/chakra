@@ -6,6 +6,7 @@
   "imports": {
     "#components/*": "./src/components/*.tsx",
     "#config/*": "./src/config/*",
+    "#env": "./env.ts",
     "#features/*": "./src/features/*",
     "#hooks/*": "./src/hooks/*.ts",
     "#lib/*": "./src/lib/*.ts",
@@ -17,13 +18,14 @@
   },
   "scripts": {
     "build": "vp build",
-    "check": "vite-env check && vp check",
-    "clean": "git clean -xdf vite-env.d.ts .output .workflow-* *.log .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
+    "check": "varlock load && vp check",
+    "clean": "git clean -xdf env.ts .output .workflow-* *.log .evlog .nitro .swc .tanstack .wrangler dist test-results coverage node_modules",
+    "codegen": "varlock codegen",
     "dev": "vp dev",
-    "postinstall": "vite-env types && vite-env generate",
+    "postinstall": "varlock codegen",
     "preview": "vp preview",
-    "workflow:observe": "dotenv-run -f ../../.env -v -- workflow inspect runs",
-    "workflow:observe:web": "dotenv-run -f ../../.env -v -- workflow web"
+    "workflow:observe": "varlock run -- workflow inspect runs",
+    "workflow:observe:web": "varlock run -- workflow web"
   },
   "dependencies": {
     "@ai-sdk/openai": "catalog:",
@@ -55,7 +57,6 @@
     "@tanstack/react-table-devtools": "catalog:",
     "@thesvg/react": "catalog:",
     "@unpic/react": "catalog:",
-    "@vite-env/core": "catalog:",
     "@workflow/world-postgres": "catalog:",
     "@workspace/auth": "workspace:*",
     "@workspace/db": "workspace:*",
@@ -85,6 +86,7 @@
     "sonner": "catalog:",
     "tslib": "catalog:",
     "tw-shimmer": "catalog:",
+    "varlock": "catalog:",
     "workflow": "catalog:",
     "zod": "catalog:",
     "zustand": "catalog:"
@@ -98,7 +100,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@vite-env/cli": "catalog:",
+    "@varlock/vite-integration": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "@workflow/vitest": "catalog:",
     "class-variance-authority": "catalog:",

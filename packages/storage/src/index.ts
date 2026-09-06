@@ -1,20 +1,21 @@
 import { log } from "evlog";
 import { createFiles } from "files-sdk";
-import { minio } from "files-sdk/minio";
+import { s3Fetch } from "files-sdk/s3-fetch";
 import { signedUrlPolicy } from "files-sdk/signed-url-policy";
 import { softDelete } from "files-sdk/soft-delete";
-import { env } from "virtual:env/server";
+
+import { ENV } from "../env";
 
 /**
  * TODO: create index.azure.ts, index.gcs.ts etc
  */
 export const images = createFiles({
-  adapter: minio({
-    bucket: env.S3_IMAGES_BUCKET,
-    endpoint: env.S3_ENDPOINT,
-    accessKeyId: env.S3_ACCESS_KEY_ID,
-    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
-    region: env.S3_REGION,
+  adapter: s3Fetch({
+    bucket: ENV.S3_IMAGES_BUCKET,
+    endpoint: ENV.S3_ENDPOINT,
+    accessKeyId: ENV.S3_ACCESS_KEY_ID,
+    secretAccessKey: ENV.S3_SECRET_ACCESS_KEY,
+    region: ENV.S3_REGION,
   }),
   plugins: [
     signedUrlPolicy({
@@ -43,12 +44,12 @@ export const images = createFiles({
 });
 
 export const files = createFiles({
-  adapter: minio({
-    bucket: env.S3_FILES_BUCKET,
-    endpoint: env.S3_ENDPOINT,
-    accessKeyId: env.S3_ACCESS_KEY_ID,
-    secretAccessKey: env.S3_SECRET_ACCESS_KEY,
-    region: env.S3_REGION,
+  adapter: s3Fetch({
+    bucket: ENV.S3_FILES_BUCKET,
+    endpoint: ENV.S3_ENDPOINT,
+    accessKeyId: ENV.S3_ACCESS_KEY_ID,
+    secretAccessKey: ENV.S3_SECRET_ACCESS_KEY,
+    region: ENV.S3_REGION,
   }),
   plugins: [
     signedUrlPolicy({

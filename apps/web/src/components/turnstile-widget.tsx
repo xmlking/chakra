@@ -2,7 +2,8 @@ import type { CaptchaRenderProps } from "@better-auth-ui/react/plugins/captcha";
 import { type TurnstileInstance, Turnstile } from "@marsidev/react-turnstile";
 import { useTheme } from "next-themes";
 import { useEffect, useRef } from "react";
-import env from "virtual:env/client";
+
+import { ENV } from "#env";
 
 export function TurnstileWidget({ setToken, clearToken, setReset }: CaptchaRenderProps) {
   const ref = useRef<TurnstileInstance>(null);
@@ -17,7 +18,7 @@ export function TurnstileWidget({ setToken, clearToken, setReset }: CaptchaRende
   return (
     <Turnstile
       ref={ref}
-      siteKey={env.VITE_TURNSTILE_SITE_KEY}
+      siteKey={ENV.TURNSTILE_SITE_KEY}
       onSuccess={setToken}
       onError={clearToken}
       onExpire={clearToken}

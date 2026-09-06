@@ -1,7 +1,7 @@
 import { hashPassword } from "@better-auth/utils/password";
 import { reset, seed } from "drizzle-seed";
-import { env } from "virtual:env/server";
 
+import { ENV } from "../env";
 import { db } from "../src";
 import * as schema from "../src/schema";
 import {
@@ -16,7 +16,7 @@ import {
 import { settings } from "../src/schema/settings";
 
 const pool = db.$client;
-const superAdminPasswordHash = await hashPassword(env.BETTER_AUTH_ADMIN_PASSWORD as string);
+const superAdminPasswordHash = await hashPassword(ENV.BETTER_AUTH_ADMIN_PASSWORD);
 
 const settingKeys = [
   "THEME_COLOR",
@@ -55,10 +55,10 @@ async function run() {
     user: {
       count: 1,
       columns: {
-        id: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
+        id: f.default({ defaultValue: ENV.BETTER_AUTH_ADMINS[0] }),
         name: f.default({ defaultValue: "Super User" }),
         email: f.default({
-          defaultValue: env.BETTER_AUTH_ADMIN_EMAIL as string,
+          defaultValue: ENV.BETTER_AUTH_ADMIN_EMAIL,
         }),
         emailVerified: f.default({ defaultValue: true }),
         image: f.default({ defaultValue: "/avatars/shadcn.jpg" }),
@@ -78,8 +78,8 @@ async function run() {
       columns: {
         issuer: f.default({ defaultValue: "local:credential" }),
         providerId: f.default({ defaultValue: "credential" }),
-        accountId: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
-        userId: f.default({ defaultValue: env.BETTER_AUTH_ADMINS[0] }),
+        accountId: f.default({ defaultValue: ENV.BETTER_AUTH_ADMINS[0] }),
+        userId: f.default({ defaultValue: ENV.BETTER_AUTH_ADMINS[0] }),
         accessToken: f.default({ defaultValue: null }),
         refreshToken: f.default({ defaultValue: null }),
         idToken: f.default({ defaultValue: null }),
@@ -92,7 +92,7 @@ async function run() {
     organization: {
       count: 1,
       columns: {
-        id: f.default({ defaultValue: env.SHARED_ORGANIZATION_ID }),
+        id: f.default({ defaultValue: ENV.SHARED_ORGANIZATION_ID }),
         name: f.default({ defaultValue: "Chakra" }),
         slug: f.default({ defaultValue: "chakra-inc" }),
         logo: f.default({ defaultValue: null }),

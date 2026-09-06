@@ -2,7 +2,7 @@ import { aui } from "@assistant-ui/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
-import ViteEnv from "@vite-env/core/plugin";
+import { varlockVitePlugin } from "@varlock/vite-integration";
 import react from "@vitejs/plugin-react";
 import { getBuildInfo } from "@workspace/shared/git-helpers";
 import ViteEvlog from "evlog/vite";
@@ -12,11 +12,12 @@ import { workflow } from "workflow/vite";
 
 export default defineConfig(() => {
   return {
-    envDir: "../..", // HINT: use workspace root .env files
     resolve: { tsconfigPaths: true },
     plugins: [
+      // The server is always started via `varlock run` (see Dockerfile), so the
+      // built SSR bundle only needs the init calls, not a second schema load.
+      varlockVitePlugin({ ssrInjectMode: "init-only" }),
       aui(),
-      ViteEnv(),
       devtools(),
       ViteEvlog({
         service: "chakra",
