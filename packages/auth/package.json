@@ -14,8 +14,8 @@
     "clean": "git clean -xdf dist test-results coverage node_modules",
     "codegen": "varlock codegen",
     "create-admin-user": "varlock run -- bun scripts/create-admin-user.ts",
-    "create-admin-user-ori": "varlock run -- bunx auth@latest create-admin -c src/index.tsx --email $BETTER_AUTH_ADMIN_EMAIL --name=\"Super Admin\" --role admin",
-    "generate-schema": "varlock run -- bunx auth@latest generate -c src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
+    "create-admin-user-ori": "varlock run -- auth create-admin -c src/index.tsx --email $BETTER_AUTH_ADMIN_EMAIL --name=\"Super Admin\" --role admin",
+    "generate-schema": "varlock run -- auth generate -c src/index.tsx --output ../db/src/schema/copy_me_auth.ts -y",
     "postinstall": "varlock codegen",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
