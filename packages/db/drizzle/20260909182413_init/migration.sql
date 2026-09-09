@@ -1,6 +1,5 @@
 CREATE TYPE "lang" AS ENUM('en', 'es', 'de');--> statement-breakpoint
 CREATE TYPE "notification_type" AS ENUM('info', 'error', 'success', 'warning');--> statement-breakpoint
-CREATE TYPE "processStatus" AS ENUM('pending', 'processing', 'completed', 'failed');--> statement-breakpoint
 CREATE TYPE "setting_type" AS ENUM('user', 'org', 'system');--> statement-breakpoint
 CREATE TYPE "visibility" AS ENUM('public', 'private');--> statement-breakpoint
 CREATE TABLE "account" (

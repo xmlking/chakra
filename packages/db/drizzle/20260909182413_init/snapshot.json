@@ -1,10 +1,10 @@
 {
-  "id": "91460ce5-1e1e-40f4-8051-d8699edbb16b",
-  "prevIds": [
-    "1a005b6e-723c-4c47-af47-ec04422d1ee0"
-  ],
   "version": "8",
   "dialect": "postgres",
+  "id": "5a85ec20-adae-4f2c-b645-5da9ae317b95",
+  "prevIds": [
+    "00000000-0000-0000-0000-000000000000"
+  ],
   "ddl": [
     {
       "values": [
@@ -24,17 +24,6 @@
         "warning"
       ],
       "name": "notification_type",
-      "entityType": "enums",
-      "schema": "public"
-    },
-    {
-      "values": [
-        "pending",
-        "processing",
-        "completed",
-        "failed"
-      ],
-      "name": "processStatus",
       "entityType": "enums",
       "schema": "public"
     },
