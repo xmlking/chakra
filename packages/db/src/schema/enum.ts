@@ -19,24 +19,14 @@ export const notificationEnum = pgEnum("notification_type", [
 // ------------------ setting type ---------------------
 export const settingTypeEnum = pgEnum("setting_type", ["user", "org", "system"]);
 
-// ------------------ process status  ---------------------
-export const processStatusEnum = pgEnum("processStatus", [
-  "pending",
-  "processing",
-  "completed",
-  "failed",
-]);
-
 // Schema
 export const langSelectSchema = createSelectSchema(langEnum);
 export const visibilitySelectSchema = createSelectSchema(visibilityEnum);
 export const notificationSelectSchema = createSelectSchema(notificationEnum);
 export const settingTypeSelectSchema = createSelectSchema(settingTypeEnum);
-export const processStatusSelectSchema = createSelectSchema(processStatusEnum);
 
 // Types
 export type LangType = z.infer<typeof langSelectSchema>;
 export type VisibilityType = z.infer<typeof visibilitySelectSchema>;
 export type NotificationType = z.infer<typeof notificationSelectSchema>;
 export type SettingType = z.infer<typeof settingTypeSelectSchema>;
-export type ProcessStatusType = z.infer<typeof processStatusSelectSchema>;
