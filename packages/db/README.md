@@ -70,12 +70,12 @@ To apply `migrations` to local database and `seed` sample data
 
 ```shell
 # workflow schema setup: https://workflow-sdk.dev/worlds/postgres
-vp run @workspace/db#workflow:bootstrap
+vp run --no-cache @workspace/db#workflow:bootstrap
 # Apply migrations to local database
 # vp run @workspace/db#push
-vp run @workspace/db#migrate
+vp run --no-cache @workspace/db#migrate
 # Apply migrations to local database
-vp run @workspace/db#seed
+vp run --no-cache @workspace/db#seed
 ```
 
 Start DB Viewer App to see the data
