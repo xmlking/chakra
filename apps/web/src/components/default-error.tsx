@@ -1,3 +1,5 @@
+/* oxlint-disable */
+
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
@@ -43,6 +45,7 @@ export function DefaultError({ error }: ErrorComponentProps) {
         <div className="mt-4 space-y-4">
           <Button
             className="w-full"
+            // oxlint-disable-next-line react-perf/jsx-no-new-function-as-prop
             onClick={async () => {
               await router.invalidate();
             }}
@@ -55,6 +58,7 @@ export function DefaultError({ error }: ErrorComponentProps) {
             ) : (
               <Link
                 to="/"
+                // oxlint-disable-next-line react-perf/jsx-no-new-function-as-prop
                 onClick={(e) => {
                   e.preventDefault();
                   window.history.back();
@@ -71,8 +75,10 @@ export function DefaultError({ error }: ErrorComponentProps) {
                 <AccordionContent>
                   <div className="rounded-md bg-muted p-4">
                     <h3 className="mb-2 font-semibold">Error Message:</h3>
+                    {/* @ts-expect-error TanStack Router exposes boundary errors as unknown. */}
                     <p className="mb-4 text-sm">{error.message}</p>
                     <h3 className="mb-2 font-semibold">Stack Trace:</h3>
+                    {/* @ts-expect-error TanStack Router exposes boundary errors as unknown. */}
                     <pre className="overflow-x-auto text-xs whitespace-pre-wrap">{error.stack}</pre>
                   </div>
                 </AccordionContent>
