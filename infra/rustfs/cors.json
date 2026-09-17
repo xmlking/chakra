@@ -1,0 +1,11 @@
+{
+  "rules": [
+    {
+      "allowedOrigins": ["http://localhost:3000", "*"],
+      "allowedMethods": ["GET", "PUT", "POST", "DELETE", "HEAD"],
+      "allowedHeaders": ["*"],
+      "exposeHeaders": ["ETag", "x-amz-request-id"],
+      "maxAgeSeconds": 3000
+    }
+  ]
+}

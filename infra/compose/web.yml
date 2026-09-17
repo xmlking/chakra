@@ -17,11 +17,11 @@ services:
       - ../../.env.local
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
-      S3_ENDPOINT: http://minio:9000
+      S3_ENDPOINT: http://storage:9000
     depends_on:
       postgres:
         condition: service_healthy
-      minio:
+      storage:
         condition: service_healthy
     healthcheck:
       test:
