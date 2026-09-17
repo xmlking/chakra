@@ -10,7 +10,7 @@
 #   - core.yml:       Nginx, Homepage, Portainer, Uptime-Kuma, What's Up Docker, FileBrowser
 #   - auth.yml:       Forward Auth middleware
 #   - database.yml:   PostgreSQL, Redis etc
-#   - storage.yml:    MinIO object storage
+#   - storage.yml:    rustfs object storage
 #   - mcp-toolbox.yml: Google MCP Toolbox for Databases
 #   - monitoring.yml: Prometheus, Grafana, Loki, Alertmanager, Netdata, Promtail, etc.
 #   - apps.yml:       n8n, Paperless-ngx, Nextcloud
