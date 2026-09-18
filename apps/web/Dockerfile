@@ -65,7 +65,7 @@ ENV PORT=3000
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
-  CMD bun -e "const res = await fetch('http://localhost:3000/health'); process.exit(res.ok ? 0 : 1);"
+  CMD bun -e "const res = await fetch('http://localhost:3000/api/health/live'); process.exit(res.ok ? 0 : 1);"
 
 # varlock validates the runtime env (from the container platform) against the
 # schema and injects it before the server boots. ENTRYPOINT, not CMD, so a
