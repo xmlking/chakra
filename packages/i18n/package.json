@@ -23,6 +23,8 @@
   "devDependencies": {
     "@inlang/cli": "catalog:",
     "@inlang/paraglide-js": "catalog:",
+    "@inlang/plugin-m-function-matcher": "catalog:",
+    "@inlang/plugin-message-format": "catalog:",
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "bumpp": "catalog:",

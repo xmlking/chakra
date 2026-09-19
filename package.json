@@ -84,6 +84,8 @@
     "@dnd-kit/utilities": "3.2.2",
     "@inlang/cli": "3.3.7",
     "@inlang/paraglide-js": "2.25.4",
+    "@inlang/plugin-m-function-matcher": "2.2.15",
+    "@inlang/plugin-message-format": "4.4.4",
     "@marsidev/react-turnstile": "1.6.1",
     "@opencoredev/email-sdk": "1.2.0",
     "@playwright/test": "1.63.0",
