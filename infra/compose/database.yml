@@ -5,8 +5,13 @@ services:
   ###########################################################################
   # postgres database with pgvector
   # docker compose exec -it postgres psql -U postgres -d postgres
+  # (or)
   # psql -U postgres -d postgres -h localhost
+  # pg_dump -U username -d database_name --schema-only --schema=your_schema_name > specific_schema_dump.sql
   # Commands:  \l , \c postgres ,  \dn, \du, \dt, \df, \dv, \d+ account
+  # To dump a specific schema without owner and privileges, use the following command:
+  # docker compose exec -it postgres pg_dump -U postgres -d postgres --schema-only --no-owner --no-privileges --schema=graphile_worker > graphile_worker_schema_dump.sql
+  # docker compose exec -it postgres pg_dump -U postgres -d postgres --schema-only --no-owner --no-privileges --schema=workflow > workflow_schema_dump.sql
   ###########################################################################
   postgres:
     image: timescale/timescaledb:latest-pg18
