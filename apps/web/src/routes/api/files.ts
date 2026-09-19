@@ -23,7 +23,7 @@ if (import.meta.env.DEV) {
 }
 
 const router = createFilesRouter({
-  files: files as any,
+  files,
   // HINT: https://files-sdk.dev/docs/ui/server/multiple-buckets
   // files: (req) =>
   //   new URL(req.url).searchParams.get("bucket") === "images"
