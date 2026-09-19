@@ -21,13 +21,11 @@ FROM deps AS build
 
 COPY --link . .
 
-# APP_ENV=build makes varlock load the committed placeholder file `.env.build`
-# instead of real secrets, so schema validation stays on during the build.
-ENV APP_ENV=build
 ENV VARLOCK_TELEMETRY_DISABLED=1
 
-# Imported schemas resolve environment overlays from the workspace root.
-RUN cp apps/web/.env.build .env.build
+# Paraglide output is generated and excluded from the Docker build context;
+# regenerate it because dependency installation skips package lifecycle scripts.
+RUN bun --filter @workspace/i18n build
 
 # The generated env.ts modules are committed, so the build can skip postinstall
 # code generation after installing dependencies with --ignore-scripts.

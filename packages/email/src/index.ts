@@ -20,8 +20,8 @@ export const email = createEmailClient({
   adapters: [
     resend({ apiKey: ENV.RESEND_API_KEY! }),
     smtp({
-      host: ENV.SMTP_HOST,
-      port: ENV.SMTP_PORT,
+      host: ENV.SMTP_HOST!,
+      port: ENV.SMTP_PORT!,
       ...(ENV.SMTP_USER &&
         ENV.SMTP_PASS && {
           auth: {

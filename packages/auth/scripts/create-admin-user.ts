@@ -12,8 +12,8 @@ async function run() {
   try {
     const result = await auth.api.createUser({
       body: {
-        email: ENV.BETTER_AUTH_ADMIN_EMAIL,
-        password: ENV.BETTER_AUTH_ADMIN_PASSWORD,
+        email: ENV.BETTER_AUTH_ADMIN_EMAIL!,
+        password: ENV.BETTER_AUTH_ADMIN_PASSWORD!,
         name: "Super Admin",
         role: "admin",
         data: {

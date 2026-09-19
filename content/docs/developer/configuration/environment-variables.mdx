@@ -15,7 +15,6 @@ replaced the previous Zod-based `env.ts` presets.
 
 ```
 .env.schema                  # shared items (APP_ENV, APP_NAME); imported by every schema below
-apps/web/.env.build          # committed placeholders, loaded only when APP_ENV=build
 .env.local                   # git-ignored; your developer secrets live here
 packages/db/.env.schema      # + generated env.ts
 packages/email/.env.schema
@@ -97,12 +96,12 @@ pick list, and read `ENV.FF_YOUR_FLAG` anywhere. Nothing else is needed.
    item is optional unless you add `@required`. Add the key to that schema's root `pick=[...]` list
    (globs like `S3_*` work) so its value is read from `.env.local`.
 2. After any `.env.schema` change, run `vp run -w codegen` from the workspace root to regenerate every `env.ts`.
-3. If the value is required and has no default, add a placeholder to `apps/web/.env.build` so Docker
-   builds and `vp test` still validate.
+3. If the value is required and has no default, it is optional during `APP_ENV=build`
+   and must be supplied by the runtime environment in production.
 4. Set the real value in your root `.env.local`.
 5. Run `varlock load` from the package directory to confirm the schema resolves.
 
-Never put a real secret in `.env.schema`, `.env.build`, or any other committed file.
+Never put a real secret in `.env.schema` or any other committed file.
 `varlock scan --staged` can be used before committing to check for leaks.
 
 <Callout title="Why pick lists?">
@@ -128,8 +127,8 @@ first access.
 ## Environments
 
 `APP_ENV` (declared in the root schema) selects extra files: `.env.[APP_ENV]` and
-`.env.[APP_ENV].local` are loaded on top of the schema. Today only `apps/web/.env.build` exists. The
-Dockerfile sets `APP_ENV=build` for the build stage and `APP_ENV=production` for the runtime image.
+`.env.[APP_ENV].local` are loaded on top of the schema. The web build sets `APP_ENV=build`,
+and the runtime image sets `APP_ENV=production`.
 `NODE_ENV` is left to the frameworks and is not used as an environment switch.
 
 Values from the process environment always win over files, which is how compose and CI supply
