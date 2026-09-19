@@ -9,8 +9,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
  * Contract test for the varlock env schemas.
  *
  * The web app schema must resolve without real secrets when APP_ENV=build,
- * using only the placeholders committed in apps/web/.env.build. This is
- * exactly what the Docker image build relies on, and it also proves the
+ * using only committed schema files. This is exactly what the Docker image
+ * build relies on, and it also proves the
  * @import graph between the web app, packages and root schema is complete.
  *
  * Only the committed env files are copied into a temp workspace, so a
@@ -24,7 +24,6 @@ const webDir = "apps/web";
 
 const committedEnvFiles = [
   [".env.schema", ".env.schema"],
-  [join(webDir, ".env.build"), ".env.build"],
   [join(webDir, ".env.schema"), join(webDir, ".env.schema")],
   ...["packages/db", "packages/email", "packages/storage", "packages/auth"].map((dir) => [
     join(dir, ".env.schema"),

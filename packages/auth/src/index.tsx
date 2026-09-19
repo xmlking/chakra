@@ -47,11 +47,12 @@ const trustedOrigins = [
   "mobile://",
   "exp://",
   /* Needed only for Apple ID authentication */
-  "https://appleid.apple.com",
-  "https://chakra.ai",
-  "https://www.chakra.ai",
-  "https://app.chakra.ai",
-  "https://astra-console.vercel.app/",
+  // "https://appleid.apple.com",
+  // "https://chakra.ai",
+  // "https://www.chakra.ai",
+  // "https://app.chakra.ai",
+  // "https://astra-console.vercel.app/",
+  ENV.BETTER_AUTH_URL!,
 ];
 
 if (import.meta.env.DEV) {
@@ -506,7 +507,7 @@ export const auth = betterAuth({
     // }),
     captcha({
       provider: "cloudflare-turnstile", // or google-recaptcha, hcaptcha, captchafox
-      secretKey: ENV.TURNSTILE_SECRET_KEY,
+      secretKey: ENV.TURNSTILE_SECRET_KEY!,
       // endpoints: ["/sign-up/*", "/sign-in/*", "/request-password-reset"],
       endpoints: [
         "/sign-up/email",

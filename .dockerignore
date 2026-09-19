@@ -13,7 +13,6 @@
 !/patches
 # !/content
 !.env.schema
-!.env.build
 
 # never ship developer secrets into the build context
 **/.env.local
@@ -29,6 +28,7 @@
 **/.workflow-*/
 **/*.logs
 **/node_modules
+packages/i18n/src/paraglide
 **/README.md
 **/CHANGELOG.md
 **/vite.config.js.timestamp-*

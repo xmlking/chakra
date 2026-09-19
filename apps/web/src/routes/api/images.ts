@@ -13,7 +13,7 @@ import { ENV } from "#env";
  * Ref: https://files-sdk.dev/docs/ui/server/tanstack-start
  */
 
-const allowedOrigins = ["https://chakra.ai", "https://www.chakra.ai", ENV.BETTER_AUTH_URL];
+const allowedOrigins = [ENV.BETTER_AUTH_URL!];
 if (import.meta.env.DEV) {
   allowedOrigins.push(
     "http://localhost:3000",

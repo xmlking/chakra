@@ -10,7 +10,7 @@ export type CoercedEnvSchema = {
    * **DATABASE_URL** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
    */
-  DATABASE_URL: string;
+  DATABASE_URL?: string;
   
   /**
    * **DB_POOL_MIN**  
@@ -37,26 +37,26 @@ export type CoercedEnvSchema = {
    * BETTER_AUTH_ADMINS="<admin-uuidv7-one>, <admin-uuidv7-two>"  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23808080%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M8%204H5v16h3m8-16h3v16h-3%22%2F%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMINS: string[];
+  BETTER_AUTH_ADMINS?: string[];
   
   /**
    * **BETTER_AUTH_ADMIN_EMAIL**  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23808080%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%3E%3Cpath%20d%3D%22M17.5%2019.125A9%209%200%201%201%2021%2012c0%205.5-6%205.5-6%202V8%22%2F%3E%3Cpath%20d%3D%22M15%2012v-1.5C15%209.12%2013.657%208%2012%208s-3%201.12-3%202.5V12m6%200v1.5c0%201.38-1.343%202.5-3%202.5s-3-1.12-3-2.5V12%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMIN_EMAIL: string;
+  BETTER_AUTH_ADMIN_EMAIL?: string;
   
   /**
    * **BETTER_AUTH_ADMIN_PASSWORD** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMIN_PASSWORD: string;
+  BETTER_AUTH_ADMIN_PASSWORD?: string;
   
   /**
    * **SHARED_ORGANIZATION_ID**  
    * UUIDv7 of the organization every user is a member of (used by the seed script).  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M10%207v2H9v6h1v2H6v-2h1V9H6V7zm6%200a2%202%200%200%201%202%202v6c0%201.11-.89%202-2%202h-4V7m4%202h-2v6h2z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  SHARED_ORGANIZATION_ID: string;
+  SHARED_ORGANIZATION_ID?: string;
   
   /**
    * **APP_ENV**  

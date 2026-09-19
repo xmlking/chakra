@@ -13,7 +13,7 @@ export type CoercedEnvSchema = {
    *   
    * 📚 {@link https://platform.openai.com/api-keys}  
    */
-  OPENAI_API_KEY: string;
+  OPENAI_API_KEY?: string;
   
   /**
    * **AI_GATEWAY_API_KEY** 🔐 _sensitive_  
@@ -55,9 +55,9 @@ export type CoercedEnvSchema = {
   /**
    * **WORKFLOW_POSTGRES_URL** 🔐 _sensitive_  
    * Uses a dedicated workflow URL when set, otherwise falls back to DATABASE_URL.  
-   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
+   * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
    */
-  WORKFLOW_POSTGRES_URL: string;
+  WORKFLOW_POSTGRES_URL?: string;
   
   /**
    * **WORKFLOW_POSTGRES_JOB_PREFIX**  
@@ -102,7 +102,7 @@ export type CoercedEnvSchema = {
    * **DATABASE_URL** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
    */
-  DATABASE_URL: string;
+  DATABASE_URL?: string;
   
   /**
    * **DB_POOL_MIN**  
@@ -129,26 +129,26 @@ export type CoercedEnvSchema = {
    * BETTER_AUTH_ADMINS="<admin-uuidv7-one>, <admin-uuidv7-two>"  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23808080%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M8%204H5v16h3m8-16h3v16h-3%22%2F%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMINS: string[];
+  BETTER_AUTH_ADMINS?: string[];
   
   /**
    * **BETTER_AUTH_ADMIN_EMAIL**  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%23808080%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%221.5%22%3E%3Cpath%20d%3D%22M17.5%2019.125A9%209%200%201%201%2021%2012c0%205.5-6%205.5-6%202V8%22%2F%3E%3Cpath%20d%3D%22M15%2012v-1.5C15%209.12%2013.657%208%2012%208s-3%201.12-3%202.5V12m6%200v1.5c0%201.38-1.343%202.5-3%202.5s-3-1.12-3-2.5V12%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMIN_EMAIL: string;
+  BETTER_AUTH_ADMIN_EMAIL?: string;
   
   /**
    * **BETTER_AUTH_ADMIN_PASSWORD** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_ADMIN_PASSWORD: string;
+  BETTER_AUTH_ADMIN_PASSWORD?: string;
   
   /**
    * **SHARED_ORGANIZATION_ID**  
    * UUIDv7 of the organization every user is a member of (used by the seed script).  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M10%207v2H9v6h1v2H6v-2h1V9H6V7zm6%200a2%202%200%200%201%202%202v6c0%201.11-.89%202-2%202h-4V7m4%202h-2v6h2z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  SHARED_ORGANIZATION_ID: string;
+  SHARED_ORGANIZATION_ID?: string;
   
   /**
    * **EMAIL_FROM**  
@@ -218,13 +218,13 @@ export type CoercedEnvSchema = {
    * SMTP fallback adapter. Resend's relay is smtp.resend.com:465 with user `resend`.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  SMTP_HOST: string;
+  SMTP_HOST?: string;
   
   /**
    * **SMTP_PORT**  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M20.95%2022.375L18%2019.425v2.225h-2V16h5.65v2H19.4l2.95%202.95zM12%2022q-2.075%200-3.9-.788t-3.175-2.137T2.788%2015.9T2%2012t.788-3.9t2.137-3.175T8.1%202.788T12%202t3.9.788t3.175%202.137T21.213%208.1T22%2012q0%20.5-.05%201t-.15%201h-2.05q.125-.5.188-1T20%2012t-.062-1t-.188-1h-3.4q.075.5.113%201t.037%201t-.037%201t-.113%201h-2q.075-.5.113-1t.037-1t-.037-1t-.113-1h-4.7q-.075.5-.112%201T9.5%2012t.038%201t.112%201H13v2h-2.9q.3%201.075.775%202.063T12%2019.95q.5%200%201-.062t1-.113v2.05q-.5.05-1%20.113T12%2022m-7.75-8h3.4q-.075-.5-.112-1T7.5%2012t.038-1t.112-1h-3.4q-.125.5-.187%201T4%2012t.063%201t.187%201m.85-6h2.95q.225-.925.563-1.812T9.4%204.45q-1.375.45-2.475%201.363T5.1%208m4.3%2011.55q-.45-.85-.788-1.737T8.05%2016H5.1q.725%201.275%201.825%202.188T9.4%2019.55M10.1%208h3.8q-.3-1.075-.775-2.062T12%204.05q-.65.9-1.125%201.888T10.1%208m5.85%200h2.95q-.725-1.275-1.825-2.187T14.6%204.45q.45.85.788%201.738T15.95%208%22%2F%3E%3C%2Fsvg%3E)   
    */
-  SMTP_PORT: number;
+  SMTP_PORT?: number;
   
   /**
    * **SMTP_SECURE**  
@@ -255,7 +255,7 @@ export type CoercedEnvSchema = {
    * browser receives it through the boot script in apps/web/src/routes/__root.tsx.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M24%2021V9h-2v14h8v-2zm-4-6v-4c0-1.103-.897-2-2-2h-6v14h2v-6h1.48l2.335%206h2.145l-2.333-6H18c1.103%200%202-.897%202-2m-6-4h4v4h-4zM8%2023H4c-1.103%200-2-.897-2-2V9h2v12h4V9h2v12c0%201.103-.897%202-2%202%22%2F%3E%3C%2Fsvg%3E)   
    */
-  BETTER_AUTH_URL: string;
+  BETTER_AUTH_URL?: string;
   
   /**
    * **BETTER_AUTH_SECRET** 🔐 _sensitive_  
@@ -264,7 +264,7 @@ export type CoercedEnvSchema = {
    *   
    * 📚 {@link https://www.better-auth.com/docs/installation#set-environment-variables}  
    */
-  BETTER_AUTH_SECRET: string;
+  BETTER_AUTH_SECRET?: string;
   
   /**
    * **BETTER_AUTH_JWT_EXPIRATION_TIME**  
@@ -341,14 +341,14 @@ export type CoercedEnvSchema = {
    * Always Fails  - 2x0000000000000000000000000000000AA  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  TURNSTILE_SECRET_KEY: string;
+  TURNSTILE_SECRET_KEY?: string;
   
   /**
    * **FILES_API_SECRET** 🔐 _sensitive_  
    * Signs files-sdk URLs. Generate with `openssl rand -hex 32`.  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  FILES_API_SECRET: string;
+  FILES_API_SECRET?: string;
   
   /**
    * **S3_IMAGES_BUCKET**  
@@ -385,13 +385,13 @@ export type CoercedEnvSchema = {
    * **S3_ACCESS_KEY_ID** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  S3_ACCESS_KEY_ID: string;
+  S3_ACCESS_KEY_ID?: string;
   
   /**
    * **S3_SECRET_ACCESS_KEY** 🔐 _sensitive_  
    * ![icon](data:image/svg+xml;utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2032%2032%22%3E%3Cpath%20fill%3D%22%23808080%22%20d%3D%22M29%2022h-5a2.003%202.003%200%200%201-2-2v-6a2%202%200%200%201%202-2h5v2h-5v6h5ZM18%2012h-4V8h-2v14h6a2.003%202.003%200%200%200%202-2v-6a2%202%200%200%200-2-2m-4%208v-6h4v6Zm-6-8H3v2h5v2H4a2%202%200%200%200-2%202v2a2%202%200%200%200%202%202h6v-8a2%202%200%200%200-2-2m0%208H4v-2h4Z%22%2F%3E%3C%2Fsvg%3E)   
    */
-  S3_SECRET_ACCESS_KEY: string;
+  S3_SECRET_ACCESS_KEY?: string;
   
 };
 

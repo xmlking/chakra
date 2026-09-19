@@ -13,7 +13,7 @@ That worked inside Vite only. Everything else bypassed the schema:
 
 - drizzle-kit and the workflow CLI ran through `dotenv-run -f ../../.env`, against an unvalidated twin config (`drizzle-tools.config.ts`) that read `process.env.DATABASE_URL!`.
 - `apps/docs` had an `env.ts` but never registered the plugin, so nothing was validated there.
-- Docker builds copied `.env.build.example` in as `.env` to satisfy validation.
+- Docker builds copied a placeholder environment file into place to satisfy validation.
 - The `OPENAI_API_KEY` had to be written back into `process.env` by hand because the AI SDK reads it from there.
 - Types were regenerated on every `postinstall` and git-ignored.
 
@@ -25,7 +25,7 @@ Every environment variable is declared once, in a committed `.env.schema`, and v
 - **One access path.** `@generateTsTypes(path=./env.ts, exposeEnv=local)` generates a package-local `env.ts` exporting a typed `ENV` (git-ignored, produced by `postinstall`). Code imports `ENV` from its own package (`#env` in `apps/web`). `virtual:env/*` and `process.env` reads are gone.
 - **`@public` replaces the `VITE_` prefix.** Everything is sensitive unless marked otherwise: `@public` marks browser-facing items, `@sensitive=false` marks plain server config so varlock does not redact values like `10` or `files` from every log line. Client-facing names lost their prefix (`VITE_BETTER_AUTH_URL` → `BETTER_AUTH_URL`).
 - **Every process is wrapped.** The Vite plugin covers dev, build and vitest. Scripts run via `varlock run --`. The container's `ENTRYPOINT` is `varlock run`, with `varlock flatten` making the import graph self-contained inside the image.
-- **`APP_ENV` is the switch.** A committed `apps/web/.env.build` holds placeholders loaded only when `APP_ENV=build`, and the Dockerfile copies it to the workspace root for imported schemas. `NODE_ENV` is left alone.
+- **`APP_ENV` is the switch.** Runtime variables are optional when `APP_ENV=build` and required in runtime environments. `NODE_ENV` is left alone.
 
 ### Status
 
