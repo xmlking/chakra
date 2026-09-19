@@ -12,6 +12,10 @@ import { workflow } from "workflow/vite";
 
 export default defineConfig(() => {
   return {
+    // server: {
+    //   // add domain after running `cloudflared tunnel --url http://localhost:3000`
+    //   allowedHosts: ["localhost", "joshua-wesley-held-focus.trycloudflare.com"],
+    // },
     resolve: { tsconfigPaths: true },
     plugins: [
       // The server is always started via `varlock run` (see Dockerfile), so the
