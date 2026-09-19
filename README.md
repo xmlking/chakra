@@ -37,6 +37,12 @@ vp install
 vp run web#dev
 ```
 
+To expose to internet via [cloudflared](https://try.cloudflare.com/), run:
+
+```shell
+cloudflared tunnel --url http://localhost:3000
+```
+
 Open the URL printed in the terminal (Vite’s default is usually `http://localhost:3000`).
 
 ### Everyday commands
