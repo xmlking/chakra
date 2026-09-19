@@ -17,6 +17,9 @@ vp env off
 
 brew install dmno-dev/tap/varlock
 varlock telemetry disable
+
+# optional
+brew install cloudflared
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
@@ -35,6 +38,12 @@ git clone https://github.com/xmlking/chakra.git
 cd chakra
 vp install
 vp run web#dev
+```
+
+To expose to internet via [cloudflared](https://try.cloudflare.com/), run:
+
+```shell
+cloudflared tunnel --url http://localhost:3000
 ```
 
 Open the URL printed in the terminal (Vite’s default is usually `http://localhost:3000`).
