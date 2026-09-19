@@ -17,6 +17,9 @@ vp env off
 
 brew install dmno-dev/tap/varlock
 varlock telemetry disable
+
+# optional
+brew install cloudflared
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
