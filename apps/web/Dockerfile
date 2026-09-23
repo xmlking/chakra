@@ -1,5 +1,7 @@
 # syntax=docker/dockerfile:1
 
+## TODO build outside docker
+
 FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
