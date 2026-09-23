@@ -1,12 +1,7 @@
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
-  pack: {
-    dts: {
-      tsgo: {},
-    },
-    exports: true,
-  },
+  pack: { deps: { resolveDepSubpath: true }, dts: { generator: "tsgo", tsgo: {} }, exports: true },
   lint: {
     options: {
       typeAware: true,
