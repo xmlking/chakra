@@ -13,6 +13,12 @@
       "skillPath": "skills/use-ai-sdk/SKILL.md",
       "computedHash": "aee5bf7ecb066b54eae76799610fa8a9be9ff1ca9a000ea92d17c14ec862938b"
     },
+    "assistant-ui": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/assistant-ui/SKILL.md",
+      "computedHash": "edc38a25714b02933ae054cb80fed046011fdac5086d9ad76ba331bd9e42452c"
+    },
     "better-auth-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
@@ -24,6 +30,12 @@
       "sourceType": "github",
       "skillPath": "security/SKILL.md",
       "computedHash": "7a230edf3a24ce18162cb4379f59b6a19b8d24ca04db530609d0f15cede556dc"
+    },
+    "create-auth": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "skillPath": "better-auth/create-auth/SKILL.md",
+      "computedHash": "9a9b498bc144367b8e237233f89def63fb2bd69e8cafe173eaa58fe3a863cdc4"
     },
     "create-auth-skill": {
       "source": "better-auth/skills",
@@ -73,6 +85,12 @@
       "skillPath": "skills/files-sdk/SKILL.md",
       "computedHash": "49b474cb0bf155fdc0eed735c9f2b64904efa820f3ecf93152efe2a7c5275fc2"
     },
+    "generative-ui": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/generative-ui/SKILL.md",
+      "computedHash": "06a13090e2eba9c2c2ccc0f9ef389c24ba583378cf756a91b7576f50bf86a6b5"
+    },
     "improve": {
       "source": "shadcn/improve",
       "sourceType": "github",
@@ -84,6 +102,12 @@
       "sourceType": "github",
       "skillPath": "skills/improve-react/SKILL.md",
       "computedHash": "ee6095448a511e2507528caae7ba91c5dc462464b603196c5b1931d4924a371a"
+    },
+    "markdown": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/markdown/SKILL.md",
+      "computedHash": "9d458ed1ae816985db02fb18e6a1a272b0b3b75ebcfcef7015ebff563665b0aa"
     },
     "migrate-better-result-3": {
       "source": "dmmulroy/better-result",
@@ -97,22 +121,60 @@
       "skillPath": "skills/migrate-radix-to-base/SKILL.md",
       "computedHash": "e1f2030ee5059be3dff0812ca0e4b995ee9fa3132176f049ebe6c90346a6755e"
     },
+    "observability": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/observability/SKILL.md",
+      "computedHash": "b06d32ef458dfa81e03e10d34f1e94d4c9d765b31338549b2dbc7e6ae9bc995f"
+    },
     "organization-best-practices": {
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "better-auth/organization/SKILL.md",
       "computedHash": "8c85e683dabef4532f1e8b67bbed5c453d39e0e3d5aeedd69d16b568f6e6d44f"
     },
+    "primitives": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/primitives/SKILL.md",
+      "computedHash": "d9a92ff2c727a9ebd680c93baf06bbf3d435d04e67f0875b623b03015223033a"
+    },
+    "react-mcp": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/react-mcp/SKILL.md",
+      "computedHash": "296baf581901520cece8d878bef9f0a1b9f21c3a3c67af9e77741a5a1e096f6f"
+    },
     "review-logging-patterns": {
       "source": "evlog.dev",
+      "sourceUrl": "https://www.evlog.dev",
       "sourceType": "well-known",
-      "computedHash": "16e0e91b358067492201f82c113269bc42936a02d1150bece06b106d1601b458"
+      "computedHash": "af203391f97353cadab02889db09d091616422179f9cf0fa8da6debcc0f06d3e",
+      "wellKnownDigest": "sha256:6c85bea9902983a0a6236d124cd18123889f730929cc3d6ef833865665577abd"
     },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
       "computedHash": "f615de216e085a84e31593ad0fa9062232adc40cd87b7c7ab2b8e49abf6500be"
+    },
+    "streaming": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/streaming/SKILL.md",
+      "computedHash": "0ca7aa05ca11416607e622b572c804aead597427845af083013dbfcfb0827ee2"
+    },
+    "thread-list": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/thread-list/SKILL.md",
+      "computedHash": "0ef9e81a9d69e61e58282f37b35536cf51c9d7e7c3f94adeeb423ebc5e8c3ce1"
+    },
+    "tools": {
+      "source": "assistant-ui/skills",
+      "sourceType": "github",
+      "skillPath": "assistant-ui/skills/tools/SKILL.md",
+      "computedHash": "ab2e53dc23691028d1b6a02a47e82f9608200f35ef4bf19493613bd449a71b3c"
     },
     "two-factor-authentication-best-practices": {
       "source": "better-auth/skills",
