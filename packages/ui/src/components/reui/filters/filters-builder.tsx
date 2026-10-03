@@ -34,7 +34,7 @@ import {
 import { getDefaultFilterOperator } from "#components/reui/filters/filters-operators"
 import type { FilterField } from "#components/reui/filters/filters-types"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import {
   Popover,

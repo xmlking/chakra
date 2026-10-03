@@ -49,7 +49,7 @@ import type {
   FilterOptionsState,
 } from "#components/reui/filters/filters-types"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { ButtonGroup } from "#components/shadcn/button-group"
 import { Input } from "#components/shadcn/input"

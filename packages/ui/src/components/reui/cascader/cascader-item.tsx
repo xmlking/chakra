@@ -18,7 +18,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Spinner } from "#components/shadcn/spinner"
 import { LoaderCircleIcon, MinusIcon, CheckIcon, RotateCwIcon, ChevronRightIcon } from "lucide-react"
 
@@ -127,7 +127,7 @@ export interface CascaderItemProps extends Omit<
   index?: number
   /** Indentation depth. Drives `--cascader-indent` in tree mode. */
   depth?: number
-  /** Renders the ancestor chain under the label, for deep-search results. */
+  /** Renders the ancestor chain under the label, for deep and global search. */
   showPath?: boolean
   /** `option` renders a real `Combobox.Item`; `button` renders identical markup
    *  outside the listbox, for the ancestor columns in columns mode. */
@@ -196,6 +196,7 @@ const CascaderItem = React.memo(function CascaderItem({
     labels,
     isBranch,
     isSelectable,
+    isDisabled,
     isSelected,
     isIndeterminate,
     selectedDescendantCount,
@@ -207,6 +208,7 @@ const CascaderItem = React.memo(function CascaderItem({
     navigateAt,
     toggleExpanded,
     commit,
+    getState,
     virtualized,
     loadMore,
     retryLevel,
@@ -216,6 +218,10 @@ const CascaderItem = React.memo(function CascaderItem({
 
   const branch = branchProp ?? isBranch(node)
   const selectable = selectableProp ?? isSelectable(node)
+  // An ancestor's flag counts: a search hit or a revealed path can list a row
+  // inside a branch nobody may open. Asked here, off the near-stable context,
+  // so no new prop and only a row that re-renders pays the ancestor walk.
+  const disabled = isDisabled(node)
   const selected = selectedProp ?? isSelected(node)
   // A selected node is never also partially selected (a dash in a filled box).
   const indeterminate =
@@ -255,22 +261,22 @@ const CascaderItem = React.memo(function CascaderItem({
   const handleClick = React.useCallback(
     (event: CascaderRowEvent) => {
       onClick?.(event)
-      if (node.disabled) return
+      if (disabled) return
       if (branch && !selectable) {
         veto(event)
         navigate(node)
       }
     },
-    [onClick, node, branch, selectable, veto, navigate]
+    [onClick, node, disabled, branch, selectable, veto, navigate]
   )
 
   const handleMouseUp = React.useCallback(
     (event: CascaderRowEvent) => {
       onMouseUp?.(event)
-      if (node.disabled) return
+      if (disabled) return
       if (branch && !selectable) veto(event)
     },
-    [onMouseUp, node, branch, selectable, veto]
+    [onMouseUp, disabled, branch, selectable, veto]
   )
 
   // The tree expander's own press. With `selectable="any"` the row press
@@ -278,15 +284,19 @@ const CascaderItem = React.memo(function CascaderItem({
   // stayed collapsed, so expanding needs its own target. `stopPropagation`
   // before the veto, so Base UI's handler never runs, and no role: nesting
   // one in `role="option"` fails axe. `navigate` fetches BEFORE it opens.
+  // A disabled row may still CLOSE what `expanded` opened, never open: a row
+  // only a query holds open is not in `expanded`, and the toggle would add it.
   const handleExpanderClick = React.useCallback(
     (event: CascaderRowEvent) => {
       event.stopPropagation()
       veto(event)
-      if (node.disabled) return
-      if (expanded) toggleExpanded(node.value)
-      else navigate(node)
+      if (expanded) {
+        if (!disabled || getState().expanded.has(node.value)) {
+          toggleExpanded(node.value)
+        }
+      } else if (!disabled) navigate(node)
     },
-    [veto, node, expanded, toggleExpanded, navigate]
+    [veto, node, disabled, expanded, getState, toggleExpanded, navigate]
   )
 
   const handleExpanderMouseUp = React.useCallback(
@@ -302,14 +312,14 @@ const CascaderItem = React.memo(function CascaderItem({
     (event: CascaderRowEvent) => {
       event.stopPropagation()
       veto(event)
-      if (node.disabled) return
+      if (disabled) return
       // `navigate` falls through to `pushLevel`, which APPENDS: right in the
       // deepest column, but from an ancestor column it duplicated the level and
       // corrupted the path. `navigateAt` rebuilds the trail from this depth.
       if (as === "button") navigateAt(node, depth ?? 0)
       else navigate(node)
     },
-    [veto, node, as, navigateAt, depth, navigate]
+    [veto, node, disabled, as, navigateAt, depth, navigate]
   )
 
   const handleChevronMouseUp = React.useCallback(
@@ -329,7 +339,7 @@ const CascaderItem = React.memo(function CascaderItem({
   const handleButtonClick = React.useCallback(
     (event: CascaderRowEvent) => {
       onClick?.(event)
-      if (node.disabled) return
+      if (disabled) return
       if (branch && !selectable) {
         // Button rows only exist in the columns trail, where `depth` is the
         // column's own depth, so navigating replaces the trail from here.
@@ -338,7 +348,7 @@ const CascaderItem = React.memo(function CascaderItem({
       }
       if (selectable) commit(node)
     },
-    [onClick, node, branch, selectable, navigateAt, depth, commit]
+    [onClick, node, disabled, branch, selectable, navigateAt, depth, commit]
   )
 
   // The paging row's press, never a selection, whatever `selectable` says.
@@ -362,7 +372,7 @@ const CascaderItem = React.memo(function CascaderItem({
     mode === "columns" &&
     as === "option" &&
     branch &&
-    !node.disabled
+    !disabled
   const hoverTimerRef = React.useRef<number | null>(null)
 
   const cancelHoverNavigate = React.useCallback(() => {
@@ -475,7 +485,7 @@ const CascaderItem = React.memo(function CascaderItem({
   const itemState = {
     branch,
     selected,
-    disabled: !!node.disabled,
+    disabled,
     depth: nodeDepth,
     count,
     path: showPath ? getCascaderPath(treeIndex, node.value).slice(0, -1) : [],
@@ -546,6 +556,9 @@ const CascaderItem = React.memo(function CascaderItem({
             childrenError ? "text-destructive" : "text-muted-foreground",
             AFFORDANCE_BOX_CLASS,
             AFFORDANCE_HOVER_CLASS,
+            /* A disabled row is `pointer-events-none`; only while open does its
+               expander take the pointer back, to close what `expanded` opened. */
+            disabled && expanded && "pointer-events-auto",
             childrenLoading && "pointer-events-none"
           )}
         >
@@ -774,8 +787,8 @@ const CascaderItem = React.memo(function CascaderItem({
         {...shared}
         /* Focus stays in the search input; the trail uses ArrowLeft. */
         tabIndex={-1}
-        disabled={node.disabled}
-        aria-disabled={node.disabled || undefined}
+        disabled={disabled}
+        aria-disabled={disabled || undefined}
         onClick={handleButtonClick}
         onMouseDown={handleButtonMouseDown}
         {...buttonProps}
@@ -793,7 +806,7 @@ const CascaderItem = React.memo(function CascaderItem({
          and the first arrow key leaves `aria-activedescendant` pointing at
          nothing. */
       {...(virtualized && index != null ? { index } : null)}
-      disabled={node.disabled}
+      disabled={disabled}
       /* Conditional spread, never `role={... : undefined}`: `mergeProps`
          iterates own keys, so `undefined` would delete `role="option"`. */
       {...(mode === "tree"
@@ -823,7 +836,7 @@ const CascaderItem = React.memo(function CascaderItem({
   )
 })
 
-/** Ancestor chain under a deep-search result: "Name" alone is ambiguous. */
+/** Ancestor chain under a deep or global hit: "Name" alone is ambiguous. */
 function CascaderItemPath({ node }: { node: CascaderNode }) {
   const { index, labels } = useCascaderActions()
   const ancestors = getCascaderPath(index, node.value).slice(0, -1)

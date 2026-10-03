@@ -51,6 +51,7 @@ import {
   getCascaderSelectedDescendants,
   getCascaderTabTarget,
   isCascaderBranch,
+  isCascaderDisabled,
   isCascaderMoreNode,
   isCascaderSelectable,
   matchesCascaderQuery,
@@ -77,7 +78,7 @@ import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ScrollArea } from "#components/shadcn/scroll-area"
 import { ChevronDownIcon, XIcon } from "lucide-react"
 
@@ -87,6 +88,9 @@ const EMPTY: CascaderNode<never>[] = []
 /** Stable empty array for the `actions` prop, so a cascader with no footer
  * does not republish the actions context on every render. */
 const EMPTY_ACTIONS: CascaderActionItem[] = []
+
+/** The `onSearch` scope of a global search: no path, so the whole tree. */
+const GLOBAL_SEARCH_PATH: string[] = []
 
 // Word joiner. A polite region reads only MUTATIONS, so alternate it.
 const ANNOUNCE_MARKER = "\u2060"
@@ -288,7 +292,7 @@ export function useCascaderSelection<T = unknown>(): CascaderSelection<T> {
 
 /**
  * Why the navigation path changed.
- * - `"drill"`: a branch was entered (row press, level arrow, deep-search hit).
+ * - `"drill"`: a branch was entered (row press, level arrow, search hit).
  * - `"back"`: one level up (back control, Backspace on an empty query).
  * - `"breadcrumb"`: a jump to an exact depth in the trail.
  * - `"reveal"`: the reopen navigated to the level holding the selection.
@@ -403,6 +407,10 @@ export interface CascaderBaseProps<T = unknown> {
   defaultInputValue?: string
   onInputValueChange?: (value: string) => void
 
+  /**
+   * `"level"` (default) filters the level on screen, `"deep"` also searches
+   * below it, `"global"` searches the whole tree from any level.
+   */
   searchScope?: CascaderSearchScope
   /** Custom matcher, replacing label + keywords substring matching. */
   filter?: (node: CascaderNode<T>, normalizedQuery: string) => boolean
@@ -630,6 +638,13 @@ function useCascaderDevWarnings<T>(options: CascaderDevOptions<T>) {
       )
     }
 
+    if (searchScope === "global" && mode === "tree") {
+      warnCascaderOnce(
+        "global-search-in-tree",
+        '`searchScope="global"` does nothing in `mode="tree"`: a tree query already searches the whole tree and auto-expands the ancestors of every hit.'
+      )
+    }
+
     if (hasOnSearch && mode === "tree") {
       warnCascaderOnce(
         "onsearch-in-tree",
@@ -675,13 +690,21 @@ interface CascaderLatest<T> {
 }
 
 /** A navigation waiting on a fetch. The `kind`s differ: a drill appends, a
- * columns press replaces the trail from `depth`, a tree press expands. */
-interface CascaderPendingNavigation {
-  value: string
-  kind: "push" | "at" | "expand"
-  /** `kind: "at"` only. The depth the pressed row belongs to. */
-  depth: number
-}
+ * columns press replaces the trail from `depth`, a search hit swaps in its own
+ * `trail`, a tree press expands. */
+type CascaderPendingNavigation =
+  | {
+      value: string
+      kind: "push" | "at" | "expand"
+      /** `kind: "at"` only. The depth the pressed row belongs to. */
+      depth: number
+    }
+  | {
+      value: string
+      kind: "trail"
+      /** The hit's ancestor chain, root first, the hit itself last. */
+      trail: string[]
+    }
 
 /** No default on `T`: inferred from `items`, so `node.data` arrives typed. */
 function Cascader<T>({
@@ -872,7 +895,7 @@ function Cascader<T>({
     enabled: open || !!inline,
     query,
     levels,
-    path,
+    path: searchScope === "global" ? GLOBAL_SEARCH_PATH : path,
     values: selectedValues,
   })
 
@@ -952,15 +975,19 @@ function Cascader<T>({
   const currentLevelKey = currentParentValue ?? CASCADER_ROOT_KEY
 
   const isDeepSearching =
-    searchScope === "deep" && query.trim().length > 0 && mode !== "tree"
+    (searchScope === "deep" || searchScope === "global") &&
+    query.trim().length > 0 &&
+    mode !== "tree"
+  // Global is the same scan from the root, whatever level is on screen.
+  const deepSearchWithin = searchScope === "global" ? null : currentParentValue
 
   const localDeepResults = React.useMemo(() => {
     if (!isDeepSearching) return null
     return searchCascaderDeep(index, query, {
-      within: currentParentValue,
+      within: deepSearchWithin,
       matches: filter,
     })
-  }, [isDeepSearching, index, query, currentParentValue, filter])
+  }, [isDeepSearching, index, query, deepSearchWithin, filter])
 
   // Server search wins over the local scan, or each hit shows up twice.
   const deepResults = loader.searchResults ?? localDeepResults
@@ -1086,6 +1113,12 @@ function Cascader<T>({
   React.useLayoutEffect(() => {
     if (swap.active) setSwap((prev) => ({ ...prev, active: false }))
   }, [swap.active])
+
+  // The same frame on demand, for a navigation that lands on the level already
+  // on screen: the key never moves, so the check above never fires.
+  const resetHighlight = React.useCallback(() => {
+    setSwap((prev) => (prev.active ? prev : { ...prev, active: true }))
+  }, [])
 
   /* ----------------------------- virtualization ---------------------------- */
 
@@ -1258,6 +1291,11 @@ function Cascader<T>({
   const isSelectable = React.useCallback(
     (node: CascaderNode<T>) => isCascaderSelectable(index, node, selectable),
     [index, selectable]
+  )
+
+  const isDisabled = React.useCallback(
+    (node: CascaderNode<T>) => isCascaderDisabled(index, node),
+    [index]
   )
 
   // Whether a branch can be committed AT ALL here. `"leaf"` is the only
@@ -1575,8 +1613,26 @@ function Cascader<T>({
     [setPathWithReason, setQuery, bumpAnnouncement]
   )
 
+  const goToTrail = React.useCallback(
+    (trail: string[]) => {
+      // A global hit can BE the level on screen. Then nothing moved, so no path
+      // change is reported, and no level swap clears the highlight the hit
+      // list left at its index, where Enter would commit some other row.
+      const { path: current } = latest.current.state
+      const stays =
+        trail.length === current.length &&
+        trail.every((entry, i) => entry === current[i])
+      if (stays) resetHighlight()
+      else setPathWithReason(trail, "drill")
+      setQuery("")
+      bumpAnnouncement(null)
+    },
+    [setPathWithReason, resetHighlight, setQuery, bumpAnnouncement]
+  )
+
   const navigateAt = React.useCallback(
     (node: CascaderNode<T>, depth: number) => {
+      if (isCascaderDisabled(latest.current.index, node)) return
       if (latest.current.mode === "tree") {
         toggleExpanded(node.value)
         return
@@ -1600,6 +1656,10 @@ function Cascader<T>({
         needsChildren: pending,
       } = latest.current
 
+      // Every drill and expand passes here, from a search hit, a key or a hover
+      // timer alike, so this is where a disabled subtree stays shut.
+      if (isCascaderDisabled(currentIndex, node)) return
+
       if (currentMode === "tree") {
         // Collapsing never needs data. Opening waits WITHOUT expanding, so
         // the branch stays shut with a spinner rather than opening onto no rows.
@@ -1615,26 +1675,19 @@ function Cascader<T>({
         return
       }
 
-      // A deep-search hit sits at any depth, so drilling in rebuilds the trail
-      // rather than appending to wherever the user was.
+      // A search hit sits at any depth, and under a global search outside the
+      // current path, so drilling in swaps in the hit's own trail. A held drill
+      // carries it too: splicing the hit into the current path at its depth
+      // kept the wrong ancestors for anything below a direct child.
       if (currentDeepResults) {
+        const trail = getCascaderPath(currentIndex, node.value).map(
+          (entry) => entry.value
+        )
         if (pending(node)) {
-          const ancestors = getCascaderPath(currentIndex, node.value)
-          requestChildren(node, {
-            value: node.value,
-            kind: "at",
-            // The hit's own depth, so the settle rebuilds the same trail.
-            depth: Math.max(0, ancestors.length - 1),
-          })
+          requestChildren(node, { value: node.value, kind: "trail", trail })
           return
         }
-        const ancestors = getCascaderPath(currentIndex, node.value)
-        setPathWithReason(
-          ancestors.map((entry) => entry.value),
-          "drill"
-        )
-        setQuery("")
-        bumpAnnouncement(null)
+        goToTrail(trail)
         return
       }
 
@@ -1644,14 +1697,7 @@ function Cascader<T>({
       }
       pushLevel(node.value)
     },
-    [
-      toggleExpanded,
-      setPathWithReason,
-      setQuery,
-      pushLevel,
-      bumpAnnouncement,
-      requestChildren,
-    ]
+    [toggleExpanded, goToTrail, pushLevel, requestChildren]
   )
 
   /**
@@ -1669,8 +1715,17 @@ function Cascader<T>({
 
     setPendingNavigation(null)
 
+    // Asked again against the index as it is NOW: a new `items` or a landed
+    // page can disable the target while its fetch was in flight.
+    const target = index.byValue.get(pendingNavigation.value)
+    if (target && isDisabled(target)) return
+
     if (pendingNavigation.kind === "expand") {
       toggleExpanded(pendingNavigation.value)
+      return
+    }
+    if (pendingNavigation.kind === "trail") {
+      goToTrail(pendingNavigation.trail)
       return
     }
     if (pendingNavigation.kind === "at") {
@@ -1678,7 +1733,16 @@ function Cascader<T>({
       return
     }
     pushLevel(pendingNavigation.value)
-  }, [pendingNavigation, loadStates, toggleExpanded, goToLevelAt, pushLevel])
+  }, [
+    pendingNavigation,
+    loadStates,
+    index,
+    isDisabled,
+    toggleExpanded,
+    goToTrail,
+    goToLevelAt,
+    pushLevel,
+  ])
 
   // A popup that closes mid-flight must not drill in when the answer arrives;
   // the loader aborts the request, this drops the intent.
@@ -1769,6 +1833,11 @@ function Cascader<T>({
         closeOnSelect: currentCloseOnSelect,
       } = latest.current
 
+      // Refuses a SELECT, never a removal: a disabled value set from outside
+      // must stay removable, and a cascade chip's removal arrives here.
+      const selecting = !currentMultiple || !current.includes(node.value)
+      if (selecting && isCascaderDisabled(currentIndex, node)) return
+
       if (!currentMultiple) {
         emitSelection([node.value], node, "select")
         if (currentCloseOnSelect) {
@@ -1783,7 +1852,6 @@ function Cascader<T>({
       }
 
       if (currentCascade) {
-        const selecting = !current.includes(node.value)
         const next = applyCascadeSelection(
           currentIndex,
           current,
@@ -1859,6 +1927,12 @@ function Cascader<T>({
           details.cancel()
           return
         }
+        // The row is Base UI `disabled` already, so only a path around it gets
+        // here, a custom row re-enabling it for one: refused, never navigated.
+        if (node && isDisabled(node)) {
+          details.cancel()
+          return
+        }
         if (node && !isSelectable(node) && isBranch(node)) {
           details.cancel()
           navigate(node)
@@ -1881,7 +1955,7 @@ function Cascader<T>({
       const before = new Set(selectedValues)
       const added = nextNodes.find((node) => !before.has(node.value))
 
-      if (added && isCascaderMoreNode(added)) {
+      if (added && (isCascaderMoreNode(added) || isDisabled(added))) {
         details.cancel()
         return
       }
@@ -1927,6 +2001,7 @@ function Cascader<T>({
       labels,
       announceNotice,
       isSelectable,
+      isDisabled,
       isBranch,
       navigate,
       commit,
@@ -2043,6 +2118,7 @@ function Cascader<T>({
       resolveNode,
       isBranch,
       isSelectable,
+      isDisabled,
       isSelected,
       isIndeterminate,
       selectedDescendantCount,
@@ -2090,6 +2166,7 @@ function Cascader<T>({
       resolveNode,
       isBranch,
       isSelectable,
+      isDisabled,
       isSelected,
       isIndeterminate,
       selectedDescendantCount,
@@ -2127,8 +2204,8 @@ function Cascader<T>({
               items={renderedItems}
               /* The empty frame that resets the highlight. See the comment above. */
               filteredItems={swapping ? EMPTY : comboboxItems}
-              /* Filtering is ours: level vs deep search scope cannot be
-                 expressed through Base UI's single matcher. */
+              /* Filtering is ours: the level, deep and global scopes cannot
+                 be expressed through Base UI's single matcher. */
               filter={null}
               value={comboboxValue}
               onValueChange={handleComboboxValueChange}
@@ -2735,9 +2812,15 @@ function CascaderList({
   maxHeight: maxHeightProp,
   ...props
 }: CascaderListProps) {
-  const { maxHeight, mode, labels, baseId, virtualized } = useCascaderActions()
-  const { currentParent } = useCascaderState()
+  const { maxHeight, mode, labels, baseId, virtualized, searchScope } =
+    useCascaderActions()
+  const { currentParent, deepResults } = useCascaderState()
   const resolved = maxHeightProp ?? maxHeight
+  // Global hits come from the whole tree, so the parent would understate them.
+  const listName =
+    searchScope === "global" && deepResults
+      ? labels.rootLevel
+      : (currentParent?.label ?? labels.rootLevel)
 
   return (
     <div
@@ -2768,7 +2851,7 @@ function CascaderList({
             data-slot="cascader-list"
             /* Base UI names the list nothing, so every mode shipped an unnamed
                listbox. The level's parent is the name; the root borrows one. */
-            aria-label={currentParent?.label ?? labels.rootLevel}
+            aria-label={listName}
             /* Replaces Base UI's floating id. `aria-controls` reads the live
                id, so the columns trail gets a predictable target. */
             id={`${baseId}-column-0`}

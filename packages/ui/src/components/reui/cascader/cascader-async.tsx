@@ -81,7 +81,8 @@ export interface UseCascaderLoaderOptions<T = unknown> {
   query: string
   /** Level keys that are currently on screen. Root is `CASCADER_ROOT_KEY`. */
   levels: string[]
-  /** The navigation path, handed to `onSearch` as its scope. */
+  /** Handed to `onSearch` as its scope and read for nothing else: the
+   * navigation path, or `[]` when the search covers the whole tree. */
   path: string[]
   /** Current selection, for `resolveValue`. */
   values: string[]
