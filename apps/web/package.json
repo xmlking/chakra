@@ -25,7 +25,7 @@
     "postinstall": "varlock codegen",
     "preview": "vp preview",
     "workflow:observe": "varlock run -- workflow inspect runs",
-    "workflow:observe:web": "varlock run -- workflow web"
+    "workflow:observe:web": "varlock run -- workflow inspect runs --web"
   },
   "dependencies": {
     "@ai-sdk/openai": "catalog:",
