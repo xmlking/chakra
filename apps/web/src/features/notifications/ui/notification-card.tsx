@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { CheckIcon, CircleAlertIcon, ClockIcon, LinkIcon, LoaderCircleIcon } from "lucide-react";
 import type { FC } from "react";
 

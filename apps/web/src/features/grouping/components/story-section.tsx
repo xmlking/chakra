@@ -16,7 +16,7 @@ import {
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { PlusIcon } from "lucide-react";
 // One pipeline section: a tinted band followed by its own table, header row and
 // all. Each section owns a separate DataGrid instance, which is what lets the

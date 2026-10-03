@@ -40,7 +40,7 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { ToggleGroup, ToggleGroupItem } from "@workspace/ui/components/shadcn/toggle-group";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { PlusIcon, SearchIcon, XIcon, FilterIcon, Settings2Icon, CheckIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";

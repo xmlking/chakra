@@ -25,7 +25,7 @@ import { Item, ItemMedia } from "@workspace/ui/components/shadcn/item";
 import { Progress, ProgressLabel, ProgressValue } from "@workspace/ui/components/shadcn/progress";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 import { toast } from "@workspace/ui/components/shadcn/toast";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { CalendarDaysIcon, CopyIcon, EyeIcon, FlagIcon, MoreHorizontalIcon } from "lucide-react";
 import { memo, type ComponentProps } from "react";
 

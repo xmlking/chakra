@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Button, buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { ArrowRightIcon, BoxIcon, MenuIcon } from "lucide-react";
 
 // import { ModeToggle } from "#components/mode-toggle";

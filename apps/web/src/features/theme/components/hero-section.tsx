@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { Check } from "lucide-react";
 import { AnimatePresence, m } from "motion/react";
 import { useEffect, useState } from "react";

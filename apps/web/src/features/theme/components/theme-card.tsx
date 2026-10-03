@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { Check, Code2 } from "lucide-react";
 import { useTheme } from "next-themes";
 

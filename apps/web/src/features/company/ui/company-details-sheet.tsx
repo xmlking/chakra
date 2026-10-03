@@ -21,7 +21,7 @@ import {
   SheetTitle,
 } from "@workspace/ui/components/shadcn/sheet";
 import { Spinner } from "@workspace/ui/components/shadcn/spinner";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { Trash2Icon, XIcon, CalendarIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 

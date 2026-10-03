@@ -8,7 +8,7 @@ import {
 import { Item, ItemMedia } from "@workspace/ui/components/shadcn/item";
 import { Spinner } from "@workspace/ui/components/shadcn/spinner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@workspace/ui/components/shadcn/tooltip";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { InfoIcon, PencilIcon, XIcon, CheckIcon } from "lucide-react";
 import { useEffect, useRef, type ReactNode } from "react";
 

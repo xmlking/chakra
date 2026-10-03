@@ -61,7 +61,7 @@ import {
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
 import { toast } from "@workspace/ui/components/shadcn/toast";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import {
   BellRingIcon,
   Building2Icon,
