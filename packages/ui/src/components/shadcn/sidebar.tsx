@@ -1,10 +1,12 @@
+"use client"
+
 import * as React from "react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "cn"
 
 import { useIsMobile } from "#hooks/use-mobile"
-import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
 import { Input } from "#components/shadcn/input"
 import { Separator } from "#components/shadcn/separator"
