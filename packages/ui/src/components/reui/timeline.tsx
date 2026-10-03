@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useState } from "react"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 // Types
 type TimelineContextValue = {
