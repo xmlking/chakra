@@ -1,5 +1,3 @@
-"use client";
-
 import { memo, useEffect } from "react";
 import { useAui } from "@assistant-ui/react";
 import {
