@@ -71,7 +71,7 @@
       "source": "opencoredev/email-sdk",
       "sourceType": "github",
       "skillPath": "skills/email-sdk-migrate/SKILL.md",
-      "computedHash": "4555bc2f191cf9ea15004168374f4ddaf72541eab904e391cd819806318d36a4"
+      "computedHash": "c1675c3f6b83f250e38369ebd3acfb551e534d97a55a3598fdaf0d838985eec7"
     },
     "eve": {
       "source": "vercel/eve",
@@ -83,7 +83,7 @@
       "source": "haydenbleasel/files-sdk",
       "sourceType": "github",
       "skillPath": "skills/files-sdk/SKILL.md",
-      "computedHash": "49b474cb0bf155fdc0eed735c9f2b64904efa820f3ecf93152efe2a7c5275fc2"
+      "computedHash": "2941c41abe63500cc1a47fd7ee10df3cdaff59d62c958358035cce52857dcaaf"
     },
     "improve": {
       "source": "shadcn/improve",
@@ -138,13 +138,13 @@
       "source": "dmno-dev/varlock",
       "sourceType": "github",
       "skillPath": "skills/varlock/SKILL.md",
-      "computedHash": "243e80968182a042d53681116a24a93ad41faf26512d5894b9cbfcb92014ce88"
+      "computedHash": "aad1f0cba6eebc70db9cf6772c23a555bc9727784070126b6d70bf18545adeac"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/web-design-guidelines/SKILL.md",
-      "computedHash": "a6a44d5498f7e8f68289902f3dedfc6f38ae0cee1e96527c80724cf27f727c2a"
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
     },
     "workflow": {
       "source": "vercel/workflow",
@@ -156,7 +156,7 @@
       "source": "vercel-labs/agent-skills",
       "sourceType": "github",
       "skillPath": "skills/writing-guidelines/SKILL.md",
-      "computedHash": "e90462d4f801d823603b12c345ad0ff91a7489415274432681d21c7129123c26"
+      "computedHash": "25aa3a33a97bddbcb1847ce4a6169106ec25e5b19b15b99c66e75ab383866ef2"
     }
   }
 }
