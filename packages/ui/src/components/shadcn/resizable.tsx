@@ -1,6 +1,7 @@
-import * as ResizablePrimitive from "react-resizable-panels"
+"use client"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
+import * as ResizablePrimitive from "react-resizable-panels"
 
 function ResizablePanelGroup({
   className,
