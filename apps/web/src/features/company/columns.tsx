@@ -26,7 +26,7 @@ import {
 } from "@workspace/ui/components/shadcn/dropdown-menu";
 import { Progress } from "@workspace/ui/components/shadcn/progress";
 import { Skeleton } from "@workspace/ui/components/shadcn/skeleton";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import {
   DatabaseIcon,
   StarIcon,

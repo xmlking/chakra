@@ -3,7 +3,7 @@
 import { Button } from "@workspace/ui/components/shadcn/button";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { sortedThemes, themes } from "@workspace/ui/lib/themes-config";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { Check, Moon, Palette, Sun } from "lucide-react";
 import { m } from "motion/react";
 import { useTheme } from "next-themes";

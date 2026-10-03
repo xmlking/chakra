@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/shadcn/card";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { type ReactNode } from "react";
 
 interface CommandCardProps {

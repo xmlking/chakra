@@ -59,7 +59,7 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { Switch } from "@workspace/ui/components/shadcn/switch";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { PlusIcon, FilterIcon, Settings2Icon, RotateCcwIcon, Trash2Icon } from "lucide-react";
 /**
  * CRM Companies grid: toolbar -> DataGrid, with the header cascader editing the

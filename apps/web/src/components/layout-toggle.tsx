@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "cn";
 import { GalleryHorizontalIcon } from "lucide-react";
 import type * as React from "react";
 
