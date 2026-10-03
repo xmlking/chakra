@@ -372,6 +372,27 @@ export function getCascaderCount<T>(
   return index.childrenOf.get(node.value)?.length ?? 0
 }
 
+/**
+ * Whether a node is disabled: its own flag, or any ancestor's, since a disabled
+ * branch keeps its whole subtree shut. The index's copy counts as its own, so a
+ * server hit that omits the flag `items` sets is still caught. Ancestry is
+ * `parentOf`: a detached hit the index has never placed answers for itself.
+ */
+export function isCascaderDisabled<T>(
+  index: CascaderIndex<T>,
+  node: CascaderNode<T>
+): boolean {
+  if (node.disabled || index.byValue.get(node.value)?.disabled) return true
+  const seen = new Set<string>([node.value])
+  let cursor = index.parentOf.get(node.value) ?? null
+  while (cursor != null && !seen.has(cursor)) {
+    seen.add(cursor)
+    if (index.byValue.get(cursor)?.disabled) return true
+    cursor = index.parentOf.get(cursor) ?? null
+  }
+  return false
+}
+
 /** Whether a node may be committed as a selection. */
 export function isCascaderSelectable<T>(
   index: CascaderIndex<T>,
@@ -381,18 +402,11 @@ export function isCascaderSelectable<T>(
   // Before the branches a consumer controls: `selectable="any"` says yes to
   // every node, and committing the paging row would select a level's name.
   if (isCascaderMoreNode(node)) return false
-  if (node.disabled) return false
-  // A disabled ANCESTOR refuses the whole subtree: `searchCascaderDeep` still
-  // surfaces children of a branch the UI will not let anyone open.
-  {
-    const seen = new Set<string>([node.value])
-    let cursor = index.parentOf.get(node.value) ?? null
-    while (cursor != null && !seen.has(cursor)) {
-      seen.add(cursor)
-      if (index.byValue.get(cursor)?.disabled) return false
-      cursor = index.parentOf.get(cursor) ?? null
-    }
-  }
+  // Rows render this answer and their presses, keys, `commit`, `navigate` and
+  // `navigateAt` check it, so a search lists a disabled subtree none of them
+  // opens. The raw setters (`pushLevel`, `setPath`, `toggleExpanded`,
+  // `setSelection`) do not ask.
+  if (isCascaderDisabled(index, node)) return false
   if (typeof selectable === "function") return selectable(node)
   if (selectable === "any") return true
   return !isCascaderBranch(index, node)

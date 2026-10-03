@@ -14,7 +14,7 @@ import type { CascaderActionItem } from "#components/reui/cascader/cascader-type
 import { Popover as PopoverPrimitive } from "@base-ui/react"
 import { useDirection } from "@base-ui/react/direction-provider"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ChevronRightIcon } from "lucide-react"
 
 /**

@@ -18,7 +18,7 @@ import {
 } from "#components/reui/cascader/cascader-lib"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ScrollArea } from "#components/shadcn/scroll-area"
 import { LoaderCircleIcon } from "lucide-react"
 
@@ -132,8 +132,9 @@ function CascaderColumnPanel({
     isSelected,
     isIndeterminate,
     retryLevel,
+    searchScope,
   } = useCascaderActions()
-  const { loadStates } = useCascaderState()
+  const { loadStates, deepResults } = useCascaderState()
 
   // Keyed per level, not one global flag: columns load and land independently.
   const columnKey = column.parent?.value ?? CASCADER_ROOT_KEY
@@ -218,7 +219,11 @@ function CascaderColumnPanel({
     // Addressable so the opening trail row can point `aria-controls` here, and
     // named even at the root, which has no parent label to borrow.
     id: `${baseId}-column-${column.depth}`,
-    "aria-label": column.parent?.label ?? labels.rootLevel,
+    // Global hits come from the whole tree, so the parent would understate them.
+    "aria-label":
+      column.active && searchScope === "global" && deepResults
+        ? labels.rootLevel
+        : (column.parent?.label ?? labels.rootLevel),
     // Conditional spread, never an explicit `undefined`: the active column is a
     // Base UI element, and its `mergeProps` iterates own keys.
     ...(virtualized ? { "data-virtualized": true } : null),

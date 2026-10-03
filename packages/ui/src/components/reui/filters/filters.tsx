@@ -87,7 +87,7 @@ import type {
 } from "#components/reui/filters/filters-types"
 import { cva } from "class-variance-authority"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 
 /* -------------------------------------------------------------------------- */

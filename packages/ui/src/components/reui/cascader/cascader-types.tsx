@@ -16,6 +16,7 @@ export interface CascaderNode<T = unknown> {
   hasChildren?: boolean
   /** Trailing count. Defaults to known children; set it for async nodes. */
   count?: number
+  /** Listed, never selected or opened; on a branch, its whole subtree too. */
   disabled?: boolean
   keywords?: string[]
   /**
@@ -47,7 +48,7 @@ export interface CascaderActionItem {
 /** Panel layout. See the docs for the keyboard map of each. */
 export type CascaderMode = "drill" | "columns" | "tree"
 
-export type CascaderSearchScope = "level" | "deep"
+export type CascaderSearchScope = "level" | "deep" | "global"
 
 /**
  * Which nodes may be committed. The predicate arm is generic over the payload
@@ -148,7 +149,8 @@ export interface CascaderLoadResult<T = unknown> {
 /** Argument handed to `onSearch`. */
 export interface CascaderSearchContext {
   signal: AbortSignal
-  /** The path the user is searching within, deepest last. */
+  /** The path the user is searching within, deepest last. Empty under a
+   * global search, whose scope is the whole tree. */
   path: string[]
 }
 
@@ -158,6 +160,7 @@ export interface CascaderSearchContext {
  * force this object to carry the item generic. `*Announcement` is live-region.
  */
 export interface CascaderLabels {
+  /** `parentLabel` is absent at the root and under a global search. */
   search: string | ((parentLabel?: string) => string)
   back: string
   /** A level's FIRST page. `loadingMore` is the next, `loadMore` its idle row. */

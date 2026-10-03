@@ -20,7 +20,7 @@ import { useDirection } from "@base-ui/react/direction-provider"
 import { mergeProps } from "@base-ui/react/merge-props"
 import { useRender } from "@base-ui/react/use-render"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ChevronRightIcon, ChevronLeftIcon } from "lucide-react"
 
 /* -------------------------------------------------------------------------- */
@@ -255,19 +255,27 @@ function CascaderInput({
     mode,
     getHighlighted,
     isBranch,
+    isDisabled,
     navigate,
     index,
     toggleExpanded,
     inline,
     invalid,
     baseId,
+    searchScope,
   } = useCascaderActions()
   const direction = useDirection()
-  const { currentParent, query, path, renderedItems, treeRows } =
+  const { currentParent, query, path, expanded, renderedItems, treeRows } =
     useCascaderState()
 
+  // Root wording under a global search: naming the level on screen would
+  // promise a narrower search than the one that runs.
   const resolvedPlaceholder =
-    placeholder ?? resolveCascaderSearchLabel(labels, currentParent?.label)
+    placeholder ??
+    resolveCascaderSearchLabel(
+      labels,
+      searchScope === "global" ? undefined : currentParent?.label
+    )
 
   // Not `showBack`: `CascaderBack` renders nothing at the root or outside
   // drill mode, where the field's own leading `px-1.5` is wanted. Beside the
@@ -367,7 +375,11 @@ function CascaderInput({
       return
     }
 
-    if (row.branch && row.expanded) {
+    // A query holds every hit's ancestors open without adding them to
+    // `expanded`, so the toggle would ADD such a row: it would open a disabled
+    // one for good. That row moves to its parent instead, as a closed one does.
+    const heldByQuery = isDisabled(row.node) && !expanded.has(row.node.value)
+    if (row.branch && row.expanded && !heldByQuery) {
       event.preventDefault()
       toggleExpanded(row.node.value)
       return

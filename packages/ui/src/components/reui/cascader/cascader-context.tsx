@@ -35,10 +35,11 @@ export interface CascaderColumn<T = unknown> {
 export interface CascaderItemState<T = unknown> {
   branch: boolean
   selected: boolean
+  /** The node's own flag or a disabled ancestor's, as `isCascaderDisabled`. */
   disabled: boolean
   depth: number
   count: number
-  /** Ancestor chain, root first. Populated for deep-search rows. */
+  /** Ancestor chain, root first. Populated for deep and global search rows. */
   path: CascaderNode<T>[]
 }
 
@@ -100,8 +101,8 @@ export function useCascaderState<T = unknown>(): CascaderStateContextValue<T> {
 
 /**
  * Config and callbacks, slow enough that a memoised row can subscribe: the
- * mutators are `[]`-dep callbacks over a latest-props ref. The three predicates
- * are the exception, read DURING RENDER where a ref written in an effect would
+ * mutators are `[]`-dep callbacks over a latest-props ref. The predicates are
+ * the exception, read DURING RENDER where a ref written in an effect would
  * return the previous commit's answer, so each is memoised on its own input.
  */
 export interface CascaderActionsContextValue<T = unknown> {
@@ -187,6 +188,13 @@ export interface CascaderActionsContextValue<T = unknown> {
   resolveNode: (value: string) => CascaderNode<T>
   isBranch: (node: CascaderNode<T>) => boolean
   isSelectable: (node: CascaderNode<T>) => boolean
+  /**
+   * The node or an ancestor is `disabled`. Rows render it disabled; row
+   * presses, keys, `commit`, `navigate`, `navigateAt` and a held navigation
+   * refuse it. `pushLevel`, `setPath`, `toggleExpanded` and `setSelection` are
+   * raw setters and do not ask.
+   */
+  isDisabled: (node: CascaderNode<T>) => boolean
   isSelected: (node: CascaderNode<T>) => boolean
   /** Always `false` without `cascade`: partial selection needs propagation. */
   isIndeterminate: (node: CascaderNode<T>) => boolean
