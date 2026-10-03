@@ -154,7 +154,9 @@ export const TrashBin = ({ files, onChanged, className }: TrashBinProps) => {
             </div>
             <Button
               disabled={busy !== undefined}
-              onClick={() => void restore(item.key)}
+              onClick={() => {
+                void restore(item.key);
+              }}
               size="icon-sm"
               type="button"
               variant="ghost"
@@ -164,7 +166,7 @@ export const TrashBin = ({ files, onChanged, className }: TrashBinProps) => {
               ) : (
                 <RotateCcwIcon />
               )}
-              <span className="sr-only">Restore</span>
+              <span className="sr-only">Restore {item.key}</span>
             </Button>
             <Button
               disabled={busy !== undefined}
@@ -174,7 +176,7 @@ export const TrashBin = ({ files, onChanged, className }: TrashBinProps) => {
               variant="destructive"
             >
               <Trash2Icon />
-              <span className="sr-only">Delete forever</span>
+              <span className="sr-only">Delete {item.key} forever</span>
             </Button>
           </li>
         ))}
@@ -205,7 +207,9 @@ export const TrashBin = ({ files, onChanged, className }: TrashBinProps) => {
             </Button>
             <Button
               disabled={busy !== undefined}
-              onClick={() => void purge()}
+              onClick={() => {
+                void purge();
+              }}
               type="button"
               variant="destructive"
             >
