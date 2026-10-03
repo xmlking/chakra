@@ -35,7 +35,7 @@ import type {
   VirtualizerOptions,
 } from "@tanstack/react-virtual"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Spinner } from "#components/shadcn/spinner"
 
 type DataGridTableVirtualScrollElements = {
@@ -363,7 +363,7 @@ function DataGridTableVirtualPinnedPlaceholderCell<TData extends object>({
         props.tableLayout?.cellBorder && "border-e",
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          "data-pinned:bg-background data-pinned:isolate [&[data-pinned=end][data-last-col=end]]:shadow-[inset_1px_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_-1px_0_0_0_var(--border)]"
+          "data-pinned:isolate data-pinned:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))] [&[data-pinned=end][data-last-col=end]]:shadow-[inset_calc(1px*var(--data-grid-dir,1))_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_calc(-1px*var(--data-grid-dir,1))_0_0_0_var(--border)]"
       )}
     />
   )

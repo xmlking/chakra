@@ -1,12 +1,25 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react"
 import type { PointerEvent, ReactNode } from "react"
 import { useDataGrid } from "#components/reui/data-grid/data-grid"
+import {
+  DirectionProvider,
+  useDirection,
+} from "@base-ui/react/direction-provider"
 import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 const MIN_THUMB_SIZE = 24
 const FALLBACK_SCROLLBAR_SIZE = 12
+// Gap between each track and the grid edge: the mb-px / me-px on the tracks and
+// the overlay's inset-e-px. The overlay's height math adds it below the bar.
+const SCROLLBAR_EDGE_GAP = 1
 
 const INITIAL_METRICS = {
   hasVerticalOverflow: false,
@@ -17,13 +30,18 @@ const INITIAL_METRICS = {
   trackHeight: 0,
 } as const
 
-// Track footprint, measured: horizontal is 8px tall and vertical 6px wide, and
-// each loses 1px to its transparent border plus 2px to p-px, so the thumbs land
-// at 5px and 3px. Shrink these further and the thumb stops being a grab target.
+// Track footprint: --data-grid-scrollbar-size (10px by default) in both
+// orientations, less 1px for the transparent border and 2px for p-px, so every
+// thumb lands at that size less 3px (7px), held 1px off the grid edge. Thinner
+// was hard to grab; the tracks overlay the last row and column, so the default
+// stays under 12px. The sticky-header overlay below follows the same variable.
 const SCROLLBAR_CLASSNAME =
-  "flex touch-none p-px transition-colors select-none data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:border-t data-[orientation=horizontal]:border-t-transparent data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5 data-[orientation=vertical]:border-s data-[orientation=vertical]:border-s-transparent"
+  "flex touch-none p-px transition-colors select-none data-[orientation=horizontal]:mb-px data-[orientation=horizontal]:h-[var(--data-grid-scrollbar-size,0.625rem)] data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:border-t data-[orientation=horizontal]:border-t-transparent data-[orientation=vertical]:me-px data-[orientation=vertical]:h-full data-[orientation=vertical]:w-[var(--data-grid-scrollbar-size,0.625rem)] data-[orientation=vertical]:border-s data-[orientation=vertical]:border-s-transparent"
 
-const SCROLLBAR_THUMB_CLASSNAME = "bg-border rounded-full relative flex-1"
+// The ::before reaches the track's outer edge, so the whole track thickness
+// grabs the thumb rather than only its painted 7px.
+const SCROLLBAR_THUMB_CLASSNAME =
+  "bg-border rounded-full relative flex-1 before:absolute before:-inset-0.5"
 
 type DataGridScrollAreaOrientation = "horizontal" | "vertical" | "both"
 
@@ -120,6 +138,36 @@ function DataGridScrollArea({
   const [hasCustomVerticalOverflow, setHasCustomVerticalOverflow] =
     useState(false)
 
+  // Base UI's thumb math reads direction from its own context, which a Radix
+  // app or a bare dir="rtl" page never provides, so RTL scrolled with LTR math
+  // and the thumb froze. RTL is read off the layout instead, so no provider of
+  // any kind is needed. LTR passes the inherited value through untouched: no
+  // state change and no extra render, exactly as before this existed.
+  const inheritedDirection = useDirection()
+  const [isLayoutRtl, setIsLayoutRtl] = useState(false)
+
+  useLayoutEffect(() => {
+    const container = containerRef.current
+    if (!container) return
+
+    const readDirection = () => {
+      const next = getComputedStyle(container).direction === "rtl"
+      setIsLayoutRtl((prev) => (prev === next ? prev : next))
+    }
+
+    readDirection()
+    if (typeof MutationObserver === "undefined") return
+
+    // Only a dir attribute flips it at runtime (an RTL toggle on <html>).
+    const observer = new MutationObserver(readDirection)
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["dir"],
+      subtree: true,
+    })
+    return () => observer.disconnect()
+  }, [])
+
   const clearDragState = useCallback(() => {
     dragRef.current = null
     document.body.style.userSelect = ""
@@ -162,7 +210,8 @@ function DataGridScrollArea({
     const hasHorizontalOverflow =
       showHorizontal && scrollWidth > viewportWidth + 0.5
     const horizontalScrollbarSize = hasHorizontalOverflow
-      ? horizontalScrollbar?.offsetHeight || FALLBACK_SCROLLBAR_SIZE
+      ? (horizontalScrollbar?.offsetHeight || FALLBACK_SCROLLBAR_SIZE) +
+        SCROLLBAR_EDGE_GAP
       : 0
     const trackHeight = Math.max(
       0,
@@ -391,89 +440,93 @@ function DataGridScrollArea({
   }
 
   return (
-    <div ref={containerRef} className="relative">
-      <ScrollAreaPrimitive.Root
-        data-slot="data-grid-scroll-area"
-        // Styling hook: present while the sticky-header scroll mode detects
-        // vertical overflow, so consumers can style scrollable vs short
-        // grids with a plain ancestor attribute selector.
-        data-overflow-vertical={hasCustomVerticalOverflow ? "true" : undefined}
-        className={cn("relative", className)}
-        {...props}
-      >
-        <ScrollAreaPrimitive.Viewport
-          ref={viewportRef}
-          data-slot="scroll-area-viewport"
-          className="size-full"
+    <DirectionProvider direction={isLayoutRtl ? "rtl" : inheritedDirection}>
+      <div ref={containerRef} className="relative">
+        <ScrollAreaPrimitive.Root
+          data-slot="data-grid-scroll-area"
+          // Styling hook: present while the sticky-header scroll mode detects
+          // vertical overflow, so consumers can style scrollable vs short
+          // grids with a plain ancestor attribute selector.
+          data-overflow-vertical={
+            hasCustomVerticalOverflow ? "true" : undefined
+          }
+          className={cn("relative", className)}
+          {...props}
         >
-          <ScrollAreaPrimitive.Content data-slot="scroll-area-content">
-            {children}
-          </ScrollAreaPrimitive.Content>
-        </ScrollAreaPrimitive.Viewport>
-
-        {showHorizontal && (
-          <ScrollAreaPrimitive.Scrollbar
-            data-slot="data-grid-scrollbar"
-            data-orientation="horizontal"
-            orientation="horizontal"
-            className={SCROLLBAR_CLASSNAME}
-            style={
-              scrollbarInsetStart > 0 || scrollbarInsetEnd > 0
-                ? {
-                    marginInlineStart: scrollbarInsetStart || undefined,
-                    marginInlineEnd: scrollbarInsetEnd || undefined,
-                  }
-                : undefined
-            }
+          <ScrollAreaPrimitive.Viewport
+            ref={viewportRef}
+            data-slot="scroll-area-viewport"
+            className="size-full"
           >
-            <ScrollAreaPrimitive.Thumb
-              data-slot="data-grid-thumb"
-              className={SCROLLBAR_THUMB_CLASSNAME}
-            />
-          </ScrollAreaPrimitive.Scrollbar>
-        )}
+            <ScrollAreaPrimitive.Content data-slot="scroll-area-content">
+              {children}
+            </ScrollAreaPrimitive.Content>
+          </ScrollAreaPrimitive.Viewport>
 
-        {showVertical && !usesCustomVerticalScrollbar && (
-          <ScrollAreaPrimitive.Scrollbar
-            data-slot="data-grid-scrollbar"
-            data-orientation="vertical"
-            orientation="vertical"
-            className={SCROLLBAR_CLASSNAME}
-          >
-            <ScrollAreaPrimitive.Thumb
-              data-slot="data-grid-thumb"
-              className={SCROLLBAR_THUMB_CLASSNAME}
-            />
-          </ScrollAreaPrimitive.Scrollbar>
-        )}
-      </ScrollAreaPrimitive.Root>
+          {showHorizontal && (
+            <ScrollAreaPrimitive.Scrollbar
+              data-slot="data-grid-scrollbar"
+              data-orientation="horizontal"
+              orientation="horizontal"
+              className={SCROLLBAR_CLASSNAME}
+              style={
+                scrollbarInsetStart > 0 || scrollbarInsetEnd > 0
+                  ? {
+                      marginInlineStart: scrollbarInsetStart || undefined,
+                      marginInlineEnd: scrollbarInsetEnd || undefined,
+                    }
+                  : undefined
+              }
+            >
+              <ScrollAreaPrimitive.Thumb
+                data-slot="data-grid-thumb"
+                className={SCROLLBAR_THUMB_CLASSNAME}
+              />
+            </ScrollAreaPrimitive.Scrollbar>
+          )}
 
-      {usesCustomVerticalScrollbar && hasCustomVerticalOverflow && (
-        <div
-          ref={setOverlayRef}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-e-0 top-(--data-grid-scrollbar-header-height) z-20 h-(--data-grid-scrollbar-track-height)"
-        >
+          {showVertical && !usesCustomVerticalScrollbar && (
+            <ScrollAreaPrimitive.Scrollbar
+              data-slot="data-grid-scrollbar"
+              data-orientation="vertical"
+              orientation="vertical"
+              className={SCROLLBAR_CLASSNAME}
+            >
+              <ScrollAreaPrimitive.Thumb
+                data-slot="data-grid-thumb"
+                className={SCROLLBAR_THUMB_CLASSNAME}
+              />
+            </ScrollAreaPrimitive.Scrollbar>
+          )}
+        </ScrollAreaPrimitive.Root>
+
+        {usesCustomVerticalScrollbar && hasCustomVerticalOverflow && (
           <div
-            className="pointer-events-auto relative h-full w-1.5 touch-none p-px"
-            onPointerDown={handleTrackPointerDown}
+            ref={setOverlayRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-e-px top-(--data-grid-scrollbar-header-height) z-20 h-(--data-grid-scrollbar-track-height)"
           >
             <div
-              className={cn(
-                "bg-border absolute end-px w-1.5",
-                "top-(--data-grid-scrollbar-thumb-top) h-(--data-grid-scrollbar-thumb-height)",
-                "rounded-full"
-              )}
-              onLostPointerCapture={clearDragState}
-              onPointerCancel={handleThumbPointerUp}
-              onPointerDown={handleThumbPointerDown}
-              onPointerMove={handleThumbPointerMove}
-              onPointerUp={handleThumbPointerUp}
-            />
+              className="pointer-events-auto relative h-full w-[var(--data-grid-scrollbar-size,0.625rem)] touch-none p-px"
+              onPointerDown={handleTrackPointerDown}
+            >
+              <div
+                className={cn(
+                  "bg-border absolute end-px w-[calc(var(--data-grid-scrollbar-size,0.625rem)-0.1875rem)]",
+                  "top-(--data-grid-scrollbar-thumb-top) h-(--data-grid-scrollbar-thumb-height)",
+                  "rounded-full before:absolute before:-inset-0.5"
+                )}
+                onLostPointerCapture={clearDragState}
+                onPointerCancel={handleThumbPointerUp}
+                onPointerDown={handleThumbPointerDown}
+                onPointerMove={handleThumbPointerMove}
+                onPointerUp={handleThumbPointerUp}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </DirectionProvider>
   )
 }
 

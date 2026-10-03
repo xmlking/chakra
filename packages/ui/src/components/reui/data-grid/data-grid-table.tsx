@@ -22,13 +22,14 @@ import {
   useDataGrid,
 } from "#components/reui/data-grid/data-grid"
 import type {
+  DataGridAutoSizeController,
   DataGridFeatures,
   DataGridTableInstance,
 } from "#components/reui/data-grid/data-grid"
 import { flexRender, Subscribe } from "@tanstack/react-table"
 import type { Cell, Column, Header, Row, Table } from "@tanstack/react-table"
+import { cn } from "cn"
 
-import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
 import { Checkbox } from "#components/shadcn/checkbox"
 import { Spinner } from "#components/shadcn/spinner"
@@ -121,6 +122,36 @@ function getDataGridScrollAreaViewport(node: HTMLElement): HTMLElement | null {
   return scrollViewport
 }
 
+/**
+ * The box whose width the fill strip tops up to: the grid's own scroll
+ * viewport, else the table viewport's parent. The live resize session and
+ * the viewport's fill sync must measure the same box, or the fill jumps at
+ * release.
+ */
+function getDataGridTableFillMeasurementTarget(node: HTMLElement): HTMLElement {
+  return getDataGridScrollAreaViewport(node) ?? node.parentElement ?? node
+}
+
+/**
+ * True for an event that reached this element only through a React portal.
+ * React bubbles synthetic events along the React tree, so a pick in an
+ * in-cell Select, popover or combobox (its content portalled into <body>)
+ * still reaches the cell and the row. Those must not start or extend a cell
+ * selection or fire onRowClick: the selection session then swallowed the
+ * mouse pick, and the row kept its stale value.
+ */
+function isDataGridPortalEvent(event: {
+  currentTarget: Element
+  target: EventTarget | null
+}) {
+  // Duck-typed, not `instanceof Node`: a grid mounted into an iframe's
+  // document is another realm, where that check fails for every target.
+  const target = event.target as Node | null
+  return !(
+    typeof target?.nodeType === "number" && event.currentTarget.contains(target)
+  )
+}
+
 type DataGridResizeStartEvent =
   | ReactMouseEvent<HTMLElement>
   | ReactTouchEvent<HTMLElement>
@@ -175,7 +206,9 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
    * renders; state is written twice per drag (start marker, release commit)
    * instead of per mousemove - which re-renders the consumer's whole tree.
    */
-  live = false
+  live = false,
+  /** Live mode previews the meta.autoSize reflow with it, so nothing jumps. */
+  autoSize?: DataGridAutoSizeController
 ): (() => void) | undefined {
   const column = table.getColumn(header.column.id)
 
@@ -199,6 +232,26 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
   const headerCell = event.currentTarget.closest("th")
   const headerRect = headerCell?.getBoundingClientRect()
   const liveTableElement = live ? headerCell?.closest("table") : null
+  // Live mode moves only the resized columns' variables, so the table and
+  // viewport widths and the fill strip have to move with them, or
+  // table-layout: fixed spreads the difference across every column until
+  // the commit. Each is written in the exact form the commit render and
+  // syncFillWidth produce, so the handover at release is seamless. A
+  // standalone virtual viewport is the scroll container at width auto, and
+  // keeps it.
+  const liveViewportElement =
+    liveTableElement?.closest<HTMLElement>(
+      '[data-slot="data-grid-table-viewport"]'
+    ) ?? null
+  const liveViewportWidthIsComputed =
+    !!liveViewportElement?.style.width.startsWith("calc(")
+  const liveContainerWidth = liveViewportElement
+    ? getDataGridTableFillMeasurementTarget(liveViewportElement).clientWidth
+    : 0
+  const totalSizeStart = table.getTotalSize()
+  const fillColumnId = table
+    .getVisibleLeafColumns()
+    .find((visibleColumn) => visibleColumn.columnDef.meta?.fillWidth)?.id
   // An end-pinned column is anchored at its end edge and grows from its
   // START edge, so its whole resize geometry runs mirrored, exactly like
   // RTL: the anchor is the opposite edge and the drag direction inverts.
@@ -256,6 +309,8 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
 
   let lastClientX = dragStartClientX
   let ended = false
+  // The autoSize column's previewed width, committed with the drag at release.
+  let autoSizePreview: { columnId: string; size: number } | null = null
   const stopListeners: Array<() => void> = []
 
   const updateOffset = (clientXPos?: number, commit = false) => {
@@ -281,18 +336,54 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
     })
 
     if (liveTableElement) {
-      columnSizingStart.forEach(([columnId]) => {
+      let totalSize = totalSizeStart
+      columnSizingStart.forEach(([columnId, headerSize]) => {
         const nextSize = nextColumnSizing[columnId]
         if (typeof nextSize !== "number") return
+        totalSize += nextSize - headerSize
         liveTableElement.style.setProperty(
           `--col-${columnId}-size`,
-          String(nextSize)
+          columnId === fillColumnId
+            ? `calc(${nextSize} + var(--data-grid-fill, 0))`
+            : String(nextSize)
         )
         liveTableElement.style.setProperty(
           `--header-${columnId}-size`,
           String(nextSize)
         )
       })
+      // An armed meta.autoSize column would reflow after the commit and move
+      // every column past it, so its reflow is previewed here instead and
+      // committed with the drag. A dragged autoSize column is the user's.
+      const preview = autoSize?.preview(liveContainerWidth - totalSize)
+      autoSizePreview =
+        preview && !(preview.columnId in nextColumnSizing) ? preview : null
+      if (autoSizePreview && preview) {
+        totalSize += preview.size - preview.current
+        liveTableElement.style.setProperty(
+          `--col-${preview.columnId}-size`,
+          preview.columnId === fillColumnId
+            ? `calc(${preview.size} + var(--data-grid-fill, 0))`
+            : String(preview.size)
+        )
+        liveTableElement.style.setProperty(
+          `--header-${preview.columnId}-size`,
+          String(preview.size)
+        )
+      }
+      const width = `calc(${totalSize}px + var(--data-grid-fill-size, 0px))`
+      liveTableElement.style.width = width
+      if (liveViewportElement) {
+        if (liveViewportWidthIsComputed) {
+          liveViewportElement.style.width = width
+        }
+        const fill = Math.max(0, liveContainerWidth - totalSize)
+        liveViewportElement.style.setProperty(
+          "--data-grid-fill-size",
+          `${fill}px`
+        )
+        liveViewportElement.style.setProperty("--data-grid-fill", String(fill))
+      }
     } else {
       table.setColumnResizing((old) => ({
         ...old,
@@ -306,6 +397,10 @@ function startDataGridColumnResizeOnEnd<TData extends object>(
     }
 
     if (commit) {
+      if (autoSizePreview) {
+        nextColumnSizing[autoSizePreview.columnId] = autoSizePreview.size
+        autoSize?.adopt(autoSizePreview.columnId, autoSizePreview.size)
+      }
       table.setColumnSizing((old) => ({
         ...old,
         ...nextColumnSizing,
@@ -500,6 +595,26 @@ function getDataGridTableOrderedVisibleColumns<TData extends object>(
     ...table.getCenterVisibleLeafColumns(),
     ...table.getEndVisibleLeafColumns(),
   ] as Column<DataGridFeatures, TData, unknown>[]
+}
+
+/**
+ * First or last column as the row renders it: start, center, then end.
+ * `column.getIndex()` follows column order and ignores pinning, so an edge
+ * check built on it picks the wrong cells once pinning moves a column away
+ * from its column-order slot.
+ */
+function getDataGridTableColumnEdges<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  columnId: string
+) {
+  const start = table.getStartVisibleLeafColumns()
+  const center = table.getCenterVisibleLeafColumns()
+  const end = table.getEndVisibleLeafColumns()
+  const first = start[0] ?? center[0] ?? end[0]
+  const last =
+    end[end.length - 1] ?? center[center.length - 1] ?? start[start.length - 1]
+
+  return { isFirst: first?.id === columnId, isLast: last?.id === columnId }
 }
 
 function getDataGridTableOrderedVisibleCells<TData extends object>(
@@ -781,6 +896,15 @@ function DataGridTableBase({ children }: { children: ReactNode }) {
       }
       className={cn(
         "text-foreground caption-bottom text-left align-middle text-sm font-normal rtl:text-right",
+        /* Opaque surfaces (pinned cells, the footer band, their premixed
+           tints) read --data-grid-surface and fall back to --background;
+           inside a Card that is the wrong token, so they follow --card. The
+           Card value is a fallback of its own, not --data-grid-surface: set
+           here on the table it would beat the consumer's ancestor value. */
+        "in-data-[slot=card]:[--data-grid-card-surface:var(--card)]",
+        /* Pinned-edge separators are inset box-shadows, which are physical;
+           this sign flips them under RTL so each stays on its inline seam. */
+        "rtl:[--data-grid-dir:-1]",
         props.tableLayout?.columnsResizable ? "min-w-0" : "w-full min-w-full",
         props.tableLayout?.width === "auto" ? "table-auto" : "table-fixed",
         !props.tableLayout?.columnsResizable && "",
@@ -846,6 +970,15 @@ function DataGridTableViewport({
   const viewportNodeRef = useRef<HTMLDivElement | null>(null)
   const fillStateRef = useRef({ containerWidth: 0, appliedFill: -1 })
   const stopContainerObserverRef = useRef<(() => void) | null>(null)
+  // v9 hands out a new table per state change. Closing over it gave the ref
+  // callback below a new identity every render, and React then detached and
+  // reattached it: a new ResizeObserver and a re-measure on every drag frame,
+  // and a null viewportNodeRef during every child layout effect in between.
+  // The latest values ride a ref instead, so the callback keeps one identity.
+  const latestRef = useRef({ table, autoSize })
+  useLayoutEffect(() => {
+    latestRef.current = { table, autoSize }
+  })
 
   // Free space is written as a CSS variable directly on the viewport node
   // instead of React state, so container resizes and column-size commits
@@ -854,7 +987,9 @@ function DataGridTableViewport({
     const node = viewportNodeRef.current
     if (!node) return
 
-    const freeSpace = fillStateRef.current.containerWidth - table.getTotalSize()
+    const latest = latestRef.current
+    const freeSpace =
+      fillStateRef.current.containerWidth - latest.table.getTotalSize()
     const fillWidth = Math.max(0, freeSpace)
 
     if (fillStateRef.current.appliedFill !== fillWidth) {
@@ -868,8 +1003,8 @@ function DataGridTableViewport({
     // Signed on purpose: a shrinking container drives the free space
     // NEGATIVE, which is exactly what tells a meta.autoSize column to hand
     // its absorbed width back.
-    autoSize?.apply(freeSpace)
-  }, [autoSize, table])
+    latest.autoSize?.apply(freeSpace)
+  }, [])
 
   const handleViewportRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -887,9 +1022,7 @@ function DataGridTableViewport({
         return
       }
 
-      const scrollViewport =
-        getDataGridScrollAreaViewport(node) ?? node.parentElement
-      const measurementTarget = scrollViewport ?? node
+      const measurementTarget = getDataGridTableFillMeasurementTarget(node)
 
       const measure = () => {
         fillStateRef.current.containerWidth = measurementTarget.clientWidth
@@ -998,9 +1131,7 @@ function DataGridTableHeadRowCell<TData extends object>({
     isPinned === "start" && column.getIsLastColumn("start")
   const isFirstEndPinned = isPinned === "end" && column.getIsFirstColumn("end")
   const isLastEndPinned = isPinned === "end" && column.getIsLastColumn("end")
-  const isLastVisibleColumn =
-    column.getIndex() ===
-    header.getContext().table.getVisibleLeafColumns().length - 1
+  const edges = getDataGridTableColumnEdges(table, column.id)
   const headerCellSpacing = headerCellSpacingVariants({
     size: props.tableLayout?.dense ? "dense" : "default",
   })
@@ -1070,23 +1201,25 @@ function DataGridTableHeadRowCell<TData extends object>({
         props.tableLayout?.columnsResizable &&
           column.getCanResize() &&
           (isPinned ? "overflow-hidden" : "overflow-visible"),
+        /* Clears the last column's end-edge resize handle. An end-pinned
+           column's handle sits at its start edge instead, and the padding
+           would only push a centred label off-centre and clip it. */
         props.tableLayout?.columnsResizable &&
           column.getCanResize() &&
-          isLastVisibleColumn &&
+          edges.isLast &&
+          isPinned !== "end" &&
           "pe-8",
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
           cn(
             "data-pinned:bg-muted data-outer-pinned-col:bg-clip-padding data-pinned:isolate",
-            "[&[data-pinned=end]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=end][data-last-col=end]]:shadow-[inset_1px_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_-1px_0_0_0_var(--border)]",
-            "[&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=start]_div.cursor-col-resize:last-child]:opacity-0"
+            /* No rule here may reach the resize handle: it sits outside the
+               handle's own cn(), so the onChange resize line could not undo
+               it. The handle decides its own line. */
+            "[&[data-pinned=end][data-last-col=end]]:shadow-[inset_calc(1px*var(--data-grid-dir,1))_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_calc(-1px*var(--data-grid-dir,1))_0_0_0_var(--border)]"
           ),
         header.column.columnDef.meta?.headerClassName,
-        // Edge detection spans the full visible leaf order; the header's own
-        // group only covers one pinning bucket.
-        column.getIndex() === 0 || isLastVisibleColumn
-          ? props.tableClassNames?.edgeCell
-          : ""
+        edges.isFirst || edges.isLast ? props.tableClassNames?.edgeCell : ""
       )}
     >
       {children}
@@ -1119,12 +1252,22 @@ function DataGridTableHeadRowCellResize<TData extends object>({
 }: {
   header: Header<DataGridFeatures, TData, unknown>
 }) {
-  const { props, table } = useDataGrid<TData>()
+  const { props, table, autoSize } = useDataGrid<TData>()
   const { column } = header
   const isPinned = column.getIsPinned()
-  const isLastVisibleColumn =
-    column.getIndex() ===
-    header.getContext().table.getVisibleLeafColumns().length - 1
+  const isLastVisibleColumn = getDataGridTableColumnEdges(
+    table,
+    column.id
+  ).isLast
+  // Under columnsPinnable the first end-pinned cell draws the seam's
+  // separator, so the last center column drops its own line, as the last
+  // visible column and cellBorder grids already do. Not a th selector: the
+  // cells between the groups vary by renderer, and a hide set outside this
+  // cn() would also kill the onChange resize line.
+  const hidesLastCenterLine =
+    props.tableLayout?.columnsPinnable &&
+    column.getIsLastColumn("center") &&
+    hasDataGridTableRightPinnedColumns(table)
   const isResizeModeOnEnd =
     getDataGridColumnResizeMode(
       props.tableLayout?.columnsResizeMode,
@@ -1154,7 +1297,8 @@ function DataGridTableHeadRowCellResize<TData extends object>({
       event,
       header,
       table,
-      !isResizeModeOnEnd
+      !isResizeModeOnEnd,
+      autoSize
     )
   }
 
@@ -1167,7 +1311,8 @@ function DataGridTableHeadRowCellResize<TData extends object>({
       event,
       header,
       table,
-      !isResizeModeOnEnd
+      !isResizeModeOnEnd,
+      autoSize
     )
   }
 
@@ -1185,7 +1330,7 @@ function DataGridTableHeadRowCellResize<TData extends object>({
         onMouseDown: handleMouseDown,
         onTouchStart: handleTouchStart,
         className: cn(
-          "absolute top-0 h-full cursor-col-resize user-select-none touch-none z-10 flex",
+          "absolute top-0 h-full cursor-col-resize touch-none select-none z-10 flex",
           isPinned === "end"
             ? cn(
                 // An end-pinned column grows from its START edge (its end is
@@ -1219,14 +1364,14 @@ function DataGridTableHeadRowCellResize<TData extends object>({
                     // With cell borders on, the th border-e already marks every
                     // boundary and this always-on line would double it; the wide
                     // hit area and resize cursor stay.
-                    props.tableLayout?.cellBorder
+                    props.tableLayout?.cellBorder || hidesLastCenterLine
                       ? "before:hidden"
                       : "before:absolute before:inset-y-0 before:w-px before:-translate-x-px before:bg-border"
                   ),
           column.getIsResizing() &&
             (isResizeModeOnEnd
               ? "opacity-100"
-              : isLastVisibleColumn
+              : isLastVisibleColumn && isPinned !== "end"
                 ? "before:absolute before:end-0 before:block before:inset-y-0 before:w-0.5 before:bg-primary opacity-100"
                 : "before:block before:bg-primary before:w-0.5 opacity-100")
         ),
@@ -1294,11 +1439,20 @@ function DataGridTableResizeIndicator({
         : 1
     const deltaOffset = (columnResizing.deltaOffset ?? 0) * directionMultiplier
 
-    if (headerHeightCacheRef.current.key !== resizingColumnId) {
+    const viewportRoot =
+      viewportElement ??
+      indicator.closest<HTMLElement>('[data-slot="data-grid-table-viewport"]')
+
+    // A 0 is never cached: it means the thead was not measurable yet, and
+    // caching it pinned the head at its 6px floor for the whole drag.
+    if (
+      headerHeightCacheRef.current.key !== resizingColumnId ||
+      headerHeightCacheRef.current.value <= 0
+    ) {
       headerHeightCacheRef.current = {
         key: resizingColumnId,
         value:
-          viewportElement
+          viewportRoot
             ?.querySelector('[data-slot="data-grid-table"] thead')
             ?.getBoundingClientRect().height ?? 0,
       }
@@ -1309,9 +1463,6 @@ function DataGridTableResizeIndicator({
     // STICKY pinned column, while the DOM rect is right for every column at
     // any scroll position. The state offset and content math stay as
     // fallbacks for a header that is not in the DOM.
-    const viewportRoot =
-      viewportElement ??
-      indicator.closest<HTMLElement>('[data-slot="data-grid-table-viewport"]')
     const headerCellElement = viewportRoot?.querySelector<HTMLElement>(
       `thead th[data-col-id="${CSS.escape(resizingHeader.column.id)}"]`
     )
@@ -1393,7 +1544,13 @@ function DataGridTableFoot({ children }: { children: ReactNode }) {
   return (
     <tfoot
       data-slot="data-grid-table-foot"
-      className={cn(props.tableClassNames?.footer)}
+      className={cn(
+        // The rule between the body and the footer. It used to be drawn by the
+        // last body row through an ancestor :has(), which made every style
+        // invalidation re-match the whole grid.
+        props.tableLayout?.rowBorder && "[&>tr:first-child>td]:border-t",
+        props.tableClassNames?.footer
+      )}
     >
       {children}
     </tfoot>
@@ -1408,7 +1565,8 @@ function DataGridTableFootRow({ children }: { children: ReactNode }) {
     <tr
       data-slot="data-grid-table-foot-row"
       className={cn(
-        props.tableLayout?.footerBackground && "bg-muted/40 dark:bg-background",
+        props.tableLayout?.footerBackground &&
+          "bg-muted/40 dark:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))]",
         props.tableLayout?.rowBorder && footRowBottomBorderClasses,
         props.tableLayout?.cellBorder && "*:last:border-e-0",
         // The fill foot cell is the :last child, so the rule above only
@@ -1447,7 +1605,8 @@ function DataGridTableFootRowCell({
       className={cn(
         "text-secondary-foreground/80 align-middle font-medium",
         spacing,
-        props.tableLayout?.footerBackground && "bg-muted/40 dark:bg-background",
+        props.tableLayout?.footerBackground &&
+          "bg-muted/40 dark:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))]",
         props.tableLayout?.cellBorder && "border-e",
         className
       )}
@@ -1487,16 +1646,28 @@ function DataGridTableBodyRowSkeletonCell<TData extends object>({
   column: Column<DataGridFeatures, TData, unknown>
 }) {
   const { props, table } = useDataGrid()
+  const isPinned = column.getIsPinned()
+  const isLastStartPinned =
+    isPinned === "start" && column.getIsLastColumn("start")
+  const isFirstEndPinned = isPinned === "end" && column.getIsFirstColumn("end")
+  const edges = getDataGridTableColumnEdges(table, column.id)
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? "dense" : "default",
   })
 
   return (
     <td
-      style={
-        props.tableLayout?.columnsResizable
-          ? { width: `calc(var(--col-${column.id}-size) * 1px)` }
-          : undefined
+      style={{
+        ...(props.tableLayout?.columnsPinnable &&
+          column.getCanPin() &&
+          getPinningStyles(column)),
+        ...(props.tableLayout?.columnsResizable && {
+          width: `calc(var(--col-${column.id}-size) * 1px)`,
+        }),
+      }}
+      data-pinned={isPinned || undefined}
+      data-last-col={
+        isLastStartPinned ? "start" : isFirstEndPinned ? "end" : undefined
       }
       className={cn(
         "align-middle",
@@ -1517,11 +1688,8 @@ function DataGridTableBodyRowSkeletonCell<TData extends object>({
         column.columnDef.meta?.cellClassName,
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
-          "data-pinned:bg-background data-pinned:isolate [&[data-pinned=end][data-last-col=end]]:shadow-[inset_1px_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_-1px_0_0_0_var(--border)]",
-        column.getIndex() === 0 ||
-          column.getIndex() === table.getVisibleLeafColumns().length - 1
-          ? props.tableClassNames?.edgeCell
-          : ""
+          "data-pinned:isolate data-pinned:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))] [&[data-pinned=end][data-last-col=end]]:shadow-[inset_calc(1px*var(--data-grid-dir,1))_0_0_0_var(--border)] [&[data-pinned=start][data-last-col=start]]:shadow-[inset_calc(-1px*var(--data-grid-dir,1))_0_0_0_var(--border)]",
+        edges.isFirst || edges.isLast ? props.tableClassNames?.edgeCell : ""
       )}
     >
       {children}
@@ -1550,8 +1718,7 @@ function DataGridTableBodyRow<TData extends object>({
   const isRowPinned = row.getIsPinned()
   const rowStatus = props.getRowStatus?.(row.original)
 
-  const bodyRowBottomBorderClasses =
-    "[&:not(:last-child)>td]:border-b [tbody:has(+tfoot)_&:last-child>td]:border-b [*:has(>[data-slot=data-grid]+[data-slot=data-grid-pagination])_[data-slot=data-grid]_&:last-child>td]:border-b"
+  const bodyRowBottomBorderClasses = "[&:not(:last-child)>td]:border-b"
 
   return (
     <tr
@@ -1576,15 +1743,20 @@ function DataGridTableBodyRow<TData extends object>({
       aria-rowindex={
         props.tableLayout?.cellSelection ? row.index + 2 : undefined
       }
-      onClick={() => props.onRowClick && props.onRowClick(row.original)}
+      onClick={(event) => {
+        if (isDataGridPortalEvent(event)) return
+        props.onRowClick?.(row.original)
+      }}
       className={cn(
         "hover:bg-muted/40 data-[state=selected]:bg-muted/50",
-        /* Pinned cells hide scrolled content behind an OPAQUE background,
-           which also hides the row's translucent hover and selected tints;
-           they get the same tints premixed over the background instead,
-           the row-status treatment. */
-        "hover:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--muted)_40%,var(--background))]",
-        "data-[state=selected]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--muted)_50%,var(--background))]",
+        /* With the pin affordance on, pinned cells hide scrolled content
+           behind an OPAQUE background, which also hides the row's translucent
+           hover and selected tints; they get the same tints premixed over the
+           background instead, the row-status treatment. Pinning used only as
+           an ordering lock leaves cells transparent, so the premix would paint
+           a second, different hover colour: gate it on the same flag. */
+        props.tableLayout?.columnsPinnable &&
+          "hover:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--muted)_40%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))] data-[state=selected]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--muted)_50%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))]",
         props.onRowClick && "cursor-pointer",
         // Optional CRUD indications, active only when getRowStatus is
         // wired; the warning-muted defaults yield to tableClassNames
@@ -1594,7 +1766,8 @@ function DataGridTableBodyRow<TData extends object>({
         props.getRowStatus &&
           "data-[row-status=deleted]:bg-destructive/5 data-[row-status=deleted]:opacity-60 data-[row-status=dirty]:bg-amber-500/5 data-[row-status=new]:bg-green-500/5 data-[row-status=deleted]:[&_td]:line-through",
         props.getRowStatus &&
-          "data-[row-status=deleted]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--destructive)_5%,var(--background))] data-[row-status=dirty]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--color-amber-500)_5%,var(--background))] data-[row-status=new]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--color-green-500)_5%,var(--background))]",
+          props.tableLayout?.columnsPinnable &&
+          "data-[row-status=deleted]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--destructive)_5%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))] data-[row-status=dirty]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--color-amber-500)_5%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))] data-[row-status=new]:[&>td[data-pinned]]:bg-[color-mix(in_oklab,var(--color-green-500)_5%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))]",
         rowStatus === "new" && props.tableClassNames?.rowNew,
         rowStatus === "dirty" && props.tableClassNames?.rowDirty,
         rowStatus === "deleted" && props.tableClassNames?.rowDeleted,
@@ -1648,8 +1821,7 @@ function DataGridTableBodyRowExpandded<TData extends object>({
   // would break striping parity, rowBorder, and virtual row measurement.
   if (!expandedContent) return null
 
-  const bodyRowBottomBorderClasses =
-    "[&:not(:last-child)>td]:border-b [tbody:has(+tfoot)_&:last-child>td]:border-b [*:has(>[data-slot=data-grid]+[data-slot=data-grid-pagination])_[data-slot=data-grid]_&:last-child>td]:border-b"
+  const bodyRowBottomBorderClasses = "[&:not(:last-child)>td]:border-b"
 
   return (
     <tr
@@ -1704,6 +1876,7 @@ function DataGridTableBodyRowCell<TData extends object>({
   const isLastStartPinned =
     isPinned === "start" && column.getIsLastColumn("start")
   const isFirstEndPinned = isPinned === "end" && column.getIsFirstColumn("end")
+  const edges = getDataGridTableColumnEdges(table, column.id)
   const bodyCellSpacing = bodyCellSpacingVariants({
     size: props.tableLayout?.dense ? "dense" : "default",
   })
@@ -1752,7 +1925,7 @@ function DataGridTableBodyRowCell<TData extends object>({
       onMouseDown={
         selection
           ? (event) => {
-              if (event.button !== 0) return
+              if (event.button !== 0 || isDataGridPortalEvent(event)) return
               if (isDataGridCellInteractiveTarget(event.target)) {
                 // A modifier click is a SELECTION gesture even on a control:
                 // Shift extends and Ctrl/Cmd adds, exactly as on a plain
@@ -1793,7 +1966,10 @@ function DataGridTableBodyRowCell<TData extends object>({
       }
       onMouseEnter={
         rangeSelectionOn
-          ? (event) => cell.getSelectionExtendHandler()(event)
+          ? (event) => {
+              if (isDataGridPortalEvent(event)) return
+              cell.getSelectionExtendHandler()(event)
+            }
           : undefined
       }
       className={cn(
@@ -1824,14 +2000,11 @@ function DataGridTableBodyRowCell<TData extends object>({
         props.tableLayout?.columnsPinnable &&
           column.getCanPin() &&
           cn(
-            "data-pinned:bg-background data-pinned:isolate",
-            "[&[data-pinned=start][data-last-col=start]]:shadow-[inset_-1px_0_0_0_var(--border)]",
-            "[&[data-pinned=end][data-last-col=end]]:shadow-[inset_1px_0_0_0_var(--border)]"
+            "data-pinned:isolate data-pinned:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))]",
+            "[&[data-pinned=start][data-last-col=start]]:shadow-[inset_calc(-1px*var(--data-grid-dir,1))_0_0_0_var(--border)]",
+            "[&[data-pinned=end][data-last-col=end]]:shadow-[inset_calc(1px*var(--data-grid-dir,1))_0_0_0_var(--border)]"
           ),
-        column.getIndex() === 0 ||
-          column.getIndex() === row.getVisibleCells().length - 1
-          ? props.tableClassNames?.edgeCell
-          : "",
+        edges.isFirst || edges.isLast ? props.tableClassNames?.edgeCell : "",
         selection && dataGridCellSelectionCellClasses
       )}
     >
@@ -1994,9 +2167,38 @@ function DataGridTableRenderedRow<TData extends object>({
 
 function DataGridTableEmpty() {
   const { i18n, table, props } = useDataGrid()
+  const stopObserverRef = useRef<(() => void) | null>(null)
   const visibleColumnCount =
     getDataGridTableOrderedVisibleColumns(table).length +
     (props.tableLayout?.columnsResizable ? 1 : 0)
+
+  // The cell spans the whole table, so on a table wider than its scroll
+  // viewport text-center lands off-screen. A sticky box sized to the
+  // viewport centres the message on what is visible. It is sized only
+  // while the table overflows, so it can never widen the table itself.
+  const handleMessageRef = useCallback((node: HTMLDivElement | null) => {
+    stopObserverRef.current?.()
+    stopObserverRef.current = null
+    if (!node || typeof ResizeObserver === "undefined") return
+
+    const scrollViewport =
+      getDataGridScrollAreaViewport(node) ??
+      node.closest('[data-slot="data-grid-table-viewport"]')?.parentElement
+    if (!scrollViewport) return
+
+    const measure = () => {
+      const overflows =
+        scrollViewport.scrollWidth > scrollViewport.clientWidth + 0.5
+      node.style.width = overflows ? `${scrollViewport.clientWidth}px` : ""
+    }
+    measure()
+
+    const observer = new ResizeObserver(measure)
+    observer.observe(scrollViewport)
+    const tableNode = node.closest("table")
+    if (tableNode) observer.observe(tableNode)
+    stopObserverRef.current = () => observer.disconnect()
+  }, [])
 
   return (
     <tr>
@@ -2004,7 +2206,13 @@ function DataGridTableEmpty() {
         colSpan={Math.max(visibleColumnCount, 1)}
         className="text-muted-foreground py-6 text-center text-sm"
       >
-        {props.emptyMessage || i18n.labels.empty}
+        <div
+          ref={handleMessageRef}
+          data-slot="data-grid-table-empty"
+          className="sticky start-0"
+        >
+          {props.emptyMessage || i18n.labels.empty}
+        </div>
       </td>
     </tr>
   )

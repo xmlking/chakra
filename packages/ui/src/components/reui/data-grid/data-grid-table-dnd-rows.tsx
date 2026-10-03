@@ -44,6 +44,7 @@ import {
   useSensor,
   useSensors,
   type CollisionDetection,
+  type DndContextProps,
   type DragCancelEvent,
   type DragEndEvent,
   type DragMoveEvent,
@@ -62,10 +63,16 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { flexRender } from "@tanstack/react-table"
-import type { Cell, HeaderGroup, Row, Table } from "@tanstack/react-table"
+import type {
+  Cell,
+  Header,
+  HeaderGroup,
+  Row,
+  Table,
+} from "@tanstack/react-table"
 import { createPortal } from "react-dom"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { GripHorizontalIcon } from "lucide-react"
 
@@ -250,66 +257,75 @@ function DataGridTableDndRow<TData extends object>({
   }
 
   const decoration = renderRowDecoration?.({ row, isDragging, isOver })
+  const cells = row.getVisibleCells()
+  const lastCell = cells[cells.length - 1]
+
+  const renderCell = (cell: Cell<DataGridFeatures, TData, unknown>) => (
+    <DataGridTableBodyRowCell cell={cell} key={cell.id}>
+      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      {decoration && cell === lastCell ? (
+        // Rides inside the last cell rather than in a `td` of its own.
+        // An absolutely positioned `td` is still a cell as far as table
+        // layout is concerned, so it added a NINTH column with no width
+        // of its own, and under `table-layout: fixed` that new column
+        // swallowed the whole surplus the real columns had been sharing,
+        // so every column snapped back to its declared size and the row's
+        // content visibly narrowed the moment a drag began. A plain
+        // element adds no column. It anchors to the ROW, the nearest
+        // positioned ancestor, and spans the full width, unless the last
+        // cell is a sticky end-pinned one: that cell is positioned itself
+        // and confines the decoration to its own width.
+        <div
+          aria-hidden="true"
+          data-slot="data-grid-table-row-decoration"
+          className="pointer-events-none absolute inset-0"
+        >
+          {decoration}
+        </div>
+      ) : null}
+      {dropEdge && cell === lastCell ? (
+        // Same anchoring trick as the decoration above: a plain
+        // element inside the last cell, so it adds no column and
+        // cannot disturb `table-layout: fixed`. It spans the row, with
+        // the same sticky end-pinned exception.
+        <div
+          aria-hidden="true"
+          data-slot="data-grid-table-row-drop-indicator"
+          data-edge={dropEdge}
+          className="pointer-events-none absolute inset-0 z-20"
+        >
+          {/* Two solid pixels down the leading edge, the same marker
+              the tree drag uses for its drop target. A wash across
+              the row has to stay faint enough not to read as a
+              selected row, and in the achromatic styles primary
+              carries no chroma at all, so faint plus colourless is
+              just grey. The bar reads at any weight and leaves the
+              row's own background to hover and selection.
+
+              The bar is the whole indicator: the gap the rows have
+              already opened says which side, so a rule across the
+              seam as well only competes with the row borders it sits
+              between. `data-edge` still carries the direction for
+              anyone styling their own. */}
+          <span className="bg-primary absolute inset-y-0 start-0 w-0.5" />
+        </div>
+      ) : null}
+    </DataGridTableBodyRowCell>
+  )
 
   return (
     <SortableRowContext.Provider value={{ attributes, listeners }}>
       <DataGridTableBodyRow row={row} dndRef={setNodeRef} dndStyle={style}>
-        {row
-          .getVisibleCells()
-          .map((cell: Cell<DataGridFeatures, TData, unknown>, index, cells) => {
-            return (
-              <DataGridTableBodyRowCell cell={cell} key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                {decoration && index === cells.length - 1 ? (
-                  // Rides inside the last cell rather than in a `td` of its own.
-                  // An absolutely positioned `td` is still a cell as far as table
-                  // layout is concerned, so it added a NINTH column with no width
-                  // of its own, and under `table-layout: fixed` that new column
-                  // swallowed the whole surplus the real columns had been sharing
-                  // — every column snapped back to its declared size and the row's
-                  // content visibly narrowed the moment a drag began. A plain
-                  // element adds no column. It still anchors to the ROW, because
-                  // the row is the nearest positioned ancestor, so the decoration
-                  // spans the full width and is not clipped by the cell.
-                  <div
-                    aria-hidden="true"
-                    data-slot="data-grid-table-row-decoration"
-                    className="pointer-events-none absolute inset-0"
-                  >
-                    {decoration}
-                  </div>
-                ) : null}
-                {dropEdge && index === cells.length - 1 ? (
-                  // Same anchoring trick as the decoration above: a plain
-                  // element inside the last cell, so it adds no column and
-                  // cannot disturb `table-layout: fixed`. It spans the row
-                  // because the row is the nearest positioned ancestor.
-                  <div
-                    aria-hidden="true"
-                    data-slot="data-grid-table-row-drop-indicator"
-                    data-edge={dropEdge}
-                    className="pointer-events-none absolute inset-0 z-20"
-                  >
-                    {/* Two solid pixels down the leading edge, the same marker
-                        the tree drag uses for its drop target. A wash across
-                        the row has to stay faint enough not to read as a
-                        selected row, and in the achromatic styles primary
-                        carries no chroma at all, so faint plus colourless is
-                        just grey. The bar reads at any weight and leaves the
-                        row's own background to hover and selection.
-
-                        The bar is the whole indicator: the gap the rows have
-                        already opened says which side, so a rule across the
-                        seam as well only competes with the row borders it sits
-                        between. `data-edge` still carries the direction for
-                        anyone styling their own. */}
-                    <span className="bg-primary absolute inset-y-0 start-0 w-0.5" />
-                  </div>
-                ) : null}
-              </DataGridTableBodyRowCell>
-            )
-          })}
-        <DataGridTableFillBodyCell />
+        {/* One keyed list with the fill in the middle, as in the head row. */}
+        {[
+          ...cells
+            .filter((cell) => cell.column.getIsPinned() !== "end")
+            .map(renderCell),
+          <DataGridTableFillBodyCell key="__data-grid-fill" />,
+          ...cells
+            .filter((cell) => cell.column.getIsPinned() === "end")
+            .map(renderCell),
+        ]}
       </DataGridTableBodyRow>
       {row.getIsExpanded() && <DataGridTableBodyRowExpandded row={row} />}
     </SortableRowContext.Provider>
@@ -337,17 +353,28 @@ function DataGridTableDndRowsBody<TData extends object>({
       <>
         {Array.from({ length: pagination.pageSize }).map((_, rowIndex) => (
           <DataGridTableBodyRowSkeleton key={rowIndex}>
-            {table.getVisibleFlatColumns().map((column, colIndex) => {
-              return (
+            {[
+              ...[
+                ...table.getStartVisibleLeafColumns(),
+                ...table.getCenterVisibleLeafColumns(),
+              ].map((column) => (
                 <DataGridTableBodyRowSkeletonCell
                   column={column}
-                  key={colIndex}
+                  key={column.id}
                 >
                   {column.columnDef.meta?.skeleton}
                 </DataGridTableBodyRowSkeletonCell>
-              )
-            })}
-            <DataGridTableFillBodyCell />
+              )),
+              <DataGridTableFillBodyCell key="__data-grid-fill" />,
+              ...table.getEndVisibleLeafColumns().map((column) => (
+                <DataGridTableBodyRowSkeletonCell
+                  column={column}
+                  key={column.id}
+                >
+                  {column.columnDef.meta?.skeleton}
+                </DataGridTableBodyRowSkeletonCell>
+              )),
+            ]}
           </DataGridTableBodyRowSkeleton>
         ))}
       </>
@@ -395,6 +422,7 @@ function DataGridTableDndRows<TData extends object>({
   onDragMove,
   onDragOver,
   onDragCancel,
+  accessibility,
 }: {
   handleDragEnd: (event: DragEndEvent) => void
   dataIds: UniqueIdentifier[]
@@ -430,6 +458,11 @@ function DataGridTableDndRows<TData extends object>({
   onDragMove?: (event: DragMoveEvent) => void
   onDragOver?: (event: DragOverEvent) => void
   onDragCancel?: (event: DragCancelEvent) => void
+  /**
+   * Forwarded to dnd-kit's `DndContext`: its screen-reader instructions and
+   * live-region announcements, which default to dnd-kit's English strings.
+   */
+  accessibility?: DndContextProps["accessibility"]
 }) {
   const { table, props } = useDataGrid<TData>()
   const tableContainerRef = useRef<HTMLDivElement>(null)
@@ -459,6 +492,7 @@ function DataGridTableDndRows<TData extends object>({
     width: number
     height: number
     columns: number[]
+    padding: { start: string; end: string }[]
   } | null>(null)
 
   const pickUpRow = useCallback((id: UniqueIdentifier) => {
@@ -491,11 +525,25 @@ function DataGridTableDndRows<TData extends object>({
       )
       .map((cell) => cell.getBoundingClientRect().width)
 
+    // Inline padding is read off the source cells for the same reason. A fixed
+    // px-3 ignored edgeCell and cellClassName, so a 44px grip column holding a
+    // 28px handle overflowed by 8px and truncate painted an ellipsis beside it.
+    const padding = Array.from(source?.children ?? [])
+      .filter(
+        (cell) =>
+          cell.getAttribute("data-slot") !== "data-grid-table-fill-body-cell"
+      )
+      .map((cell) => {
+        const style = getComputedStyle(cell)
+        return { start: style.paddingInlineStart, end: style.paddingInlineEnd }
+      })
+
     setCarried({
       id,
       width: columns.reduce((total, width) => total + width, 0),
       height,
       columns,
+      padding,
     })
   }, [])
 
@@ -573,6 +621,7 @@ function DataGridTableDndRows<TData extends object>({
   return (
     <DndContext
       id={useId()}
+      accessibility={accessibility}
       collisionDetection={collisionDetection}
       modifiers={resolvedModifiers}
       onDragCancel={(event) => {
@@ -608,37 +657,57 @@ function DataGridTableDndRows<TData extends object>({
               .getHeaderGroups()
               .map(
                 (headerGroup: HeaderGroup<DataGridFeatures, TData>, index) => {
+                  const renderHeader = (
+                    header: Header<DataGridFeatures, TData, unknown>
+                  ) => {
+                    const { column } = header
+
+                    return (
+                      <DataGridTableHeadRowCell header={header} key={header.id}>
+                        {header.isPlaceholder ? null : props.tableLayout
+                            ?.columnsResizable && column.getCanResize() ? (
+                          <>
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                          </>
+                        ) : (
+                          flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )
+                        )}
+                        {props.tableLayout?.columnsResizable &&
+                          column.getCanResize() && (
+                            <DataGridTableHeadRowCellResize header={header} />
+                          )}
+                      </DataGridTableHeadRowCell>
+                    )
+                  }
+
                   return (
                     <DataGridTableHeadRow key={index} rowId={headerGroup.id}>
-                      {headerGroup.headers.map((header, index) => {
-                        const { column } = header
-
-                        return (
-                          <DataGridTableHeadRowCell header={header} key={index}>
-                            {header.isPlaceholder ? null : props.tableLayout
-                                ?.columnsResizable && column.getCanResize() ? (
-                              <>
-                                {flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )}
-                              </>
-                            ) : (
-                              flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )
-                            )}
-                            {props.tableLayout?.columnsResizable &&
-                              column.getCanResize() && (
-                                <DataGridTableHeadRowCellResize
-                                  header={header}
-                                />
-                              )}
-                          </DataGridTableHeadRowCell>
-                        )
-                      })}
-                      <DataGridTableFillHeadCell />
+                      {/* Every row follows DataGridTableBase's colgroup, which
+                          puts the fill col between the center and end-pinned
+                          groups; a fill cell appended last hands its width to
+                          the end-pinned column. One keyed list, not three, so
+                          a column pinned into or out of the end group moves
+                          instead of remounting, which would drop keyboard
+                          focus. */}
+                      {[
+                        ...headerGroup.headers
+                          .filter(
+                            (header) => header.column.getIsPinned() !== "end"
+                          )
+                          .map(renderHeader),
+                        <DataGridTableFillHeadCell key="__data-grid-fill" />,
+                        ...headerGroup.headers
+                          .filter(
+                            (header) => header.column.getIsPinned() === "end"
+                          )
+                          .map(renderHeader),
+                      ]}
                     </DataGridTableHeadRow>
                   )
                 }
@@ -713,7 +782,17 @@ function DataGridTableDndRows<TData extends object>({
                                   cell.column.getSize(),
                               }}
                             >
-                              <div className="truncate px-3">
+                              <div
+                                className={cn(
+                                  "truncate",
+                                  !carried.padding[index] && "px-3"
+                                )}
+                                style={{
+                                  paddingInlineStart:
+                                    carried.padding[index]?.start,
+                                  paddingInlineEnd: carried.padding[index]?.end,
+                                }}
+                              >
                                 {flexRender(
                                   cell.column.columnDef.cell,
                                   cell.getContext()

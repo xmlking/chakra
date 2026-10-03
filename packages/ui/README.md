@@ -36,13 +36,7 @@ bunx --bun shadcn@latest add -p src/components/basecn @basecn/combobox
 
 # files-sdk
 bunx --bun shadcn@latest add https://files-sdk.dev/r/all.json
-# better-upload (optional)
-bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-button
-bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone
-bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/upload-dropzone-progress
-bunx --bun shadcn@latest add  -p src/components/better-upload @better-upload/paste-upload-area
-# kibo-ui (optional)
-bunx --bun shadcn@latest add @kibo-ui/gantt
+
 # reui
 bunx --bun shadcn@latest add @reui/data-grid
 bunx --bun shadcn@latest add @reui/filters
