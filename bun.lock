@@ -221,6 +221,7 @@
         "@types/bun": "catalog:",
         "@types/node": "catalog:",
         "@types/pg": "catalog:",
+        "@workflow/world-postgres": "catalog:",
         "drizzle-kit": "catalog:",
         "drizzle-seed": "catalog:",
         "vite": "catalog:",
