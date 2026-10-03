@@ -25,7 +25,7 @@
     "studio": "varlock run -- drizzle-kit studio",
     "typecheck": "tsc --noEmit",
     "up": "varlock run -- drizzle-kit up",
-    "workflow:bootstrap": "varlock run -- bun x --package @workflow/world-postgres@5.0.0-beta.36 bootstrap"
+    "workflow:bootstrap": "varlock run -- bun x --no-install --package @workflow/world-postgres bootstrap"
   },
   "dependencies": {
     "@workspace/shared": "workspace:*",
@@ -41,6 +41,7 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
+    "@workflow/world-postgres": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-seed": "catalog:",
     "vite": "catalog:",
