@@ -65,7 +65,7 @@ import { Spinner } from "#components/shadcn/spinner"
 import { Textarea } from "#components/shadcn/textarea"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { ssoPlugin } from "#lib/auth/sso-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 import { SsoDomainVerification } from "./sso-domain-verification"
 import { SsoProviderSetup } from "./sso-provider-setup"

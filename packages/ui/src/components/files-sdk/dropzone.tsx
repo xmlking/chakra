@@ -16,7 +16,7 @@ import {
 import type { ReactNode } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface UploadedEntry {
   key: string;

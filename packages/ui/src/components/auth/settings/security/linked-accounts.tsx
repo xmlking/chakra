@@ -10,7 +10,7 @@ import {
   ItemSeparator
 } from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { LinkedAccount } from "./linked-account"
 
 export type LinkedAccountsProps = {

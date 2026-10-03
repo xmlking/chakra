@@ -29,7 +29,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { phoneNumberPlugin } from "#lib/auth/phone-number-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OtpField } from "../otp-field"
 import { PasswordStrengthMeter } from "../password-strength-meter"
 import { useIsHydrated } from "../use-is-hydrated"

@@ -48,7 +48,7 @@ import {
 import { Slider } from "#components/shadcn/slider"
 import { Switch } from "#components/shadcn/switch"
 import { Textarea } from "#components/shadcn/textarea"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type AdditionalFieldProps = {
   name: string

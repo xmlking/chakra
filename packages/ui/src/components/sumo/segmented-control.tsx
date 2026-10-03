@@ -1,9 +1,8 @@
 // oxlint-disable react-doctor/no-multi-comp react-doctor/no-react19-deprecated-apis
 
 import { Tabs } from "@base-ui/react";
+import { cn } from "cn";
 import React from "react";
-
-import { cn } from "#lib/utils";
 
 import { useTabObserver } from "./hooks/use-tab-observer";
 

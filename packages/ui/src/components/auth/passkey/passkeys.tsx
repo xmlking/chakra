@@ -7,7 +7,7 @@ import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
 import { passkeyPlugin } from "#lib/auth/passkey-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 import { AddPasskeyDialog } from "./add-passkey-dialog"
 import { Passkey } from "./passkey"

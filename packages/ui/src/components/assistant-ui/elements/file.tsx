@@ -12,7 +12,7 @@ import {
   DownloadIcon,
 } from "lucide-react";
 import type { FileMessagePartComponent } from "@assistant-ui/react";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 const fileVariants = cva(
   "aui-file-root inline-flex items-center gap-3 rounded-lg transition-colors",

@@ -33,7 +33,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { LastUsedBadge } from "./last-login-method/last-used-badge"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
 

@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
 
 import { Skeleton } from "#components/shadcn/skeleton"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import {
   OrganizationLogo,
   type OrganizationLogoSize

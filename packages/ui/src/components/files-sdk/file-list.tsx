@@ -10,7 +10,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface FileListProps {
   /** A `useFiles()` instance — lists, downloads and deletes through it. */

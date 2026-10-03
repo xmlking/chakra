@@ -19,7 +19,7 @@ import {
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
 import { magicLinkPlugin } from "#lib/auth/magic-link-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { MAGIC_LINK_SENT_STORAGE_KEY } from "./magic-link-sent"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
 

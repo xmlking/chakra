@@ -5,13 +5,13 @@
  */
 
 import { Command as CommandPrimitive, useCommandState } from "cmdk";
+import { cn } from "cn";
 import { ChevronDownIcon, X } from "lucide-react";
 // eslint-disable-next-line react-doctor/no-react19-deprecated-apis
 import React, { forwardRef, useEffect } from "react";
 
 import { Badge } from "#components/shadcn/badge";
 import { Command, CommandGroup, CommandItem, CommandList } from "#components/shadcn/command";
-import { cn } from "#lib/utils";
 
 import { useDebounce } from "./hooks/use-debounce";
 

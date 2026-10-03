@@ -69,7 +69,7 @@ import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { dashPlugin } from "#lib/auth/dash-plugin"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type ActivityAccess = "admin" | "admin-user" | "organization" | "user"
 

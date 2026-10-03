@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/car
 import { FieldDescription, FieldGroup } from "#components/shadcn/field"
 import { Spinner } from "#components/shadcn/spinner"
 import { phoneNumberPlugin } from "#lib/auth/phone-number-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { InternationalPhoneField } from "./international-phone-field"
 
 export const PHONE_NUMBER_RESET_STORAGE_KEY =

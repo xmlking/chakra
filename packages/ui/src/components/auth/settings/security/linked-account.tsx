@@ -32,7 +32,7 @@ import {
 } from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { FreshSessionPrompt } from "./fresh-session-prompt"
 
 export type LinkedAccountProps = {

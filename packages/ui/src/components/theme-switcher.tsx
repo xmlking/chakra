@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
 import { ScrollArea } from "#components/shadcn/scroll-area";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 import { useTheme } from "next-themes";
 
 // Helper to get current color theme and mode from theme string like "catppuccin-dark"

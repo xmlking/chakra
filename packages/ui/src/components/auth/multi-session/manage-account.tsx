@@ -20,7 +20,7 @@ import {
 import { Item, ItemActions } from "#components/shadcn/item"
 import { Spinner } from "#components/shadcn/spinner"
 import { multiSessionPlugin } from "#lib/auth/multi-session-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type ManageAccountProps = {
   deviceSession?: ListDeviceSession | null

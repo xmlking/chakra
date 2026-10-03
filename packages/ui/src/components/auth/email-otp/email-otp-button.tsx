@@ -9,7 +9,7 @@ import { KeyRound, Lock } from "lucide-react"
 
 import { buttonVariants } from "#components/shadcn/button"
 import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type EmailOtpButtonProps = {
   /** @remarks `AuthView` */

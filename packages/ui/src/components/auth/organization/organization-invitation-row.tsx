@@ -18,7 +18,7 @@ import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
 import { TableCell, TableRow } from "#components/shadcn/table"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OrganizationInvitationRowSkeleton } from "./organization-invitation-row-skeleton"
 
 export type OrganizationInvitationRowProps = {

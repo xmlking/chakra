@@ -17,7 +17,7 @@ import { useEffect, useMemo } from "react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/shadcn/tabs"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OrganizationPeople } from "./organization-people"
 import { OrganizationRoles } from "./organization-roles"
 import { OrganizationSettings } from "./organization-settings"

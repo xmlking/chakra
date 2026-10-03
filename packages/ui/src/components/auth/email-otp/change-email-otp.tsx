@@ -15,7 +15,7 @@ import { Input } from "#components/shadcn/input"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OpenEmailButton } from "../open-email-button"
 import { OtpField } from "../otp-field"
 

@@ -20,7 +20,7 @@ import {
 import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OrganizationLogo } from "./organization-logo"
 
 export type ChangeOrganizationLogoProps = {

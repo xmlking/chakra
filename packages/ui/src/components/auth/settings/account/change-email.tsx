@@ -9,7 +9,7 @@ import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type ChangeEmailProps = {
   className?: string

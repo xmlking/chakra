@@ -29,7 +29,7 @@ import { Card, CardContent } from "#components/shadcn/card"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { siwePlugin } from "#lib/auth/siwe-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 const shortAddress = (address: string) =>
   address.length > 14 ? `${address.slice(0, 8)}…${address.slice(-6)}` : address

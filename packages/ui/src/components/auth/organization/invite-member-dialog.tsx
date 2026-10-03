@@ -50,7 +50,7 @@ import {
 } from "#components/shadcn/select"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 /** Props for the `InviteMemberDialog` component. */
 export type InviteMemberDialogProps = {

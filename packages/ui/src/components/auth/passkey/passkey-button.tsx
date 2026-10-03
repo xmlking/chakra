@@ -11,7 +11,7 @@ import { Fingerprint } from "lucide-react"
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
 import { passkeyPlugin } from "#lib/auth/passkey-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type PasskeyButtonProps = {
   /** @remarks `AuthView` */

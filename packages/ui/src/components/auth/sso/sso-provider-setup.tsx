@@ -29,7 +29,7 @@ import { Spinner } from "#components/shadcn/spinner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/shadcn/tabs"
 import { Textarea } from "#components/shadcn/textarea"
 import { ssoPlugin } from "#lib/auth/sso-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type SsoProtocol = "oidc" | "saml"
 

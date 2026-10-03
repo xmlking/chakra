@@ -6,7 +6,7 @@ import { Fragment } from "react"
 import { Card, CardContent } from "#components/shadcn/card"
 import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
 import { multiSessionPlugin } from "#lib/auth/multi-session-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ManageAccount } from "./manage-account"
 
 export type ManageAccountsProps = {

@@ -17,7 +17,7 @@ import type { ComponentProps } from "react"
 
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { LastUsedBadge } from "./last-login-method/last-used-badge"
 
 export type ProviderButtonProps = {

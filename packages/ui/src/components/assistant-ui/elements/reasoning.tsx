@@ -16,7 +16,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "#components/shadcn/collapsible";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export const ANIMATION_DURATION = 200;
 

@@ -27,7 +27,7 @@ import {
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
 import { siwePlugin } from "#lib/auth/siwe-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type SignInEthereumButtonProps = { view?: AuthView }
 

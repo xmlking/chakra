@@ -4,7 +4,7 @@ import { useCallback, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
 import { Progress } from "#components/shadcn/progress";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 type QueueStatus = "pending" | "uploading" | "success" | "error" | "cancelled";
 

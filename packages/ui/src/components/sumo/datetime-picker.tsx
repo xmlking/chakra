@@ -1,4 +1,5 @@
 import { DayPicker, type DayPickerProps } from "@daypicker/react";
+import { cn } from "cn";
 import { add, format } from "date-fns";
 import { enUS, type Locale } from "date-fns/locale";
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock } from "lucide-react";
@@ -19,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#components/shadcn/select";
-import { cn } from "#lib/utils";
 
 // ---------- utils start ----------
 /**

@@ -78,7 +78,7 @@ import { Spinner } from "#components/shadcn/spinner"
 import { Switch } from "#components/shadcn/switch"
 import { Textarea } from "#components/shadcn/textarea"
 import { oauthProviderPlugin } from "#lib/auth/oauth-provider-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type ClientAction =
   | { kind: "delete"; client: ManagedOAuthClient }
