@@ -78,14 +78,13 @@ Preview components before installing them. Search across multiple registries. Se
 
 ```shell
 # List all items from a registry
-bunx --bun shadcn@latest list @ai-elements
 bunx --bun shadcn@latest list @alpine
 bunx --bun shadcn@latest list @reui
 bunx --bun shadcn@latest list @magicui
 # View items from the registry before installing
-bunx --bun shadcn@latest view @ai-elements/message
+bunx --bun shadcn@latest view @reui/ai-chat-1
 # Search items from registries
-bunx --bun shadcn@latest search @ai-elements -q "message"
+bunx --bun shadcn@latest search @reui -q "filter"
 ```
 
 > [!TIP]

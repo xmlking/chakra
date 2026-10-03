@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
 import { Skeleton } from "#components/shadcn/skeleton";
@@ -107,28 +105,61 @@ export const ThreadListItems: FC<
   );
 };
 
-const DAY_IN_MS = 86_400_000;
-
 const dateGroupLabel = (
   date: Date | undefined,
   startOfToday: number,
+  startOfYesterday: number,
 ): string => {
   if (!date || date.getTime() >= startOfToday) return "Today";
-  if (date.getTime() >= startOfToday - DAY_IN_MS) return "Yesterday";
+  if (date.getTime() >= startOfYesterday) return "Yesterday";
   return "Earlier";
 };
 
-type ThreadListGroup = { label: string; indices: number[] };
+const startOfLocalDay = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
 
-const ThreadListItemGroups: FC<{ searchQuery?: string }> = ({
-  searchQuery = "",
-}) => {
+const useStartOfToday = () => {
+  const [startOfToday, setStartOfToday] = useState(() =>
+    startOfLocalDay(new Date()),
+  );
+
+  useEffect(() => {
+    let timeout: number;
+    const scheduleNextDay = () => {
+      const now = new Date();
+      setStartOfToday(startOfLocalDay(now));
+      const startOfTomorrow = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+      ).getTime();
+      timeout = window.setTimeout(
+        scheduleNextDay,
+        startOfTomorrow - now.getTime(),
+      );
+    };
+    scheduleNextDay();
+    return () => window.clearTimeout(timeout);
+  }, []);
+
+  return startOfToday;
+};
+
+export type ThreadListGroup = { label: string; indices: number[] };
+
+/**
+ * Filters the thread list by title and buckets the matches by last activity
+ * (Today, Yesterday, Earlier). `groups` is null when no thread carries a
+ * date, in which case `filteredIndices` keeps the runtime order.
+ */
+export const useThreadListGroups = (searchQuery = "") => {
   const threadIds = useAuiState((s) => s.threads.threadIds);
   const threadItems = useAuiState((s) => s.threads.threadItems);
 
   const query = searchQuery.trim().toLowerCase();
+  const startOfToday = useStartOfToday();
 
-  const { filteredIndices, groups } = useMemo(() => {
+  return useMemo(() => {
     const itemsById = new Map(threadItems.map((item) => [item.id, item]));
     const dates = threadIds.map((id) => itemsById.get(id)?.lastMessageAt);
     const filteredIndices = threadIds
@@ -142,22 +173,23 @@ const ThreadListItemGroups: FC<{ searchQuery?: string }> = ({
       )
       .map(({ index }) => index);
     if (!filteredIndices.some((index) => dates[index])) {
-      return { filteredIndices, groups: null };
+      return { threadIds, filteredIndices, groups: null };
     }
 
-    const now = new Date();
-    const startOfToday = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate(),
-    ).getTime();
+    const yesterday = new Date(startOfToday);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const startOfYesterday = yesterday.getTime();
     const time = (index: number) =>
       dates[index]?.getTime() ?? Number.MAX_SAFE_INTEGER;
     const sorted = [...filteredIndices].sort((a, b) => time(b) - time(a));
 
     const result: ThreadListGroup[] = [];
     for (const index of sorted) {
-      const label = dateGroupLabel(dates[index], startOfToday);
+      const label = dateGroupLabel(
+        dates[index],
+        startOfToday,
+        startOfYesterday,
+      );
       const lastGroup = result[result.length - 1];
       if (lastGroup?.label === label) {
         lastGroup.indices.push(index);
@@ -165,8 +197,16 @@ const ThreadListItemGroups: FC<{ searchQuery?: string }> = ({
         result.push({ label, indices: [index] });
       }
     }
-    return { filteredIndices, groups: result };
-  }, [threadIds, threadItems, query]);
+    return { threadIds, filteredIndices, groups: result };
+  }, [threadIds, threadItems, query, startOfToday]);
+};
+
+const ThreadListItemGroups: FC<{ searchQuery?: string }> = ({
+  searchQuery = "",
+}) => {
+  const { threadIds, filteredIndices, groups } =
+    useThreadListGroups(searchQuery);
+  const query = searchQuery.trim();
 
   if (query && filteredIndices.length === 0) {
     return (

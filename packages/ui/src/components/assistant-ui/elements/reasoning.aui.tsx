@@ -1,5 +1,3 @@
-"use client";
-
 import { memo, useCallback, useRef } from "react";
 import {
   useScrollLock,
@@ -41,7 +39,7 @@ function ReasoningRoot({
       if (typeof ref === "function") {
         ref(node);
       } else if (ref) {
-        ref.current = node;
+        (ref as { current: HTMLDivElement | null }).current = node;
       }
     },
     [ref],
