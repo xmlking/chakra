@@ -50,15 +50,13 @@ bunx skills@latest add dmmulroy/better-result@adopt-better-result
 # AI Agents - mastra, eve, assistant-ui (optional)
 bunx skills@latest add mastra-ai/skills
 bunx skills@latest add https://github.com/vercel/eve --skill eve
-bunx skills@latest add assistant-ui/skills --skill primitives
-assistant-ui,│  thread-list
+bunx skills@latest add assistant-ui/skills --skill assistant-ui
 
 # Files SDK
 bunx skills add haydenbleasel/files-sdk --skill files-sdk
 
 # Email SDK
 bunx skills add opencoredev/email-sdk --skill email-sdk
-bunx skills add opencoredev/email-sdk --skill email-sdk-migrate
 
 # React Doctor
 bunx skills add https://github.com/aidenybai/react-doctor --skill improve-react
@@ -75,12 +73,6 @@ Developer workflow skills
 ```shell
 # improve -  audits any codebase and writes implementation plans for other agents to execute
 bunx skills@latest add shadcn/improve
-```
-
-For `reui` skills, we have to use shadcn cli
-
-```shell
-bunx --bun shadcn@latest add @reui/skills-cursor
 ```
 
 ## Update skills
