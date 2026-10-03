@@ -53,7 +53,7 @@ import type {
   TableFeatures,
 } from "@tanstack/react-table"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 /**
  * Per-column extras the grid reads off `columnDef.meta`.
@@ -265,9 +265,9 @@ export const dataGridCellSelectionCellClasses = cn(
   // tint pre-mixed over the background, and the focused pinned cell keeps
   // a solid background instead of turning transparent.
   "data-[cell-selected]:bg-primary/4",
-  "data-[cell-selected]:data-pinned:bg-[color-mix(in_oklab,var(--primary)_4%,var(--background))]",
+  "data-[cell-selected]:data-pinned:bg-[color-mix(in_oklab,var(--primary)_4%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))]",
   "data-[cell-focused]:bg-transparent!",
-  "data-[cell-focused]:data-pinned:bg-background!",
+  "data-[cell-focused]:data-pinned:bg-[color:var(--data-grid-surface,var(--data-grid-card-surface,var(--background)))]!",
   // Every selection line is one layout-free ::before overlay per cell. It
   // reaches 1px BEYOND the cell so each line paints exactly ON the shared
   // gridline it replaces: the range perimeter and the interior dividers
@@ -338,7 +338,7 @@ export const dataGridCellSelectionCellClasses = cn(
   // Tint only: the dashed region outline is one overlay element drawn by
   // the fill session, so neighboring target cells never double their edges.
   "data-[cell-fill-target]:bg-primary/4",
-  "data-[cell-fill-target]:data-pinned:bg-[color-mix(in_oklab,var(--primary)_4%,var(--background))]"
+  "data-[cell-fill-target]:data-pinned:bg-[color-mix(in_oklab,var(--primary)_4%,var(--data-grid-surface,var(--data-grid-card-surface,var(--background))))]"
 )
 
 export type DataGridApiFetchParams = {
@@ -409,6 +409,20 @@ export type DataGridAutoSizeController = {
    * was dispatched.
    */
   apply: (freeSpace: number) => boolean
+  /**
+   * The width the armed column would reflow to at this free space, and the
+   * width it holds now, without committing anything. Null when no column is
+   * armed. A live (onChange) resize previews with it on every move.
+   */
+  preview: (
+    freeSpace: number
+  ) => { columnId: string; current: number; size: number } | null
+  /**
+   * Records a width the caller commits for the armed column, so the next
+   * measurement reads it as this coordinator's own write and keeps
+   * reflowing, rather than as a user drag that stands it down.
+   */
+  adopt: (columnId: string, size: number) => void
 }
 
 type DataGridAutoSizeReflowState = {
@@ -468,7 +482,9 @@ function createDataGridAutoSizeController<TData extends object>(
   // write to the consumer's store is inert once nothing renders it.
   const SETTLE_MS = 150
 
-  const reflow = (freeSpace: number): boolean => {
+  // The armed column's reflow target at this free space. Shared by reflow,
+  // which commits it, and preview, which only reports it.
+  const resolveReflow = (freeSpace: number) => {
     const table = getTable()
     const state = getDataGridAutoSizeState(table.store)
     // LIVE state, never the render snapshot: a measurement can run between
@@ -476,37 +492,79 @@ function createDataGridAutoSizeController<TData extends object>(
     // would hide the width this controller just wrote.
     const columnSizing =
       table.atoms.columnSizing?.get() ?? table.state.columnSizing
-    if (!state.applied) return false
+    if (!state.applied) return null
     const autoSizeColumn = table
       .getVisibleLeafColumns()
       .find(
         (column) => column.columnDef.meta?.autoSize && column.getCanResize()
       )
     if (!autoSizeColumn || autoSizeColumn.id !== state.applied.columnId)
-      return false
+      return null
     // A width this coordinator did not write belongs to the user's drag;
     // reflow stands down until a reset re-arms the column.
     const currentSize = columnSizing[state.applied.columnId]
     if (currentSize !== undefined && currentSize !== state.applied.grown) {
-      return false
+      return null
     }
     // The free space as it would measure with our growth removed; the
     // target re-absorbs exactly that, floored at minSize so a narrow
     // window hands space back without ever crushing the column (no
-    // explicit minSize floors at the starting width instead).
+    // explicit minSize floors at the starting width instead). The resolved
+    // columnDef always carries TanStack's built-in minSize (20), so only a
+    // value that differs from the defaults, or a defaultColumn.minSize,
+    // counts as one the consumer set.
     const freeAtBase = freeSpace + (state.applied.grown - state.applied.base)
-    const floor = autoSizeColumn.columnDef.minSize ?? state.applied.base
+    const resolvedMinSize = autoSizeColumn.columnDef.minSize
+    const hasConsumerMinSize =
+      table.options.defaultColumn?.minSize !== undefined ||
+      resolvedMinSize !== table.getDefaultColumnDef().minSize
+    const floor =
+      hasConsumerMinSize && resolvedMinSize !== undefined
+        ? resolvedMinSize
+        : state.applied.base
     const target = Math.max(floor, state.applied.base + freeAtBase)
-    if (Math.abs(target - state.applied.grown) < 1) return false
-    state.applied = { ...state.applied, grown: target }
+    return {
+      table,
+      state,
+      applied: state.applied,
+      target,
+      // Always set on a resolved columnDef (MAX_SAFE_INTEGER by default).
+      maxSize: autoSizeColumn.columnDef.maxSize!,
+    }
+  }
+
+  const reflow = (freeSpace: number): boolean => {
+    const resolved = resolveReflow(freeSpace)
+    if (!resolved) return false
+    const { table, state, applied, target } = resolved
+    if (Math.abs(target - applied.grown) < 1) return false
+    state.applied = { ...applied, grown: target }
     table.setColumnSizing((old) => ({
       ...old,
-      [state.applied!.columnId]: target,
+      [applied.columnId]: target,
     }))
     return true
   }
 
   return {
+    preview(freeSpace: number) {
+      const resolved = resolveReflow(freeSpace)
+      // In rendered pixels: getSize() clamps to maxSize, so an unclamped
+      // preview painted a capped column past its cap until the release.
+      return resolved
+        ? {
+            columnId: resolved.applied.columnId,
+            current: Math.min(resolved.applied.grown, resolved.maxSize),
+            size: Math.min(resolved.target, resolved.maxSize),
+          }
+        : null
+    },
+    adopt(columnId: string, size: number) {
+      const state = getDataGridAutoSizeState(getTable().store)
+      if (state.applied?.columnId === columnId) {
+        state.applied = { ...state.applied, grown: size }
+      }
+    },
     apply(freeSpace: number) {
       const table = getTable()
       const state = getDataGridAutoSizeState(table.store)

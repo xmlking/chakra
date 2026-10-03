@@ -39,7 +39,13 @@ function DataGridColumnVisibility<TData extends object>({
               return (
                 <DropdownMenuCheckboxItem
                   key={column.id}
-                  className="capitalize"
+                  // Title-casing is for a raw column id only; an authored
+                  // label keeps its own casing.
+                  className={
+                    getColumnHeaderLabel(column) === column.id
+                      ? "capitalize"
+                      : undefined
+                  }
                   checked={column.getIsVisible()}
                   onSelect={(event) => event.preventDefault()}
                   onCheckedChange={(value) => column.toggleVisibility(!!value)}

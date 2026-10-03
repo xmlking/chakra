@@ -4,7 +4,7 @@ import { useDataGrid } from "#components/reui/data-grid/data-grid"
 import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"
 import type { Column } from "@tanstack/react-table"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { Input } from "#components/shadcn/input"
 import {
@@ -61,7 +61,7 @@ function DataGridColumnFilter<TData extends object, TValue>({
                 >
                   {selectedValues.size}
                 </Badge>
-                <div className="hidden space-x-1 lg:flex">
+                <div className="hidden gap-x-1 lg:flex">
                   {selectedValues.size > 2 ? (
                     <Badge variant="secondary" className="px-1 font-normal">
                       {i18n.labels.filterSelectedCount(selectedValues.size)}
