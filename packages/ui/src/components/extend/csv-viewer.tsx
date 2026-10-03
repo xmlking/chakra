@@ -14,10 +14,6 @@ import {
   emptyGridSelection,
 } from "@glideapps/glide-data-grid"
 
-import "@glideapps/glide-data-grid/dist/index.css"
-
-import Papa from "papaparse"
-
 import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import {
@@ -40,66 +36,58 @@ import {
   SelectValue,
 } from "#components/shadcn/select"
 import { Separator } from "#components/shadcn/separator"
-import { Spinner } from "#components/shadcn/spinner"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "#components/shadcn/tooltip"
-import { Ellipsis, Download, Upload, Search, ChevronLeft, ArrowRight, CircleMinus, CirclePlusIcon } from "lucide-react"
+import "@glideapps/glide-data-grid/dist/index.css"
+
+import * as React from "react"
+import Papa from "papaparse"
+import { Ellipsis, Download, Upload, Search, ChevronLeft, ArrowRight, CircleMinus, CirclePlusIcon, LoaderCircle } from "lucide-react"
 
 const ZOOM_OPTIONS = [0.75, 1, 1.25, 1.5, 2] as const
 const CSV_SEARCH_BATCH_ROW_COUNT = 500
 const CSV_SEARCH_DEBOUNCE_MS = 300
-
 type GlideDataGridModule = typeof GlideDataGrid
 type CsvViewerProps = {
   className?: string
   data?: string
   search?: boolean
 }
-
 type CsvSearchResult = {
   col: number
   row: number
   displayValue: string
   columnTitle: string
 }
-
 function toDisplayString(value: unknown): string {
   return value === null || value === undefined ? "" : String(value)
 }
-
 function normalizeHeaderTitle(header: string, index: number): string {
   const trimmed = header.trim()
   return trimmed.length > 0 ? trimmed : `Column ${index + 1}`
 }
-
 function columnIndexToA1(col: number) {
   let columnNumber = col + 1
   let columnName = ""
-
   while (columnNumber > 0) {
     const remainder = (columnNumber - 1) % 26
     columnName = String.fromCharCode(65 + remainder) + columnName
     columnNumber = Math.floor((columnNumber - 1) / 26)
   }
-
   return columnName
 }
-
 function cellAddressToA1(col: number, row: number) {
   return `${columnIndexToA1(col)}${row + 1}`
 }
-
 function cellMatchesQuery(displayValue: string, query: string) {
   return displayValue.toLowerCase().includes(query)
 }
-
 function createSingleCellSelection(cell: Item): GridSelection {
   const [col, row] = cell
-
   return {
     columns: CompactSelection.empty(),
     rows: CompactSelection.empty(),
@@ -110,7 +98,6 @@ function createSingleCellSelection(cell: Item): GridSelection {
     },
   }
 }
-
 async function findCsvSearchResults(
   headers: string[],
   rows: string[][],
@@ -118,13 +105,11 @@ async function findCsvSearchResults(
 ) {
   const query = rawQuery.trim().toLowerCase()
   if (!query) return []
-
   const results: CsvSearchResult[] = []
   const columnCount = Math.max(
     headers.length,
     rows.reduce((maxCount, row) => Math.max(maxCount, row.length), 0)
   )
-
   for (
     let batchStartRow = 0;
     batchStartRow < rows.length;
@@ -134,14 +119,11 @@ async function findCsvSearchResults(
       batchStartRow + CSV_SEARCH_BATCH_ROW_COUNT,
       rows.length
     )
-
     for (let row = batchStartRow; row < batchEndRow; row += 1) {
       const rowValues = rows[row] ?? []
-
       for (let col = 0; col < columnCount; col += 1) {
         const displayValue = rowValues[col] ?? ""
         if (!cellMatchesQuery(displayValue, query)) continue
-
         results.push({
           col,
           row,
@@ -150,17 +132,14 @@ async function findCsvSearchResults(
         })
       }
     }
-
     if (batchEndRow < rows.length) {
       await new Promise<void>((resolve) => {
         window.setTimeout(resolve, 0)
       })
     }
   }
-
   return results
 }
-
 function parseDelimitedText(text: string): {
   headers: string[]
   rows: string[][]
@@ -170,7 +149,6 @@ function parseDelimitedText(text: string): {
     header: true,
     skipEmptyLines: "greedy",
   })
-
   const objectRows = Array.isArray(results.data)
     ? results.data.filter(
         (row): row is Record<string, unknown> =>
@@ -197,7 +175,6 @@ function parseDelimitedText(text: string): {
       (_, index) => `Extra ${index + 1}`
     ),
   ]
-
   const rows = objectRows.map((row) => {
     const baseValues = fieldKeys.map((fieldKey) =>
       toDisplayString(row[fieldKey])
@@ -215,15 +192,12 @@ function parseDelimitedText(text: string): {
               () => ""
             ),
           ]
-
     return [...baseValues, ...paddedExtras]
   })
-
   const firstError =
     Array.isArray(results.errors) && results.errors.length > 0
       ? results.errors[0]
       : null
-
   return {
     headers,
     rows,
@@ -233,18 +207,15 @@ function parseDelimitedText(text: string): {
         : null,
   }
 }
-
 function ensureCsvExtension(fileName: string) {
   const lowerFileName = fileName.toLowerCase()
   return lowerFileName.endsWith(".csv") || lowerFileName.endsWith(".tsv")
     ? fileName
     : `${fileName}.csv`
 }
-
 function downloadTextFile(text: string, fileName: string, type: string) {
   const url = URL.createObjectURL(new Blob([text], { type }))
   const anchor = document.createElement("a")
-
   anchor.href = url
   anchor.download = fileName
   anchor.rel = "noopener"
@@ -253,7 +224,6 @@ function downloadTextFile(text: string, fileName: string, type: string) {
   anchor.remove()
   window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
-
 function CsvFileActionsMenu({
   downloadDisabled,
   isPending,
@@ -267,7 +237,19 @@ function CsvFileActionsMenu({
 }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button type="button" variant="ghost" size="icon-sm" aria-label="Open CSV actions" disabled={isPending} />}><Ellipsis className="size-4" /></DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Open CSV actions"
+            disabled={isPending}
+          >
+            <Ellipsis className="size-4" />
+          </Button>
+        }
+      ></DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40">
         <DropdownMenuItem disabled={downloadDisabled} onClick={onDownload}>
           <Download className="size-4" />
@@ -275,7 +257,7 @@ function CsvFileActionsMenu({
         </DropdownMenuItem>
         <DropdownMenuItem disabled={isPending} onClick={onUploadClick}>
           {isPending ? (
-            <Spinner className="size-4" />
+            <InlineSpinner className="size-4" />
           ) : (
             <Upload className="size-4" />
           )}
@@ -285,7 +267,6 @@ function CsvFileActionsMenu({
     </DropdownMenu>
   )
 }
-
 function ToolbarTooltip({
   label,
   children,
@@ -295,24 +276,23 @@ function ToolbarTooltip({
 }) {
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger>
+      <TooltipTrigger
+        render={<span className="inline-flex">{children}</span>}
+      ></TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
   )
 }
-
 function CsvSearchPopover({
   headers,
   rows,
   gridRef,
-  dataIdentity,
   controlsDisabled,
   onGridSelectionChange,
 }: {
   headers: string[]
   rows: string[][]
   gridRef: React.RefObject<DataEditorRef | null>
-  dataIdentity: string
   controlsDisabled: boolean
   onGridSelectionChange: (selection: GridSelection) => void
 }) {
@@ -337,7 +317,6 @@ function CsvSearchPopover({
       : searchResults.length
         ? `${activeResultIndex + 1} / ${searchResults.length}`
         : "No results"
-
   const runSearch = React.useCallback(
     (rawQuery: string) => {
       const nextQuery = rawQuery.trim()
@@ -346,13 +325,11 @@ function CsvSearchPopover({
       appliedResultKeyRef.current = ""
       setSearchQuery(nextQuery)
       setActiveResultIndex(0)
-
       if (!nextQuery) {
         setSearchResults([])
         setIsSearching(false)
         return
       }
-
       setIsSearching(true)
       void findCsvSearchResults(headers, rows, nextQuery)
         .then((nextResults) => {
@@ -370,23 +347,22 @@ function CsvSearchPopover({
     },
     [headers, rows]
   )
-
   React.useEffect(() => {
-    const trimmedDraft = searchDraft.trim()
-
-    if (!trimmedDraft) {
-      runSearch("")
-      return
-    }
-
-    setIsSearching(true)
+    if (!searchDraft.trim()) return
     const timeoutId = window.setTimeout(() => {
       runSearch(searchDraft)
     }, CSV_SEARCH_DEBOUNCE_MS)
-
     return () => window.clearTimeout(timeoutId)
   }, [runSearch, searchDraft])
-
+  const handleSearchDraftChange = (nextDraft: string) => {
+    searchRequestIdRef.current += 1
+    setSearchDraft(nextDraft)
+    if (!nextDraft.trim()) {
+      runSearch("")
+      return
+    }
+    setIsSearching(true)
+  }
   const clearSearch = React.useCallback(() => {
     searchRequestIdRef.current += 1
     setSearchDraft("")
@@ -397,11 +373,9 @@ function CsvSearchPopover({
     appliedResultKeyRef.current = ""
     onGridSelectionChange(emptyGridSelection)
   }, [onGridSelectionChange])
-
   const goToRelativeResult = React.useCallback(
     (direction: 1 | -1) => {
       if (!searchResults.length) return
-
       setActiveResultIndex((currentIndex) => {
         return (
           (currentIndex + direction + searchResults.length) %
@@ -411,27 +385,17 @@ function CsvSearchPopover({
     },
     [searchResults.length]
   )
-
   React.useEffect(() => {
-    searchRequestIdRef.current += 1
-    setSearchDraft("")
-    setSearchQuery("")
-    setSearchResults([])
-    setActiveResultIndex(0)
-    setIsSearching(false)
-    appliedResultKeyRef.current = ""
-    onGridSelectionChange(emptyGridSelection)
-  }, [dataIdentity, onGridSelectionChange])
-
+    return () => {
+      searchRequestIdRef.current += 1
+    }
+  }, [])
   React.useEffect(() => {
     if (!activeResult) return
-
     if (appliedResultKeyRef.current === activeResultKey) return
     appliedResultKeyRef.current = activeResultKey
-
     const cell: Item = [activeResult.col, activeResult.row]
     onGridSelectionChange(createSingleCellSelection(cell))
-
     const frame = window.requestAnimationFrame(() => {
       gridRef.current?.scrollTo(
         activeResult.col,
@@ -445,24 +409,33 @@ function CsvSearchPopover({
         }
       )
     })
-
     return () => window.cancelAnimationFrame(frame)
   }, [activeResult, activeResultKey, gridRef, onGridSelectionChange])
-
   return (
     <Popover>
       <ToolbarTooltip label="Search CSV">
-        <PopoverTrigger render={<Button type="button" variant="ghost" size="icon-sm" aria-label="Search CSV" disabled={controlsDisabled} />}><Search className="size-4" /></PopoverTrigger>
+        <PopoverTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Search CSV"
+              disabled={controlsDisabled}
+            >
+              <Search className="size-4" />
+            </Button>
+          }
+        ></PopoverTrigger>
       </ToolbarTooltip>
       <PopoverContent align="end" className="w-72">
         <div className="space-y-3">
           <Input
             placeholder="Search CSV"
             value={searchDraft}
-            onChange={(event) => setSearchDraft(event.target.value)}
+            onChange={(event) => handleSearchDraftChange(event.target.value)}
             onKeyDown={(event) => {
               if (event.key !== "Enter") return
-
               event.preventDefault()
               if (event.shiftKey && searchResults.length) {
                 goToRelativeResult(-1)
@@ -532,38 +505,27 @@ function CsvSearchPopover({
     </Popover>
   )
 }
-
 function readIsDarkTheme() {
   return (
     typeof document !== "undefined" &&
     document.documentElement.classList.contains("dark")
   )
 }
-
-function useIsDarkTheme() {
-  const [isDark, setIsDark] = React.useState(readIsDarkTheme)
-
-  React.useEffect(() => {
-    if (typeof document === "undefined") return
-
-    const updateTheme = () => setIsDark(readIsDarkTheme())
-
-    updateTheme()
-
-    if (typeof MutationObserver === "undefined") return
-
-    const observer = new MutationObserver(updateTheme)
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    })
-
-    return () => observer.disconnect()
-  }, [])
-
-  return isDark
+function subscribeToDarkTheme(listener: () => void) {
+  const observer = new MutationObserver(listener)
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["class"],
+  })
+  return () => observer.disconnect()
 }
-
+function useIsDarkTheme() {
+  return React.useSyncExternalStore(
+    subscribeToDarkTheme,
+    readIsDarkTheme,
+    () => false
+  )
+}
 export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
   const inputRef = React.useRef<HTMLInputElement | null>(null)
   const gridRef = React.useRef<DataEditorRef | null>(null)
@@ -580,48 +542,50 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
   )
   const [isPending, setIsPending] = React.useState(false)
   const [dataRevision, setDataRevision] = React.useState(0)
-
   const dataIdentity = React.useMemo(
     () =>
       `${dataRevision}:${parsed.headers.join("\u0001")}:${parsed.rows.length}:${parsed.error ?? ""}`,
     [dataRevision, parsed.error, parsed.headers, parsed.rows.length]
   )
-
   const handleGridSelectionChange = React.useCallback(
     (selection: GridSelection) => {
       setGridSelection(selection)
     },
     []
   )
-
-  React.useEffect(() => {
+  const [previousData, setPreviousData] = React.useState(data)
+  if (!Object.is(previousData, data)) {
+    setPreviousData(data)
     if (data) {
       setParsed(parseDelimitedText(data))
       setUploadedFileName(null)
       setDataRevision((revision) => revision + 1)
     }
-  }, [data])
-
-  React.useEffect(() => {
-    if (!search) {
+  }
+  const [selectionSource, setSelectionSource] = React.useState({
+    dataRevision,
+    search,
+  })
+  if (
+    selectionSource.dataRevision !== dataRevision ||
+    selectionSource.search !== search
+  ) {
+    setSelectionSource({ dataRevision, search })
+    if (selectionSource.dataRevision !== dataRevision || !search) {
       setGridSelection(emptyGridSelection)
     }
-  }, [search])
-
+  }
   React.useEffect(() => {
     let mounted = true
-
     void import("@glideapps/glide-data-grid").then((module) => {
       if (mounted) {
         setGlide(module)
       }
     })
-
     return () => {
       mounted = false
     }
   }, [])
-
   const columnCount = Math.max(1, parsed.headers.length)
   const scale = React.useCallback(
     (value: number) => Math.round(value * zoom),
@@ -629,7 +593,6 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
   )
   const searchDisabled =
     Boolean(parsed.error) || parsed.rows.length === 0 || isPending
-
   const theme = React.useMemo<Partial<Theme>>(
     () => ({
       accentColor: isDark ? "#60a5fa" : "#2563eb",
@@ -659,7 +622,6 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
     }),
     [isDark, scale]
   )
-
   const columns = React.useMemo<GridColumn[]>(
     () =>
       Array.from({ length: columnCount }, (_, index) => ({
@@ -669,12 +631,10 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
       })),
     [columnCount, parsed.headers, scale]
   )
-
   const getCellContent = React.useCallback(
     ([col, row]: Item): GridCell => {
       const value = parsed.rows[row]?.[col] ?? ""
       const textKind = glide?.GridCellKind.Text as GridCellKind.Text
-
       return {
         kind: textKind,
         data: value,
@@ -685,11 +645,9 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
     },
     [glide, parsed.rows]
   )
-
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     if (!file) return
-
     setIsPending(true)
     try {
       const text = await file.text()
@@ -709,7 +667,6 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
       setIsPending(false)
     }
   }
-
   function stepZoom(direction: -1 | 1) {
     const index = ZOOM_OPTIONS.indexOf(zoom)
     const nextIndex = Math.min(
@@ -718,20 +675,17 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
     )
     setZoom(ZOOM_OPTIONS[nextIndex])
   }
-
   function handleDownload() {
     const text = Papa.unparse({
       fields: parsed.headers,
       data: parsed.rows,
     })
-
     downloadTextFile(
       text,
       ensureCsvExtension(uploadedFileName ?? "data.csv"),
       "text/csv;charset=utf-8"
     )
   }
-
   return (
     <div
       className={cn(
@@ -798,7 +752,7 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
                   headers={parsed.headers}
                   rows={parsed.rows}
                   gridRef={gridRef}
-                  dataIdentity={dataIdentity}
+                  key={dataIdentity}
                   controlsDisabled={searchDisabled}
                   onGridSelectionChange={handleGridSelectionChange}
                 />
@@ -841,7 +795,7 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
                 Pass delimited text with the <code>data</code> prop or upload a
                 CSV file.
               </p>
-              <Button
+              <InlineLoadingButton
                 type="button"
                 variant="outline"
                 size="sm"
@@ -851,12 +805,12 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
               >
                 <Upload className="size-4" />
                 Upload CSV
-              </Button>
+              </InlineLoadingButton>
             </div>
           </div>
         ) : !glide ? (
           <div className="grid h-full place-items-center bg-background">
-            <Spinner className="size-4" />
+            <InlineSpinner className="size-4" />
           </div>
         ) : (
           <glide.DataEditor
@@ -887,3 +841,35 @@ export function CsvViewer({ className, data, search = false }: CsvViewerProps) {
     </div>
   )
 }
+function InlineLoadingButton({
+  loading,
+  disabled,
+  children,
+  className,
+  ...props
+}: React.ComponentProps<typeof Button> & {
+  loading?: boolean
+}) {
+  return (
+    <Button
+      {...props}
+      className={cn("relative", className)}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+    >
+      <span className={cn("contents", loading && "invisible")}>{children}</span>
+      {loading ? (
+        <InlineSpinner className="pointer-events-none absolute" />
+      ) : null}
+    </Button>
+  )
+}
+function InlineSpinner({ className, ...props }: InlineRegistryIconProps) {
+  return (
+    <LoaderCircle role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
+  )
+}
+type InlineRegistryIconProps = Omit<
+  React.ComponentProps<"svg">,
+  "children" | "strokeWidth"
+> & { strokeWidth?: number }

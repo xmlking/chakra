@@ -5,12 +5,20 @@ import type {
   DocxTrackedChangeCardRenderProps,
 } from "@extend-ai/react-docx"
 
+import { cn } from "#lib/utils"
 import { Badge } from "#components/shadcn/badge"
 import { Card } from "#components/shadcn/card"
 
+type AnnotationBadgeVariant =
+  | "outline"
+  | "secondary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
 function trackedChangeBadgeVariant(
   kind: DocxTrackedChangeCardRenderProps["change"]["kind"]
-): React.ComponentProps<typeof Badge>["variant"] {
+): AnnotationBadgeVariant {
   switch (kind) {
     case "insertion":
     case "move-to":
@@ -22,7 +30,6 @@ function trackedChangeBadgeVariant(
       return "warning"
   }
 }
-
 function trackedChangeBadgeLabel({
   change,
   kindLabel,
@@ -40,7 +47,6 @@ function trackedChangeBadgeLabel({
       return kindLabel
   }
 }
-
 function DocxAnnotationCard({
   anchorText,
   badge,
@@ -53,7 +59,7 @@ function DocxAnnotationCard({
 }: {
   anchorText?: string
   badge: string
-  badgeVariant?: React.ComponentProps<typeof Badge>["variant"]
+  badgeVariant?: AnnotationBadgeVariant
   date?: string
   documentTheme: DocxDocumentTheme
   meta: string
@@ -75,7 +81,6 @@ function DocxAnnotationCard({
       : "rgb(244 244 245 / 0.75)",
     color: mutedTextColor,
   }
-
   return (
     <Card
       style={cardStyle}
@@ -90,9 +95,20 @@ function DocxAnnotationCard({
           {date ? <div className="mt-0.5 truncate">{date}</div> : null}
         </div>
         <Badge
-          variant={badgeVariant}
-          size="sm"
-          className="max-w-[92px] truncate"
+          variant={badgeVariant === "outline" ? "outline" : "secondary"}
+          className={cn(
+            "h-4 px-1 text-[10px]",
+            cn(
+              "max-w-[92px] truncate",
+              badgeVariant === "success" &&
+                "bg-green-500/10 text-green-700 dark:text-green-300",
+              badgeVariant === "error" && "bg-destructive/10 text-destructive",
+              badgeVariant === "warning" &&
+                "bg-amber-500/10 text-amber-700 dark:text-amber-300",
+              badgeVariant === "info" &&
+                "bg-blue-500/10 text-blue-700 dark:text-blue-300"
+            )
+          )}
         >
           {badge}
         </Badge>
@@ -109,7 +125,6 @@ function DocxAnnotationCard({
     </Card>
   )
 }
-
 export function createDocxTrackedChangeCardRenderer(
   documentTheme: DocxDocumentTheme
 ) {
@@ -133,7 +148,6 @@ export function createDocxTrackedChangeCardRenderer(
     )
   }
 }
-
 export function createDocxCommentCardRenderer(
   documentTheme: DocxDocumentTheme
 ) {
@@ -148,7 +162,6 @@ export function createDocxCommentCardRenderer(
       : comment.parentId !== undefined
         ? "Reply"
         : "Comment"
-
     return (
       <DocxAnnotationCard
         anchorText={comment.anchorText}

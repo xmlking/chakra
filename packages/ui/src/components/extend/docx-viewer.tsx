@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
 import {
   DocxEditorViewer,
   useDocxComments,
@@ -9,10 +10,12 @@ import {
   type DocxDocumentTheme,
   type DocxEditorController,
   type DocxPageThumbnailItem,
+  type ViewerZoomLevel,
+  type ViewerZoomState,
 } from "@extend-ai/react-docx"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
-import { cn } from "cn"
+import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
 import {
   DropdownMenu,
@@ -23,7 +26,10 @@ import {
   DropdownMenuTrigger,
 } from "#components/shadcn/dropdown-menu"
 import { Input } from "#components/shadcn/input"
-import { ScrollArea } from "#components/shadcn/scroll-area"
+import {
+  ScrollArea as InlineScrollArea,
+  ScrollBar,
+} from "#components/shadcn/scroll-area"
 import {
   Select,
   SelectContent,
@@ -32,7 +38,6 @@ import {
   SelectValue,
 } from "#components/shadcn/select"
 import { Separator } from "#components/shadcn/separator"
-import { Spinner } from "#components/shadcn/spinner"
 import {
   Tooltip,
   TooltipContent,
@@ -49,7 +54,7 @@ import {
   createDocxTrackedChangeCardRenderer,
 } from "#components/extend/docx-annotation-card"
 import { FileThumbnail } from "#components/extend/file-thumbnail"
-import { Ellipsis, Moon, MessageSquare, FileDiff, Download, Upload, PanelLeft, CircleMinus, CirclePlusIcon } from "lucide-react"
+import { Ellipsis, Moon, MessageSquare, FileDiff, Download, Upload, PanelLeft, CircleMinus, CirclePlusIcon, LoaderCircle } from "lucide-react"
 
 const DOCX_MIME_TYPE =
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -58,42 +63,40 @@ const DOCX_THUMBNAIL_WIDTH = 92
 const DOCX_THUMBNAIL_LIST_PADDING = 16
 const DOCX_THUMBNAIL_ROW_ESTIMATE = 172
 const DEFAULT_ZOOM = 50
-const ZOOM_OPTIONS = [10, 25, 50, 75, 100, 125, 150, 175, 200, 400] as const
+const ZOOM_OPTIONS = [50, 75, 100, 125, 150, 175, 200] as const
+const ZOOM_MODE_LABELS = {
+  "fit-page": "Fit page",
+  "fit-width": "Fit width",
+  automatic: "Automatic",
+} satisfies Record<Exclude<ViewerZoomLevel, number>, string>
 const DOCX_PADDING_WARNING_TEXT = "a style property during rerender"
 const DOCX_THUMBNAIL_FOCUS_RING_CLASS =
   "group-focus-visible/docx-thumbnail-sidebar:ring-2 group-focus-visible/docx-thumbnail-sidebar:ring-ring group-focus-visible/docx-thumbnail-sidebar:ring-offset-1 group-focus-visible/docx-thumbnail-sidebar:ring-offset-background"
 const DOCX_THUMBNAIL_PREFETCH_ROWS = 4
-
 type UploadedDocxFile = {
   file: File
   identity: string
   sourceUrl: string | undefined
 }
-
 type DocxActivePageStore = {
   getSnapshot: () => number
   setActivePage: React.Dispatch<React.SetStateAction<number>>
   subscribe: (listener: () => void) => () => void
 }
-
 type DocxThumbnailRenderWindowState = {
   visiblePageIndexes: number[]
   prefetchPageIndexes: number[]
 }
-
 function createDocxActivePageStore(): DocxActivePageStore {
   let activePage = 1
   const listeners = new Set<() => void>()
-
   return {
     getSnapshot: () => activePage,
     setActivePage: (nextPage) => {
       const value =
         typeof nextPage === "function" ? nextPage(activePage) : nextPage
       const normalizedValue = Math.max(1, Math.round(value || 1))
-
       if (normalizedValue === activePage) return
-
       activePage = normalizedValue
       listeners.forEach((listener) => listener())
     },
@@ -103,7 +106,6 @@ function createDocxActivePageStore(): DocxActivePageStore {
     },
   }
 }
-
 function useDocxActivePage(activePageStore: DocxActivePageStore) {
   return React.useSyncExternalStore(
     activePageStore.subscribe,
@@ -111,14 +113,12 @@ function useDocxActivePage(activePageStore: DocxActivePageStore) {
     activePageStore.getSnapshot
   )
 }
-
 function areNumberArraysEqual(left: number[], right: number[]) {
   return (
     left.length === right.length &&
     left.every((value, index) => value === right[index])
   )
 }
-
 async function loadDocxFile(
   url: string,
   displayFileName: string
@@ -127,36 +127,29 @@ async function loadDocxFile(
   if (!response.ok) {
     throw new Error(`Failed to fetch DOCX (${response.status})`)
   }
-
   const blob = await response.blob()
   return new File([blob], displayFileName, {
     type: blob.type || DOCX_MIME_TYPE,
   })
 }
-
 function formatDocumentName(fileName: string | undefined, url: string) {
   if (fileName?.trim()) return fileName
-
   const pathname = url.split("?")[0] ?? ""
   const rawName = pathname.split("/").pop() ?? "document.docx"
-
   try {
     return decodeURIComponent(rawName)
   } catch {
     return rawName
   }
 }
-
 function ensureDocxExtension(fileName: string) {
   return fileName.toLowerCase().endsWith(".docx")
     ? fileName
     : `${fileName}.docx`
 }
-
 function downloadBlob(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement("a")
-
   anchor.href = url
   anchor.download = fileName
   anchor.rel = "noopener"
@@ -165,7 +158,6 @@ function downloadBlob(blob: Blob, fileName: string) {
   anchor.remove()
   window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
-
 async function downloadDocxFile({
   file,
   fileName,
@@ -179,71 +171,49 @@ async function downloadDocxFile({
     downloadBlob(file, ensureDocxExtension(fileName))
     return
   }
-
   if (!url) return
-
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Failed to download DOCX (${response.status})`)
   }
-
   downloadBlob(await response.blob(), ensureDocxExtension(fileName))
 }
-
 function getNextZoomScale(currentZoomScale: number, direction: 1 | -1) {
-  const currentIndex = ZOOM_OPTIONS.indexOf(
-    currentZoomScale as (typeof ZOOM_OPTIONS)[number]
-  )
-  let fallbackIndex = -1
-
   if (direction > 0) {
-    fallbackIndex = ZOOM_OPTIONS.findIndex((value) => value > currentZoomScale)
-  } else {
-    for (let index = ZOOM_OPTIONS.length - 1; index >= 0; index -= 1) {
-      if (ZOOM_OPTIONS[index] < currentZoomScale) {
-        fallbackIndex = index
-        break
-      }
-    }
+    return (
+      ZOOM_OPTIONS.find((value) => value > currentZoomScale) ?? currentZoomScale
+    )
   }
-
-  const resolvedIndex = currentIndex >= 0 ? currentIndex : fallbackIndex
-  if (resolvedIndex < 0) return currentZoomScale
-
-  const nextIndex = Math.min(
-    Math.max(resolvedIndex + direction, 0),
-    ZOOM_OPTIONS.length - 1
-  )
-
-  return ZOOM_OPTIONS[nextIndex] ?? currentZoomScale
+  for (let index = ZOOM_OPTIONS.length - 1; index >= 0; index -= 1) {
+    const value = ZOOM_OPTIONS[index]
+    if (value < currentZoomScale) return value
+  }
+  return currentZoomScale
 }
-
-function normalizeDocxZoomScale(value: number | undefined): number {
-  return typeof value === "number" &&
-    ZOOM_OPTIONS.includes(value as (typeof ZOOM_OPTIONS)[number])
-    ? value
-    : DEFAULT_ZOOM
+function normalizeDocxZoomLevel(
+  value: ViewerZoomLevel | undefined
+): ViewerZoomLevel {
+  return value ?? DEFAULT_ZOOM
 }
-
+function isZoomMode(value: string): value is Exclude<ViewerZoomLevel, number> {
+  return value in ZOOM_MODE_LABELS
+}
 function useDelayedLoadingIndicator(isLoading: boolean, delayMs: number) {
   const [showSpinner, setShowSpinner] = React.useState(false)
-
+  const [previousIsLoading, setPreviousIsLoading] = React.useState(isLoading)
+  if (previousIsLoading !== isLoading) {
+    setPreviousIsLoading(isLoading)
+    setShowSpinner(false)
+  }
   React.useEffect(() => {
     if (!isLoading) return
-
     const timeoutId = window.setTimeout(() => {
       setShowSpinner(true)
     }, delayMs)
-
-    return () => {
-      window.clearTimeout(timeoutId)
-      setShowSpinner(false)
-    }
+    return () => window.clearTimeout(timeoutId)
   }, [delayMs, isLoading])
-
   return isLoading && showSpinner
 }
-
 function isDocxPaddingWarning(args: unknown[]) {
   return (
     typeof args[0] === "string" &&
@@ -251,24 +221,19 @@ function isDocxPaddingWarning(args: unknown[]) {
     args.some((arg) => String(arg).includes("padding"))
   )
 }
-
 function useSuppressDocxPaddingWarning(enabled: boolean) {
   React.useEffect(() => {
     if (!enabled) return
-
     const originalConsoleError = console.error
-
     console.error = (...args: unknown[]) => {
       if (isDocxPaddingWarning(args)) return
       originalConsoleError(...args)
     }
-
     return () => {
       console.error = originalConsoleError
     }
   }, [enabled])
 }
-
 function isInteractiveViewerTarget(target: EventTarget | null) {
   return (
     target instanceof Element &&
@@ -279,7 +244,6 @@ function isInteractiveViewerTarget(target: EventTarget | null) {
     )
   )
 }
-
 function ToolbarTooltip({
   label,
   children,
@@ -289,12 +253,13 @@ function ToolbarTooltip({
 }) {
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger>
+      <TooltipTrigger
+        render={<span className="inline-flex">{children}</span>}
+      ></TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
   )
 }
-
 function ViewerLoadingSurface({
   showSpinner = true,
 }: {
@@ -302,11 +267,10 @@ function ViewerLoadingSurface({
 }) {
   return (
     <div className="grid h-full min-h-52 place-items-center bg-transparent">
-      {showSpinner ? <Spinner className="size-4" /> : null}
+      {showSpinner ? <InlineSpinner className="size-4" /> : null}
     </div>
   )
 }
-
 function DocxFileActionsMenu({
   controlsDisabled,
   downloadDisabled,
@@ -339,18 +303,28 @@ function DocxFileActionsMenu({
   showUploadButton: boolean
 }) {
   const showFileActions = showDownloadButton || showUploadButton
-
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button type="button" variant="ghost" size="icon-sm" aria-label="Open DOCX actions" />}><Ellipsis className="size-4" /></DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Open DOCX actions"
+          >
+            <Ellipsis className="size-4" />
+          </Button>
+        }
+      ></DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
         {showNightRenderToggle ? (
           <>
             <DropdownMenuCheckboxItem
               checked={isDark}
               disabled={controlsDisabled}
-              variant="switch"
               onCheckedChange={(checked) => onIsDarkChange(checked === true)}
+              className={cn("justify-between")}
             >
               <span className="flex min-w-0 items-center gap-2">
                 <Moon className="size-4" />
@@ -363,8 +337,8 @@ function DocxFileActionsMenu({
         <DropdownMenuCheckboxItem
           checked={showComments}
           disabled={controlsDisabled}
-          variant="switch"
           onCheckedChange={(checked) => onShowCommentsChange(checked === true)}
+          className={cn("justify-between")}
         >
           <span className="flex min-w-0 items-center gap-2">
             <MessageSquare className="size-4" />
@@ -374,10 +348,10 @@ function DocxFileActionsMenu({
         <DropdownMenuCheckboxItem
           checked={showTrackedChanges}
           disabled={controlsDisabled}
-          variant="switch"
           onCheckedChange={(checked) =>
             onShowTrackedChangesChange(checked === true)
           }
+          className={cn("justify-between")}
         >
           <span className="flex min-w-0 items-center gap-2">
             <FileDiff className="size-4" />
@@ -388,7 +362,7 @@ function DocxFileActionsMenu({
         {showDownloadButton ? (
           <DropdownMenuItem disabled={downloadDisabled} onClick={onDownload}>
             {isPreparingDownload ? (
-              <Spinner className="size-4" />
+              <InlineSpinner className="size-4" />
             ) : (
               <Download className="size-4" />
             )}
@@ -405,7 +379,6 @@ function DocxFileActionsMenu({
     </DropdownMenu>
   )
 }
-
 function DocxPageNumberControl({
   activePageStore,
   controlsDisabled,
@@ -422,35 +395,21 @@ function DocxPageNumberControl({
   const displayPage = pageCount ? activePage : 1
   const [isEditing, setIsEditing] = React.useState(false)
   const [draftPage, setDraftPage] = React.useState(() => String(displayPage))
-
-  React.useEffect(() => {
-    if (!isEditing) {
-      setDraftPage(String(displayPage))
-    }
-  }, [displayPage, isEditing])
-
   React.useEffect(() => {
     if (!isEditing) return
-
     inputRef.current?.focus()
     inputRef.current?.select()
   }, [isEditing])
-
   const applyPageDraft = React.useCallback(
     (value: string) => {
       const trimmedValue = value.trim()
-
       if (!trimmedValue) return
-
       const parsedPage = Number(trimmedValue)
-
       if (!Number.isInteger(parsedPage)) return
-
       onPageChange(Math.min(Math.max(parsedPage, 1), Math.max(pageCount, 1)))
     },
     [onPageChange, pageCount]
   )
-
   return (
     <div className="flex items-center text-sm whitespace-nowrap text-primary">
       <span>Page</span>
@@ -460,13 +419,10 @@ function DocxPageNumberControl({
           aria-label="Page number"
           inputMode="numeric"
           pattern="[0-9]*"
-          size="sm"
           value={draftPage}
-          className="mx-1 w-14 min-w-14 rounded-md [&_[data-slot=input]]:text-center"
           onBlur={() => setIsEditing(false)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const nextValue = event.target.value
-
             setDraftPage(nextValue)
             applyPageDraft(nextValue)
           }}
@@ -475,6 +431,10 @@ function DocxPageNumberControl({
               event.currentTarget.blur()
             }
           }}
+          className={cn(
+            "h-8 px-2.5",
+            "mx-1 w-14 min-w-14 rounded-md [&_[data-slot=input]]:text-center"
+          )}
         />
       ) : (
         <Button
@@ -496,7 +456,6 @@ function DocxPageNumberControl({
     </div>
   )
 }
-
 function DocxToolbar({
   activePageStore,
   controlsDisabled,
@@ -509,15 +468,16 @@ function DocxToolbar({
   onShowTrackedChangesChange,
   onToggleSidebar,
   onUploadClick,
+  onZoomChange,
   pageCount,
-  setZoomScale,
+  resolvedZoom,
   showComments,
   showDownloadButton = true,
   showNightRenderToggle,
   showTrackedChanges,
   showUploadButton = true,
   toolbarActions,
-  zoomScale,
+  zoomLevel,
 }: {
   activePageStore: DocxActivePageStore
   controlsDisabled: boolean
@@ -530,19 +490,27 @@ function DocxToolbar({
   onShowTrackedChangesChange: (checked: boolean) => void
   onToggleSidebar: () => void
   onUploadClick: () => void
+  onZoomChange: (zoomLevel: ViewerZoomLevel) => void
   pageCount: number
-  setZoomScale: React.Dispatch<React.SetStateAction<number>>
+  resolvedZoom: number
   showComments: boolean
   showDownloadButton?: boolean
   showNightRenderToggle: boolean
   showTrackedChanges: boolean
   showUploadButton?: boolean
   toolbarActions?: React.ReactNode
-  zoomScale: number
+  zoomLevel: ViewerZoomLevel
 }) {
-  const canZoomIn = zoomScale < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
-  const canZoomOut = zoomScale > ZOOM_OPTIONS[0]
-
+  const canZoomIn = resolvedZoom < ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
+  const canZoomOut = resolvedZoom > ZOOM_OPTIONS[0]
+  const selectValue =
+    typeof zoomLevel === "number" ? zoomLevel.toString() : zoomLevel
+  const roundedZoom = Number(resolvedZoom.toFixed(2))
+  const zoomOptions = ZOOM_OPTIONS.includes(
+    roundedZoom as (typeof ZOOM_OPTIONS)[number]
+  )
+    ? ZOOM_OPTIONS
+    : [...ZOOM_OPTIONS, roundedZoom].sort((left, right) => left - right)
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-background px-3 py-2">
       <TooltipProvider>
@@ -575,30 +543,34 @@ function DocxToolbar({
                 size="icon-sm"
                 disabled={controlsDisabled || !canZoomOut}
                 aria-label="Zoom out"
-                onClick={() =>
-                  setZoomScale((currentZoomScale) =>
-                    getNextZoomScale(currentZoomScale, -1)
-                  )
-                }
+                onClick={() => onZoomChange(getNextZoomScale(resolvedZoom, -1))}
               >
                 <CircleMinus className="size-4" />
               </Button>
             </ToolbarTooltip>
             <Select
-              value={zoomScale.toString()}
-              onValueChange={(value) => setZoomScale(Number(value))}
+              value={selectValue}
+              onValueChange={(value) => {
+                if (value === null) return
+                onZoomChange(isZoomMode(value) ? value : Number(value))
+              }}
               disabled={controlsDisabled}
               modal={false}
             >
               <SelectTrigger
                 size="sm"
-                className="w-[84px] min-w-[84px]"
+                className="w-[104px] min-w-[104px]"
                 aria-label="Zoom level"
               >
-                <SelectValue>{Math.round(zoomScale)}%</SelectValue>
+                <SelectValue>{Math.round(resolvedZoom)}%</SelectValue>
               </SelectTrigger>
               <SelectContent align="end" alignItemWithTrigger={false}>
-                {ZOOM_OPTIONS.map((value) => (
+                {Object.entries(ZOOM_MODE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
+                {zoomOptions.map((value) => (
                   <SelectItem key={value} value={value.toString()}>
                     {value}%
                   </SelectItem>
@@ -612,11 +584,7 @@ function DocxToolbar({
                 size="icon-sm"
                 disabled={controlsDisabled || !canZoomIn}
                 aria-label="Zoom in"
-                onClick={() =>
-                  setZoomScale((currentZoomScale) =>
-                    getNextZoomScale(currentZoomScale, 1)
-                  )
-                }
+                onClick={() => onZoomChange(getNextZoomScale(resolvedZoom, 1))}
               >
                 <CirclePlusIcon className="size-4" />
               </Button>
@@ -653,7 +621,6 @@ function DocxToolbar({
     </div>
   )
 }
-
 function DocxSidebarThumbnail({
   canvasRef,
   displayFileName,
@@ -700,7 +667,6 @@ function DocxSidebarThumbnail({
     />
   )
 }
-
 function DocxThumbnailSidebarList({
   activePage,
   displayFileName,
@@ -743,7 +709,6 @@ function DocxThumbnailSidebarList({
   const renderWindowSignature = virtualItems
     .map((virtualRow) => virtualRow.index)
     .join(",")
-
   React.useEffect(() => {
     if (!sidebarOpen || isLoadingDocument || !visibleThumbnails.length) {
       onThumbnailRenderWindowChange({
@@ -752,11 +717,9 @@ function DocxThumbnailSidebarList({
       })
       return
     }
-
     const visiblePageIndexes = virtualItems
       .map((virtualRow) => visibleThumbnails[virtualRow.index]?.pageIndex)
       .filter((pageIndex): pageIndex is number => pageIndex !== undefined)
-
     const firstVirtualIndex = virtualItems[0]?.index ?? 0
     const lastVirtualIndex =
       virtualItems[virtualItems.length - 1]?.index ?? firstVirtualIndex
@@ -770,19 +733,16 @@ function DocxThumbnailSidebarList({
     )
     const visiblePageIndexSet = new Set(visiblePageIndexes)
     const prefetchPageIndexes: number[] = []
-
     for (
       let index = firstPrefetchIndex;
       index <= lastPrefetchIndex;
       index += 1
     ) {
       const pageIndex = visibleThumbnails[index]?.pageIndex
-
       if (pageIndex !== undefined && !visiblePageIndexSet.has(pageIndex)) {
         prefetchPageIndexes.push(pageIndex)
       }
     }
-
     onThumbnailRenderWindowChange({
       prefetchPageIndexes,
       visiblePageIndexes,
@@ -795,23 +755,18 @@ function DocxThumbnailSidebarList({
     visibleThumbnails,
     virtualItems,
   ])
-
   React.useEffect(() => {
     if (!sidebarOpen || activePage < 1 || !visibleThumbnails.length) return
-
     virtualizer.scrollToIndex(
       Math.min(activePage - 1, visibleThumbnails.length - 1),
       { align: "auto" }
     )
   }, [activePage, sidebarOpen, virtualizer, visibleThumbnails.length])
-
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (pageCount < 1) return
-
       const currentPage = activePage > 0 ? activePage : 1
       let nextPage: number | null = null
-
       if (event.key === "ArrowDown") {
         nextPage = Math.min(pageCount, currentPage + 1)
       } else if (event.key === "ArrowUp") {
@@ -821,17 +776,14 @@ function DocxThumbnailSidebarList({
       } else if (event.key === "End") {
         nextPage = pageCount
       }
-
       if (nextPage === null) return
-
       event.preventDefault()
       onSelectPage(nextPage)
     },
     [activePage, onSelectPage, pageCount]
   )
-
   return (
-    <ScrollArea
+    <InlineScrollArea2
       className="h-full"
       scrollFade
       viewportClassName="group/docx-thumbnail-sidebar focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -866,7 +818,6 @@ function DocxThumbnailSidebarList({
           {virtualItems.map((virtualRow) => {
             const thumbnail = visibleThumbnails[virtualRow.index]
             if (!thumbnail) return null
-
             return (
               <div
                 key={virtualRow.key}
@@ -877,9 +828,7 @@ function DocxThumbnailSidebarList({
                   thumbnail.pageNumber === activePage && "z-10"
                 )}
                 style={{
-                  transform: `translateY(${
-                    virtualRow.start + DOCX_THUMBNAIL_LIST_PADDING
-                  }px)`,
+                  transform: `translateY(${virtualRow.start + DOCX_THUMBNAIL_LIST_PADDING}px)`,
                 }}
               >
                 <div
@@ -925,10 +874,9 @@ function DocxThumbnailSidebarList({
           })}
         </div>
       ) : null}
-    </ScrollArea>
+    </InlineScrollArea2>
   )
 }
-
 function DocxThumbnailSidebarContent({
   activePageStore,
   displayFileName,
@@ -994,15 +942,12 @@ function DocxThumbnailSidebarContent({
         ) {
           return currentRenderWindow
         }
-
         return nextRenderWindow
       })
     },
     []
   )
-
   if (!sidebarOpen) return null
-
   return (
     <DocxThumbnailSidebarList
       activePage={activePage}
@@ -1016,7 +961,6 @@ function DocxThumbnailSidebarContent({
     />
   )
 }
-
 export function DocxViewerPreview({
   className,
   defaultZoom = DEFAULT_ZOOM,
@@ -1030,7 +974,7 @@ export function DocxViewerPreview({
   toolbarActions,
 }: {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: ViewerZoomLevel
   fileName?: string
   isDark: boolean
   onIsDarkChange: (isDark: boolean) => void
@@ -1056,7 +1000,6 @@ export function DocxViewerPreview({
     />
   )
 }
-
 function DocxViewerContent({
   className,
   defaultZoom,
@@ -1071,7 +1014,7 @@ function DocxViewerContent({
   url,
 }: {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: ViewerZoomLevel
   effectiveIsDark: boolean
   fileName?: string
   setNightRenderEnabled: (checked: boolean) => void
@@ -1090,8 +1033,8 @@ function DocxViewerContent({
   const [uploadedDocxFile, setUploadedDocxFile] =
     React.useState<UploadedDocxFile | null>(null)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
-  const activePageStore = React.useMemo(createDocxActivePageStore, [])
-  const resolvedDefaultZoomScale = normalizeDocxZoomScale(defaultZoom)
+  const activePageStore = React.useMemo(() => createDocxActivePageStore(), [])
+  const resolvedDefaultZoomLevel = normalizeDocxZoomLevel(defaultZoom)
   const activeUploadedDocxFile =
     uploadedDocxFile?.sourceUrl === url ? uploadedDocxFile : null
   const documentKey = activeUploadedDocxFile?.identity ?? url ?? ""
@@ -1122,32 +1065,41 @@ function DocxViewerContent({
   const { showTrackedChanges, setShowTrackedChanges } =
     useDocxTrackChanges(editor)
   const [reportedPageCount, setReportedPageCount] = React.useState(0)
-  const [zoomScaleState, setZoomScaleState] = React.useState({
+  const [zoomState, setZoomState] = React.useState({
     documentKey: "",
-    value: resolvedDefaultZoomScale,
+    level: resolvedDefaultZoomLevel,
+    resolvedZoom:
+      typeof resolvedDefaultZoomLevel === "number"
+        ? resolvedDefaultZoomLevel
+        : DEFAULT_ZOOM,
   })
-  const zoomScale =
-    zoomScaleState.documentKey === documentKey
-      ? zoomScaleState.value
-      : resolvedDefaultZoomScale
-  const setZoomScale = React.useCallback<
-    React.Dispatch<React.SetStateAction<number>>
-  >(
-    (nextZoomScale) => {
-      setZoomScaleState((currentState) => {
-        const currentZoomScale =
-          currentState.documentKey === documentKey
-            ? currentState.value
-            : resolvedDefaultZoomScale
-        const value =
-          typeof nextZoomScale === "function"
-            ? nextZoomScale(currentZoomScale)
-            : nextZoomScale
-
-        return { documentKey, value }
+  const activeZoomState =
+    zoomState.documentKey === documentKey
+      ? zoomState
+      : {
+          documentKey,
+          level: resolvedDefaultZoomLevel,
+          resolvedZoom:
+            typeof resolvedDefaultZoomLevel === "number"
+              ? resolvedDefaultZoomLevel
+              : DEFAULT_ZOOM,
+        }
+  const setZoomLevel = React.useCallback(
+    (level: ViewerZoomLevel) => {
+      setZoomState({
+        documentKey,
+        level,
+        resolvedZoom:
+          typeof level === "number" ? level : activeZoomState.resolvedZoom,
       })
     },
-    [documentKey, resolvedDefaultZoomScale]
+    [activeZoomState.resolvedZoom, documentKey]
+  )
+  const handleZoomChange = React.useCallback(
+    (state: ViewerZoomState) => {
+      setZoomState({ documentKey, ...state })
+    },
+    [documentKey]
   )
   const [loadError, setLoadError] = React.useState<string>()
   const [isLoadingDocument, setIsLoadingDocument] = React.useState(true)
@@ -1190,16 +1142,13 @@ function DocxViewerContent({
       enabled: true,
       overscan: 1,
       scrollElement: viewportElement,
-      zoomScale: zoomScale / 100,
     }),
-    [viewportElement, zoomScale]
+    [viewportElement]
   )
   const handleDownload = React.useCallback(async () => {
     if (isPreparingDownload) return
     if (!activeUploadedDocxFile && !url) return
-
     setIsPreparingDownload(true)
-
     try {
       await downloadDocxFile({
         file: activeUploadedDocxFile?.file,
@@ -1213,16 +1162,13 @@ function DocxViewerContent({
     }
   }, [activeUploadedDocxFile, displayFileName, isPreparingDownload, url])
   useSuppressDocxPaddingWarning(!isLoadingDocument && !loadError)
-
   React.useEffect(() => {
     setActivePage(1)
     viewportRef.current?.scrollTo({ top: 0, left: 0 })
   }, [documentKey, setActivePage])
-
   React.useEffect(() => {
     setDocumentTheme(effectiveIsDark ? "dark" : "light")
   }, [effectiveIsDark, setDocumentTheme])
-
   React.useEffect(() => {
     if (
       status.startsWith("Failed to load file") ||
@@ -1232,19 +1178,15 @@ function DocxViewerContent({
         setLoadError(status)
         setIsLoadingDocument(false)
       })
-
       return () => window.cancelAnimationFrame(frame)
     }
   }, [status])
-
   // Imports mutate the shared editor instance; concurrent calls (effect
   // re-runs, StrictMode double-invoke) race inside the parser and surface as
   // bogus "Invalid DOCX ZIP" errors, so every import is chained through here.
   const importQueueRef = React.useRef<Promise<void>>(Promise.resolve())
-
   React.useEffect(() => {
     let isCurrent = true
-
     async function load() {
       // Superseded while queued — let the newest import run instead.
       if (!isCurrent) return
@@ -1254,18 +1196,15 @@ function DocxViewerContent({
         setReportedPageCount(0)
         return
       }
-
       setIsLoadingDocument(true)
       setLoadError(undefined)
       setReportedPageCount(0)
-
       try {
         const docxFile =
           activeUploadedDocxFile?.file ??
           (url ? await loadDocxFile(url, displayFileName) : null)
         if (!docxFile) return
         await importDocxFile(docxFile)
-
         if (isCurrent) {
           setIsLoadingDocument(false)
           setActivePage(1)
@@ -1280,9 +1219,7 @@ function DocxViewerContent({
         }
       }
     }
-
     importQueueRef.current = importQueueRef.current.then(load)
-
     return () => {
       isCurrent = false
     }
@@ -1293,16 +1230,13 @@ function DocxViewerContent({
     setActivePage,
     url,
   ])
-
   const updateActivePageFromViewport = React.useCallback(() => {
     const viewport = viewportRef.current
     if (!viewport || !pageCount) return
-
     const viewportRect = viewport.getBoundingClientRect()
     const viewportCenter = viewportRect.top + viewportRect.height / 2
     let closestPage = 1
     let closestDistance = Number.POSITIVE_INFINITY
-
     viewport
       .querySelectorAll<HTMLElement>(
         '[data-docx-page-wrapper="true"][data-index]'
@@ -1310,41 +1244,33 @@ function DocxViewerContent({
       .forEach((page) => {
         const pageIndex = Number(page.dataset.index)
         if (!Number.isFinite(pageIndex)) return
-
         const pageRect = page.getBoundingClientRect()
         const pageCenter = pageRect.top + pageRect.height / 2
         const distance = Math.abs(pageCenter - viewportCenter)
-
         if (distance < closestDistance) {
           closestDistance = distance
           closestPage = pageIndex + 1
         }
       })
-
     activePageStore.setActivePage((currentPage) =>
       currentPage === closestPage ? currentPage : closestPage
     )
   }, [activePageStore, pageCount])
-
   React.useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport || !pageCount) return
-
     let frameId = 0
     const handleScroll = () => {
       window.cancelAnimationFrame(frameId)
       frameId = window.requestAnimationFrame(updateActivePageFromViewport)
     }
-
     frameId = window.requestAnimationFrame(updateActivePageFromViewport)
     viewport.addEventListener("scroll", handleScroll, { passive: true })
-
     return () => {
       window.cancelAnimationFrame(frameId)
       viewport.removeEventListener("scroll", handleScroll)
     }
   }, [pageCount, updateActivePageFromViewport])
-
   const scrollToPage = React.useCallback(
     (pageNumber: number) => {
       const viewport = viewportRef.current
@@ -1352,23 +1278,18 @@ function DocxViewerContent({
       const page = viewport?.querySelector<HTMLElement>(
         `[data-docx-page-wrapper="true"][data-index="${targetPageIndex}"]`
       )
-
       setActivePage(pageNumber)
-
       if (!viewport) return
-
       if (!page) {
         const pageStridePx =
           (pageLayout.pageHeightPx + pageLayout.viewportDefaults.pageGapPx) *
-          (zoomScale / 100)
-
+          (activeZoomState.resolvedZoom / 100)
         viewport.scrollTo({
           top: Math.max(0, targetPageIndex * pageStridePx - 24),
           behavior: "auto",
         })
         return
       }
-
       viewport.scrollTo({
         top:
           page.getBoundingClientRect().top -
@@ -1382,17 +1303,14 @@ function DocxViewerContent({
       pageLayout.pageHeightPx,
       pageLayout.viewportDefaults.pageGapPx,
       setActivePage,
-      zoomScale,
+      activeZoomState.resolvedZoom,
     ]
   )
-
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ""
-
     if (!file) return
-
-    setZoomScale(resolvedDefaultZoomScale)
+    setZoomLevel(resolvedDefaultZoomLevel)
     setActivePage(1)
     setReportedPageCount(0)
     setUploadedDocxFile({
@@ -1401,7 +1319,6 @@ function DocxViewerContent({
       sourceUrl: url,
     })
   }
-
   return (
     <div
       className={cn(
@@ -1430,14 +1347,15 @@ function DocxViewerContent({
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
           onUploadClick={() => fileInputRef.current?.click()}
           pageCount={pageCount}
-          setZoomScale={setZoomScale}
+          onZoomChange={setZoomLevel}
           showComments={showComments}
           showDownloadButton={showDownload}
           showNightRenderToggle={shouldRenderNightMode}
           showTrackedChanges={showTrackedChanges}
           showUploadButton={showUpload}
           toolbarActions={toolbarActions}
-          zoomScale={zoomScale}
+          resolvedZoom={activeZoomState.resolvedZoom}
+          zoomLevel={activeZoomState.level}
         />
       ) : null}
       <div
@@ -1459,7 +1377,7 @@ function DocxViewerContent({
             sidebarOpen={thumbnailSidebarVisible}
           />
         </DocumentViewerThumbnailSidebar>
-        <ScrollArea
+        <InlineScrollArea2
           className="min-h-0 flex-1"
           style={{ backgroundColor: viewerBackgroundColor }}
           viewportClassName="px-4 py-6"
@@ -1510,16 +1428,12 @@ function DocxViewerContent({
             loadingState
           ) : (
             <div className="flex min-h-full w-max min-w-full justify-center">
-              <div
-                className={cn(
-                  "origin-top",
-                  effectiveIsDark && "docx-night-reader-shell"
-                )}
-                style={{ zoom: zoomScale / 100 }}
-              >
+              <div className={cn(effectiveIsDark && "docx-night-reader-shell")}>
                 <DocxEditorViewer
                   editor={editor}
                   mode="read-only"
+                  zoom={activeZoomState.level}
+                  onZoomChange={handleZoomChange}
                   showTrackedChanges={showTrackedChanges}
                   renderTrackedChangeCard={renderTrackedChangeCard}
                   showComments={showComments}
@@ -1534,8 +1448,119 @@ function DocxViewerContent({
               </div>
             </div>
           )}
-        </ScrollArea>
+        </InlineScrollArea2>
       </div>
     </div>
   )
 }
+function InlineScrollArea2({
+  className,
+  children,
+  orientation = "both",
+  scrollFade = false,
+  scrollbarGutter = false,
+  scrollbarOverflowOnly = false,
+  viewportClassName,
+  viewportProps,
+  viewportRef,
+  ...props
+}: InlineScrollAreaProps) {
+  const {
+    className: viewportPropsClassName,
+    ref: viewportPropsRef,
+    ...resolvedViewportProps
+  } = viewportProps ?? {}
+  const composedViewportRef = React.useMemo(
+    () => InlineComposeRefs(viewportPropsRef, viewportRef),
+    [viewportPropsRef, viewportRef]
+  )
+
+  if (
+    !viewportProps &&
+    !viewportRef &&
+    !viewportClassName &&
+    !scrollFade &&
+    !scrollbarGutter &&
+    !scrollbarOverflowOnly
+  ) {
+    return (
+      <InlineScrollArea
+        {...props}
+        className={cn(
+          "size-full min-h-0",
+          orientation === "horizontal" &&
+            "[&>[data-orientation=vertical]]:hidden",
+          className
+        )}
+      >
+        {children}
+        {orientation !== "vertical" ? (
+          <ScrollBar orientation="horizontal" />
+        ) : null}
+      </InlineScrollArea>
+    )
+  }
+
+  return (
+    <ScrollAreaPrimitive.Root
+      className={cn(
+        "size-full min-h-0",
+        scrollbarOverflowOnly &&
+          "[&:not(:has([data-slot=scroll-area-viewport][data-has-overflow-x]))_[data-orientation=horizontal]]:hidden [&:not(:has([data-slot=scroll-area-viewport][data-has-overflow-y]))_[data-orientation=vertical]]:hidden",
+        className
+      )}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        {...resolvedViewportProps}
+        ref={composedViewportRef}
+        className={cn(
+          "h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          scrollFade &&
+            "mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] [--fade-size:1.5rem]",
+          scrollbarGutter && orientation !== "vertical" && "pb-3.5",
+          scrollbarGutter && orientation !== "horizontal" && "pe-3.5",
+          viewportPropsClassName,
+          viewportClassName
+        )}
+        data-slot="scroll-area-viewport"
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      {orientation !== "horizontal" ? (
+        <ScrollBar orientation="vertical" />
+      ) : null}
+      {orientation !== "vertical" ? (
+        <ScrollBar orientation="horizontal" />
+      ) : null}
+      {orientation === "both" ? <ScrollAreaPrimitive.Corner /> : null}
+    </ScrollAreaPrimitive.Root>
+  )
+}
+type InlineScrollAreaProps = ScrollAreaPrimitive.Root.Props & {
+  orientation?: "vertical" | "horizontal" | "both"
+  scrollFade?: boolean
+  scrollbarGutter?: boolean
+  scrollbarOverflowOnly?: boolean
+  viewportClassName?: string
+  viewportProps?: ScrollAreaPrimitive.Viewport.Props
+  viewportRef?: React.Ref<HTMLDivElement>
+}
+function InlineComposeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+  return (node: T | null) => {
+    for (const ref of refs) {
+      if (!ref) continue
+      if (typeof ref === "function") ref(node)
+      else ref.current = node
+    }
+  }
+}
+function InlineSpinner({ className, ...props }: InlineRegistryIconProps) {
+  return (
+    <LoaderCircle role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
+  )
+}
+type InlineRegistryIconProps = Omit<
+  React.ComponentProps<"svg">,
+  "children" | "strokeWidth"
+> & { strokeWidth?: number }
