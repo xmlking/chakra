@@ -32,7 +32,7 @@ import { Checkbox } from "#components/shadcn/checkbox"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { agentAuthPlugin } from "#lib/auth/agent-auth-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type ApprovalResult = "approved" | "denied"
 

@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "#components/shadcn/dialog";
 import { Input } from "#components/shadcn/input";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface ShareDialogProps {
   /** A `useFiles()` instance — the link is minted through it. */

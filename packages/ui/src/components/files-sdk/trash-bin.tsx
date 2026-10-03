@@ -16,7 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "#components/shadcn/dialog";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface TrashBinProps {
   /** A `useFiles()` instance backed by a gateway with the `softDelete()` plugin. */

@@ -59,7 +59,7 @@ import { useZoom, ZoomPluginPackage } from "@embedpdf/plugin-zoom/react"
 import { flushSync } from "react-dom"
 
 import { loadSharedPdfEngine } from "#lib/pdf-thumbnail-utils"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import {
   DropdownMenu,

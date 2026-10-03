@@ -36,7 +36,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { ssoPlugin } from "#lib/auth/sso-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type SsoDomainVerificationProps = {
   className?: string

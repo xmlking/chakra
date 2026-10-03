@@ -2,7 +2,7 @@ import type { FileUploadState, UseFilesResult } from "files-sdk/react";
 import { CheckCircle2Icon, Loader2Icon, XCircleIcon } from "lucide-react";
 
 import { Progress } from "#components/shadcn/progress";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface UploadProgressProps {
   /** A `useFiles()` instance — reads its ambient `uploads` / `progress`. */

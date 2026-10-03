@@ -5,7 +5,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export interface FileSearchProps {
   /** A `useFiles()` instance — matches are found through `search()`. */

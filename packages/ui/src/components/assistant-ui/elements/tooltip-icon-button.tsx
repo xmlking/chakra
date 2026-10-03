@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from "#components/shadcn/tooltip";
 import { Button } from "#components/shadcn/button";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 export type TooltipIconButtonProps = ComponentPropsWithRef<typeof Button> & {
   tooltip: string;

@@ -13,7 +13,7 @@ import {
 } from "#components/shadcn/dropdown-menu"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type ChangeAvatarProps = {
   className?: string

@@ -37,7 +37,7 @@ import {
 } from "@pierre/diffs/react"
 import { useTheme } from "next-themes"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import {
   Collapsible,

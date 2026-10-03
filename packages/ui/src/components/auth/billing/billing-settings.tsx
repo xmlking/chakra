@@ -51,7 +51,7 @@ import {
 } from "#components/shadcn/select"
 import { Spinner } from "#components/shadcn/spinner"
 import { billingPlugin } from "#lib/auth/billing-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type SubscriptionAction = "cancel" | "restore"
 

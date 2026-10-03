@@ -16,7 +16,7 @@ import {
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
 import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 /** `sessionStorage` key the reset-code form reads the pending address from. */
 export const RESET_PASSWORD_OTP_STORAGE_KEY =

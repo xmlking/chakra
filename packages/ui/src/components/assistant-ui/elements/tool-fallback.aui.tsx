@@ -22,7 +22,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "#components/shadcn/collapsible";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 import { Button } from "#components/shadcn/button";
 
 const ANIMATION_DURATION = 200;

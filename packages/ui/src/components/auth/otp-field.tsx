@@ -7,7 +7,7 @@ import {
   InputOTPGroup,
   InputOTPSlot
 } from "#components/shadcn/input-otp"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type OtpFieldProps = {
   /** Visible label rendered above the slots. */

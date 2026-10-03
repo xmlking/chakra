@@ -1,3 +1,5 @@
+import { cn } from "cn";
+
 import {
   Field,
   FieldContent,
@@ -6,7 +8,6 @@ import {
   FieldLabel,
 } from "#components/shadcn/field";
 import { Slider } from "#components/shadcn/slider";
-import { cn } from "#lib/utils";
 
 import type { FieldControlProps } from "./base-field";
 import { useFieldContext } from "./context";

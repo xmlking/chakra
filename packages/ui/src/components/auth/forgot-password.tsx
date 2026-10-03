@@ -17,7 +17,7 @@ import {
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { RESET_LINK_SENT_STORAGE_KEY } from "./reset-link-sent"
 
 export type ForgotPasswordProps = {

@@ -18,7 +18,7 @@ import {
 } from "#components/shadcn/dropdown-menu"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type TeamSwitcherProps = {
   organizationId: string

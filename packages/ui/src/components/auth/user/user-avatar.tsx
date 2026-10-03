@@ -6,7 +6,7 @@ import type { ReactNode } from "react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "#components/shadcn/avatar"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type UserAvatarProps = {
   className?: string

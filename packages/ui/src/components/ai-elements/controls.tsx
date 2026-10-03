@@ -1,4 +1,4 @@
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 import { Controls as ControlsPrimitive } from "@xyflow/react";
 import type { ComponentProps } from "react";
 

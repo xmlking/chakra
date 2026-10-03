@@ -8,7 +8,7 @@ import { UserRound } from "lucide-react"
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
 import { anonymousPlugin } from "#lib/auth/anonymous-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 /** Sign in with a temporary anonymous account. */
 export function AnonymousButton() {

@@ -16,7 +16,7 @@ import { FieldDescription } from "#components/shadcn/field"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { useIsHydrated } from "../use-is-hydrated"
 
 type UserInvitation = Invitation & { organizationName?: string }

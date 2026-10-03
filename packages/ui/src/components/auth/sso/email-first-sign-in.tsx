@@ -48,7 +48,7 @@ import {
 import { Spinner } from "#components/shadcn/spinner"
 import { ssoPlugin } from "#lib/auth/sso-plugin"
 import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ProviderButtons } from "../provider-buttons"
 
 export type EmailFirstSignInProps = {

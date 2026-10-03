@@ -44,7 +44,7 @@ import {
 import { Separator } from "#components/shadcn/separator"
 import { Spinner } from "#components/shadcn/spinner"
 import { deviceAuthorizationPlugin } from "#lib/auth/device-authorization-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type DeviceAuthorizationStep = "code" | "approval" | "approved" | "denied"
 

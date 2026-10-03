@@ -32,7 +32,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { AdditionalField } from "./additional-field"
 import { PasswordStrengthMeter } from "./password-strength-meter"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"

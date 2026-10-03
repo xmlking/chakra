@@ -40,7 +40,7 @@ import {
 import { Spinner } from "#components/shadcn/spinner"
 import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
 import { usernamePlugin } from "#lib/auth/username-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { LastUsedBadge } from "../last-login-method/last-used-badge"
 
 export type SignInUsernameProps = {

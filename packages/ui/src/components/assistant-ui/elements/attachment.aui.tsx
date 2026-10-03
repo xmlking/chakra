@@ -35,7 +35,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "#components/shadcn/avatar";
 import { TooltipIconButton } from "#components/assistant-ui/elements/tooltip-icon-button";
 import { useAttachmentSrc } from "#hooks/use-attachment-src";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 
 type AttachmentPreviewProps = {
   src: string;

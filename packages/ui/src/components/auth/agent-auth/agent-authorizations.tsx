@@ -27,7 +27,7 @@ import { Card, CardContent } from "#components/shadcn/card"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
 import { agentAuthPlugin } from "#lib/auth/agent-auth-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 type RevokeTarget = {
   agent: AgentAuthorization

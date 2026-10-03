@@ -3,7 +3,7 @@
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
 import { Skeleton } from "#components/shadcn/skeleton";
-import { cn } from "#lib/utils";
+import { cn } from "cn";
 import {
   AuiIf,
   ThreadListItemMorePrimitive,

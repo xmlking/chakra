@@ -10,7 +10,7 @@ import {
   ItemSeparator
 } from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { ActiveSession } from "./active-session"
 import { FreshSessionPrompt } from "./fresh-session-prompt"
 import { SessionActions } from "./session-actions"

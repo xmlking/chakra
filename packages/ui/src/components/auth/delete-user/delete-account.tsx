@@ -31,7 +31,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { deleteUserPlugin } from "#lib/auth/delete-user-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 
 export type DeleteAccountProps = {
   className?: string

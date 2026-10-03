@@ -6,7 +6,7 @@ import { Button } from "#components/shadcn/button"
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
 import { FieldDescription } from "#components/shadcn/field"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OpenEmailButton } from "./open-email-button"
 import { useIsHydrated } from "./use-is-hydrated"
 

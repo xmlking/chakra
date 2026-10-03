@@ -5,7 +5,7 @@ import type { ComponentProps } from "react"
 
 import { Card, CardContent } from "#components/shadcn/card"
 import { Separator } from "#components/shadcn/separator"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { DeleteOrganization } from "./delete-organization"
 import { DeleteOrganizationSkeleton } from "./delete-organization-skeleton"
 import { LeaveOrganization } from "./leave-organization"

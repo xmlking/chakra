@@ -33,7 +33,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
 import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OpenEmailButton } from "../open-email-button"
 import { OtpField } from "../otp-field"
 import { PasswordStrengthMeter } from "../password-strength-meter"

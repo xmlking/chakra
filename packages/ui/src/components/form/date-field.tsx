@@ -1,4 +1,5 @@
 import type { DateRange, DayPicker, Mode } from "@daypicker/react";
+import { cn } from "cn";
 import { CalendarIcon, X } from "lucide-react";
 import { useState } from "react";
 
@@ -6,7 +7,6 @@ import { Button } from "#components/shadcn/button";
 import { Calendar } from "#components/shadcn/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "#components/shadcn/popover";
 import { Separator } from "#components/shadcn/separator";
-import { cn } from "#lib/utils";
 
 import { BaseField, type FieldControlProps } from "./base-field";
 import { useFieldContext } from "./context";

@@ -23,7 +23,7 @@ import {
 } from "#components/shadcn/input-group"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { OpenEmailButton } from "../../open-email-button"
 import { PasswordStrengthMeter } from "../../password-strength-meter"
 
