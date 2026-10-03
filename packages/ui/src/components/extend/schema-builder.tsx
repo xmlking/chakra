@@ -1,4 +1,5 @@
 import * as React from "react"
+import { ScrollArea as ScrollAreaPrimitive } from "@base-ui/react/scroll-area"
 import {
   closestCenter,
   DndContext,
@@ -37,11 +38,11 @@ import {
 } from "@pierre/diffs/react"
 import { useTheme } from "next-themes"
 
-import { cn } from "cn"
+import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
 import {
   Collapsible,
-  CollapsiblePanel,
+  CollapsibleContent as CollapsiblePanel,
   CollapsibleTrigger,
 } from "#components/shadcn/collapsible"
 import {
@@ -56,52 +57,48 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "#components/shadcn/dropdown-menu"
-import { ScrollArea } from "#components/shadcn/scroll-area"
+import {
+  ScrollArea as InlineScrollArea,
+  ScrollBar,
+} from "#components/shadcn/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/shadcn/tabs"
 import { CircleX, Hash, TextCursorInput, Columns3Icon, Brackets, SquareCode, CaptionsIcon, Plus, GripVertical, ChevronDown, TableIcon } from "lucide-react"
 
-function CancelCircleGlyph(props: React.ComponentProps<"svg">) {
+function CancelCircleGlyph(props: InlineRegistryIconProps) {
   return (
     <CircleX {...props} />
   )
 }
-
-function InputNumericGlyph(props: React.ComponentProps<"svg">) {
+function InputNumericGlyph(props: InlineRegistryIconProps) {
   return (
     <Hash {...props} />
   )
 }
-
-function InputTextGlyph(props: React.ComponentProps<"svg">) {
+function InputTextGlyph(props: InlineRegistryIconProps) {
   return (
     <TextCursorInput {...props} />
   )
 }
-
-function LeftToRightListBulletGlyph(props: React.ComponentProps<"svg">) {
+function LeftToRightListBulletGlyph(props: InlineRegistryIconProps) {
   return (
     <Columns3Icon {...props} />
   )
 }
-
-function SecondBracketGlyph(props: React.ComponentProps<"svg">) {
+function SecondBracketGlyph(props: InlineRegistryIconProps) {
   return (
     <Brackets {...props} />
   )
 }
-
-function SourceCodeSquareGlyph(props: React.ComponentProps<"svg">) {
+function SourceCodeSquareGlyph(props: InlineRegistryIconProps) {
   return (
     <SquareCode {...props} />
   )
 }
-
-function TextCheckGlyph(props: React.ComponentProps<"svg">) {
+function TextCheckGlyph(props: InlineRegistryIconProps) {
   return (
     <CaptionsIcon {...props} />
   )
 }
-
 export type SchemaBuilderScalarType =
   | "string"
   | "number"
@@ -121,13 +118,11 @@ export type SchemaBuilderArrayItemType =
   | SchemaBuilderArrayScalarType
   | "object"
   | "enum"
-
 export type SchemaBuilderEnumValue = {
   id: string
   value: string
   description: string
 }
-
 export type SchemaBuilderProperty = {
   id: string
   key: string
@@ -141,13 +136,10 @@ export type SchemaBuilderProperty = {
     enumValues?: SchemaBuilderEnumValue[]
   }
 }
-
 export type SchemaBuilderSchema = {
   properties: SchemaBuilderProperty[]
 }
-
 export type SchemaBuilderTheme = "light" | "dark"
-
 export type SerializedSchemaProperty = {
   type: string
   description?: string
@@ -156,12 +148,10 @@ export type SerializedSchemaProperty = {
   properties?: Record<string, SerializedSchemaProperty>
   items?: SerializedSchemaProperty
 }
-
 export type SerializedSchema = {
   type: "object"
   properties: Record<string, SerializedSchemaProperty>
 }
-
 const SCALAR_TYPES: SchemaBuilderScalarType[] = [
   "string",
   "number",
@@ -187,7 +177,6 @@ const SCHEMA_DND_MEASURING = {
   },
 }
 type SchemaCollisionArgs = Parameters<CollisionDetection>[0]
-
 function getDroppableRectArea(
   droppableRects: SchemaCollisionArgs["droppableRects"],
   id: UniqueIdentifier
@@ -195,7 +184,6 @@ function getDroppableRectArea(
   const rect = droppableRects.get(id)
   return rect ? rect.width * rect.height : Number.POSITIVE_INFINITY
 }
-
 function getProjectedPropertyChildContainerId(
   properties: SchemaBuilderProperty[],
   propertyId: UniqueIdentifier,
@@ -206,7 +194,6 @@ function getProjectedPropertyChildContainerId(
     ? getPropertyChildContainerId(overLocation.property)
     : null
   const overRect = args.droppableRects.get(propertyId)
-
   if (
     childContainerId &&
     args.pointerCoordinates &&
@@ -215,13 +202,10 @@ function getProjectedPropertyChildContainerId(
   ) {
     return childContainerId
   }
-
   return null
 }
-
 function getSchemaPropertyElementRect(attribute: string, id: UniqueIdentifier) {
   if (typeof document === "undefined") return null
-
   for (const element of document.querySelectorAll<HTMLElement>(
     `[${attribute}]`
   )) {
@@ -229,10 +213,8 @@ function getSchemaPropertyElementRect(attribute: string, id: UniqueIdentifier) {
       return element.getBoundingClientRect()
     }
   }
-
   return null
 }
-
 function getPropertyBlockRect(id: UniqueIdentifier, args: SchemaCollisionArgs) {
   return (
     getSchemaPropertyElementRect(SCHEMA_PROPERTY_BLOCK_ATTRIBUTE, id) ??
@@ -240,11 +222,9 @@ function getPropertyBlockRect(id: UniqueIdentifier, args: SchemaCollisionArgs) {
     null
   )
 }
-
 function getPropertyRowRect(id: UniqueIdentifier) {
   return getSchemaPropertyElementRect(SCHEMA_PROPERTY_ROW_ATTRIBUTE, id)
 }
-
 const TYPE_LABELS: Record<
   SchemaBuilderFieldType | `array-${SchemaBuilderArrayItemType}`,
   string
@@ -264,15 +244,13 @@ const TYPE_LABELS: Record<
   "array-enum": "Array<enum>",
   "array-object": "Array<object>",
 }
-
 type SchemaBuilderTypeStyleKey =
   | SchemaBuilderFieldType
   | `array-${SchemaBuilderArrayItemType}`
-
 const TYPE_STYLES: Record<
   SchemaBuilderTypeStyleKey,
   {
-    icon: React.ComponentType<React.ComponentProps<"svg">>
+    icon: React.ComponentType<InlineRegistryIconProps>
     badge: string
   }
 > = {
@@ -339,7 +317,6 @@ const TYPE_STYLES: Record<
       "bg-violet-50 text-violet-600 dark:bg-violet-300/10 dark:text-violet-300",
   },
 }
-
 const CODE_FILE_THEME = {
   "--diffs-light-bg": "var(--color-code)",
   "--diffs-dark-bg": "var(--color-code)",
@@ -352,10 +329,8 @@ const CODE_FILE_THEME = {
   "--diffs-font-size": "0.8rem",
   "--diffs-line-height": "1.625",
 } as React.CSSProperties
-
 const CODE_FONT_SIZE_PX = 12.8
 const CODE_LINE_HEIGHT_PX = CODE_FONT_SIZE_PX * 1.625
-
 const CODE_VIRTUAL_FILE_METRICS = {
   hunkLineCount: 50,
   lineHeight: CODE_LINE_HEIGHT_PX,
@@ -364,7 +339,6 @@ const CODE_VIRTUAL_FILE_METRICS = {
   paddingTop: 0,
   paddingBottom: 8,
 } satisfies VirtualFileMetrics
-
 const CODE_HIGHLIGHTER_OPTIONS = {
   theme: {
     light: "pierre-light-soft",
@@ -372,14 +346,12 @@ const CODE_HIGHLIGHTER_OPTIONS = {
   },
   langs: ["json"],
 } satisfies WorkerInitializationRenderOptions
-
 const CODE_WORKER_POOL_OPTIONS = {
   workerFactory: () =>
     new Worker(new URL("@pierre/diffs/worker/worker.js", import.meta.url), {
       type: "module",
     }),
 } satisfies WorkerPoolOptions
-
 function ScrollAreaVirtualizer({
   children,
   className,
@@ -400,15 +372,12 @@ function ScrollAreaVirtualizer({
   const contentRef = React.useRef<HTMLDivElement | null>(null)
   const syncVirtualizer = React.useCallback(() => {
     if (!virtualizer) return
-
     const viewport = viewportRef.current
     const content = contentRef.current
-
     if (viewport && content) {
       virtualizer.setup(viewport, content)
       return
     }
-
     virtualizer.cleanUp()
   }, [virtualizer])
   const setViewportRef = React.useCallback(
@@ -425,14 +394,12 @@ function ScrollAreaVirtualizer({
     },
     [syncVirtualizer]
   )
-
   React.useEffect(() => {
     return () => virtualizer?.cleanUp()
   }, [virtualizer])
-
   return (
     <VirtualizerContext.Provider value={virtualizer}>
-      <ScrollArea
+      <InlineScrollArea2
         className={className}
         scrollFade={scrollFade}
         scrollbarOverflowOnly
@@ -445,24 +412,21 @@ function ScrollAreaVirtualizer({
         >
           {children}
         </div>
-      </ScrollArea>
+      </InlineScrollArea2>
     </VirtualizerContext.Provider>
   )
 }
-
+const subscribeToHydration = () => () => {}
 function useResolvedCodeThemeType(theme?: SchemaBuilderTheme) {
   const { resolvedTheme } = useTheme()
-  const [isMounted, setIsMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setIsMounted(true)
-  }, [])
-
+  const isMounted = React.useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false
+  )
   if (theme) return theme
-
   return isMounted && resolvedTheme === "dark" ? "dark" : "light"
 }
-
 export const SAMPLE_SCHEMA: SchemaBuilderSchema = {
   properties: [
     {
@@ -554,14 +518,11 @@ export const SAMPLE_SCHEMA: SchemaBuilderSchema = {
     },
   ],
 }
-
 let nextPropertyId = 0
-
 function createId(prefix: string) {
   nextPropertyId += 1
   return `${prefix}-${nextPropertyId}`
 }
-
 function createEnumValue(): SchemaBuilderEnumValue {
   return {
     id: createId("enum"),
@@ -569,7 +530,6 @@ function createEnumValue(): SchemaBuilderEnumValue {
     description: "",
   }
 }
-
 function createProperty(
   type: SchemaBuilderFieldType = "string"
 ): SchemaBuilderProperty {
@@ -580,7 +540,6 @@ function createProperty(
     description: "",
   })
 }
-
 function normalizePropertyForType(
   property: SchemaBuilderProperty,
   type = property.type
@@ -589,7 +548,6 @@ function normalizePropertyForType(
     ...property,
     type,
   }
-
   if (type === "enum") {
     return {
       ...base,
@@ -600,7 +558,6 @@ function normalizePropertyForType(
       items: undefined,
     }
   }
-
   if (type === "object") {
     return {
       ...base,
@@ -611,7 +568,6 @@ function normalizePropertyForType(
       items: undefined,
     }
   }
-
   if (type === "array") {
     return {
       ...base,
@@ -623,7 +579,6 @@ function normalizePropertyForType(
       },
     }
   }
-
   return {
     ...base,
     enumValues: undefined,
@@ -631,17 +586,14 @@ function normalizePropertyForType(
     items: undefined,
   }
 }
-
 function formatJson(value: unknown) {
   return JSON.stringify(value, null, 2)
 }
-
 function serializeProperty(
   property: SchemaBuilderProperty
 ): SerializedSchemaProperty {
   const description = property.description.trim()
   const base = description ? { description } : {}
-
   if (property.type === "enum") {
     const enumValues = property.enumValues ?? []
     return {
@@ -655,7 +607,6 @@ function serializeProperty(
       ),
     }
   }
-
   if (property.type === "object") {
     return {
       type: "object",
@@ -663,10 +614,8 @@ function serializeProperty(
       properties: serializeProperties(property.properties ?? []),
     }
   }
-
   if (property.type === "array") {
     const items = property.items ?? { type: "string" as const }
-
     return {
       type: "array",
       ...base,
@@ -689,13 +638,11 @@ function serializeProperty(
             : { type: items.type },
     }
   }
-
   return {
     type: property.type,
     ...base,
   }
 }
-
 function serializeProperties(
   properties: SchemaBuilderProperty[]
 ): Record<string, SerializedSchemaProperty> {
@@ -705,14 +652,12 @@ function serializeProperties(
       .map((property) => [property.key.trim(), serializeProperty(property)])
   )
 }
-
 export function serializeSchema(schema: SchemaBuilderSchema): SerializedSchema {
   return {
     type: "object",
     properties: serializeProperties(schema.properties),
   }
 }
-
 function updatePropertyById(
   properties: SchemaBuilderProperty[],
   id: string,
@@ -722,37 +667,29 @@ function updatePropertyById(
     property.id === id ? update(property) : property
   )
 }
-
 function getObjectContainerId(propertyId: string) {
   return `object:${propertyId}`
 }
-
 function getArrayObjectContainerId(propertyId: string) {
   return `array-object:${propertyId}`
 }
-
 function isPropertyContainerId(id: UniqueIdentifier) {
   const value = String(id)
-
   return (
     value === ROOT_SCHEMA_CONTAINER_ID ||
     value.startsWith("object:") ||
     value.startsWith("array-object:")
   )
 }
-
 function getPropertyChildContainerId(property: SchemaBuilderProperty) {
   if (property.type === "object") {
     return getObjectContainerId(property.id)
   }
-
   if (property.type === "array" && property.items?.type === "object") {
     return getArrayObjectContainerId(property.id)
   }
-
   return null
 }
-
 function propertyHasNestedEditor(property: SchemaBuilderProperty) {
   return (
     property.type === "enum" ||
@@ -760,21 +697,15 @@ function propertyHasNestedEditor(property: SchemaBuilderProperty) {
     property.type === "array"
   )
 }
-
 function getNestedEditorLabel(property: SchemaBuilderProperty) {
-  return `${
-    property.type === "enum" ? "Configure enums" : "Configure schema"
-  } for ${property.key || "property"}`
+  return `${property.type === "enum" ? "Configure enums" : "Configure schema"} for ${property.key || "property"}`
 }
-
 type PropertyLocation = {
   containerId: string
   index: number
   property: SchemaBuilderProperty
 }
-
 const NOT_FOUND_PROPERTIES: SchemaBuilderProperty[] = []
-
 function findPropertyLocation(
   properties: SchemaBuilderProperty[],
   propertyId: string,
@@ -783,7 +714,6 @@ function findPropertyLocation(
   for (let index = 0; index < properties.length; index += 1) {
     const property = properties[index]
     if (!property) continue
-
     if (property.id === propertyId) {
       return {
         containerId,
@@ -791,7 +721,6 @@ function findPropertyLocation(
         property,
       }
     }
-
     if (property.type === "object") {
       const nestedLocation = findPropertyLocation(
         property.properties ?? [],
@@ -800,7 +729,6 @@ function findPropertyLocation(
       )
       if (nestedLocation) return nestedLocation
     }
-
     if (property.type === "array" && property.items?.type === "object") {
       const nestedLocation = findPropertyLocation(
         property.items.properties ?? [],
@@ -810,17 +738,14 @@ function findPropertyLocation(
       if (nestedLocation) return nestedLocation
     }
   }
-
   return null
 }
-
 function propertyOwnsContainer(
   property: SchemaBuilderProperty,
   containerId: string
 ): boolean {
   if (property.type === "object") {
     if (getObjectContainerId(property.id) === containerId) return true
-
     if (
       (property.properties ?? []).some((childProperty) =>
         propertyOwnsContainer(childProperty, containerId)
@@ -829,42 +754,34 @@ function propertyOwnsContainer(
       return true
     }
   }
-
   if (property.type === "array" && property.items?.type === "object") {
     if (getArrayObjectContainerId(property.id) === containerId) return true
-
     return (property.items.properties ?? []).some((childProperty) =>
       propertyOwnsContainer(childProperty, containerId)
     )
   }
-
   return false
 }
-
 function getContainerProperties(
   properties: SchemaBuilderProperty[],
   containerId: string
 ): SchemaBuilderProperty[] {
   if (containerId === ROOT_SCHEMA_CONTAINER_ID) return properties
-
   for (const property of properties) {
     if (property.type === "object") {
       if (getObjectContainerId(property.id) === containerId) {
         return property.properties ?? []
       }
-
       const nestedProperties = getContainerProperties(
         property.properties ?? [],
         containerId
       )
       if (nestedProperties !== NOT_FOUND_PROPERTIES) return nestedProperties
     }
-
     if (property.type === "array" && property.items?.type === "object") {
       if (getArrayObjectContainerId(property.id) === containerId) {
         return property.items.properties ?? []
       }
-
       const nestedProperties = getContainerProperties(
         property.items.properties ?? [],
         containerId
@@ -872,17 +789,14 @@ function getContainerProperties(
       if (nestedProperties !== NOT_FOUND_PROPERTIES) return nestedProperties
     }
   }
-
   return NOT_FOUND_PROPERTIES
 }
-
 function setContainerProperties(
   properties: SchemaBuilderProperty[],
   containerId: string,
   nextContainerProperties: SchemaBuilderProperty[]
 ): SchemaBuilderProperty[] {
   if (containerId === ROOT_SCHEMA_CONTAINER_ID) return nextContainerProperties
-
   return properties.map((property) => {
     if (property.type === "object") {
       if (getObjectContainerId(property.id) === containerId) {
@@ -891,7 +805,6 @@ function setContainerProperties(
           properties: nextContainerProperties,
         }
       }
-
       return {
         ...property,
         properties: setContainerProperties(
@@ -901,7 +814,6 @@ function setContainerProperties(
         ),
       }
     }
-
     if (property.type === "array" && property.items?.type === "object") {
       if (getArrayObjectContainerId(property.id) === containerId) {
         return {
@@ -912,7 +824,6 @@ function setContainerProperties(
           },
         }
       }
-
       return {
         ...property,
         items: {
@@ -925,11 +836,9 @@ function setContainerProperties(
         },
       }
     }
-
     return property
   })
 }
-
 function moveProperty(
   properties: SchemaBuilderProperty[],
   activeId: string,
@@ -937,33 +846,26 @@ function moveProperty(
 ) {
   const activeLocation = findPropertyLocation(properties, activeId)
   if (!activeLocation) return properties
-
   const overLocation = findPropertyLocation(properties, overId)
   const targetContainerId = overLocation?.containerId ?? overId
   if (!isPropertyContainerId(targetContainerId)) return properties
-
   if (propertyOwnsContainer(activeLocation.property, targetContainerId)) {
     return properties
   }
-
   if (activeLocation.containerId === targetContainerId) {
     if (!overLocation) return properties
-
     const containerProperties = getContainerProperties(
       properties,
       activeLocation.containerId
     )
     const targetIndex = overLocation.index
-
     if (activeLocation.index === targetIndex) return properties
-
     return setContainerProperties(
       properties,
       activeLocation.containerId,
       arrayMove(containerProperties, activeLocation.index, targetIndex)
     )
   }
-
   const sourceProperties = getContainerProperties(
     properties,
     activeLocation.containerId
@@ -982,23 +884,19 @@ function moveProperty(
   )
   const targetIndex = refreshedOverLocation?.index ?? targetProperties.length
   const nextTargetProperties = targetProperties.slice()
-
   nextTargetProperties.splice(targetIndex, 0, activeLocation.property)
   nextProperties = setContainerProperties(
     nextProperties,
     targetContainerId,
     nextTargetProperties
   )
-
   return nextProperties
 }
-
 type PropertyMovePreview = {
   containerId: string
   index: number
   property: SchemaBuilderProperty
 }
-
 function getPropertyMovePreview(
   properties: SchemaBuilderProperty[],
   activeId: string,
@@ -1006,26 +904,20 @@ function getPropertyMovePreview(
 ): PropertyMovePreview | null {
   const activeLocation = findPropertyLocation(properties, activeId)
   if (!activeLocation) return null
-
   const overLocation = findPropertyLocation(properties, overId)
   const targetContainerId = overLocation?.containerId ?? overId
   if (!isPropertyContainerId(targetContainerId)) return null
-
   if (propertyOwnsContainer(activeLocation.property, targetContainerId)) {
     return null
   }
-
   if (activeLocation.containerId === targetContainerId) return null
-
   const targetProperties = getContainerProperties(properties, targetContainerId)
-
   return {
     containerId: targetContainerId,
     index: overLocation?.index ?? targetProperties.length,
     property: activeLocation.property,
   }
 }
-
 function isSameContainerPropertyReorderReady(
   properties: SchemaBuilderProperty[],
   activeId: UniqueIdentifier,
@@ -1036,26 +928,20 @@ function isSameContainerPropertyReorderReady(
   const overLocation = findPropertyLocation(properties, String(overId))
   if (!activeLocation || !overLocation) return true
   if (activeLocation.containerId !== overLocation.containerId) return true
-
   const overRect = getPropertyBlockRect(overId, args)
   if (!overRect || !args.pointerCoordinates) return true
-
   const threshold = Math.min(
     PROPERTY_REORDER_EDGE_THRESHOLD_PX,
     overRect.height / 2
   )
-
   if (activeLocation.index < overLocation.index) {
     return args.pointerCoordinates.y >= overRect.bottom - threshold
   }
-
   if (activeLocation.index > overLocation.index) {
     return args.pointerCoordinates.y <= overRect.top + threshold
   }
-
   return false
 }
-
 function isSchemaCollisionCandidate(
   properties: SchemaBuilderProperty[],
   id: UniqueIdentifier,
@@ -1063,31 +949,25 @@ function isSchemaCollisionCandidate(
   args: SchemaCollisionArgs
 ) {
   if (id === activeId) return false
-
   const value = String(id)
   const isSchemaTarget =
     isPropertyContainerId(value) ||
     Boolean(findPropertyLocation(properties, value))
-
   return (
     isSchemaTarget &&
     isSameContainerPropertyReorderReady(properties, activeId, id, args)
   )
 }
-
 function isPointerBelowLastContainerProperty(
   containerProperties: SchemaBuilderProperty[],
   args: SchemaCollisionArgs
 ) {
   const lastProperty = containerProperties.at(-1)
   if (!lastProperty || !args.pointerCoordinates) return true
-
   const lastPropertyRect = getPropertyBlockRect(lastProperty.id, args)
   if (!lastPropertyRect) return false
-
   return args.pointerCoordinates.y >= lastPropertyRect.bottom
 }
-
 function getNextPropertyInsertionId(
   properties: SchemaBuilderProperty[],
   location: PropertyLocation
@@ -1096,10 +976,8 @@ function getNextPropertyInsertionId(
     properties,
     location.containerId
   )
-
   return targetProperties[location.index + 1]?.id ?? location.containerId
 }
-
 function resolveCrossContainerPropertyInsertionId(
   properties: SchemaBuilderProperty[],
   activeId: UniqueIdentifier,
@@ -1111,30 +989,23 @@ function resolveCrossContainerPropertyInsertionId(
   if (!activeLocation || !overLocation || !args.pointerCoordinates) {
     return overId
   }
-
   if (activeLocation.containerId === overLocation.containerId) {
     return overId
   }
-
   const overRowRect = getPropertyRowRect(overId)
   if (overRowRect) {
     const overRowMiddle = overRowRect.top + overRowRect.height / 2
-
     return args.pointerCoordinates.y < overRowMiddle
       ? overId
       : getNextPropertyInsertionId(properties, overLocation)
   }
-
   const overBlockRect = getPropertyBlockRect(overId, args)
   if (!overBlockRect) return overId
-
   const overBlockMiddle = overBlockRect.top + overBlockRect.height / 2
-
   return args.pointerCoordinates.y < overBlockMiddle
     ? overId
     : getNextPropertyInsertionId(properties, overLocation)
 }
-
 function useSchemaBuilderSensors() {
   return useSensors(
     useSensor(PointerSensor, {
@@ -1147,35 +1018,27 @@ function useSchemaBuilderSensors() {
     })
   )
 }
-
 function useStableCallback<Args extends unknown[], Result>(
   callback: (...args: Args) => Result
 ) {
   const callbackRef = React.useRef(callback)
-
   React.useInsertionEffect(() => {
     callbackRef.current = callback
   })
-
   return React.useCallback((...args: Args) => callbackRef.current(...args), [])
 }
-
 function useStableIds(ids: string[]) {
   const idsKey = JSON.stringify(ids)
-
   return React.useMemo(() => JSON.parse(idsKey) as string[], [idsKey])
 }
-
 function getTypeStyleKey(
   property: SchemaBuilderProperty
 ): SchemaBuilderTypeStyleKey {
   if (property.type === "array" && property.items) {
     return `array-${property.items.type}`
   }
-
   return property.type
 }
-
 function SchemaTypeBadge({
   className,
   type,
@@ -1184,7 +1047,6 @@ function SchemaTypeBadge({
   type: SchemaBuilderTypeStyleKey
 }) {
   const style = TYPE_STYLES[type]
-
   return (
     <span
       className={cn(
@@ -1198,7 +1060,6 @@ function SchemaTypeBadge({
     </span>
   )
 }
-
 function SchemaTypeMenuItem({
   type,
   onSelect,
@@ -1212,7 +1073,6 @@ function SchemaTypeMenuItem({
     </DropdownMenuItem>
   )
 }
-
 function SchemaTypeMenu({
   property,
   onChange,
@@ -1226,7 +1086,6 @@ function SchemaTypeMenu({
     },
     [onChange, property]
   )
-
   const updateArrayItemType = React.useCallback(
     (itemType: SchemaBuilderArrayItemType) => {
       onChange({
@@ -1251,13 +1110,23 @@ function SchemaTypeMenu({
     },
     [onChange, property]
   )
-
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button type="button" variant="ghost" size="sm" className="h-8 w-full min-w-0 justify-between overflow-hidden rounded-md px-2" />}><SchemaTypeBadge
-                      className="max-w-full shrink"
-                      type={getTypeStyleKey(property)}
-                    /></DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-8 w-full min-w-0 justify-between overflow-hidden rounded-md px-2"
+          >
+            <SchemaTypeBadge
+              className="max-w-full shrink"
+              type={getTypeStyleKey(property)}
+            />
+          </Button>
+        }
+      ></DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-44">
         <DropdownMenuGroup>
           <DropdownMenuLabel>JSON types</DropdownMenuLabel>
@@ -1307,7 +1176,6 @@ function SchemaTypeMenu({
     </DropdownMenu>
   )
 }
-
 function ArrayItemTypeMenu({
   property,
   onChange,
@@ -1316,7 +1184,6 @@ function ArrayItemTypeMenu({
   onChange: (property: SchemaBuilderProperty) => void
 }) {
   const items = property.items ?? { type: "string" as const }
-
   const updateItemType = React.useCallback(
     (type: SchemaBuilderArrayItemType) => {
       onChange({
@@ -1341,10 +1208,22 @@ function ArrayItemTypeMenu({
     },
     [items.enumValues, items.properties, onChange, property]
   )
-
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button type="button" variant="outline" size="sm" className="h-6 px-2" onClick={(event) => event.stopPropagation()} onPointerDown={(event) => event.stopPropagation()} />}><SchemaTypeBadge type={`array-${items.type}`} /></DropdownMenuTrigger>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-6 px-2"
+            onClick={(event) => event.stopPropagation()}
+            onPointerDown={(event) => event.stopPropagation()}
+          >
+            <SchemaTypeBadge type={`array-${items.type}`} />
+          </Button>
+        }
+      ></DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Nested</DropdownMenuLabel>
@@ -1372,7 +1251,6 @@ function ArrayItemTypeMenu({
     </DropdownMenu>
   )
 }
-
 function InlineTextInput({
   className,
   onChange,
@@ -1380,13 +1258,12 @@ function InlineTextInput({
   ...props
 }: React.InputHTMLAttributes<HTMLInputElement>) {
   const handleInput = React.useCallback(
-    (event: React.FormEvent<HTMLInputElement>) => {
+    (event: React.InputEvent<HTMLInputElement>) => {
       onInput?.(event)
       onChange?.(event as unknown as React.ChangeEvent<HTMLInputElement>)
     },
     [onChange, onInput]
   )
-
   return (
     <input
       className={cn(
@@ -1398,7 +1275,6 @@ function InlineTextInput({
     />
   )
 }
-
 function EnumEditor({
   values,
   onChange,
@@ -1421,17 +1297,13 @@ function EnumEditor({
     (event: DragEndEvent) => {
       const { active, over } = event
       if (!over || active.id === over.id) return
-
       const activeIndex = values.findIndex((value) => value.id === active.id)
       const overIndex = values.findIndex((value) => value.id === over.id)
-
       if (activeIndex < 0 || overIndex < 0) return
-
       onChange(arrayMove(values, activeIndex, overIndex))
     },
     [onChange, values]
   )
-
   return (
     <DndContext
       id={`schema-builder-enum-${dndContextId}`}
@@ -1481,7 +1353,6 @@ function EnumEditor({
     </DndContext>
   )
 }
-
 const SortableEnumRow = React.memo(function SortableEnumRow({
   value,
   onValueChange,
@@ -1505,7 +1376,6 @@ const SortableEnumRow = React.memo(function SortableEnumRow({
       type: ENUM_VALUE_DRAG_TYPE,
     },
   })
-
   return (
     <tr
       ref={setNodeRef}
@@ -1559,7 +1429,6 @@ const SortableEnumRow = React.memo(function SortableEnumRow({
     </tr>
   )
 })
-
 function ArrayItemsEditor({
   property,
   onChange,
@@ -1576,7 +1445,6 @@ function ArrayItemsEditor({
   onNestedEditorOpenChange: (propertyId: string, open: boolean) => void
 }) {
   const items = property.items ?? { type: "string" as const }
-
   return (
     <>
       {items.type === "object" ? (
@@ -1614,7 +1482,6 @@ function ArrayItemsEditor({
     </>
   )
 }
-
 function NestedEditor({
   property,
   depth,
@@ -1638,7 +1505,6 @@ function NestedEditor({
       />
     )
   }
-
   if (property.type === "object") {
     return (
       <SchemaBuilderTable
@@ -1654,7 +1520,6 @@ function NestedEditor({
       />
     )
   }
-
   if (property.type === "array") {
     return (
       <ArrayItemsEditor
@@ -1667,10 +1532,8 @@ function NestedEditor({
       />
     )
   }
-
   return null
 }
-
 function SchemaBuilderTable({
   properties,
   depth = 0,
@@ -1701,13 +1564,11 @@ function SchemaBuilderTable({
       onPropertiesChange(updatePropertyById(properties, id, () => nextProperty))
     }
   )
-
   const addProperty = React.useCallback(() => {
     onPropertiesChange([...properties, createProperty()])
   }, [onPropertiesChange, properties])
   const tableDropPreview =
     dropPreview?.containerId === containerId ? dropPreview : null
-
   return (
     <div
       ref={setNodeRef}
@@ -1773,7 +1634,6 @@ function SchemaBuilderTable({
     </div>
   )
 }
-
 const SortablePropertyRows = React.memo(function SortablePropertyRows({
   property,
   depth,
@@ -1811,7 +1671,6 @@ const SortablePropertyRows = React.memo(function SortablePropertyRows({
   const hasNestedEditor = propertyHasNestedEditor(property)
   const isNestedEditorOpen = nestedEditorOpenByPropertyId[property.id] ?? true
   const nestedEditorLabel = getNestedEditorLabel(property)
-
   return (
     <tbody
       ref={setNodeRef}
@@ -1907,9 +1766,7 @@ const SortablePropertyRows = React.memo(function SortablePropertyRows({
                   className="p-2 pl-[--schema-builder-nest-indent]"
                   style={
                     {
-                      "--schema-builder-nest-indent": `${
-                        0.5 + Math.min(depth, 4) * 0.75
-                      }rem`,
+                      "--schema-builder-nest-indent": `${0.5 + Math.min(depth, 4) * 0.75}rem`,
                     } as React.CSSProperties
                   }
                 >
@@ -1930,7 +1787,6 @@ const SortablePropertyRows = React.memo(function SortablePropertyRows({
     </tbody>
   )
 })
-
 function SchemaPropertyDropPreviewRows({
   property,
 }: {
@@ -1952,7 +1808,6 @@ function SchemaPropertyDropPreviewRows({
     </tbody>
   )
 }
-
 function SchemaPropertyDragOverlay({
   property,
   isNestedEditorOpen,
@@ -1963,7 +1818,6 @@ function SchemaPropertyDragOverlay({
   nestedEditorOpenByPropertyId: Record<string, boolean>
 }) {
   const hasNestedEditor = propertyHasNestedEditor(property)
-
   return (
     <div className="w-[min(680px,calc(100vw-2rem))] overflow-hidden rounded-lg border bg-background text-sm shadow-lg">
       <div
@@ -2017,7 +1871,6 @@ function SchemaPropertyDragOverlay({
     </div>
   )
 }
-
 function NestedEditorPreview({
   property,
   nestedEditorOpenByPropertyId,
@@ -2028,7 +1881,6 @@ function NestedEditorPreview({
   if (property.type === "enum") {
     return <EnumValuesPreview values={property.enumValues ?? []} />
   }
-
   if (property.type === "object") {
     return (
       <SchemaPropertiesPreview
@@ -2037,14 +1889,11 @@ function NestedEditorPreview({
       />
     )
   }
-
   if (property.type === "array") {
     const items = property.items ?? { type: "string" as const }
-
     if (items.type === "enum") {
       return <EnumValuesPreview values={items.enumValues ?? []} />
     }
-
     if (items.type === "object") {
       return (
         <SchemaPropertiesPreview
@@ -2054,10 +1903,8 @@ function NestedEditorPreview({
       )
     }
   }
-
   return null
 }
-
 function EnumValuesPreview({ values }: { values: SchemaBuilderEnumValue[] }) {
   return (
     <div className="overflow-hidden rounded-lg border bg-background">
@@ -2083,7 +1930,6 @@ function EnumValuesPreview({ values }: { values: SchemaBuilderEnumValue[] }) {
     </div>
   )
 }
-
 function SchemaPropertiesPreview({
   properties,
   nestedEditorOpenByPropertyId,
@@ -2102,7 +1948,6 @@ function SchemaPropertiesPreview({
         const hasNestedEditor = propertyHasNestedEditor(property)
         const isNestedEditorOpen =
           nestedEditorOpenByPropertyId[property.id] ?? true
-
         return (
           <div key={property.id} className="border-b last:border-b-0">
             <div
@@ -2154,7 +1999,6 @@ function SchemaPropertiesPreview({
     </div>
   )
 }
-
 export const SchemaJsonView = React.memo(function SchemaJsonView({
   scrollResetKey = 0,
   schema,
@@ -2167,7 +2011,6 @@ export const SchemaJsonView = React.memo(function SchemaJsonView({
   const codeThemeType = useResolvedCodeThemeType(theme)
   const file = React.useMemo(() => {
     const contents = formatJson(serializeSchema(schema))
-
     return {
       name: "schema.json",
       contents,
@@ -2175,7 +2018,6 @@ export const SchemaJsonView = React.memo(function SchemaJsonView({
       cacheKey: contents,
     }
   }, [schema])
-
   return (
     <div
       data-rehype-pretty-code-figure
@@ -2211,7 +2053,6 @@ export const SchemaJsonView = React.memo(function SchemaJsonView({
     </div>
   )
 })
-
 export function SchemaBuilderPanel({
   className,
   defaultSchema = SAMPLE_SCHEMA,
@@ -2245,27 +2086,22 @@ export function SchemaBuilderPanel({
   // hidden; otherwise every form keystroke re-serializes and re-highlights
   // the code view. Syncing during render keeps it fresh once visible.
   const [jsonViewSchema, setJsonViewSchema] = React.useState(schema)
-
   if (activeTab === "json" && jsonViewSchema !== schema) {
     setJsonViewSchema(schema)
   }
-
   const dropPreview = React.useMemo(() => {
     if (!activeSchemaDrag?.overId) return null
-
     return getPropertyMovePreview(
       schema.properties,
       activeSchemaDrag.activeId,
       activeSchemaDrag.overId
     )
   }, [activeSchemaDrag, schema.properties])
-
   const updateSchema = React.useCallback(
     (nextSchema: SchemaBuilderSchema) => {
       if (!controlledSchema) {
         setUncontrolledSchema(nextSchema)
       }
-
       onSchemaChange?.(nextSchema)
     },
     [controlledSchema, onSchemaChange]
@@ -2274,7 +2110,6 @@ export function SchemaBuilderPanel({
     (propertyId: string, open: boolean) => {
       setNestedEditorOpenByPropertyId((current) => {
         if ((current[propertyId] ?? true) === open) return current
-
         return {
           ...current,
           [propertyId]: open,
@@ -2288,7 +2123,6 @@ export function SchemaBuilderPanel({
       if (args.active.data.current?.type !== SCHEMA_PROPERTY_DRAG_TYPE) {
         return closestCenter(args)
       }
-
       const pointerIntersections = pointerWithin(args)
       const schemaPointerIntersections = pointerIntersections
         .filter(({ id }) =>
@@ -2307,7 +2141,6 @@ export function SchemaBuilderPanel({
       const isPointerOverActive = pointerIntersections.some(
         ({ id }) => id === args.active.id
       )
-
       if (
         schemaPointerIntersections.length === 0 &&
         isPointerOverActive &&
@@ -2315,7 +2148,6 @@ export function SchemaBuilderPanel({
       ) {
         return [{ id: lastSchemaOverIdRef.current }]
       }
-
       const intersections =
         schemaPointerIntersections.length > 0
           ? schemaPointerIntersections
@@ -2328,7 +2160,6 @@ export function SchemaBuilderPanel({
               )
             )
       let overId = getFirstCollision(intersections, "id")
-
       if (overId != null) {
         overId =
           getProjectedPropertyChildContainerId(
@@ -2336,13 +2167,11 @@ export function SchemaBuilderPanel({
             overId,
             args
           ) ?? overId
-
         if (isPropertyContainerId(overId)) {
           const containerProperties = getContainerProperties(
             schema.properties,
             String(overId)
           )
-
           if (
             containerProperties.length > 0 &&
             !isPointerBelowLastContainerProperty(containerProperties, args)
@@ -2364,7 +2193,6 @@ export function SchemaBuilderPanel({
               ),
             })
             const closestChildId = getFirstCollision(closestChild, "id")
-
             overId = closestChildId
               ? (getProjectedPropertyChildContainerId(
                   schema.properties,
@@ -2374,7 +2202,6 @@ export function SchemaBuilderPanel({
               : overId
           }
         }
-
         overId = resolveCrossContainerPropertyInsertionId(
           schema.properties,
           args.active.id,
@@ -2382,10 +2209,8 @@ export function SchemaBuilderPanel({
           args
         )
         lastSchemaOverIdRef.current = overId
-
         return [{ id: overId }]
       }
-
       return lastSchemaOverIdRef.current
         ? [{ id: lastSchemaOverIdRef.current }]
         : []
@@ -2397,7 +2222,6 @@ export function SchemaBuilderPanel({
       if (event.active.data.current?.type !== SCHEMA_PROPERTY_DRAG_TYPE) {
         return
       }
-
       lastSchemaOverIdRef.current = null
       const activeId = String(event.active.id)
       setActiveDragProperty(
@@ -2415,7 +2239,6 @@ export function SchemaBuilderPanel({
       if (event.active.data.current?.type !== SCHEMA_PROPERTY_DRAG_TYPE) {
         return
       }
-
       const activeId = String(event.active.id)
       const eventOverId = event.over ? String(event.over.id) : null
       const candidateOverIds = [
@@ -2431,12 +2254,10 @@ export function SchemaBuilderPanel({
             candidateOverId !== activeId &&
             getPropertyMovePreview(schema.properties, activeId, candidateOverId)
         ) ?? null
-
       setActiveSchemaDrag((current) => {
         if (current?.activeId === activeId && current?.overId === overId) {
           return current
         }
-
         return {
           activeId,
           overId,
@@ -2449,13 +2270,11 @@ export function SchemaBuilderPanel({
     (event: DragEndEvent) => {
       setActiveDragProperty(null)
       setActiveSchemaDrag(null)
-
       const { active, over } = event
       if (active.data.current?.type !== SCHEMA_PROPERTY_DRAG_TYPE) {
         lastSchemaOverIdRef.current = null
         return
       }
-
       const activeId = String(active.id)
       const candidateOverIds = [
         over ? String(over.id) : null,
@@ -2467,15 +2286,10 @@ export function SchemaBuilderPanel({
         candidateOverIds.find(
           (candidateOverId) => candidateOverId && candidateOverId !== activeId
         ) ?? null
-
       lastSchemaOverIdRef.current = null
-
       if (!overId) return
-
       const nextProperties = moveProperty(schema.properties, activeId, overId)
-
       if (nextProperties === schema.properties) return
-
       updateSchema({
         properties: nextProperties,
       })
@@ -2489,12 +2303,10 @@ export function SchemaBuilderPanel({
   }, [])
   const handleTabChange = React.useCallback((nextTab: string) => {
     setActiveTab(nextTab)
-
     if (nextTab === "json") {
       setJsonScrollResetKey((current) => current + 1)
     }
   }, [])
-
   return (
     <Tabs
       value={activeTab}
@@ -2514,7 +2326,7 @@ export function SchemaBuilderPanel({
         </TabsList>
       </div>
       <TabsContent value="form" keepMounted className="min-h-0 flex-1">
-        <ScrollArea className="h-full" scrollFade>
+        <InlineScrollArea2 className="h-full" scrollFade>
           <DndContext
             id={`schema-builder-${dndContextId}`}
             autoScroll={{
@@ -2552,7 +2364,7 @@ export function SchemaBuilderPanel({
               ) : null}
             </DragOverlay>
           </DndContext>
-        </ScrollArea>
+        </InlineScrollArea2>
       </TabsContent>
       <TabsContent value="json" keepMounted className="min-h-0 flex-1">
         <SchemaJsonView
@@ -2563,4 +2375,110 @@ export function SchemaBuilderPanel({
       </TabsContent>
     </Tabs>
   )
+}
+type InlineRegistryIconProps = Omit<
+  React.ComponentProps<"svg">,
+  "children" | "strokeWidth"
+> & { strokeWidth?: number }
+function InlineScrollArea2({
+  className,
+  children,
+  orientation = "both",
+  scrollFade = false,
+  scrollbarGutter = false,
+  scrollbarOverflowOnly = false,
+  viewportClassName,
+  viewportProps,
+  viewportRef,
+  ...props
+}: InlineScrollAreaProps) {
+  const {
+    className: viewportPropsClassName,
+    ref: viewportPropsRef,
+    ...resolvedViewportProps
+  } = viewportProps ?? {}
+  const composedViewportRef = React.useMemo(
+    () => InlineComposeRefs(viewportPropsRef, viewportRef),
+    [viewportPropsRef, viewportRef]
+  )
+
+  if (
+    !viewportProps &&
+    !viewportRef &&
+    !viewportClassName &&
+    !scrollFade &&
+    !scrollbarGutter &&
+    !scrollbarOverflowOnly
+  ) {
+    return (
+      <InlineScrollArea
+        {...props}
+        className={cn(
+          "size-full min-h-0",
+          orientation === "horizontal" &&
+            "[&>[data-orientation=vertical]]:hidden",
+          className
+        )}
+      >
+        {children}
+        {orientation !== "vertical" ? (
+          <ScrollBar orientation="horizontal" />
+        ) : null}
+      </InlineScrollArea>
+    )
+  }
+
+  return (
+    <ScrollAreaPrimitive.Root
+      className={cn(
+        "size-full min-h-0",
+        scrollbarOverflowOnly &&
+          "[&:not(:has([data-slot=scroll-area-viewport][data-has-overflow-x]))_[data-orientation=horizontal]]:hidden [&:not(:has([data-slot=scroll-area-viewport][data-has-overflow-y]))_[data-orientation=vertical]]:hidden",
+        className
+      )}
+      {...props}
+    >
+      <ScrollAreaPrimitive.Viewport
+        {...resolvedViewportProps}
+        ref={composedViewportRef}
+        className={cn(
+          "h-full rounded-[inherit] outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          scrollFade &&
+            "mask-t-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-start)))] mask-r-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-end)))] mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] mask-l-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-x-start)))] [--fade-size:1.5rem]",
+          scrollbarGutter && orientation !== "vertical" && "pb-3.5",
+          scrollbarGutter && orientation !== "horizontal" && "pe-3.5",
+          viewportPropsClassName,
+          viewportClassName
+        )}
+        data-slot="scroll-area-viewport"
+      >
+        {children}
+      </ScrollAreaPrimitive.Viewport>
+      {orientation !== "horizontal" ? (
+        <ScrollBar orientation="vertical" />
+      ) : null}
+      {orientation !== "vertical" ? (
+        <ScrollBar orientation="horizontal" />
+      ) : null}
+      {orientation === "both" ? <ScrollAreaPrimitive.Corner /> : null}
+    </ScrollAreaPrimitive.Root>
+  )
+}
+type InlineScrollAreaProps = ScrollAreaPrimitive.Root.Props & {
+  orientation?: "vertical" | "horizontal" | "both"
+  scrollFade?: boolean
+  scrollbarGutter?: boolean
+  scrollbarOverflowOnly?: boolean
+  viewportClassName?: string
+  viewportProps?: ScrollAreaPrimitive.Viewport.Props
+  viewportRef?: React.Ref<HTMLDivElement>
+}
+function InlineComposeRefs<T>(...refs: Array<React.Ref<T> | undefined>) {
+  return (node: T | null) => {
+    for (const ref of refs) {
+      if (!ref) continue
+      if (typeof ref === "function") ref(node)
+      else ref.current = node
+    }
+  }
 }
