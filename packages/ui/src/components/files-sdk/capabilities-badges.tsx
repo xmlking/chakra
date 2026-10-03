@@ -14,7 +14,10 @@ export interface CapabilitiesBadgesProps {
   className?: string;
 }
 
-/** Render a seconds duration as a compact `7d` / `4h` / `30m` label. */
+/**
+ * Render a seconds duration as a compact `7d` / `4h` / `30m` label. Rounds
+ * down, since this labels a maximum: 1.5 days is "max 1d", never "max 2d".
+ */
 const formatDuration = (seconds: number): string => {
   const units: [number, string][] = [
     [86_400, "d"],
@@ -22,8 +25,8 @@ const formatDuration = (seconds: number): string => {
     [60, "m"],
   ];
   for (const [size, suffix] of units) {
-    if (seconds % size === 0 || seconds >= size) {
-      return `${Math.round(seconds / size)}${suffix}`;
+    if (seconds >= size) {
+      return `${Math.floor(seconds / size)}${suffix}`;
     }
   }
   return `${seconds}s`;
@@ -120,6 +123,11 @@ export const CapabilitiesBadges = ({
           )}
           <span className={cn(!row.supported && "text-muted-foreground")}>
             {row.label}
+          </span>
+          {/* The check/cross icons are decorative (aria-hidden), so state the
+              support level in text for screen readers. */}
+          <span className="sr-only">
+            {row.supported ? "(supported)" : "(not supported)"}
           </span>
         </Badge>
       ))}

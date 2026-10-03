@@ -20,8 +20,6 @@ To `add/update` **shadcn** `components`, run the following commands:
 cd packages/ui
 # SHADCN Components
 bunx --bun shadcn@latest add --all --overwrite
-# Switch utils.ts from clsx + twMerge to [cn](https://github.com/shadcn-ui/cn)
-bunx shadcn@latest migrate cn
 
 # better-auth-ui Components
 # bunx --bun shadcn@latest registry add @better-auth-ui=https://better-auth-ui.com/r/{style}/{name}.json
@@ -36,16 +34,6 @@ bunx shadcn@latest add https://tweakcn-picker.vercel.app/r/theme-cyberpunk.json
 ## basecn
 bunx --bun shadcn@latest add -p src/components/basecn @basecn/combobox
 
-# AI Elements (optional)
-#bunx --bun shadcn@latest add @ai-elements/all
-# AI Elements Workflow Components for React Flow (optional)
-bunx --bun shadcn@latest add @ai-elements/canvas
-bunx --bun shadcn@latest add @ai-elements/connection
-bunx --bun shadcn@latest add @ai-elements/controls
-bunx --bun shadcn@latest add @ai-elements/edge
-bunx --bun shadcn@latest add @ai-elements/node
-bunx --bun shadcn@latest add @ai-elements/panel
-bunx --bun shadcn@latest add @ai-elements/toolbar
 # files-sdk
 bunx --bun shadcn@latest add https://files-sdk.dev/r/all.json
 # better-upload (optional)

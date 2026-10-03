@@ -54,6 +54,32 @@ const formatBytes = (bytes: number): string => {
   return `${(bytes / 1024 ** exponent).toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`;
 };
 
+/**
+ * Whether `file` satisfies an `accept` string the way the file picker does:
+ * comma-separated `.ext` suffixes, `type/*` wildcards, or exact MIME types.
+ * Dropped files bypass the picker's filter, so they're checked with this.
+ */
+const matchesAccept = (file: File, accept: string | undefined): boolean => {
+  const tokens = (accept ?? "")
+    .split(",")
+    .map((token) => token.trim().toLowerCase())
+    .filter(Boolean);
+  if (!tokens.length) {
+    return true;
+  }
+  const name = file.name.toLowerCase();
+  const type = file.type.toLowerCase();
+  return tokens.some((token) => {
+    if (token.startsWith(".")) {
+      return name.endsWith(token);
+    }
+    if (token.endsWith("/*")) {
+      return type.startsWith(token.slice(0, -1));
+    }
+    return type === token;
+  });
+};
+
 const DropzoneContext = createContext<DropzoneContextValue | null>(null);
 
 const useDropzoneContext = (): DropzoneContextValue => {
@@ -90,19 +116,25 @@ const entryFile = (entry: FileSystemFileEntry): Promise<File> =>
     entry.file(resolve, reject);
   });
 
+// `isFile` / `isDirectory` discriminate the entry subtype at runtime; lib.dom
+// only types them as plain booleans, so name the narrowing here.
+const isFileEntry = (entry: FileSystemEntry): entry is FileSystemFileEntry =>
+  entry.isFile;
+const isDirectoryEntry = (
+  entry: FileSystemEntry
+): entry is FileSystemDirectoryEntry => entry.isDirectory;
+
 const traverseEntry = async (
   entry: FileSystemEntry
 ): Promise<PendingFile[]> => {
-  if (entry.isFile) {
-    const file = await entryFile(entry as FileSystemFileEntry);
+  if (isFileEntry(entry)) {
+    const file = await entryFile(entry);
     // fullPath is absolute (`/folder/sub/file.txt`) — strip the leading slash so
     // keys mirror webkitRelativePath and include the dropped folder's name.
     return [{ file, path: entry.fullPath.slice(1) }];
   }
-  if (entry.isDirectory) {
-    const children = await readAllEntries(
-      (entry as FileSystemDirectoryEntry).createReader()
-    );
+  if (isDirectoryEntry(entry)) {
+    const children = await readAllEntries(entry.createReader());
     const nested = await Promise.all(children.map(traverseEntry));
     return nested.flat();
   }
@@ -146,7 +178,11 @@ export interface DropzoneProps {
   files: UseFilesResult;
   /** Key prefix (folder) for explicit keys, e.g. `"docs/"`. Empty = server mints the key. */
   prefix?: string;
-  /** `accept` attribute for the file input, e.g. `"image/*"`. */
+  /**
+   * Accepted file types, e.g. `"image/*"` or `".pdf,.docx"` — the file input's
+   * `accept` filter, also enforced on dropped files (non-matching files are
+   * reported as failed).
+   */
   accept?: string;
   /**
    * Accept whole folders: the picker selects a directory and dropped folders
@@ -170,7 +206,8 @@ export interface DropzoneProps {
  * Drag-and-drop (or click) upload area wired to `files-sdk/react`. Compose with
  * `<DropzoneContent />`, `<DropzoneEmptyState />` and `<DropzoneError />`, or
  * pass your own children. The prompt stays visible after uploads so users can
- * keep adding files.
+ * keep adding files. The zone is a `<button>`, so custom children should be
+ * phrasing content (spans, icons, text) rather than `<div>`s or `<p>`s.
  */
 export const Dropzone = ({
   files,
@@ -205,6 +242,10 @@ export const Dropzone = ({
       const batch = pending.slice(0, maxFiles);
       for (const { file, path } of batch) {
         const name = path || file.name;
+        if (!matchesAccept(file, accept)) {
+          fail(name, file, new Error(`not an accepted file type (${accept})`));
+          continue;
+        }
         if (maxSize && file.size > maxSize) {
           fail(name, file, new Error(`larger than ${formatBytes(maxSize)}`));
           continue;
@@ -246,7 +287,7 @@ export const Dropzone = ({
         );
       }
     },
-    [files, maxFiles, maxSize, onError, onUploaded, prefix]
+    [accept, files, maxFiles, maxSize, onError, onUploaded, prefix]
   );
 
   // Called synchronously from the drop event so collectDropped can grab the
@@ -283,51 +324,70 @@ export const Dropzone = ({
     ]
   );
 
+  // The file input sits beside the button, not inside it (interactive
+  // content can't nest in a <button>), and every built-in state renders
+  // phrasing content (spans) so the button's content model stays valid.
+  //
+  // While uploading, the zone is only *marked* disabled (`aria-disabled`), not
+  // given the `disabled` attribute: a disabled button gets no drag events (and
+  // the Button's `disabled:pointer-events-none` lets them fall through), so a
+  // file dropped mid-upload would reach the page and the browser would
+  // navigate away to open it. Keeping the handlers live lets the drop be
+  // swallowed and ignored instead.
+  const busy = files.isUploading;
   return (
     <DropzoneContext.Provider value={contextValue}>
       <Button
+        aria-disabled={busy || undefined}
         className={cn(
-          "relative flex h-auto w-full flex-col items-center justify-center gap-2 overflow-hidden p-8",
+          "relative flex h-auto w-full flex-col items-center justify-center gap-2 overflow-hidden p-8 whitespace-normal",
           isDragActive && "border-primary ring-primary ring-1",
+          busy && "cursor-not-allowed opacity-50",
           className
         )}
-        disabled={files.isUploading}
-        onClick={open}
+        onClick={() => {
+          if (!busy) {
+            open();
+          }
+        }}
         onDragLeave={() => setIsDragActive(false)}
         onDragOver={(event) => {
           event.preventDefault();
-          setIsDragActive(true);
+          setIsDragActive(!busy);
         }}
         onDrop={(event) => {
           event.preventDefault();
           setIsDragActive(false);
-          void handleDrop(event.dataTransfer);
+          if (!busy) {
+            void handleDrop(event.dataTransfer);
+          }
         }}
         type="button"
         variant="outline"
       >
-        <input
-          accept={accept}
-          aria-label="Upload files"
-          className="hidden"
-          multiple={maxFiles > 1}
-          onChange={(event) => {
-            const picked = [...(event.currentTarget.files ?? [])].map(
-              (file) => ({ file, path: file.webkitRelativePath || "" })
-            );
-            void upload(picked);
-            event.currentTarget.value = "";
-          }}
-          ref={(node) => {
-            inputRef.current = node;
-            // React's types don't know the non-standard directory-picker
-            // attribute, so set it imperatively.
-            node?.toggleAttribute("webkitdirectory", directory);
-          }}
-          type="file"
-        />
         {children}
       </Button>
+      <input
+        accept={accept}
+        aria-label="Upload files"
+        className="hidden"
+        multiple={maxFiles > 1}
+        onChange={(event) => {
+          const picked = [...(event.currentTarget.files ?? [])].map((file) => ({
+            file,
+            path: file.webkitRelativePath || "",
+          }));
+          void upload(picked);
+          event.currentTarget.value = "";
+        }}
+        ref={(node) => {
+          inputRef.current = node;
+          // React's types don't know the non-standard directory-picker
+          // attribute, so set it imperatively.
+          node?.toggleAttribute("webkitdirectory", directory);
+        }}
+        type="file"
+      />
     </DropzoneContext.Provider>
   );
 };
@@ -346,7 +406,7 @@ export const DropzoneEmptyState = ({
     useDropzoneContext();
 
   if (children) {
-    return <div className={className}>{children}</div>;
+    return <span className={cn("block", className)}>{children}</span>;
   }
 
   let countLabel = "1 file";
@@ -363,7 +423,7 @@ export const DropzoneEmptyState = ({
     : "Drag & drop or click to upload";
 
   return (
-    <div
+    <span
       className={cn(
         "flex flex-col items-center justify-center gap-1 text-center",
         className
@@ -374,15 +434,15 @@ export const DropzoneEmptyState = ({
       ) : (
         <UploadIcon className="text-muted-foreground size-6" />
       )}
-      <p className="text-sm font-medium">
+      <span className="text-sm font-medium">
         {isUploading ? "Uploading…" : prompt}
-      </p>
-      <p className="text-muted-foreground text-xs">
+      </span>
+      <span className="text-muted-foreground text-xs">
         {accept ? `${accept} · ` : ""}
         {countLabel}
         {maxSize ? ` · max ${formatBytes(maxSize)}` : ""}
-      </p>
-    </div>
+      </span>
+    </span>
   );
 };
 
@@ -403,18 +463,18 @@ export const DropzoneContent = ({
   }
 
   if (children) {
-    return <div className={className}>{children}</div>;
+    return <span className={cn("block", className)}>{children}</span>;
   }
 
   return (
-    <p
+    <span
       className={cn("flex items-center gap-1.5 text-sm font-medium", className)}
     >
       <CheckCircle2Icon className="text-primary size-4" />
       {uploaded.length === 1
         ? `Uploaded ${uploaded[0].name}`
         : `${uploaded.length} files uploaded`}
-    </p>
+    </span>
   );
 };
 
@@ -432,11 +492,11 @@ export const DropzoneError = ({ className, children }: DropzoneErrorProps) => {
   }
 
   if (children) {
-    return <div className={className}>{children}</div>;
+    return <span className={cn("block", className)}>{children}</span>;
   }
 
   return (
-    <p
+    <span
       className={cn(
         "text-destructive flex items-center gap-1.5 text-sm",
         className
@@ -444,6 +504,6 @@ export const DropzoneError = ({ className, children }: DropzoneErrorProps) => {
     >
       <XCircleIcon className="size-4" />
       {error}
-    </p>
+    </span>
   );
 };
