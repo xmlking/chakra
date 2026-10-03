@@ -4,7 +4,6 @@ export type ThumbnailFile = {
   name: string
   type: string
 }
-
 export type FileThumbnailProps = {
   file: ThumbnailFile | File
   className?: string
@@ -15,16 +14,13 @@ export type FileThumbnailProps = {
   isLoading?: boolean
   hasError?: boolean
 }
-
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ")
 }
-
 // Preview URLs that have completed a reveal this session. View/tab switches
 // remount thumbnails; URLs in this set render instantly instead of replaying
 // the blur-in, so only an image's first load animates.
 const revealedPreviewImageUrls = new Set<string>()
-
 export function FileThumbnailLoadingOverlay() {
   return (
     <div
@@ -36,7 +32,6 @@ export function FileThumbnailLoadingOverlay() {
     </div>
   )
 }
-
 export function FileThumbnail({
   className,
   previewAspectRatio,
@@ -74,16 +69,13 @@ export function FileThumbnail({
     (hasError || imageFailed || (!previewImageUrl && !hasPreviewContent))
   const cancelImageReveal = React.useCallback(() => {
     if (revealFrameRef.current === null) return
-
     window.cancelAnimationFrame(revealFrameRef.current)
     revealFrameRef.current = null
   }, [])
   const markImageLoaded = React.useCallback(
     (image: HTMLImageElement, imageUrl: string | null | undefined) => {
       if (!imageUrl) return
-
       const didLoad = image.naturalWidth > 0 && image.naturalHeight > 0
-
       setFailedPreviewImageUrl(didLoad ? null : imageUrl)
       if (didLoad) {
         revealedPreviewImageUrls.add(imageUrl)
@@ -98,23 +90,17 @@ export function FileThumbnail({
     },
     [cancelImageReveal]
   )
-
   React.useEffect(() => {
     cancelImageReveal()
   }, [cancelImageReveal, previewImageUrl])
-
   React.useEffect(() => cancelImageReveal, [cancelImageReveal])
-
   React.useEffect(() => {
     const image = imageRef.current
-
     if (!image || !previewImageUrl) return
-
     if (image.complete) {
       markImageLoaded(image, previewImageUrl)
     }
   }, [markImageLoaded, previewImageUrl])
-
   return (
     <div
       className={cx(
