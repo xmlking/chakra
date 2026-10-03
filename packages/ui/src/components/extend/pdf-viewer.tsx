@@ -55,11 +55,15 @@ import {
   ViewportElementContext,
   ViewportPluginPackage,
 } from "@embedpdf/plugin-viewport/react"
-import { useZoom, ZoomPluginPackage } from "@embedpdf/plugin-zoom/react"
+import {
+  useZoom,
+  ZoomMode,
+  ZoomPluginPackage,
+} from "@embedpdf/plugin-zoom/react"
 import { flushSync } from "react-dom"
 
 import { loadSharedPdfEngine } from "#lib/pdf-thumbnail-utils"
-import { cn } from "cn"
+import { cn } from "#lib/utils"
 import { Button } from "#components/shadcn/button"
 import {
   DropdownMenu,
@@ -82,7 +86,6 @@ import {
   SelectValue,
 } from "#components/shadcn/select"
 import { Separator } from "#components/shadcn/separator"
-import { Spinner } from "#components/shadcn/spinner"
 import {
   Tooltip,
   TooltipContent,
@@ -95,7 +98,7 @@ import {
   useElementWidth,
   useInlineThumbnailSidebar,
 } from "#components/extend/document-viewer-sidebar"
-import { Search, Ellipsis, Download, Upload, ChevronLeft, ArrowRight, PanelLeft, RotateCw, CircleMinus, CirclePlusIcon } from "lucide-react"
+import { Search, Ellipsis, Download, Upload, ChevronLeft, ArrowRight, PanelLeft, RotateCw, CircleMinus, CirclePlusIcon, LoaderCircle } from "lucide-react"
 
 export type PDFViewerPageOverlayProps = {
   pageNumber: number
@@ -104,24 +107,27 @@ export type PDFViewerPageOverlayProps = {
   scale: number
   rotation: number
 }
-
 export type PDFViewerHandle = {
   scrollToPage: (pageNumber: number, options?: ScrollIntoViewOptions) => void
   scrollToPageArea: (
     pageNumber: number,
-    area: { top: number; left?: number; width?: number; height?: number },
+    area: {
+      top: number
+      left?: number
+      width?: number
+      height?: number
+    },
     options?: ScrollToOptions
   ) => void
   getViewportElement: () => HTMLDivElement | null
 }
-
 export type PDFViewerScrollAreaViewportResolver = (
   container: HTMLDivElement
 ) => HTMLDivElement | null
-
+export type PDFViewerZoomLevel = number | "fit-page" | "fit-width" | "automatic"
 export type PDFViewerProps = {
   className?: string
-  defaultZoom?: number
+  defaultZoom?: PDFViewerZoomLevel
   fileName?: string
   resolveScrollAreaViewport?: PDFViewerScrollAreaViewportResolver
   showDownload?: boolean
@@ -152,7 +158,6 @@ export type PDFViewerProps = {
     pageNumber: number
   ) => void
 }
-
 const DEFAULT_ZOOM = 1
 const ZOOM_OPTIONS = [0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 2]
 const PAGE_GAP = 24
@@ -172,54 +177,59 @@ const THUMBNAIL_FOCUS_RING_CLASS =
   "group-focus-visible/pdf-thumbnail-sidebar:ring-2 group-focus-visible/pdf-thumbnail-sidebar:ring-ring group-focus-visible/pdf-thumbnail-sidebar:ring-offset-1 group-focus-visible/pdf-thumbnail-sidebar:ring-offset-background"
 const DEFAULT_SCROLL_AREA_VIEWPORT_SELECTOR =
   '[data-slot="scroll-area-viewport"]'
-
+const ZOOM_MODE_LABELS: Record<ZoomMode, string> = {
+  [ZoomMode.FitPage]: "Fit page",
+  [ZoomMode.FitWidth]: "Fit width",
+  [ZoomMode.Automatic]: "Automatic",
+}
+function toZoomLevel(level: PDFViewerZoomLevel): ZoomMode | number {
+  if (level === "fit-page") return ZoomMode.FitPage
+  if (level === "fit-width") return ZoomMode.FitWidth
+  if (level === "automatic") return ZoomMode.Automatic
+  return level
+}
+function isZoomMode(value: unknown): value is ZoomMode {
+  return (
+    value === ZoomMode.FitPage ||
+    value === ZoomMode.FitWidth ||
+    value === ZoomMode.Automatic
+  )
+}
 function resolveDefaultScrollAreaViewport(container: HTMLDivElement) {
   return container.querySelector<HTMLDivElement>(
     DEFAULT_SCROLL_AREA_VIEWPORT_SELECTOR
   )
 }
-
 const PDFViewerScrollAreaResolverContext =
   React.createContext<PDFViewerScrollAreaViewportResolver>(
     resolveDefaultScrollAreaViewport
   )
-
 type PageRotationDeltas = Map<number, Rotation>
 type ThumbnailSelectionMode = "replace" | "toggle" | "range"
-
 function getPageIndexRange(from: number, to: number): Set<number> {
   const start = Math.min(from, to)
   const end = Math.max(from, to)
   const range = new Set<number>()
-
   for (let pageIndex = start; pageIndex <= end; pageIndex += 1) {
     range.add(pageIndex)
   }
-
   return range
 }
-
 function arePageIndexSetsEqual(left: Set<number>, right: Set<number>) {
   if (left.size !== right.size) return false
-
   for (const value of left) {
     if (!right.has(value)) return false
   }
-
   return true
 }
-
 function normalizeRotation(rotation: number): Rotation {
   return (((rotation % 4) + 4) % 4) as Rotation
 }
-
 function useSharedPdfEngine() {
   const [engine, setEngine] = React.useState<PdfEngine | null>(null)
   const [error, setError] = React.useState<Error | null>(null)
-
   React.useEffect(() => {
     let cancelled = false
-
     loadSharedPdfEngine().then(
       (loadedEngine) => {
         if (!cancelled) setEngine(loadedEngine)
@@ -228,48 +238,37 @@ function useSharedPdfEngine() {
         if (!cancelled) setError(loadError)
       }
     )
-
     return () => {
       cancelled = true
     }
   }, [])
-
   return { engine, error }
 }
-
 function rotationToDegrees(rotation: Rotation) {
   return (rotation as number) * 90
 }
-
 function normalizeDegrees(rotation: number) {
   return ((rotation % 360) + 360) % 360
 }
-
 function ensurePdfExtension(fileName: string) {
   return fileName.toLowerCase().endsWith(".pdf") ? fileName : `${fileName}.pdf`
 }
-
 function getPdfDownloadFileName(fileName: string | undefined, src: string) {
   if (fileName?.trim()) return ensurePdfExtension(fileName.trim())
-
   const pathname = src.split(/[?#]/)[0] ?? ""
   const rawName = pathname.split("/").pop() || "document.pdf"
-
   try {
     return ensurePdfExtension(decodeURIComponent(rawName))
   } catch {
     return ensurePdfExtension(rawName)
   }
 }
-
 function getRotatedPdfDownloadFileName(fileName: string) {
   return fileName.replace(/\.pdf$/i, "-rotated.pdf")
 }
-
 function downloadBlob(blob: Blob, fileName: string) {
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement("a")
-
   anchor.href = url
   anchor.download = fileName
   anchor.rel = "noopener"
@@ -278,7 +277,6 @@ function downloadBlob(blob: Blob, fileName: string) {
   anchor.remove()
   window.setTimeout(() => URL.revokeObjectURL(url), 0)
 }
-
 async function downloadPdfWithPageRotations({
   fileName,
   pageRotationDeltas,
@@ -289,27 +287,21 @@ async function downloadPdfWithPageRotations({
   src: string
 }) {
   const response = await fetch(src)
-
   if (!response.ok) {
     throw new Error(`Failed to download PDF (${response.status})`)
   }
-
   if (pageRotationDeltas.size === 0) {
     downloadBlob(await response.blob(), fileName)
     return
   }
-
   const [{ PDFDocument, degrees }, pdfBytes] = await Promise.all([
     import("pdf-lib"),
     response.arrayBuffer(),
   ])
   const pdfDocument = await PDFDocument.load(pdfBytes)
-
   pdfDocument.getPages().forEach((page, pageIndex) => {
     const rotationDelta = pageRotationDeltas.get(pageIndex)
-
     if (!rotationDelta) return
-
     page.setRotation(
       degrees(
         normalizeDegrees(
@@ -318,17 +310,14 @@ async function downloadPdfWithPageRotations({
       )
     )
   })
-
   const nextPdfBytes = await pdfDocument.save()
   const nextPdfBuffer = new ArrayBuffer(nextPdfBytes.byteLength)
   new Uint8Array(nextPdfBuffer).set(nextPdfBytes)
-
   downloadBlob(
     new Blob([nextPdfBuffer], { type: "application/pdf" }),
     getRotatedPdfDownloadFileName(fileName)
   )
 }
-
 function getThumbnailMetaForPage({
   page,
   pageIndex,
@@ -351,7 +340,6 @@ function getThumbnailMetaForPage({
   const pageHeight = rotation % 2 === 1 ? page.size.width : page.size.height
   const imageHeight = Math.round(innerWidth * (pageHeight / pageWidth))
   const wrapperHeight = imagePadding + imageHeight + imagePadding + labelHeight
-
   return {
     pageIndex,
     width: innerWidth,
@@ -362,7 +350,6 @@ function getThumbnailMetaForPage({
     padding: imagePadding,
   }
 }
-
 function buildThumbnailLayout({
   basePageRotations,
   pageRotationDeltas,
@@ -383,7 +370,6 @@ function buildThumbnailLayout({
   paddingY: number
 }) {
   if (!pdfDocument) return null
-
   let top = paddingY
   const items = pdfDocument.pages.map((page, pageIndex) => {
     const basePageRotation =
@@ -400,17 +386,14 @@ function buildThumbnailLayout({
       labelHeight,
       top,
     })
-
     top += meta.wrapperHeight + gap
     return meta
   })
-
   return {
     items,
     totalHeight: items.length ? top - gap + paddingY : paddingY * 2,
   }
 }
-
 function getVisibleThumbnailItems({
   buffer,
   clientHeight,
@@ -425,25 +408,20 @@ function getVisibleThumbnailItems({
   if (items.length === 0) return []
   if (clientHeight <= 0)
     return items.slice(0, Math.min(items.length, buffer * 2))
-
   const viewportBottom = scrollTop + clientHeight
   let start = items.findIndex(
     (item) => item.top + item.wrapperHeight >= scrollTop
   )
-
   if (start === -1) start = items.length - 1
-
   let end = start
   while (end < items.length && items[end].top <= viewportBottom) {
     end += 1
   }
-
   return items.slice(
     Math.max(0, start - buffer),
     Math.min(items.length, end + buffer)
   )
 }
-
 function PDFViewerLoadingSkeleton({
   sidebarOpen,
   sidebarInline,
@@ -460,12 +438,11 @@ function PDFViewerLoadingSkeleton({
         />
       ) : null}
       <div className="grid min-w-0 flex-1 place-items-center">
-        <Spinner className="size-4" />
+        <InlineSpinner className="size-4" />
       </div>
     </div>
   )
 }
-
 // Rendered while the engine or document is not ready: same frame and controls
 // as the full viewer, with document-dependent controls disabled.
 function PDFViewerFallbackShell({
@@ -482,7 +459,7 @@ function PDFViewerFallbackShell({
   onUploadFile,
 }: {
   className?: string
-  defaultZoom: number
+  defaultZoom: PDFViewerZoomLevel
   errorMessage?: string
   showDownload: boolean
   showRotateControls: boolean
@@ -505,7 +482,10 @@ function PDFViewerFallbackShell({
         <PDFViewerToolbar
           activePage={1}
           controlsDisabled
-          currentZoomLevel={defaultZoom}
+          currentZoomLevel={
+            typeof defaultZoom === "number" ? defaultZoom : DEFAULT_ZOOM
+          }
+          zoomLevel={toZoomLevel(defaultZoom)}
           numPages={0}
           searchControl={
             <ToolbarTooltip label="Search text">
@@ -520,6 +500,7 @@ function PDFViewerFallbackShell({
               </Button>
             </ToolbarTooltip>
           }
+          sidebarOpen={sidebarOpen}
           showDownload={showDownload}
           showRotateControls={showRotateControls}
           showUpload={showUpload}
@@ -557,7 +538,6 @@ function PDFViewerFallbackShell({
     </div>
   )
 }
-
 function ToolbarTooltip({
   label,
   children,
@@ -567,12 +547,13 @@ function ToolbarTooltip({
 }) {
   return (
     <Tooltip>
-      <TooltipTrigger render={<span className="inline-flex" />}>{children}</TooltipTrigger>
+      <TooltipTrigger
+        render={<span className="inline-flex">{children}</span>}
+      ></TooltipTrigger>
       <TooltipContent side="bottom">{label}</TooltipContent>
     </Tooltip>
   )
 }
-
 function PDFViewerFileActionsMenu({
   downloadDisabled,
   isPreparingDownload = false,
@@ -589,9 +570,7 @@ function PDFViewerFileActionsMenu({
   showUpload?: boolean
 }) {
   const inputRef = React.useRef<HTMLInputElement>(null)
-
   if (!showDownload && !showUpload) return null
-
   return (
     <>
       {showUpload && onUploadFile ? (
@@ -603,7 +582,6 @@ function PDFViewerFileActionsMenu({
           tabIndex={-1}
           onChange={(event) => {
             const nextFile = event.target.files?.[0]
-
             if (nextFile) {
               onUploadFile(nextFile)
               event.currentTarget.value = ""
@@ -612,12 +590,23 @@ function PDFViewerFileActionsMenu({
         />
       ) : null}
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button type="button" variant="ghost" size="icon-sm" aria-label="Open PDF actions" />}><Ellipsis className="size-4" /></DropdownMenuTrigger>
+        <DropdownMenuTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Open PDF actions"
+            >
+              <Ellipsis className="size-4" />
+            </Button>
+          }
+        ></DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
           {showDownload ? (
             <DropdownMenuItem disabled={downloadDisabled} onClick={onDownload}>
               {isPreparingDownload ? (
-                <Spinner className="size-4" />
+                <InlineSpinner className="size-4" />
               ) : (
                 <Download className="size-4" />
               )}
@@ -635,7 +624,6 @@ function PDFViewerFileActionsMenu({
     </>
   )
 }
-
 function PDFViewerPageNumberControl({
   activePage,
   controlsDisabled,
@@ -651,29 +639,21 @@ function PDFViewerPageNumberControl({
   const displayPage = numPages ? activePage : 1
   const [isEditing, setIsEditing] = React.useState(false)
   const [draftPage, setDraftPage] = React.useState(() => String(displayPage))
-
   React.useEffect(() => {
     if (!isEditing) return
-
     inputRef.current?.focus()
     inputRef.current?.select()
   }, [isEditing])
-
   const applyPageDraft = React.useCallback(
     (value: string) => {
       const trimmedValue = value.trim()
-
       if (!trimmedValue) return
-
       const parsedPage = Number(trimmedValue)
-
       if (!Number.isInteger(parsedPage)) return
-
       onPageChange(Math.min(Math.max(parsedPage, 1), Math.max(numPages, 1)))
     },
     [numPages, onPageChange]
   )
-
   return (
     <div className="flex items-center text-sm whitespace-nowrap text-primary">
       <span>Page</span>
@@ -683,13 +663,10 @@ function PDFViewerPageNumberControl({
           aria-label="Page number"
           inputMode="numeric"
           pattern="[0-9]*"
-          size="sm"
           value={draftPage}
-          className="mx-1 w-14 min-w-14 rounded-md [&_[data-slot=input]]:text-center"
           onBlur={() => setIsEditing(false)}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             const nextValue = event.target.value
-
             setDraftPage(nextValue)
             applyPageDraft(nextValue)
           }}
@@ -698,6 +675,10 @@ function PDFViewerPageNumberControl({
               event.currentTarget.blur()
             }
           }}
+          className={cn(
+            "h-8 px-2.5",
+            "mx-1 w-14 min-w-14 rounded-md [&_[data-slot=input]]:text-center"
+          )}
         />
       ) : (
         <Button
@@ -719,7 +700,6 @@ function PDFViewerPageNumberControl({
     </div>
   )
 }
-
 function PDFViewerSearchControl({
   documentId,
   controlsDisabled,
@@ -743,15 +723,11 @@ function PDFViewerSearchControl({
       : state.total
         ? `${state.activeResultIndex + 1} / ${state.total}`
         : "No results"
-
   const scrollToResult = React.useCallback(
     (index: number) => {
       const result = state.results[index]
-
       if (!result || !scroll) return
-
       const firstRect = result.rects[0]
-
       scroll.scrollToPage({
         pageNumber: result.pageIndex + 1,
         ...(firstRect
@@ -768,44 +744,35 @@ function PDFViewerSearchControl({
     },
     [scroll, state.results]
   )
-
   React.useEffect(() => {
     providesRef.current = provides
     scrollRef.current = scroll
   }, [provides, scroll])
-
   const runSearch = React.useCallback((rawQuery: string) => {
     const query = rawQuery.trim()
     const requestId = searchRequestIdRef.current + 1
     searchRequestIdRef.current = requestId
     setSearchQuery(query)
-
     const searchProvider = providesRef.current
     const scrollProvider = scrollRef.current
-
     if (!searchProvider) {
       setIsSearching(false)
       return
     }
-
     if (!query) {
       searchProvider.stopSearch()
       setIsSearching(false)
       return
     }
-
     setIsSearching(true)
     searchProvider.startSearch()
     searchProvider.searchAllPages(query).wait(
       (result) => {
         if (searchRequestIdRef.current !== requestId) return
-
         const firstResult = result.results[0]
-
         if (firstResult && scrollProvider) {
           searchProvider.goToResult(0)
           const firstRect = firstResult.rects[0]
-
           scrollProvider.scrollToPage({
             pageNumber: firstResult.pageIndex + 1,
             ...(firstRect
@@ -828,28 +795,21 @@ function PDFViewerSearchControl({
       }
     )
   }, [])
-
   React.useEffect(() => {
     if (!searchDraft.trim()) return
-
     const timeoutId = window.setTimeout(() => {
       runSearch(searchDraft)
     }, PDF_SEARCH_DEBOUNCE_MS)
-
     return () => window.clearTimeout(timeoutId)
   }, [runSearch, searchDraft])
-
   const handleSearchDraftChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const nextDraft = event.target.value
-
       setSearchDraft(nextDraft)
-
       if (nextDraft.trim()) {
         setIsSearching(true)
         return
       }
-
       searchRequestIdRef.current += 1
       setSearchQuery("")
       setIsSearching(false)
@@ -857,7 +817,6 @@ function PDFViewerSearchControl({
     },
     [provides]
   )
-
   const clearSearch = React.useCallback(() => {
     searchRequestIdRef.current += 1
     setSearchDraft("")
@@ -865,23 +824,31 @@ function PDFViewerSearchControl({
     setIsSearching(false)
     provides?.stopSearch()
   }, [provides])
-
   const navigate = React.useCallback(
     (direction: 1 | -1) => {
       if (!provides || state.total === 0) return
-
       const index =
         direction === 1 ? provides.nextResult() : provides.previousResult()
-
       scrollToResult(index)
     },
     [provides, scrollToResult, state.total]
   )
-
   return (
     <Popover>
       <ToolbarTooltip label="Search text">
-        <PopoverTrigger render={<Button type="button" variant="ghost" size="icon-sm" aria-label="Search text" disabled={controlsDisabled} />}><Search className="size-4" /></PopoverTrigger>
+        <PopoverTrigger
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Search text"
+              disabled={controlsDisabled}
+            >
+              <Search className="size-4" />
+            </Button>
+          }
+        ></PopoverTrigger>
       </ToolbarTooltip>
       <PopoverContent align="end" className="w-72">
         <div className="space-y-3">
@@ -891,7 +858,6 @@ function PDFViewerSearchControl({
             onChange={handleSearchDraftChange}
             onKeyDown={(event) => {
               if (event.key !== "Enter") return
-
               event.preventDefault()
               if (event.shiftKey && state.total) {
                 navigate(-1)
@@ -955,7 +921,6 @@ function PDFViewerSearchControl({
     </Popover>
   )
 }
-
 function PDFViewerToolbar({
   activePage,
   controlsDisabled,
@@ -964,6 +929,7 @@ function PDFViewerToolbar({
   isPreparingDownload = false,
   numPages,
   searchControl,
+  sidebarOpen,
   showDownload,
   showRotateControls,
   showUpload,
@@ -974,6 +940,7 @@ function PDFViewerToolbar({
   onToggleSidebar,
   onUploadFile,
   onZoomChange,
+  zoomLevel,
 }: {
   activePage: number
   controlsDisabled: boolean
@@ -982,6 +949,7 @@ function PDFViewerToolbar({
   isPreparingDownload?: boolean
   numPages: number
   searchControl: React.ReactNode
+  sidebarOpen: boolean
   showDownload: boolean
   showRotateControls: boolean
   showUpload: boolean
@@ -991,18 +959,33 @@ function PDFViewerToolbar({
   onRotate: (direction: 1 | -1) => void
   onToggleSidebar: () => void
   onUploadFile?: (file: File) => void
-  onZoomChange: (zoomLevel: number) => void
+  onZoomChange: (zoomLevel: ZoomMode | number) => void
+  zoomLevel: ZoomMode | number
 }) {
+  const selectValue = isZoomMode(zoomLevel)
+    ? zoomLevel
+    : String(Number(currentZoomLevel.toFixed(2)))
+  const zoomOptions = ZOOM_OPTIONS.includes(Number(currentZoomLevel.toFixed(2)))
+    ? ZOOM_OPTIONS
+    : [...ZOOM_OPTIONS, Number(currentZoomLevel.toFixed(2))].sort(
+        (left, right) => left - right
+      )
   return (
     <div className="flex min-h-12 flex-wrap items-center justify-between gap-2 border-b bg-background px-3 py-2">
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <TooltipProvider>
-          <ToolbarTooltip label="Toggle thumbnails">
+          <ToolbarTooltip label="Pages sidebar">
             <Button
               type="button"
               variant="ghost"
               size="icon-sm"
-              aria-label="Toggle thumbnails"
+              aria-label="Pages sidebar"
+              aria-pressed={sidebarOpen}
+              data-active={sidebarOpen ? "" : undefined}
+              className={cn(
+                sidebarOpen &&
+                  "bg-accent text-accent-foreground ring-1 ring-ring/40 ring-inset"
+              )}
               disabled={controlsDisabled}
               onClick={onToggleSidebar}
             >
@@ -1067,7 +1050,6 @@ function PDFViewerToolbar({
                   const nextZoom = [...ZOOM_OPTIONS]
                     .reverse()
                     .find((option) => option < currentZoomLevel)
-
                   onZoomChange(nextZoom ?? ZOOM_OPTIONS[0])
                 }}
               >
@@ -1075,18 +1057,30 @@ function PDFViewerToolbar({
               </Button>
             </ToolbarTooltip>
             <Select
-              value={String(currentZoomLevel)}
-              onValueChange={(value) => onZoomChange(Number(value))}
+              value={selectValue}
+              onValueChange={(value) => {
+                const next = String(value)
+                onZoomChange(isZoomMode(next) ? next : Number(next))
+              }}
               disabled={controlsDisabled}
               modal={false}
             >
-              <SelectTrigger size="sm" className="w-[84px] min-w-[84px]">
+              <SelectTrigger
+                size="sm"
+                className="w-[104px] min-w-[104px]"
+                aria-label="Zoom level"
+              >
                 <SelectValue placeholder="Zoom">
                   {Math.round(currentZoomLevel * 100)}%
                 </SelectValue>
               </SelectTrigger>
               <SelectContent alignItemWithTrigger={false}>
-                {ZOOM_OPTIONS.map((option) => (
+                {(Object.keys(ZOOM_MODE_LABELS) as ZoomMode[]).map((mode) => (
+                  <SelectItem key={mode} value={mode}>
+                    {ZOOM_MODE_LABELS[mode]}
+                  </SelectItem>
+                ))}
+                {zoomOptions.map((option) => (
                   <SelectItem key={option} value={String(option)}>
                     {Math.round(option * 100)}%
                   </SelectItem>
@@ -1107,7 +1101,6 @@ function PDFViewerToolbar({
                   const nextZoom = ZOOM_OPTIONS.find(
                     (option) => option > currentZoomLevel
                   )
-
                   onZoomChange(
                     nextZoom ?? ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1]
                   )
@@ -1149,17 +1142,14 @@ function PDFViewerToolbar({
     </div>
   )
 }
-
 function setPdfViewerRef<T>(ref: React.Ref<T> | undefined, value: T | null) {
   if (!ref) return
-
   if (typeof ref === "function") {
     ref(value)
   } else {
     ref.current = value
   }
 }
-
 function PDFViewerScrollArea({
   children,
   className,
@@ -1179,32 +1169,25 @@ function PDFViewerScrollArea({
   const containerRef = React.useRef<HTMLDivElement | null>(null)
   const { className: viewportPropsClassName, ...resolvedViewportProps } =
     viewportProps ?? {}
-
   const setViewportRef = React.useCallback(
     (viewport: HTMLDivElement | null) => {
       setPdfViewerRef(viewportRef, viewport)
     },
     [viewportRef]
   )
-
   React.useLayoutEffect(() => {
     const container = containerRef.current
     if (!container) return
-
     const viewport = resolveScrollAreaViewport(container)
-
     if (!viewport) {
       console.error(
         `PDFViewer could not resolve the scroll viewport. Add ${DEFAULT_SCROLL_AREA_VIEWPORT_SELECTOR} to your ScrollArea viewport or pass resolveScrollAreaViewport.`
       )
       return
     }
-
     setViewportRef(viewport)
-
     return () => setViewportRef(null)
   }, [resolveScrollAreaViewport, setViewportRef])
-
   return (
     <div
       ref={containerRef}
@@ -1227,7 +1210,6 @@ function PDFViewerScrollArea({
     </div>
   )
 }
-
 function PDFViewerThumbnails({
   basePageRotations,
   documentId,
@@ -1250,14 +1232,11 @@ function PDFViewerThumbnails({
   const thumbnailListboxId = React.useId()
   const activeDescendantId =
     activePage > 0 ? `${thumbnailListboxId}-page-${activePage}` : undefined
-
   const handleKeyDown = React.useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (pageCount < 1) return
-
       const currentPage = activePage > 0 ? activePage : 1
       let nextPage: number | null = null
-
       if (event.key === "ArrowDown") {
         nextPage = Math.min(pageCount, currentPage + 1)
       } else if (event.key === "ArrowUp") {
@@ -1271,15 +1250,12 @@ function PDFViewerThumbnails({
         onSelectPage(currentPage, "toggle")
         return
       }
-
       if (nextPage === null) return
-
       event.preventDefault()
       onSelectPage(nextPage, event.shiftKey ? "range" : "replace")
     },
     [activePage, onSelectPage, pageCount]
   )
-
   return (
     <PDFViewerThumbnailScrollArea
       activeDescendantId={activeDescendantId}
@@ -1310,7 +1286,6 @@ function PDFViewerThumbnails({
                     : `rotate(${rotationToDegrees(pageRotationDelta)}deg)`,
                 width: meta.width,
               }
-
         return (
           <div
             key={meta.pageIndex}
@@ -1344,7 +1319,6 @@ function PDFViewerThumbnails({
                   : event.metaKey || event.ctrlKey
                     ? "toggle"
                     : "replace"
-
                 onSelectPage(pageNumber, mode)
               }}
             >
@@ -1378,7 +1352,6 @@ function PDFViewerThumbnails({
     </PDFViewerThumbnailScrollArea>
   )
 }
-
 function PDFViewerThumbnailScrollArea({
   activeDescendantId,
   basePageRotations,
@@ -1406,12 +1379,10 @@ function PDFViewerThumbnailScrollArea({
     () => thumbnailPlugin?.provides().forDocument(documentId) ?? null,
     [documentId, thumbnailPlugin]
   )
-
   const windowState = React.useSyncExternalStore(
     React.useCallback(
       (onStoreChange) => {
         if (!thumbnailScope) return () => undefined
-
         return thumbnailScope.onWindow(() => onStoreChange())
       },
       [thumbnailScope]
@@ -1446,14 +1417,12 @@ function PDFViewerThumbnailScrollArea({
   )
   const effectiveWindowState = React.useMemo(() => {
     if (!thumbnailLayout) return windowState
-
     const items = getVisibleThumbnailItems({
       buffer: thumbnailPlugin?.cfg.buffer ?? 3,
       clientHeight: viewportMetrics.clientHeight,
       items: thumbnailLayout.items,
       scrollTop: viewportMetrics.scrollTop,
     })
-
     return {
       start: items[0]?.pageIndex ?? -1,
       end: items.at(-1)?.pageIndex ?? -1,
@@ -1461,11 +1430,9 @@ function PDFViewerThumbnailScrollArea({
       totalHeight: thumbnailLayout.totalHeight,
     }
   }, [thumbnailLayout, thumbnailPlugin, viewportMetrics, windowState])
-
   React.useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport || !thumbnailScope) return
-
     const updateWindow = () => {
       setViewportMetrics({
         clientHeight: viewport.clientHeight,
@@ -1473,20 +1440,16 @@ function PDFViewerThumbnailScrollArea({
       })
       thumbnailScope.updateWindow(viewport.scrollTop, viewport.clientHeight)
     }
-
     viewport.addEventListener("scroll", updateWindow)
     const frame = window.requestAnimationFrame(updateWindow)
-
     return () => {
       window.cancelAnimationFrame(frame)
       viewport.removeEventListener("scroll", updateWindow)
     }
   }, [thumbnailScope])
-
   React.useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport || !thumbnailScope) return
-
     const resizeObserver = new ResizeObserver(() => {
       setViewportMetrics({
         clientHeight: viewport.clientHeight,
@@ -1494,28 +1457,21 @@ function PDFViewerThumbnailScrollArea({
       })
       thumbnailScope.updateWindow(viewport.scrollTop, viewport.clientHeight)
     })
-
     resizeObserver.observe(viewport)
-
     return () => resizeObserver.disconnect()
   }, [thumbnailScope])
-
   React.useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport || !thumbnailScope) return
-
     thumbnailScope.updateWindow(viewport.scrollTop, viewport.clientHeight)
   }, [thumbnailLayout, thumbnailScope, windowState])
-
   React.useEffect(() => {
     const viewport = viewportRef.current
     if (!viewport || !thumbnailScope || !hasWindowState) return
-
     return thumbnailScope.onScrollTo(({ top, behavior }) => {
       viewport.scrollTo({ top, behavior })
     })
   }, [hasWindowState, thumbnailScope])
-
   return (
     <PDFViewerScrollArea
       className="h-full w-full"
@@ -1546,7 +1502,6 @@ function PDFViewerThumbnailScrollArea({
     </PDFViewerScrollArea>
   )
 }
-
 function PDFViewerScrollAreaViewport({
   children,
   className,
@@ -1560,7 +1515,6 @@ function PDFViewerScrollAreaViewport({
   const { provides: viewport } = useViewportCapability()
   const isGated = useIsViewportGated(documentId)
   const viewportGap = viewport?.getViewportGap() ?? 0
-
   return (
     <ViewportElementContext.Provider value={viewportRef}>
       <PDFViewerScrollArea
@@ -1578,7 +1532,6 @@ function PDFViewerScrollAreaViewport({
     </ViewportElementContext.Provider>
   )
 }
-
 // Captures the scrollable viewport element so the imperative handle can expose
 // it.
 function PDFViewerViewportBridge({
@@ -1587,14 +1540,11 @@ function PDFViewerViewportBridge({
   viewportElementRef: React.MutableRefObject<HTMLDivElement | null>
 }) {
   const elementRef = useViewportElement()
-
   React.useEffect(() => {
     viewportElementRef.current = elementRef?.current ?? null
   })
-
   return null
 }
-
 function PDFViewerTextSelectionLayer({
   documentId,
   pageIndex,
@@ -1606,10 +1556,8 @@ function PDFViewerTextSelectionLayer({
 }) {
   const { plugin: selectionPlugin } = useSelectionPlugin()
   const [rects, setRects] = React.useState<Rect[]>([])
-
   React.useEffect(() => {
     if (!selectionPlugin) return
-
     return selectionPlugin.registerSelectionOnPage({
       documentId,
       pageIndex,
@@ -1618,9 +1566,7 @@ function PDFViewerTextSelectionLayer({
       },
     })
   }, [documentId, pageIndex, selectionPlugin])
-
   if (!rects.length) return null
-
   return (
     <>
       {rects.map((rect, index) => (
@@ -1639,7 +1585,6 @@ function PDFViewerTextSelectionLayer({
     </>
   )
 }
-
 function PDFViewerSelectionReleaseGuard({
   documentId,
 }: {
@@ -1648,48 +1593,38 @@ function PDFViewerSelectionReleaseGuard({
   const { plugin: selectionPlugin } = useSelectionPlugin()
   const { provides: selection } = useSelectionCapability()
   const lastSelectionModeIdRef = React.useRef<string | null>(null)
-
   React.useEffect(() => {
     if (!selection) return
-
     return selection.forDocument(documentId).onBeginSelection(({ modeId }) => {
       lastSelectionModeIdRef.current = modeId
     })
   }, [documentId, selection])
-
   React.useEffect(() => {
     if (!selection) return
-
     let cleanupFrame = 0
     const finalizeIfStillSelecting = () => {
       window.cancelAnimationFrame(cleanupFrame)
       cleanupFrame = window.requestAnimationFrame(() => {
         const selectionState = selection.getState(documentId)
-
         if (!selectionState.selecting) return
-
         if (selectionState.selection && selectionPlugin) {
           const pluginWithEndSelection = selectionPlugin as unknown as {
             endSelection?: (documentId: string, modeId: string) => void
           }
-
           pluginWithEndSelection.endSelection?.(
             documentId,
             lastSelectionModeIdRef.current ?? "pointerMode"
           )
           return
         }
-
         if (!selectionState.selection) {
           selection.clear(documentId)
         }
       })
     }
-
     window.addEventListener("pointerup", finalizeIfStillSelecting)
     window.addEventListener("pointercancel", finalizeIfStillSelecting)
     window.addEventListener("blur", finalizeIfStillSelecting)
-
     return () => {
       window.cancelAnimationFrame(cleanupFrame)
       window.removeEventListener("pointerup", finalizeIfStillSelecting)
@@ -1697,59 +1632,44 @@ function PDFViewerSelectionReleaseGuard({
       window.removeEventListener("blur", finalizeIfStillSelecting)
     }
   }, [documentId, selection, selectionPlugin])
-
   return null
 }
-
 function isEditableCopyTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false
-
   if (target.isContentEditable) return true
-
   return Boolean(target.closest("input, textarea, [contenteditable='true']"))
 }
-
 function PDFViewerSelectionCopyShortcut({
   documentId,
 }: {
   documentId: string
 }) {
   const { provides: selection } = useSelectionCapability()
-
   React.useEffect(() => {
     if (!selection) return
-
     const copySelectedPdfText = (event: Event) => {
       if (isEditableCopyTarget(event.target)) return
       if (!selection.getState(documentId).selection) return
-
       event.preventDefault()
       selection.copyToClipboard(documentId)
     }
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() !== "c") return
       if (!event.metaKey && !event.ctrlKey) return
-
       copySelectedPdfText(event)
     }
-
     document.addEventListener("copy", copySelectedPdfText)
     document.addEventListener("keydown", handleKeyDown)
-
     return () => {
       document.removeEventListener("copy", copySelectedPdfText)
       document.removeEventListener("keydown", handleKeyDown)
     }
   }, [documentId, selection])
-
   return null
 }
-
 function isQuarterTurn(rotation: Rotation) {
   return rotation % 2 === 1
 }
-
 function getRotatedDimensions({
   height,
   rotation,
@@ -1763,7 +1683,6 @@ function getRotatedDimensions({
     ? { height: width, width: height }
     : { height, width }
 }
-
 function getRotatedPageDimensions(page: PageLayout, rotation: Rotation) {
   return getRotatedDimensions({
     height: page.height,
@@ -1771,7 +1690,6 @@ function getRotatedPageDimensions(page: PageLayout, rotation: Rotation) {
     width: page.width,
   })
 }
-
 function applyPageRotationDeltasToScrollerLayout({
   basePageRotations,
   layout,
@@ -1782,7 +1700,6 @@ function applyPageRotationDeltasToScrollerLayout({
   pageRotationDeltas: PageRotationDeltas
 }): ScrollerLayout {
   if (pageRotationDeltas.size === 0) return layout
-
   let maxWidth = 0
   let maxHeight = 0
   let offset = 0
@@ -1807,7 +1724,6 @@ function applyPageRotationDeltasToScrollerLayout({
         layout.strategy === ScrollStrategy.Horizontal
           ? rotatedSize.width
           : rotatedSize.height
-
       if (
         layout.startSpacing === 0 &&
         itemIndex === 0 &&
@@ -1819,7 +1735,6 @@ function applyPageRotationDeltasToScrollerLayout({
           (oldScrollAxisSize - newScrollAxisSize) / 2
         )
       }
-
       const nextPageLayout = {
         ...page,
         rotatedHeight: rotatedSize.height,
@@ -1827,7 +1742,6 @@ function applyPageRotationDeltasToScrollerLayout({
         x: layout.strategy === ScrollStrategy.Horizontal ? 0 : pageOffset,
         y: layout.strategy === ScrollStrategy.Horizontal ? pageOffset : 0,
       }
-
       pageOffset +=
         (layout.strategy === ScrollStrategy.Horizontal
           ? rotatedSize.height
@@ -1840,10 +1754,8 @@ function applyPageRotationDeltasToScrollerLayout({
         layout.strategy === ScrollStrategy.Horizontal
           ? itemHeight + rotatedSize.height
           : Math.max(itemHeight, rotatedSize.height)
-
       return nextPageLayout
     })
-
     if (pageLayouts.length > 1) {
       if (layout.strategy === ScrollStrategy.Horizontal) {
         itemHeight -= pageGap
@@ -1851,7 +1763,6 @@ function applyPageRotationDeltasToScrollerLayout({
         itemWidth -= pageGap
       }
     }
-
     const nextItem = {
       ...item,
       height: itemHeight,
@@ -1861,7 +1772,6 @@ function applyPageRotationDeltasToScrollerLayout({
       x: layout.strategy === ScrollStrategy.Horizontal ? offset : item.x,
       y: layout.strategy === ScrollStrategy.Horizontal ? item.y : offset,
     }
-
     if (layout.strategy === ScrollStrategy.Horizontal) {
       offset += itemWidth + pageGap
       maxHeight = Math.max(maxHeight, itemHeight)
@@ -1869,14 +1779,11 @@ function applyPageRotationDeltasToScrollerLayout({
       offset += itemHeight + pageGap
       maxWidth = Math.max(maxWidth, itemWidth)
     }
-
     return nextItem
   })
-
   if (items.length > 0) {
     offset -= pageGap
   }
-
   return {
     ...layout,
     endSpacing: layout.endSpacing,
@@ -1898,7 +1805,6 @@ function applyPageRotationDeltasToScrollerLayout({
         : maxWidth,
   }
 }
-
 function PDFViewerScroller({
   documentId,
   pageRotationDeltas,
@@ -1915,11 +1821,9 @@ function PDFViewerScroller({
     docId: string | null
     layout: ScrollerLayout | null
   }>({ docId: null, layout: null })
-
   React.useEffect(() => {
     if (!scrollPlugin || !documentId) return
     let frame = 0
-
     const setCurrentLayout = () => {
       try {
         setLayoutData({
@@ -1930,13 +1834,10 @@ function PDFViewerScroller({
         setLayoutData({ docId: documentId, layout: null })
       }
     }
-
     const unsubscribe = scrollPlugin.onScrollerData(documentId, (layout) => {
       setLayoutData({ docId: documentId, layout })
     })
-
     frame = window.requestAnimationFrame(setCurrentLayout)
-
     return () => {
       window.cancelAnimationFrame(frame)
       unsubscribe()
@@ -1944,24 +1845,19 @@ function PDFViewerScroller({
       scrollPlugin.clearLayoutReady(documentId)
     }
   }, [documentId, scrollPlugin])
-
   const scrollerLayout = React.useMemo(() => {
     if (layoutData.docId !== documentId || !layoutData.layout) return null
-
     return applyPageRotationDeltasToScrollerLayout({
       basePageRotations,
       layout: layoutData.layout,
       pageRotationDeltas,
     })
   }, [basePageRotations, documentId, layoutData, pageRotationDeltas])
-
   React.useLayoutEffect(() => {
     if (!scrollPlugin || !documentId || !scrollerLayout) return
     scrollPlugin.setLayoutReady(documentId)
   }, [documentId, scrollPlugin, scrollerLayout])
-
   if (!scrollerLayout) return null
-
   return (
     <div
       style={{
@@ -2050,13 +1946,12 @@ function PDFViewerScroller({
     </div>
   )
 }
-
 type PDFViewerInnerProps = {
   viewerRef: React.ForwardedRef<PDFViewerHandle>
   pdfFile: string
   documentId: string
   document: PdfDocumentObject | null
-  defaultZoom: number
+  defaultZoom: PDFViewerZoomLevel
   className?: string
   fileName?: string
   showDownload: boolean
@@ -2074,7 +1969,6 @@ type PDFViewerInnerProps = {
   onPagePointerCancel?: PDFViewerProps["onPagePointerCancel"]
   onUploadFile: (file: File) => void
 }
-
 function PDFViewerInner({
   viewerRef,
   pdfFile,
@@ -2123,7 +2017,6 @@ function PDFViewerInner({
   const selectionAnchorPageIndexRef = React.useRef<number | null>(null)
   const suppressActivePageSelectionSyncRef = React.useRef<number | null>(null)
   const initializedSelectionDocumentRef = React.useRef<string | null>(null)
-
   const activePage = scrollState.currentPage
   const numPages = pdfDocument?.pageCount ?? 0
   const isLoading = !pdfDocument
@@ -2132,31 +2025,22 @@ function PDFViewerInner({
   const thumbnailSidebarVisible = sidebarOpen && !isLoading
   const currentZoomLevel = zoomState.currentZoomLevel
   const alignedThumbnailSidebarDocumentRef = React.useRef<string | null>(null)
-
   React.useEffect(() => {
     pageRotationDeltasRef.current = pageRotationDeltas
   }, [pageRotationDeltas])
-
   React.useEffect(() => {
     selectedPageIndexesRef.current = selectedPageIndexes
   }, [selectedPageIndexes])
-
   React.useEffect(() => {
     if (activePage > 0) onActivePageChange?.(activePage)
   }, [activePage, onActivePageChange])
-
   React.useEffect(() => {
     if (activePage < 1 || numPages < 1) return
-
     const activePageIndex = activePage - 1
     const suppressedPageIndex = suppressActivePageSelectionSyncRef.current
-
     suppressActivePageSelectionSyncRef.current = null
-
     if (suppressedPageIndex === activePageIndex) return
-
     const nextSelection = new Set([activePageIndex])
-
     selectionAnchorPageIndexRef.current = activePageIndex
     selectedPageIndexesRef.current = nextSelection
     setSelectedPageIndexes((previousSelection) =>
@@ -2165,7 +2049,6 @@ function PDFViewerInner({
         : nextSelection
     )
   }, [activePage, numPages])
-
   React.useEffect(() => {
     if (
       numPages < 1 ||
@@ -2173,22 +2056,18 @@ function PDFViewerInner({
     ) {
       return
     }
-
     const initialPageIndex = Math.max(0, (activePage > 0 ? activePage : 1) - 1)
     const initialSelection = new Set([initialPageIndex])
-
     initializedSelectionDocumentRef.current = documentId
     selectionAnchorPageIndexRef.current = initialPageIndex
     selectedPageIndexesRef.current = initialSelection
     setSelectedPageIndexes(initialSelection)
   }, [activePage, documentId, numPages])
-
   React.useEffect(() => {
     if (!thumbnailSidebarVisible) {
       alignedThumbnailSidebarDocumentRef.current = null
       return
     }
-
     if (
       activePage < 1 ||
       !thumbnails ||
@@ -2196,15 +2075,12 @@ function PDFViewerInner({
     ) {
       return
     }
-
     alignedThumbnailSidebarDocumentRef.current = documentId
     const frame = window.requestAnimationFrame(() => {
       thumbnails.forDocument(documentId).scrollToThumb(activePage - 1)
     })
-
     return () => window.cancelAnimationFrame(frame)
   }, [activePage, documentId, thumbnailSidebarVisible, thumbnails])
-
   // The zoom plugin only releases its viewport gate for mode-based zoom
   // levels (automatic/fit); with a numeric default the gate would never
   // lift, so apply the initial zoom explicitly once the document loads.
@@ -2212,11 +2088,9 @@ function PDFViewerInner({
   React.useEffect(() => {
     if (!pdfDocument || !zoom) return
     if (initialZoomDocumentRef.current === documentId) return
-
     initialZoomDocumentRef.current = documentId
-    zoom.requestZoom(defaultZoom)
+    zoom.requestZoom(toZoomLevel(defaultZoom))
   }, [defaultZoom, documentId, pdfDocument, zoom])
-
   const scrollToPage = React.useCallback(
     (pageNumber: number, options?: ScrollIntoViewOptions) => {
       scroll?.scrollToPage({
@@ -2226,55 +2100,43 @@ function PDFViewerInner({
     },
     [scroll]
   )
-
   const selectThumbnailPage = React.useCallback(
     (pageNumber: number, mode: ThumbnailSelectionMode) => {
       const pageIndex = pageNumber - 1
-
       if (pageIndex < 0 || pageIndex >= numPages) return
-
       suppressActivePageSelectionSyncRef.current = pageIndex
-
       setSelectedPageIndexes((previousSelection) => {
         let nextSelection: Set<number>
-
         if (mode === "range") {
           const anchorPageIndex =
             selectionAnchorPageIndexRef.current ??
             (activePage > 0 ? activePage - 1 : pageIndex)
-
           nextSelection = getPageIndexRange(anchorPageIndex, pageIndex)
         } else if (mode === "toggle") {
           nextSelection = new Set(previousSelection)
-
           if (nextSelection.has(pageIndex)) {
             nextSelection.delete(pageIndex)
           } else {
             nextSelection.add(pageIndex)
           }
-
           selectionAnchorPageIndexRef.current = pageIndex
         } else {
           nextSelection = new Set([pageIndex])
           selectionAnchorPageIndexRef.current = pageIndex
         }
-
         selectedPageIndexesRef.current = nextSelection
         return nextSelection
       })
-
       scrollToPage(pageNumber)
     },
     [activePage, numPages, scrollToPage]
   )
-
   React.useImperativeHandle(
     viewerRef,
     () => ({
       scrollToPage,
       scrollToPageArea: (pageNumber, area, options) => {
         const pageSize = pdfDocument?.pages[pageNumber - 1]?.size
-
         scroll?.scrollToPage({
           pageNumber,
           ...(pageSize
@@ -2293,12 +2155,9 @@ function PDFViewerInner({
     }),
     [pdfDocument, scroll, scrollToPage]
   )
-
   const handleDownload = React.useCallback(async () => {
     if (!pdfFile || isPreparingDownload) return
-
     setIsPreparingDownload(true)
-
     try {
       await downloadPdfWithPageRotations({
         fileName: getPdfDownloadFileName(fileName, pdfFile),
@@ -2311,11 +2170,9 @@ function PDFViewerInner({
       setIsPreparingDownload(false)
     }
   }, [fileName, isPreparingDownload, pageRotationDeltas, pdfFile])
-
   const rotateSelectedPages = React.useCallback(
     (direction: -1 | 1) => {
       if (!pdfDocument || !registry || activePage < 1) return
-
       const documentState = registry.getStore().getState().core.documents[
         documentId
       ]
@@ -2331,9 +2188,7 @@ function PDFViewerInner({
       )
         .filter((pageIndex) => currentDocument.pages[pageIndex])
         .sort((a, b) => a - b)
-
       if (targetPageIndexes.length === 0) return
-
       const previousDeltas = pageRotationDeltasRef.current
       const nextDeltas = new Map(previousDeltas)
       const referencePageIndex =
@@ -2341,11 +2196,9 @@ function PDFViewerInner({
           ? activePage - 1
           : targetPageIndexes[0]
       let scrollDelta = 0
-
       for (const pageIndex of targetPageIndexes) {
         const currentPage = currentDocument.pages[pageIndex]
         if (!currentPage) continue
-
         const previousDelta = previousDeltas.get(pageIndex) ?? 0
         const nextDelta = normalizeRotation(previousDelta + direction)
         const basePageRotation =
@@ -2366,29 +2219,24 @@ function PDFViewerInner({
           width: currentPage.size.width * currentZoomLevel,
         })
         const heightDelta = nextRotatedSize.height - previousRotatedSize.height
-
         if (pageIndex < referencePageIndex) {
           scrollDelta += heightDelta
         } else if (pageIndex === referencePageIndex) {
           scrollDelta += heightDelta / 2
         }
-
         if (nextDelta) {
           nextDeltas.set(pageIndex, nextDelta)
         } else {
           nextDeltas.delete(pageIndex)
         }
       }
-
       const store = registry.getStore()
       const viewport = viewportElementRef.current
-
       pageRotationDeltasRef.current = nextDeltas
       flushSync(() => {
         setPageRotationDeltas(nextDeltas)
         store.dispatchToCore(refreshPages(documentId, targetPageIndexes))
       })
-
       if (viewport && scrollDelta !== 0) {
         viewport.scrollTop += scrollDelta
       }
@@ -2408,7 +2256,6 @@ function PDFViewerInner({
       thumbnailPlugin,
     ]
   )
-
   const handleUpload = React.useCallback(
     (file: File) => {
       onUploadFile(file)
@@ -2416,7 +2263,6 @@ function PDFViewerInner({
     },
     [onPdfUpload, onUploadFile]
   )
-
   const renderPage = React.useCallback(
     (page: PageLayout) => {
       const pageNumber = page.pageNumber
@@ -2427,7 +2273,6 @@ function PDFViewerInner({
       const pageRotation = normalizeRotation(
         basePageRotation + (pageRotationDeltas.get(page.pageIndex) ?? 0)
       )
-
       return (
         <Rotate
           documentId={documentId}
@@ -2512,7 +2357,6 @@ function PDFViewerInner({
       pdfDocument,
     ]
   )
-
   return (
     <div
       data-slot="pdf-viewer"
@@ -2536,6 +2380,7 @@ function PDFViewerInner({
               controlsDisabled={controlsDisabled}
             />
           }
+          sidebarOpen={sidebarOpen}
           showDownload={showDownload}
           showRotateControls={showRotateControls}
           showUpload={showUpload}
@@ -2546,6 +2391,7 @@ function PDFViewerInner({
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
           onUploadFile={handleUpload}
           onZoomChange={(zoomLevel) => zoom?.requestZoom(zoomLevel)}
+          zoomLevel={zoomState.zoomLevel}
         />
       ) : null}
       <div
@@ -2600,7 +2446,6 @@ function PDFViewerInner({
     </div>
   )
 }
-
 function PDFViewerDocumentLoader({
   pdfFile,
   onDocumentLoadSuccess,
@@ -2614,25 +2459,20 @@ function PDFViewerDocumentLoader({
   const [loadError, setLoadError] = React.useState(false)
   const openedFileRef = React.useRef<string | null>(null)
   const onDocumentLoadSuccessRef = React.useRef(onDocumentLoadSuccess)
-
   React.useEffect(() => {
     onDocumentLoadSuccessRef.current = onDocumentLoadSuccess
   })
-
   React.useEffect(() => {
     if (!documentManager || !pdfFile) return
     if (openedFileRef.current === pdfFile) return
-
     openedFileRef.current = pdfFile
     setLoadError(false)
-
     const previousDocumentIds = documentManager
       .getOpenDocuments()
       .map((openDocument) => openDocument.id)
     const handleOpenError = () => {
       if (openedFileRef.current === pdfFile) setLoadError(true)
     }
-
     documentManager
       .openDocumentUrl({
         url: pdfFile,
@@ -2650,11 +2490,9 @@ function PDFViewerDocumentLoader({
         }, handleOpenError)
       }, handleOpenError)
   }, [documentManager, pdfFile])
-
   const document =
     activeDocument?.status === "loaded" ? activeDocument.document : null
   const documentFailed = loadError || activeDocument?.status === "error"
-
   if (!activeDocumentId || documentFailed || !pdfFile) {
     return (
       <PDFViewerFallbackShell
@@ -2674,7 +2512,6 @@ function PDFViewerDocumentLoader({
       />
     )
   }
-
   return (
     <PDFViewerInner
       key={activeDocumentId}
@@ -2685,7 +2522,6 @@ function PDFViewerDocumentLoader({
     />
   )
 }
-
 export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
   function PDFViewer(
     {
@@ -2719,23 +2555,19 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
     const uploadedPdfUrl =
       uploadedPdfFile.src === src ? uploadedPdfFile.url : null
     const pdfFile = uploadedPdfUrl ?? src ?? ""
-
     React.useEffect(
       () => () => {
         if (uploadedPdfUrl) URL.revokeObjectURL(uploadedPdfUrl)
       },
       [uploadedPdfUrl]
     )
-
     const handleUploadFile = React.useCallback(
       (nextFile: File) => {
         const nextUrl = URL.createObjectURL(nextFile)
-
         setUploadedPdfFile({ src, url: nextUrl })
       },
       [src]
     )
-
     // Plugin registrations are created once per viewer instance.
     const [plugins] = React.useState(() => [
       createPluginRegistration(DocumentManagerPluginPackage),
@@ -2770,13 +2602,12 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
         scrollBehavior: "auto",
       }),
       createPluginRegistration(ZoomPluginPackage, {
-        defaultZoomLevel: defaultZoom,
+        defaultZoomLevel: toZoomLevel(defaultZoom),
         minZoom: ZOOM_OPTIONS[0],
         maxZoom: ZOOM_OPTIONS[ZOOM_OPTIONS.length - 1],
       }),
       createPluginRegistration(RotatePluginPackage),
     ])
-
     if (engineError) {
       return (
         <PDFViewerFallbackShell
@@ -2797,7 +2628,6 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
         />
       )
     }
-
     if (!engine) {
       return (
         <PDFViewerFallbackShell
@@ -2817,7 +2647,6 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
         />
       )
     }
-
     return (
       <PDFViewerScrollAreaResolverContext.Provider
         value={resolveScrollAreaViewport ?? resolveDefaultScrollAreaViewport}
@@ -2850,3 +2679,12 @@ export const PDFViewer = React.forwardRef<PDFViewerHandle, PDFViewerProps>(
     )
   }
 )
+function InlineSpinner({ className, ...props }: InlineRegistryIconProps) {
+  return (
+    <LoaderCircle role="status" aria-label="Loading" className={cn("size-4 animate-spin", className)} {...props} />
+  )
+}
+type InlineRegistryIconProps = Omit<
+  React.ComponentProps<"svg">,
+  "children" | "strokeWidth"
+> & { strokeWidth?: number }

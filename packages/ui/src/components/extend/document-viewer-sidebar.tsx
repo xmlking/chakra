@@ -1,20 +1,16 @@
 import * as React from "react"
 
-import { cn } from "cn"
+import { cn } from "#lib/utils"
 
 const INLINE_THUMBNAIL_SIDEBAR_MIN_WIDTH = 768
-
 export function useElementWidth<TElement extends HTMLElement>() {
   const ref = React.useRef<TElement | null>(null)
   const [width, setWidth] = React.useState(0)
-
   React.useLayoutEffect(() => {
     const element = ref.current
     if (!element) return
-
     const updateWidth = () => {
       const nextWidth = element.getBoundingClientRect().width
-
       // Keep the last real measurement while the element is hidden or
       // detached (keep-alive preview pools, display:none ancestors): a
       // zero-width pass would re-lay-out the viewer for nothing, clearing
@@ -23,22 +19,16 @@ export function useElementWidth<TElement extends HTMLElement>() {
       if (nextWidth === 0) return
       setWidth(nextWidth)
     }
-
     updateWidth()
-
     const observer = new ResizeObserver(updateWidth)
     observer.observe(element)
-
     return () => observer.disconnect()
   }, [])
-
   return [ref, width] as const
 }
-
 export function useInlineThumbnailSidebar(width: number) {
   return width >= INLINE_THUMBNAIL_SIDEBAR_MIN_WIDTH
 }
-
 export function DocumentViewerThumbnailSidebar({
   children,
   className,
@@ -56,7 +46,6 @@ export function DocumentViewerThumbnailSidebar({
 }) {
   const [transitionsReady, setTransitionsReady] = React.useState(false)
   const shouldAnimateSidebar = transitionsReady && open
-
   React.useEffect(() => {
     let secondFrameId = 0
     const firstFrameId = window.requestAnimationFrame(() => {
@@ -64,13 +53,11 @@ export function DocumentViewerThumbnailSidebar({
         setTransitionsReady(true)
       })
     })
-
     return () => {
       window.cancelAnimationFrame(firstFrameId)
       window.cancelAnimationFrame(secondFrameId)
     }
   }, [])
-
   return (
     <aside
       data-document-thumbnail-sidebar=""
@@ -95,7 +82,6 @@ export function DocumentViewerThumbnailSidebar({
     </aside>
   )
 }
-
 export function DocumentViewerSidebarSkeleton({
   className,
   inline,
@@ -104,7 +90,6 @@ export function DocumentViewerSidebarSkeleton({
   inline: boolean
 }) {
   if (!inline) return null
-
   return (
     <div className={cn("w-40 shrink-0 border-r bg-sidebar p-4", className)}>
       <div className="mx-auto h-28 w-20 overflow-hidden rounded-md bg-background shadow-xs">
