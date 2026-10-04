@@ -5,7 +5,8 @@ import {
   useSendVerificationOtp,
   useVerifyEmailOtp
 } from "@better-auth-ui/react/plugins/email-otp"
-import { type SyntheticEvent, useEffect, useState } from "react"
+import { useSelector } from "@tanstack/react-form"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 
 import { Button } from "#components/shadcn/button"
@@ -19,18 +20,17 @@ import {
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Spinner } from "#components/shadcn/spinner"
 import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
 import {
   RESEND_COOLDOWN_SECONDS,
   useResendCooldown
 } from "#lib/auth/use-resend-cooldown"
 import { cn } from "cn"
+import { runAuthFormAction, submitAuthForm, useAuthForm } from "../auth-form"
 import { OpenEmailButton } from "../open-email-button"
 import { OtpField } from "../otp-field"
 import { useIsHydrated } from "../use-is-hydrated"
@@ -72,8 +72,6 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
   const [email, setEmail] = useState(
     (isHydrated && sessionStorage.getItem(VERIFY_EMAIL_STORAGE_KEY)) || ""
   )
-  const [code, setCode] = useState("")
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string }>({})
 
   const { cooldown, isCoolingDown, startCooldown } = useResendCooldown()
 
@@ -87,7 +85,7 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
     if (pendingEmail) startCooldown(RESEND_COOLDOWN_SECONDS)
   }, [startCooldown])
 
-  const { mutate: sendVerificationOtp, isPending: isSending } =
+  const { mutateAsync: sendVerificationOtp, isPending: isSending } =
     useSendVerificationOtp(otpClient, {
       onSuccess: (_data, { email: sentTo }) => {
         sessionStorage.setItem(VERIFY_EMAIL_STORAGE_KEY, sentTo)
@@ -97,40 +95,41 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
       }
     })
 
-  const { mutate: verifyEmailOtp, isPending: isVerifying } = useVerifyEmailOtp(
-    otpClient,
-    {
-      onError: () => setCode(""),
+  const { mutateAsync: verifyEmailOtp, isPending: isVerifying } =
+    useVerifyEmailOtp(otpClient, {
+      onError: () => form.setFieldValue("code", ""),
       onSuccess: () => {
         sessionStorage.removeItem(VERIFY_EMAIL_STORAGE_KEY)
         toast.success(emailOtpLocalization.emailVerified)
         navigate({ to: redirectTo })
       }
-    }
-  )
+    })
 
   const isPending = isSending || isVerifying
 
-  const verifyCode = (completedCode: string) => {
+  const verifyCode = async (completedCode: string) => {
     if (isPending || !email) return
 
-    verifyEmailOtp({ email, otp: completedCode })
+    await verifyEmailOtp({ email, otp: completedCode })
   }
 
-  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (!email) {
-      const formData = new FormData(e.currentTarget)
-      sendVerificationOtp({
-        email: formData.get("email") as string,
-        type: "email-verification"
-      })
-      return
+  const form = useAuthForm({
+    defaultValues: { code: "", email: "" },
+    onSubmit: async ({ value }) => {
+      if (!email) {
+        await sendVerificationOtp({
+          email: value.email,
+          type: "email-verification"
+        })
+        return
+      }
+      await verifyCode(value.code)
     }
-
-    verifyCode(code)
-  }
+  })
+  const codeComplete = useSelector(
+    form.store,
+    (state) => state.values.code.length === otpLength
+  )
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
@@ -147,87 +146,93 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit}>
-          <FieldGroup>
-            {email ? (
-              <OtpField
-                autoFocus
-                disabled={isPending}
-                label={emailOtpLocalization.code}
-                length={otpLength}
-                name="otp"
-                value={code}
-                onChange={setCode}
-                onComplete={verifyCode}
-              />
-            ) : (
-              <Field data-invalid={!!fieldErrors.email}>
-                <FieldLabel htmlFor="email">
-                  {localization.auth.email}
-                </FieldLabel>
+        <form.AppForm>
+          <form.AuthFormRoot>
+            <FieldGroup>
+              {email ? (
+                <form.AppField name="code">
+                  {(field) => (
+                    <OtpField
+                      autoFocus
+                      disabled={isPending}
+                      label={emailOtpLocalization.code}
+                      length={otpLength}
+                      name="otp"
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onComplete={() => void submitAuthForm(form)}
+                    />
+                  )}
+                </form.AppField>
+              ) : (
+                <form.AppField name="email">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="email">
+                        {localization.auth.email}
+                      </FieldLabel>
 
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  placeholder={localization.auth.emailPlaceholder}
-                  required
-                  disabled={isPending}
-                  onChange={() =>
-                    setFieldErrors((prev) => ({ ...prev, email: undefined }))
-                  }
-                  onInvalid={(e) => {
-                    e.preventDefault()
+                      <Input
+                        id="email"
+                        name={field.name}
+                        type="email"
+                        autoComplete="email"
+                        placeholder={localization.auth.emailPlaceholder}
+                        required
+                        disabled={isPending}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                      />
 
-                    setFieldErrors((prev) => ({
-                      ...prev,
-                      email: (e.target as HTMLInputElement).validationMessage
-                    }))
-                  }}
-                  aria-invalid={!!fieldErrors.email}
-                />
-
-                <FieldError>{fieldErrors.email}</FieldError>
-              </Field>
-            )}
-
-            <div className="flex flex-col gap-3">
-              <Button
-                type="submit"
-                disabled={
-                  isPending || (Boolean(email) && code.length !== otpLength)
-                }
-              >
-                {isPending && <Spinner />}
-
-                {email
-                  ? emailOtpLocalization.verifyCode
-                  : emailOtpLocalization.sendCode}
-              </Button>
-
-              {email && <OpenEmailButton email={email} variant="secondary" />}
-
-              {email && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isPending || isCoolingDown}
-                  onClick={() =>
-                    sendVerificationOtp({ email, type: "email-verification" })
-                  }
-                >
-                  {isCoolingDown
-                    ? localization.auth.resendIn.replace(
-                        "{{seconds}}",
-                        String(cooldown)
-                      )
-                    : localization.auth.resend}
-                </Button>
+                      <field.AuthFormFieldError />
+                    </Field>
+                  )}
+                </form.AppField>
               )}
-            </div>
-          </FieldGroup>
-        </form>
+
+              <form.AuthFormServerError />
+
+              <div className="flex flex-col gap-3">
+                <form.AuthFormSubmitButton
+                  isPending={isPending}
+                  disabled={isPending || (Boolean(email) && !codeComplete)}
+                >
+                  {email
+                    ? emailOtpLocalization.verifyCode
+                    : emailOtpLocalization.sendCode}
+                </form.AuthFormSubmitButton>
+
+                {email && <OpenEmailButton email={email} variant="secondary" />}
+
+                {email && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isPending || isCoolingDown}
+                    onClick={() =>
+                      void runAuthFormAction(form, () =>
+                        sendVerificationOtp({
+                          email,
+                          type: "email-verification"
+                        })
+                      )
+                    }
+                  >
+                    {isCoolingDown
+                      ? localization.auth.resendIn.replace(
+                          "{{seconds}}",
+                          String(cooldown)
+                        )
+                      : localization.auth.resend}
+                  </Button>
+                )}
+              </div>
+            </FieldGroup>
+          </form.AuthFormRoot>
+        </form.AppForm>
 
         <div className="flex flex-col gap-3 items-center w-full mt-4">
           <FieldDescription className="text-center">

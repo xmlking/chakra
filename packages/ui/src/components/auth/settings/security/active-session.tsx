@@ -64,9 +64,11 @@ export function ActiveSession({ activeSession }: ActiveSessionProps) {
   )
 
   const isCurrentSession = activeSession.token === session?.session.token
-  const ua = Bowser.parse(activeSession.userAgent || "")
+  const ua = activeSession.userAgent
+    ? Bowser.parse(activeSession.userAgent)
+    : undefined
   const isMobile =
-    ua.platform.type === "mobile" || ua.platform.type === "tablet"
+    ua?.platform.type === "mobile" || ua?.platform.type === "tablet"
 
   return (
     <Item>
@@ -75,8 +77,8 @@ export function ActiveSession({ activeSession }: ActiveSessionProps) {
       </ItemMedia>
       <ItemContent>
         <ItemTitle>
-          {ua.browser.name || "Unknown Browser"}
-          {ua.os.name ? `, ${ua.os.name}` : ""}
+          {ua?.browser.name || "Unknown Browser"}
+          {ua?.os.name ? `, ${ua.os.name}` : ""}
         </ItemTitle>
         {isCurrentSession ? (
           <Badge variant="secondary">

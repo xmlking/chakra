@@ -1,8 +1,17 @@
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react"
+import { ShieldCheck } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle
+} from "#components/shadcn/empty"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { twoFactorPlugin } from "#lib/auth/two-factor-plugin"
 import { cn } from "cn"
@@ -62,34 +71,57 @@ export function TwoFactorSettings({ className }: TwoFactorSettingsProps) {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="flex flex-col gap-4">
-          {isPending ? (
-            <Skeleton className="h-5 w-48" />
-          ) : (
-            <p className="text-sm font-medium">
-              {isEnabled
-                ? twoFactorLocalization.twoFactorEnabled
-                : twoFactorLocalization.twoFactorDisabled}
+      {!isPending && !isEnabled ? (
+        <Card className="p-0">
+          <CardContent className="p-0">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <ShieldCheck />
+                </EmptyMedia>
+                <EmptyTitle>
+                  {twoFactorLocalization.twoFactorDisabled}
+                </EmptyTitle>
+                <EmptyDescription>
+                  {twoFactorLocalization.twoFactorDescription}
+                </EmptyDescription>
+              </EmptyHeader>
+              <EmptyContent>
+                <Button size="sm" onClick={() => setEnableOpen(true)}>
+                  {twoFactorLocalization.enableTwoFactor}
+                </Button>
+              </EmptyContent>
+            </Empty>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="flex flex-col gap-4">
+            {isPending ? (
+              <Skeleton className="h-5 w-48" />
+            ) : (
+              <p className="text-sm font-medium">
+                {twoFactorLocalization.twoFactorEnabled}
+              </p>
+            )}
+
+            <p className="text-muted-foreground text-sm">
+              {twoFactorLocalization.twoFactorDescription}
             </p>
-          )}
 
-          <p className="text-muted-foreground text-sm">
-            {twoFactorLocalization.twoFactorDescription}
-          </p>
-
-          {isEnabled && backupCodesEnabled && (
-            <Button
-              className="self-start"
-              size="sm"
-              variant="outline"
-              onClick={() => setRegenerateOpen(true)}
-            >
-              {twoFactorLocalization.regenerateBackupCodes}
-            </Button>
-          )}
-        </CardContent>
-      </Card>
+            {isEnabled && backupCodesEnabled && (
+              <Button
+                className="self-start"
+                size="sm"
+                variant="outline"
+                onClick={() => setRegenerateOpen(true)}
+              >
+                {twoFactorLocalization.regenerateBackupCodes}
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       <EnableTwoFactorDialog open={enableOpen} onOpenChange={setEnableOpen} />
       <DisableTwoFactorDialog

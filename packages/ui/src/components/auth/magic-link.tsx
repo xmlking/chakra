@@ -1,27 +1,25 @@
-import { authMutationKeys } from "@better-auth-ui/core"
+import { authMutationKeys, validateEmailAddress } from "@better-auth-ui/core"
 import type { MagicLinkAuthClient } from "@better-auth-ui/core/plugins/magic-link"
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useSignInMagicLink } from "@better-auth-ui/react/plugins/magic-link"
 import { useIsMutating } from "@tanstack/react-query"
-import { type SyntheticEvent, useState } from "react"
 
-import { Button } from "#components/shadcn/button"
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
 import {
   Field,
   FieldDescription,
-  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { Spinner } from "#components/shadcn/spinner"
 import { magicLinkPlugin } from "#lib/auth/magic-link-plugin"
 import { cn } from "cn"
+import { isAuthFormFieldInvalid, useAuthForm } from "./auth-form"
 import { MAGIC_LINK_SENT_STORAGE_KEY } from "./magic-link-sent"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
+import { ReauthenticationNotice } from "./reauthentication"
 
 export type MagicLinkProps = {
   className?: string
@@ -58,9 +56,7 @@ export function MagicLink({
   const { localization: magicLinkLocalization, viewPaths: magicLinkViewPaths } =
     useAuthPlugin(magicLinkPlugin)
 
-  const [email, setEmail] = useState(getSsoFallbackEmail)
-
-  const { mutate: signInMagicLink, isPending: signInMagicLinkPending } =
+  const { mutateAsync: signInMagicLink, isPending: signInMagicLinkPending } =
     useSignInMagicLink(authClient, {
       onSuccess: (_data, variables) => {
         sessionStorage.setItem(MAGIC_LINK_SENT_STORAGE_KEY, variables.email)
@@ -78,19 +74,20 @@ export function MagicLink({
   })
   const isPending = signInMutating + signUpMutating > 0
 
-  const [fieldErrors, setFieldErrors] = useState<{
-    email?: string
-  }>({})
-
-  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    signInMagicLink({ email, callbackURL: `${baseURL}${redirectTo}` })
-  }
+  const form = useAuthForm({
+    defaultValues: { email: getSsoFallbackEmail() },
+    onSubmit: async ({ value }) =>
+      await signInMagicLink({
+        callbackURL: `${baseURL}${redirectTo}`,
+        email: value.email
+      })
+  })
 
   const showSeparator = socialProviders && socialProviders.length > 0
 
   return (
     <Card className={cn("w-full max-w-sm", className)}>
+      <ReauthenticationNotice />
       <CardHeader>
         <CardTitle className="text-xl">{localization.auth.signIn}</CardTitle>
       </CardHeader>
@@ -111,62 +108,67 @@ export function MagicLink({
             </>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field data-invalid={!!fieldErrors.email}>
-                <FieldLabel htmlFor="email">
-                  {localization.auth.email}
-                </FieldLabel>
-
-                <Input
-                  id="email"
+          <form.AppForm>
+            <form.AuthFormRoot>
+              <FieldGroup>
+                <form.AppField
                   name="email"
-                  type="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value)
-
-                    setFieldErrors((prev) => ({
-                      ...prev,
-                      email: undefined
-                    }))
+                  validators={{
+                    onChange: ({ value }) =>
+                      validateEmailAddress(value, {
+                        invalidMessage: localization.auth.invalidEmail,
+                        requiredMessage: localization.auth.fieldRequired
+                      })
                   }}
-                  placeholder={localization.auth.emailPlaceholder}
-                  required
-                  disabled={isPending}
-                  onInvalid={(e) => {
-                    e.preventDefault()
-
-                    setFieldErrors((prev) => ({
-                      ...prev,
-                      email: (e.target as HTMLInputElement).validationMessage
-                    }))
+                >
+                  {(field) => {
+                    const isInvalid = isAuthFormFieldInvalid(field.state.meta)
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor="email">
+                          {localization.auth.email}
+                        </FieldLabel>
+                        <Input
+                          id="email"
+                          name={field.name}
+                          type="email"
+                          autoComplete="email"
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(event) =>
+                            field.handleChange(event.target.value)
+                          }
+                          placeholder={localization.auth.emailPlaceholder}
+                          required
+                          disabled={isPending}
+                          aria-invalid={isInvalid}
+                        />
+                        <field.AuthFormFieldError />
+                      </Field>
+                    )
                   }}
-                  aria-invalid={!!fieldErrors.email}
-                />
+                </form.AppField>
 
-                <FieldError>{fieldErrors.email}</FieldError>
-              </Field>
+                <div className="flex flex-col gap-3">
+                  <form.AuthFormSubmitButton
+                    isPending={signInMagicLinkPending}
+                    disabled={isPending}
+                  >
+                    {magicLinkLocalization.sendMagicLink}
+                  </form.AuthFormSubmitButton>
 
-              <div className="flex flex-col gap-3">
-                <Button type="submit" disabled={isPending}>
-                  {signInMagicLinkPending && <Spinner />}
-
-                  {magicLinkLocalization.sendMagicLink}
-                </Button>
-
-                {plugins.flatMap((plugin) =>
-                  (plugin.authButtons ?? []).map((AuthButton, index) => (
-                    <AuthButton
-                      key={`${plugin.id}-${index.toString()}`}
-                      view="magicLink"
-                    />
-                  ))
-                )}
-              </div>
-            </FieldGroup>
-          </form>
+                  {plugins.flatMap((plugin) =>
+                    (plugin.authButtons ?? []).map((AuthButton, index) => (
+                      <AuthButton
+                        key={`${plugin.id}-${index.toString()}`}
+                        view="magicLink"
+                      />
+                    ))
+                  )}
+                </div>
+              </FieldGroup>
+            </form.AuthFormRoot>
+          </form.AppForm>
 
           {socialPosition === "bottom" && (
             <>

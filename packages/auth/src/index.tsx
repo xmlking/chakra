@@ -75,7 +75,6 @@ export const auth = betterAuth({
     //   domain: ".chakra.ai",
     // },
   },
-  experimental: { joins: true },
   telemetry: { enabled: false },
   secret: ENV.BETTER_AUTH_SECRET,
   baseURL,
