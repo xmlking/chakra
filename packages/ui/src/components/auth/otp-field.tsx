@@ -1,3 +1,5 @@
+"use client"
+
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { useId } from "react"
 

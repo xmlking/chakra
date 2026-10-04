@@ -1,4 +1,4 @@
-import { isSessionNotFreshError } from "@better-auth-ui/core"
+import { isReauthenticationRequiredError } from "@better-auth-ui/core"
 import { useAuth, useListSessions, useSession } from "@better-auth-ui/react"
 import { Fragment } from "react"
 import { Card, CardContent } from "#components/shadcn/card"
@@ -11,8 +11,8 @@ import {
 } from "#components/shadcn/item"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { cn } from "cn"
+import { ReauthenticationAction } from "../../reauthentication"
 import { ActiveSession } from "./active-session"
-import { FreshSessionPrompt } from "./fresh-session-prompt"
 import { SessionActions } from "./session-actions"
 
 export type ActiveSessionsProps = {
@@ -31,7 +31,9 @@ export function ActiveSessions({ className }: ActiveSessionsProps) {
   const { authClient, localization } = useAuth()
   const { data: session } = useSession(authClient)
 
-  const sessionsQuery = useListSessions(authClient)
+  const sessionsQuery = useListSessions(authClient, {
+    meta: { errorPresentation: "inline" }
+  })
   const { data: sessions, error, isPending } = sessionsQuery
 
   const activeSessions = [...(sessions ?? [])].sort((activeSession) =>
@@ -46,8 +48,10 @@ export function ActiveSessions({ className }: ActiveSessionsProps) {
 
       <Card className={cn("gap-0 p-0", className)}>
         <CardContent className="p-0">
-          {isSessionNotFreshError(error) ? (
-            <FreshSessionPrompt onFresh={() => sessionsQuery.refetch()} />
+          {isReauthenticationRequiredError(error) ? (
+            <ReauthenticationAction />
+          ) : error ? (
+            <div className="p-4 text-destructive text-sm">{error.message}</div>
           ) : isPending ? (
             <SessionRowSkeleton />
           ) : (

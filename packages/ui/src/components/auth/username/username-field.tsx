@@ -1,3 +1,4 @@
+import { getFormFieldErrors } from "@better-auth-ui/core"
 import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useIsUsernameAvailable } from "@better-auth-ui/react/plugins/username"
@@ -23,6 +24,11 @@ import { usernamePlugin } from "#lib/auth/username-plugin"
 export function UsernameField({
   name,
   field,
+  value,
+  onBlur,
+  onChange,
+  isInvalid,
+  errors,
   isPending
 }: AdditionalFieldProps) {
   const { authClient, localization: authLocalization } =
@@ -36,8 +42,9 @@ export function UsernameField({
   } = useAuthPlugin(usernamePlugin)
 
   const currentUsername = String(field.defaultValue ?? "")
-  const [value, setValue] = useState(currentUsername)
-  const [error, setError] = useState<string>()
+  const username = typeof value === "string" ? value : ""
+  const [nativeError, setNativeError] = useState<string>()
+  const fieldErrors = getFormFieldErrors(errors ?? [])
 
   const {
     mutate: requestAvailability,
@@ -62,8 +69,8 @@ export function UsernameField({
   )
 
   function handleChange(next: string) {
-    setValue(next)
-    setError(undefined)
+    onChange(next || null)
+    setNativeError(undefined)
     resetAvailability()
 
     if (checkAvailability) {
@@ -72,10 +79,12 @@ export function UsernameField({
   }
 
   const isCheckingAvailability =
-    !!checkAvailability && !!value.trim() && value.trim() !== currentUsername
+    !!checkAvailability &&
+    !!username.trim() &&
+    username.trim() !== currentUsername
 
   return (
-    <Field data-invalid={!!error}>
+    <Field data-invalid={isInvalid || !!nativeError}>
       <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
       <InputGroup>
@@ -95,7 +104,8 @@ export function UsernameField({
           disabled={isPending}
           required={field.required}
           readOnly={field.readOnly}
-          value={value}
+          value={username}
+          onBlur={onBlur}
           onChange={(e) => handleChange(e.target.value)}
           onInvalid={(e) => {
             e.preventDefault()
@@ -111,9 +121,9 @@ export function UsernameField({
                     "{{max}}",
                     String(maxUsernameLength)
                   )
-            setError(msg)
+            setNativeError(msg)
           }}
-          aria-invalid={!!error}
+          aria-invalid={isInvalid || !!nativeError}
           placeholder={field.placeholder}
         />
 
@@ -139,7 +149,7 @@ export function UsernameField({
         )}
       </InputGroup>
 
-      <FieldError>{error}</FieldError>
+      <FieldError errors={fieldErrors}>{nativeError}</FieldError>
     </Field>
   )
 }

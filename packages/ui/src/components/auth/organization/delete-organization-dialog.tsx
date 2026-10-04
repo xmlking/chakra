@@ -3,7 +3,6 @@ import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useDeleteOrganization } from "@better-auth-ui/react/plugins/organization"
 import type { Organization } from "better-auth/client"
 import { TriangleAlert } from "lucide-react"
-import type { SyntheticEvent } from "react"
 import { toast } from "sonner"
 
 import {
@@ -16,10 +15,9 @@ import {
   AlertDialogMedia,
   AlertDialogTitle
 } from "#components/shadcn/alert-dialog"
-import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
-import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { useAuthForm } from "../auth-form"
 import { OrganizationView } from "./organization-view"
 
 export type DeleteOrganizationDialogProps = {
@@ -40,7 +38,7 @@ export function DeleteOrganizationDialog({
     viewPaths: organizationPluginViewPaths
   } = useAuthPlugin(organizationPlugin)
 
-  const { mutate: deleteOrganization, isPending } = useDeleteOrganization(
+  const { mutateAsync: deleteOrganization, isPending } = useDeleteOrganization(
     authClient,
     {
       onSuccess: () => {
@@ -55,47 +53,53 @@ export function DeleteOrganizationDialog({
     }
   )
 
-  function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
-    e.preventDefault()
-    deleteOrganization({ organizationId: organization.id })
-  }
+  const form = useAuthForm({
+    defaultValues: {},
+    onSubmit: async () => {
+      await deleteOrganization({ organizationId: organization.id })
+    }
+  })
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <AlertDialogHeader>
-            <AlertDialogMedia className="bg-destructive/10 text-destructive">
-              <TriangleAlert />
-            </AlertDialogMedia>
+        <form.AppForm>
+          <form.AuthFormRoot className="flex flex-col gap-6">
+            <AlertDialogHeader>
+              <AlertDialogMedia className="bg-destructive/10 text-destructive">
+                <TriangleAlert />
+              </AlertDialogMedia>
 
-            <AlertDialogTitle>
-              {organizationLocalization.deleteOrganization}
-            </AlertDialogTitle>
+              <AlertDialogTitle>
+                {organizationLocalization.deleteOrganization}
+              </AlertDialogTitle>
 
-            <AlertDialogDescription>
-              {organizationLocalization.deleteOrganizationDescription}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+              <AlertDialogDescription>
+                {organizationLocalization.deleteOrganizationDescription}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
 
-          <Card>
-            <CardContent>
-              <OrganizationView organization={organization} hideRole />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardContent>
+                <OrganizationView organization={organization} hideRole />
+              </CardContent>
+            </Card>
 
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>
-              {localization.settings.cancel}
-            </AlertDialogCancel>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isPending}>
+                {localization.settings.cancel}
+              </AlertDialogCancel>
 
-            <Button type="submit" variant="destructive" disabled={isPending}>
-              {isPending && <Spinner />}
-
-              {organizationLocalization.deleteOrganization}
-            </Button>
-          </AlertDialogFooter>
-        </form>
+              <form.AuthFormSubmitButton
+                isPending={isPending}
+                variant="destructive"
+                disabled={isPending}
+              >
+                {organizationLocalization.deleteOrganization}
+              </form.AuthFormSubmitButton>
+            </AlertDialogFooter>
+          </form.AuthFormRoot>
+        </form.AppForm>
       </AlertDialogContent>
     </AlertDialog>
   )

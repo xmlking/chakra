@@ -1,7 +1,13 @@
-import { parseAdditionalFieldValues } from "@better-auth-ui/core"
+import {
+  getAdditionalFieldDefaultValues,
+  getAdditionalFieldSubmitValues,
+  validateEmailAddress
+} from "@better-auth-ui/core"
 import {
   mergeOrganizationRoleLabels,
-  type OrganizationAuthClient
+  type OrganizationAuthClient,
+  type OrganizationRolesAuthClient,
+  type OrganizationTeamsAuthClient
 } from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import {
@@ -13,16 +19,9 @@ import {
   useListTeams
 } from "@better-auth-ui/react/plugins/organization"
 import { ChevronDown, UserPlus } from "lucide-react"
-import {
-  type SyntheticEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { toast } from "sonner"
-import { AdditionalField } from "#components/auth/additional-field"
-import { Button, buttonVariants } from "#components/shadcn/button"
+import { buttonVariants } from "#components/shadcn/button"
 import {
   Dialog,
   DialogClose,
@@ -38,7 +37,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from "#components/shadcn/dropdown-menu"
-import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
+import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import {
   Select,
@@ -48,9 +47,13 @@ import {
   SelectTrigger,
   SelectValue
 } from "#components/shadcn/select"
-import { Spinner } from "#components/shadcn/spinner"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { cn } from "cn"
+import {
+  getAuthAdditionalFieldValidators,
+  isAuthFormFieldInvalid,
+  useAuthForm
+} from "../auth-form"
 
 /** Props for the `InviteMemberDialog` component. */
 export type InviteMemberDialogProps = {
@@ -79,7 +82,7 @@ export function InviteMemberDialog({
     teams: teamsEnabled
   } = useAuthPlugin(organizationPlugin)
   const { data: activeOrganization } = useActiveOrganization(authClient)
-  const teams = useListTeams(authClient, {
+  const teams = useListTeams(authClient as OrganizationTeamsAuthClient, {
     query: { organizationId: activeOrganization?.id },
     enabled: teamsEnabled
   })
@@ -92,7 +95,7 @@ export function InviteMemberDialog({
     organizationId: activeOrganization?.id,
     permissions: { ac: ["read"] }
   })
-  const dynamicRoles = useListRoles(authClient, {
+  const dynamicRoles = useListRoles(authClient as OrganizationRolesAuthClient, {
     query: { organizationId: activeOrganization?.id },
     enabled:
       dynamicAccessControl?.enabled === true &&
@@ -102,42 +105,18 @@ export function InviteMemberDialog({
     () => mergeOrganizationRoleLabels(roles, dynamicRoles.data),
     [dynamicRoles.data, roles]
   )
-
-  const [selectedRoles, setSelectedRoles] = useState(() => {
-    const fallback = pickDefaultRole(Object.keys(assignableRoles))
-    return fallback ? [fallback] : []
-  })
-  const [teamId, setTeamId] = useState("")
-  const [emailError, setEmailError] = useState<string>()
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const activeOrganizationId = activeOrganization?.id
-  const previousOrganizationId = useRef(activeOrganizationId)
+  const roleItems = Object.entries(assignableRoles).map(([value, label]) => ({
+    label,
+    value
+  }))
   const teamItems =
     teams.data?.map((team) => ({ label: team.name, value: team.id })) ?? []
 
-  useEffect(() => {
-    setSelectedRoles((current) => {
-      const keys = Object.keys(assignableRoles)
-      const kept = current.filter((entry) => keys.includes(entry))
+  const activeOrganizationId = activeOrganization?.id
+  const previousOrganizationId = useRef(activeOrganizationId)
 
-      if (kept.length > 0) return allowMultipleRoles ? kept : kept.slice(0, 1)
-
-      const fallback = pickDefaultRole(keys)
-      return fallback ? [fallback] : []
-    })
-  }, [allowMultipleRoles, assignableRoles])
-
-  useEffect(() => {
-    const organizationChanged =
-      previousOrganizationId.current !== activeOrganizationId
-
-    if (open || organizationChanged) setTeamId("")
-    if (!open) setEmailError(undefined)
-    previousOrganizationId.current = activeOrganizationId
-  }, [open, activeOrganizationId])
-
-  const { mutate: inviteMember, isPending: isInviting } = useInviteMember(
-    authClient,
+  const { mutateAsync: inviteMember, isPending: isInviting } = useInviteMember(
+    authClient as OrganizationTeamsAuthClient,
     {
       onSuccess: () => {
         onOpenChange(false)
@@ -146,252 +125,325 @@ export function InviteMemberDialog({
     }
   )
 
-  const isRoleValid = selectedRoles.length > 0
-
-  const roleSummary = selectedRoles
-    .map((entry) => assignableRoles[entry] ?? entry)
-    .join(", ")
-
-  const toggleRole = (role: string) => {
-    setSelectedRoles((current) =>
-      current.includes(role)
-        ? current.filter((entry) => entry !== role)
-        : [...current, role]
-    )
-  }
-
-  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (
-      !activeOrganizationId ||
-      !canInvite.data?.success ||
-      !isRoleValid ||
-      atInvitationLimit
-    )
-      return
-
-    const formData = new FormData(e.currentTarget)
-    const invitationEmail = (formData.get("email") as string).trim()
-    const invitationRoles = [...selectedRoles] as Parameters<
-      typeof inviteMember
-    >[0]["role"]
-    const selectedTeamId = teams.data?.some((team) => team.id === teamId)
-      ? teamId
-      : undefined
-
-    setIsSubmitting(true)
-    let invitationValues: Record<string, unknown>
-    try {
-      invitationValues = await parseAdditionalFieldValues(
-        invitationFields,
-        formData
-      )
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : String(error))
-      setIsSubmitting(false)
-      return
-    }
-
-    inviteMember(
-      {
-        ...invitationValues,
-        email: invitationEmail,
-        organizationId: activeOrganizationId,
-        role: invitationRoles,
-        teamId: selectedTeamId
-      },
-      { onSettled: () => setIsSubmitting(false) }
-    )
-  }
-
   const atInvitationLimit =
     invitationLimit !== undefined &&
     (invitations.data?.filter((invitation) => invitation.status === "pending")
       .length ?? 0) >= invitationLimit
 
+  const form = useAuthForm({
+    defaultValues: {
+      additionalFields: getAdditionalFieldDefaultValues(invitationFields),
+      email: "",
+      roles: [] as string[],
+      teamId: ""
+    },
+    onSubmit: async ({ value }) => {
+      if (
+        !activeOrganizationId ||
+        !canInvite.data?.success ||
+        value.roles.length === 0 ||
+        atInvitationLimit
+      )
+        return
+
+      const teamId = teams.data?.some((team) => team.id === value.teamId)
+        ? value.teamId
+        : undefined
+
+      try {
+        await inviteMember({
+          ...getAdditionalFieldSubmitValues(
+            invitationFields,
+            value.additionalFields
+          ),
+          email: value.email.trim(),
+          organizationId: activeOrganizationId,
+          role: value.roles as Parameters<typeof inviteMember>[0]["role"],
+          teamId
+        })
+      } catch {
+        // The mutation reports the error through its configured handler.
+      }
+    }
+  })
+
+  useEffect(() => {
+    const keys = Object.keys(assignableRoles)
+    const current = form.getFieldValue("roles")
+    const kept = current.filter((entry) => keys.includes(entry))
+    const roles =
+      kept.length > 0
+        ? allowMultipleRoles
+          ? kept
+          : kept.slice(0, 1)
+        : (() => {
+            const fallback = pickDefaultRole(keys)
+            return fallback ? [fallback] : []
+          })()
+
+    form.setFieldValue("roles", roles)
+  }, [allowMultipleRoles, assignableRoles, form])
+
+  useEffect(() => {
+    const organizationChanged =
+      previousOrganizationId.current !== activeOrganizationId
+
+    if (open || organizationChanged) {
+      const fallback = pickDefaultRole(Object.keys(assignableRoles))
+      form.reset({
+        additionalFields: getAdditionalFieldDefaultValues(invitationFields),
+        email: "",
+        roles: fallback ? [fallback] : [],
+        teamId: ""
+      })
+    }
+    previousOrganizationId.current = activeOrganizationId
+  }, [activeOrganizationId, assignableRoles, form, invitationFields, open])
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <UserPlus />
-              {organizationLocalization.inviteMember}
-            </DialogTitle>
+        <form.AppForm>
+          <form.AuthFormRoot className="flex flex-col gap-6">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <UserPlus />
+                {organizationLocalization.inviteMember}
+              </DialogTitle>
 
-            <DialogDescription>
-              {organizationLocalization.inviteMemberDescription}
-            </DialogDescription>
-          </DialogHeader>
+              <DialogDescription>
+                {organizationLocalization.inviteMemberDescription}
+              </DialogDescription>
+            </DialogHeader>
 
-          <div className="flex flex-col gap-4">
-            <Field data-invalid={!!emailError}>
-              <FieldLabel htmlFor="invite-member-email">
-                {localization.auth.email}
-              </FieldLabel>
-
-              <Input
-                id="invite-member-email"
+            <div className="flex flex-col gap-4">
+              <form.AppField
                 name="email"
-                type="email"
-                autoFocus
-                required
-                placeholder={localization.auth.email}
-                disabled={isInviting}
-                onChange={() => setEmailError(undefined)}
-                onInvalid={(e) => {
-                  e.preventDefault()
-                  const el = e.target as HTMLInputElement
-                  const msg = el.validity.valueMissing
-                    ? localization.auth.fieldRequired
-                    : localization.auth.invalidEmail
-                  setEmailError(msg)
+                validators={{
+                  onChange: ({ value }) =>
+                    validateEmailAddress(value, {
+                      invalidMessage: localization.auth.invalidEmail,
+                      requiredMessage: localization.auth.fieldRequired
+                    })
                 }}
-                aria-invalid={!!emailError}
-              />
+              >
+                {(field) => {
+                  const isInvalid = isAuthFormFieldInvalid(field.state.meta)
 
-              <FieldError>{emailError}</FieldError>
-            </Field>
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="invite-member-email">
+                        {localization.auth.email}
+                      </FieldLabel>
+                      <Input
+                        id="invite-member-email"
+                        name={field.name}
+                        type="email"
+                        autoFocus
+                        placeholder={localization.auth.email}
+                        disabled={isInviting}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        aria-invalid={isInvalid}
+                      />
+                      <field.AuthFormFieldError />
+                    </Field>
+                  )
+                }}
+              </form.AppField>
 
-            <Field>
-              <FieldLabel htmlFor="invite-member-role">
-                {organizationLocalization.role}
-              </FieldLabel>
+              <form.AppField
+                name="roles"
+                validators={{
+                  onChange: ({ value }) =>
+                    value.length > 0
+                      ? undefined
+                      : localization.auth.fieldRequired
+                }}
+              >
+                {(field) => {
+                  const selectedRoles = field.state.value
+                  const roleSummary = selectedRoles
+                    .map((entry) => assignableRoles[entry] ?? entry)
+                    .join(", ")
+                  const toggleRole = (role: string) =>
+                    field.handleChange(
+                      selectedRoles.includes(role)
+                        ? selectedRoles.filter((entry) => entry !== role)
+                        : [...selectedRoles, role]
+                    )
 
-              {allowMultipleRoles ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    id="invite-member-role"
-                    disabled={isInviting}
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "w-full justify-between font-normal"
-                    )}
-                  >
-                    <span
-                      className={cn(!roleSummary && "text-muted-foreground")}
+                  return (
+                    <Field
+                      data-invalid={isAuthFormFieldInvalid(field.state.meta)}
                     >
-                      {roleSummary || organizationLocalization.selectRoles}
-                    </span>
-                    <ChevronDown className="opacity-50" />
-                  </DropdownMenuTrigger>
+                      <FieldLabel htmlFor="invite-member-role">
+                        {organizationLocalization.role}
+                      </FieldLabel>
+                      {allowMultipleRoles ? (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            id="invite-member-role"
+                            disabled={isInviting}
+                            className={cn(
+                              buttonVariants({ variant: "outline" }),
+                              "w-full justify-between font-normal"
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                !roleSummary && "text-muted-foreground"
+                              )}
+                            >
+                              {roleSummary ||
+                                organizationLocalization.selectRoles}
+                            </span>
+                            <ChevronDown className="opacity-50" />
+                          </DropdownMenuTrigger>
 
-                  <DropdownMenuContent
-                    align="start"
-                    className="w-(--radix-dropdown-menu-trigger-width)"
-                  >
-                    {Object.entries(assignableRoles).map(([key, label]) => {
-                      const checked = selectedRoles.includes(key)
+                          <DropdownMenuContent
+                            align="start"
+                            className="w-(--radix-dropdown-menu-trigger-width)"
+                          >
+                            {Object.entries(assignableRoles).map(
+                              ([key, label]) => {
+                                const checked = selectedRoles.includes(key)
 
-                      return (
-                        <DropdownMenuCheckboxItem
-                          key={key}
-                          checked={checked}
-                          disabled={checked && selectedRoles.length === 1}
-                          onSelect={(event) => {
-                            event.preventDefault()
-                            toggleRole(key)
-                          }}
+                                return (
+                                  <DropdownMenuCheckboxItem
+                                    key={key}
+                                    checked={checked}
+                                    disabled={
+                                      checked && selectedRoles.length === 1
+                                    }
+                                    onCheckedChange={() => toggleRole(key)}
+                                  >
+                                    {label}
+                                  </DropdownMenuCheckboxItem>
+                                )
+                              }
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <Select
+                          disabled={isInviting}
+                          items={roleItems}
+                          onValueChange={(role) =>
+                            role && field.handleChange([role])
+                          }
+                          value={selectedRoles[0] ?? ""}
                         >
-                          {label}
-                        </DropdownMenuCheckboxItem>
-                      )
-                    })}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <Select
-                  disabled={isInviting}
-                  onValueChange={(role) => setSelectedRoles([role])}
-                  value={selectedRoles[0] ?? ""}
-                >
-                  <SelectTrigger id="invite-member-role" className="w-full">
-                    <SelectValue
-                      placeholder={organizationLocalization.selectRoles}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Object.entries(assignableRoles).map(([key, label]) => (
-                        <SelectItem key={key} value={key}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                          <SelectTrigger
+                            id="invite-member-role"
+                            className="w-full"
+                          >
+                            <SelectValue
+                              placeholder={organizationLocalization.selectRoles}
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {Object.entries(assignableRoles).map(
+                                ([key, label]) => (
+                                  <SelectItem key={key} value={key}>
+                                    {label}
+                                  </SelectItem>
+                                )
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      )}
+                      <field.AuthFormFieldError />
+                    </Field>
+                  )
+                }}
+              </form.AppField>
+
+              {teamsEnabled && (
+                <form.AppField name="teamId">
+                  {(field) => (
+                    <Field>
+                      <FieldLabel htmlFor="invite-member-team">
+                        {organizationLocalization.team}
+                      </FieldLabel>
+                      <Select
+                        items={teamItems}
+                        value={field.state.value}
+                        onValueChange={(value) =>
+                          field.handleChange(value ?? "")
+                        }
+                        disabled={isInviting}
+                      >
+                        <SelectTrigger
+                          id="invite-member-team"
+                          className="w-full"
+                        >
+                          <SelectValue
+                            placeholder={organizationLocalization.selectTeam}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {teamItems.map((item) => (
+                              <SelectItem key={item.value} value={item.value}>
+                                {item.label}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                </form.AppField>
               )}
 
-              <FieldError />
-            </Field>
-
-            {teamsEnabled && (
-              <Field>
-                <FieldLabel htmlFor="invite-member-team">
-                  {organizationLocalization.team}
-                </FieldLabel>
-                <Select
-                  items={teamItems}
-                  value={teamId}
-                  onValueChange={(value) => setTeamId(value ?? "")}
-                  disabled={isInviting}
+              {invitationFields.map((configuredField) => (
+                <form.AppField
+                  key={configuredField.name}
+                  name={`additionalFields.${configuredField.name}`}
+                  validators={getAuthAdditionalFieldValidators(
+                    configuredField,
+                    localization.auth.fieldRequired
+                  )}
                 >
-                  <SelectTrigger id="invite-member-team" className="w-full">
-                    <SelectValue
-                      placeholder={organizationLocalization.selectTeam}
+                  {(field) => (
+                    <field.AuthFormAdditionalField
+                      field={configuredField}
+                      isPending={isInviting}
+                      optionalLabel={localization.settings.optional}
                     />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {teamItems.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </Field>
-            )}
+                  )}
+                </form.AppField>
+              ))}
+            </div>
 
-            {invitationFields.map((field) => (
-              <AdditionalField
-                key={field.name}
-                field={field}
-                name={field.name}
-                isPending={isInviting || isSubmitting}
-                optionalLabel={localization.settings.optional}
-              />
-            ))}
-          </div>
+            <DialogFooter>
+              <DialogClose
+                className={buttonVariants({ variant: "outline" })}
+                disabled={isInviting}
+                type="button"
+              >
+                {localization.settings.cancel}
+              </DialogClose>
 
-          <DialogFooter>
-            <DialogClose
-              className={buttonVariants({ variant: "outline" })}
-              disabled={isInviting || isSubmitting}
-              type="button"
-            >
-              {localization.settings.cancel}
-            </DialogClose>
-
-            <Button
-              type="submit"
-              disabled={
-                isInviting ||
-                isSubmitting ||
-                !isRoleValid ||
-                atInvitationLimit ||
-                canInvite.isPending ||
-                !canInvite.data?.success
-              }
-            >
-              {(isInviting || isSubmitting) && <Spinner />}
-
-              {organizationLocalization.inviteMember}
-            </Button>
-          </DialogFooter>
-        </form>
+              <form.AuthFormSubmitButton
+                disabled={
+                  isInviting ||
+                  atInvitationLimit ||
+                  canInvite.isPending ||
+                  !canInvite.data?.success
+                }
+              >
+                {organizationLocalization.inviteMember}
+              </form.AuthFormSubmitButton>
+            </DialogFooter>
+          </form.AuthFormRoot>
+        </form.AppForm>
       </DialogContent>
     </Dialog>
   )

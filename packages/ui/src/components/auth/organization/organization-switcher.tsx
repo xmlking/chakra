@@ -26,7 +26,6 @@ import { cn } from "cn"
 import { UserView } from "../user/user-view"
 import { CreateOrganizationDialog } from "./create-organization-dialog"
 import { OrganizationView } from "./organization-view"
-import { useRouter } from "@tanstack/react-router";
 
 /** Props for the `OrganizationSwitcher` component. */
 export type OrganizationSwitcherProps = {
@@ -54,7 +53,7 @@ export function OrganizationSwitcher({
   hideCreate,
   hidePersonal,
   hideSettings,
-  hideSlug = true,
+  hideSlug: hideSlugProp,
   setActive,
   trigger
 }: OrganizationSwitcherProps) {
@@ -65,8 +64,10 @@ export function OrganizationSwitcher({
     localization: organizationLocalization,
     viewPaths: organizationViewPaths,
     slug,
-    slugPrefix
+    slugPrefix,
+    hideSlug: pluginHideSlug
   } = useAuthPlugin(organizationPlugin)
+  const hideSlug = hideSlugProp ?? pluginHideSlug ?? true
 
   const { data: activeOrganization, isPending: activeOrganizationPending } =
     useActiveOrganization(authClient)
@@ -91,9 +92,7 @@ export function OrganizationSwitcher({
   const hasOtherEntries =
     otherOrganizations.length > 0 || (!!activeOrganization && !hidePersonal)
 
-  const router = useRouter()
-
-  async function handleSetActive(organization: Organization | null) {
+  function handleSetActive(organization: Organization | null) {
     setDropdownOpen(false)
 
     if (setActive) {
@@ -106,7 +105,6 @@ export function OrganizationSwitcher({
       })
     } else {
       setActiveOrganization({ organizationId: organization?.id ?? null })
-       await router.invalidate()
     }
   }
 
@@ -231,6 +229,7 @@ export function OrganizationSwitcher({
       </DropdownMenu>
 
       <CreateOrganizationDialog
+        hideSlug={hideSlug}
         open={createOpen}
         onOpenChange={setCreateOpen}
       />

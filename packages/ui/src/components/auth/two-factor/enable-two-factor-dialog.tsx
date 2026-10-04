@@ -12,10 +12,10 @@ import {
   useEnableTwoFactor,
   useVerifyTotp
 } from "@better-auth-ui/react/plugins/two-factor"
-import { Check, Copy, ShieldCheck } from "lucide-react"
-import { type SyntheticEvent, useMemo, useState } from "react"
+import { Check, Copy, Mail, ShieldCheck, Smartphone } from "lucide-react"
+import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import { Button, buttonVariants } from "#components/shadcn/button"
+import { buttonVariants } from "#components/shadcn/button"
 import {
   Dialog,
   DialogClose,
@@ -33,10 +33,10 @@ import {
   InputGroupButton,
   InputGroupInput
 } from "#components/shadcn/input-group"
-import { Spinner } from "#components/shadcn/spinner"
 import { Tabs, TabsList, TabsTrigger } from "#components/shadcn/tabs"
 import { twoFactorPlugin } from "#lib/auth/two-factor-plugin"
 import { useTwoFactorPasswordRequirement } from "#lib/auth/use-two-factor-password"
+import { submitAuthForm, useAuthForm } from "../auth-form"
 import { OtpField } from "../otp-field"
 import { BackupCodes } from "./backup-codes"
 
@@ -77,7 +77,6 @@ export function EnableTwoFactorDialog({
   )
   const [totpUri, setTotpUri] = useState("")
   const [backupCodes, setBackupCodes] = useState<string[]>([])
-  const [code, setCode] = useState("")
   const {
     copied: setupKeyCopied,
     copy: copySetupKeyValue,
@@ -110,7 +109,7 @@ export function EnableTwoFactorDialog({
   }
 
   const {
-    mutate: enableTwoFactor,
+    mutateAsync: enableTwoFactor,
     isPending: isEnabling,
     reset: resetEnrollment
   } = useEnableTwoFactor(twoFactorClient, {
@@ -127,10 +126,10 @@ export function EnableTwoFactorDialog({
     }
   })
 
-  const { mutate: verifyTotp, isPending: isVerifying } = useVerifyTotp(
+  const { mutateAsync: verifyTotp, isPending: isVerifying } = useVerifyTotp(
     twoFactorClient,
     {
-      onError: () => setCode(""),
+      onError: () => form.setFieldValue("code", ""),
       onSuccess: () => {
         toast.success(twoFactorLocalization.twoFactorEnabled)
         setStep("backupCodes")
@@ -140,12 +139,29 @@ export function EnableTwoFactorDialog({
 
   const isPending = isEnabling || isVerifying || isResolvingPasswordRequirement
 
-  const verifyCode = (completedCode: string) => {
+  const form = useAuthForm({
+    defaultValues: { code: "", password: "" },
+    onSubmit: async ({ value }) => {
+      if (step === "backupCodes") {
+        handleOpenChange(false)
+        return
+      }
+      if (step === "verify") {
+        await verifyCode(value.code)
+        return
+      }
+      await enableTwoFactor(
+        requiresPassword ? { method, password: value.password } : { method }
+      )
+    }
+  })
+
+  const verifyCode = async (completedCode: string) => {
     if (isPending || step !== "verify" || completedCode.length !== codeLength) {
       return
     }
 
-    verifyTotp({ code: completedCode })
+    await verifyTotp({ code: completedCode })
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -156,30 +172,11 @@ export function EnableTwoFactorDialog({
       setMethod(enrollmentMethods[0] ?? "totp")
       setTotpUri("")
       setBackupCodes([])
-      setCode("")
+      form.reset()
       resetSetupKeyCopy()
       // Clears the resolved TOTP URI and backup codes from the mutation cache.
       resetEnrollment()
     }
-  }
-
-  const handleSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    if (step === "backupCodes") {
-      handleOpenChange(false)
-      return
-    }
-
-    if (step === "verify") {
-      verifyCode(code)
-      return
-    }
-
-    const formData = new FormData(e.currentTarget)
-    const password = formData.get("password") as string
-
-    enableTwoFactor(requiresPassword ? { method, password } : { method })
   }
 
   const submitLabel =
@@ -192,169 +189,199 @@ export function EnableTwoFactorDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <ShieldCheck />
-              {twoFactorLocalization.twoFactor}
-            </DialogTitle>
+        <form.AppForm>
+          <form.AuthFormRoot className="flex flex-col gap-6">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck />
+                {twoFactorLocalization.twoFactor}
+              </DialogTitle>
 
-            <DialogDescription>
-              {step === "password" && requiresPassword
-                ? twoFactorLocalization.passwordConfirmation
-                : step === "verify"
-                  ? twoFactorLocalization.scanQrCode
-                  : twoFactorLocalization.twoFactorDescription}
-            </DialogDescription>
-          </DialogHeader>
+              <DialogDescription>
+                {step === "password" && requiresPassword
+                  ? twoFactorLocalization.passwordConfirmation
+                  : step === "verify"
+                    ? twoFactorLocalization.scanQrCode
+                    : twoFactorLocalization.twoFactorDescription}
+              </DialogDescription>
+            </DialogHeader>
 
-          {step === "password" && (
-            <div className="flex flex-col gap-4">
-              {enrollmentMethods.length > 1 && (
-                <Tabs
-                  value={method}
-                  onValueChange={(value) => setMethod(value as TwoFactorMethod)}
-                >
-                  <TabsList
-                    aria-label={twoFactorLocalization.chooseEnrollmentMethod}
-                    className="w-full"
+            {step === "password" && (
+              <div className="flex flex-col gap-4">
+                {enrollmentMethods.length > 1 && (
+                  <Tabs
+                    value={method}
+                    onValueChange={(value) =>
+                      setMethod(value as TwoFactorMethod)
+                    }
                   >
-                    {enrollmentMethods.includes("totp") && (
-                      <TabsTrigger value="totp">
-                        {twoFactorLocalization.authenticatorApp}
-                      </TabsTrigger>
+                    <TabsList
+                      aria-label={twoFactorLocalization.chooseEnrollmentMethod}
+                      className="w-full"
+                    >
+                      {enrollmentMethods.includes("totp") && (
+                        <TabsTrigger value="totp">
+                          <Smartphone
+                            aria-hidden="true"
+                            className="text-muted-foreground"
+                          />
+                          {twoFactorLocalization.authenticatorApp}
+                        </TabsTrigger>
+                      )}
+                      {enrollmentMethods.includes("otp") && (
+                        <TabsTrigger value="otp">
+                          <Mail
+                            aria-hidden="true"
+                            className="text-muted-foreground"
+                          />
+                          {twoFactorLocalization.deliveredCode}
+                        </TabsTrigger>
+                      )}
+                    </TabsList>
+                  </Tabs>
+                )}
+
+                <p className="text-muted-foreground text-sm">
+                  {method === "totp"
+                    ? twoFactorLocalization.authenticatorAppDescription
+                    : twoFactorLocalization.deliveredCodeDescription}
+                </p>
+
+                {requiresPassword && (
+                  <form.AppField name="password">
+                    {(field) => (
+                      <Field>
+                        <FieldLabel htmlFor="two-factor-password">
+                          {localization.auth.password}
+                        </FieldLabel>
+
+                        <Input
+                          id="two-factor-password"
+                          name={field.name}
+                          type="password"
+                          autoComplete="current-password"
+                          autoFocus
+                          required
+                          placeholder={localization.auth.passwordPlaceholder}
+                          disabled={isPending}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(event) =>
+                            field.handleChange(event.target.value)
+                          }
+                        />
+
+                        <FieldError />
+                      </Field>
                     )}
-                    {enrollmentMethods.includes("otp") && (
-                      <TabsTrigger value="otp">
-                        {twoFactorLocalization.deliveredCode}
-                      </TabsTrigger>
-                    )}
-                  </TabsList>
-                </Tabs>
-              )}
-
-              <p className="text-muted-foreground text-sm">
-                {method === "totp"
-                  ? twoFactorLocalization.authenticatorAppDescription
-                  : twoFactorLocalization.deliveredCodeDescription}
-              </p>
-
-              {requiresPassword && (
-                <Field>
-                  <FieldLabel htmlFor="two-factor-password">
-                    {localization.auth.password}
-                  </FieldLabel>
-
-                  <Input
-                    id="two-factor-password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    autoFocus
-                    required
-                    placeholder={localization.auth.passwordPlaceholder}
-                    disabled={isPending}
-                  />
-
-                  <FieldError />
-                </Field>
-              )}
-            </div>
-          )}
-
-          {step === "verify" && (
-            <div className="flex flex-col items-center gap-4">
-              {qrCode && (
-                <svg
-                  aria-hidden="true"
-                  className="size-44 rounded-md border"
-                  viewBox={`0 0 ${qrCode.size} ${qrCode.size}`}
-                >
-                  <path
-                    fill="white"
-                    d={`M0 0h${qrCode.size}v${qrCode.size}H0z`}
-                  />
-                  <path
-                    fill="black"
-                    d={qrCode.path}
-                    shapeRendering="crispEdges"
-                  />
-                </svg>
-              )}
-
-              {setupKey && (
-                <Field className="w-full gap-1">
-                  <FieldLabel
-                    className="text-muted-foreground text-xs"
-                    htmlFor="two-factor-setup-key"
-                  >
-                    {twoFactorLocalization.setupKey}
-                  </FieldLabel>
-
-                  <InputGroup>
-                    <InputGroupInput
-                      className="font-mono text-xs"
-                      id="two-factor-setup-key"
-                      readOnly
-                      value={setupKey}
-                    />
-
-                    <InputGroupAddon align="inline-end">
-                      <InputGroupButton
-                        aria-label={
-                          setupKeyCopied
-                            ? twoFactorLocalization.setupKeyCopied
-                            : localization.settings.copyToClipboard
-                        }
-                        onClick={copySetupKey}
-                        size="icon-xs"
-                      >
-                        {setupKeyCopied ? <Check /> : <Copy />}
-                      </InputGroupButton>
-                    </InputGroupAddon>
-                  </InputGroup>
-                </Field>
-              )}
-
-              <OtpField
-                autoFocus
-                className="w-full"
-                disabled={isPending}
-                label={twoFactorLocalization.authenticatorCode}
-                length={codeLength}
-                name="code"
-                value={code}
-                onChange={setCode}
-                onComplete={verifyCode}
-              />
-            </div>
-          )}
-
-          {step === "backupCodes" && <BackupCodes codes={backupCodes} />}
-
-          <DialogFooter>
-            {step !== "backupCodes" && (
-              <DialogClose
-                className={buttonVariants({ variant: "outline" })}
-                disabled={isPending}
-                type="button"
-              >
-                {localization.settings.cancel}
-              </DialogClose>
+                  </form.AppField>
+                )}
+              </div>
             )}
 
-            <Button
-              type="submit"
-              disabled={
-                isPending || (step === "verify" && code.length !== codeLength)
-              }
-            >
-              {isPending && <Spinner />}
+            {step === "verify" && (
+              <div className="flex flex-col items-center gap-4">
+                {qrCode && (
+                  <svg
+                    aria-hidden="true"
+                    className="size-44 rounded-md border"
+                    viewBox={`0 0 ${qrCode.size} ${qrCode.size}`}
+                  >
+                    <path
+                      fill="white"
+                      d={`M0 0h${qrCode.size}v${qrCode.size}H0z`}
+                    />
+                    <path
+                      fill="black"
+                      d={qrCode.path}
+                      shapeRendering="crispEdges"
+                    />
+                  </svg>
+                )}
 
-              {submitLabel}
-            </Button>
-          </DialogFooter>
-        </form>
+                {setupKey && (
+                  <Field className="w-full gap-1">
+                    <FieldLabel
+                      className="text-muted-foreground text-xs"
+                      htmlFor="two-factor-setup-key"
+                    >
+                      {twoFactorLocalization.setupKey}
+                    </FieldLabel>
+
+                    <InputGroup>
+                      <InputGroupInput
+                        className="font-mono text-xs"
+                        id="two-factor-setup-key"
+                        readOnly
+                        value={setupKey}
+                      />
+
+                      <InputGroupAddon align="inline-end">
+                        <InputGroupButton
+                          aria-label={
+                            setupKeyCopied
+                              ? twoFactorLocalization.setupKeyCopied
+                              : localization.settings.copyToClipboard
+                          }
+                          onClick={copySetupKey}
+                          size="icon-xs"
+                        >
+                          {setupKeyCopied ? <Check /> : <Copy />}
+                        </InputGroupButton>
+                      </InputGroupAddon>
+                    </InputGroup>
+                  </Field>
+                )}
+
+                <form.AppField name="code">
+                  {(field) => (
+                    <OtpField
+                      autoFocus
+                      className="w-full"
+                      disabled={isPending}
+                      label={twoFactorLocalization.authenticatorCode}
+                      length={codeLength}
+                      name={field.name}
+                      value={field.state.value}
+                      onChange={field.handleChange}
+                      onComplete={() => void submitAuthForm(form)}
+                    />
+                  )}
+                </form.AppField>
+              </div>
+            )}
+
+            {step === "backupCodes" && <BackupCodes codes={backupCodes} />}
+
+            <form.AuthFormServerError />
+
+            <DialogFooter>
+              {step !== "backupCodes" && (
+                <DialogClose
+                  className={buttonVariants({ variant: "outline" })}
+                  disabled={isPending}
+                  type="button"
+                >
+                  {localization.settings.cancel}
+                </DialogClose>
+              )}
+
+              <form.Subscribe selector={(state) => state.values.code}>
+                {(code) => (
+                  <form.AuthFormSubmitButton
+                    isPending={isPending}
+                    disabled={
+                      isPending ||
+                      (step === "verify" && code.length !== codeLength)
+                    }
+                  >
+                    {submitLabel}
+                  </form.AuthFormSubmitButton>
+                )}
+              </form.Subscribe>
+            </DialogFooter>
+          </form.AuthFormRoot>
+        </form.AppForm>
       </DialogContent>
     </Dialog>
   )

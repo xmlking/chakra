@@ -1,4 +1,8 @@
 import {
+  DEFAULT_TABLE_SEARCH_DEBOUNCE_MS,
+  getClampedTablePageIndex
+} from "@better-auth-ui/core"
+import {
   type DashAuditLog,
   type DashAuthClient,
   formatDashEventName,
@@ -17,7 +21,15 @@ import {
   useDashUserAuditLogs
 } from "@better-auth-ui/react/plugins/dash"
 import { useActiveMemberRole } from "@better-auth-ui/react/plugins/organization"
+import { useDebouncedValue } from "@tanstack/react-pacer"
 import { keepPreviousData } from "@tanstack/react-query"
+import {
+  columnFilteringFeature,
+  createTableHook,
+  globalFilteringFeature,
+  rowPaginationFeature,
+  tableFeatures
+} from "@tanstack/react-table"
 import {
   Activity,
   Building2,
@@ -29,7 +41,7 @@ import {
   UserRound,
   Users
 } from "lucide-react"
-import { Fragment, useDeferredValue, useMemo, useState } from "react"
+import { Fragment, useEffect, useMemo } from "react"
 
 import { Badge } from "#components/shadcn/badge"
 import { Button } from "#components/shadcn/button"
@@ -70,8 +82,24 @@ import { Spinner } from "#components/shadcn/spinner"
 import { dashPlugin } from "#lib/auth/dash-plugin"
 import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { cn } from "cn"
+import { useServerTableState } from "../server-table-state"
 
 type ActivityAccess = "admin" | "admin-user" | "organization" | "user"
+
+const { createAppColumnHelper, useAppTable: useActivityTable } =
+  createTableHook({
+    features: tableFeatures({
+      columnFilteringFeature,
+      globalFilteringFeature,
+      rowPaginationFeature
+    })
+  })
+
+const activityColumnHelper = createAppColumnHelper<DashAuditLog>()
+const activityColumns = activityColumnHelper.columns([
+  activityColumnHelper.accessor("eventType", { id: "eventType" })
+])
+const EMPTY_EVENTS: DashAuditLog[] = []
 
 type ActivityFeedProps = {
   access: ActivityAccess
@@ -210,10 +238,14 @@ function ActivityFeed({
 }: ActivityFeedProps) {
   const { authClient } = useAuth()
   const { localization, pageSize } = useAuthPlugin(dashPlugin)
-  const [page, setPage] = useState(0)
-  const [eventType, setEventType] = useState("all")
-  const [identifier, setIdentifier] = useState("")
-  const deferredIdentifier = useDeferredValue(identifier.trim())
+  const tableState = useServerTableState({ pageSize })
+  const { columnFilters, globalFilter, pagination, setPagination } = tableState
+  const eventType = String(
+    columnFilters.find((filter) => filter.id === "eventType")?.value ?? "all"
+  )
+  const [debouncedIdentifier] = useDebouncedValue(globalFilter.trim(), {
+    wait: DEFAULT_TABLE_SEARCH_DEBOUNCE_MS
+  })
   const eventOptions = useMemo(
     () => Object.entries(localization.eventLabels),
     [localization.eventLabels]
@@ -222,11 +254,11 @@ function ActivityFeed({
     { label: localization.allEvents, value: "all" },
     ...eventOptions.map(([value, label]) => ({ label, value }))
   ]
-  const offset = page * pageSize
+  const offset = pagination.pageIndex * pagination.pageSize
   const params = {
     eventType: eventType === "all" ? undefined : eventType,
-    identifier: deferredIdentifier || undefined,
-    limit: pageSize,
+    identifier: debouncedIdentifier || undefined,
+    limit: pagination.pageSize,
     offset,
     organizationId
   }
@@ -248,7 +280,7 @@ function ActivityFeed({
       params: {
         eventType: params.eventType,
         identifier: params.identifier,
-        limit: pageSize,
+        limit: pagination.pageSize,
         offset
       }
     }
@@ -262,7 +294,36 @@ function ActivityFeed({
   const { data, error, isFetching, isPending } = query
   const showPending = !ready || isPending
   const pageEnd = offset + (data?.events.length ?? 0)
-  const hasNextPage = pageEnd < (data?.total ?? 0)
+  useEffect(() => {
+    if (!ready || !query.isSuccess) return
+    const pageIndex = getClampedTablePageIndex(
+      pagination.pageIndex,
+      pagination.pageSize,
+      data?.total ?? 0
+    )
+    if (pageIndex !== pagination.pageIndex) {
+      setPagination((current) => ({ ...current, pageIndex }))
+    }
+  }, [
+    data?.total,
+    pagination.pageIndex,
+    pagination.pageSize,
+    query.isSuccess,
+    ready,
+    setPagination
+  ])
+  const table = useActivityTable(
+    {
+      atoms: tableState.atoms,
+      columns: activityColumns,
+      data: data?.events ?? EMPTY_EVENTS,
+      getRowId: getDashEventKey,
+      manualFiltering: true,
+      manualPagination: true,
+      rowCount: data?.total ?? 0
+    },
+    () => null
+  )
 
   return (
     <Card
@@ -302,8 +363,9 @@ function ActivityFeed({
               value={eventType}
               onValueChange={(value) => {
                 if (!value) return
-                setEventType(value)
-                setPage(0)
+                table
+                  .getColumn("eventType")
+                  ?.setFilterValue(value === "all" ? undefined : value)
               }}
             >
               <SelectTrigger id="dash-event-type" className="w-full">
@@ -331,11 +393,10 @@ function ActivityFeed({
               <InputGroupInput
                 id="dash-identifier"
                 onChange={(event) => {
-                  setIdentifier(event.target.value)
-                  setPage(0)
+                  table.setGlobalFilter(event.target.value)
                 }}
                 placeholder={localization.identifierPlaceholder}
-                value={identifier}
+                value={globalFilter}
               />
             </InputGroup>
           </Field>
@@ -372,10 +433,10 @@ function ActivityFeed({
           </Empty>
         ) : data?.events.length ? (
           <ul>
-            {data.events.map((event, position) => (
-              <Fragment key={getDashEventKey(event)}>
+            {table.getRowModel().rows.map((row, position) => (
+              <Fragment key={row.id}>
                 {position > 0 && <Separator />}
-                <ActivityRow event={event} />
+                <ActivityRow event={row.original} />
               </Fragment>
             ))}
           </ul>
@@ -408,19 +469,19 @@ function ActivityFeed({
           <div className="flex gap-1">
             <Button
               aria-label={localization.previousPage}
-              disabled={isFetching || page === 0}
+              disabled={isFetching || !table.getCanPreviousPage()}
               size="icon-sm"
               variant="ghost"
-              onClick={() => setPage((current) => Math.max(0, current - 1))}
+              onClick={() => table.previousPage()}
             >
               <ChevronLeft />
             </Button>
             <Button
               aria-label={localization.nextPage}
-              disabled={isFetching || !hasNextPage}
+              disabled={isFetching || !table.getCanNextPage()}
               size="icon-sm"
               variant="ghost"
-              onClick={() => setPage((current) => current + 1)}
+              onClick={() => table.nextPage()}
             >
               <ChevronRight />
             </Button>

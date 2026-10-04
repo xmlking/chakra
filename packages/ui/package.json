@@ -82,6 +82,7 @@
     "@tanstack/react-pacer": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
+    "@tanstack/react-store": "catalog:",
     "@tanstack/react-table": "catalog:",
     "@tanstack/react-virtual": "catalog:",
     "@tiptap/core": "^3.31.4",
