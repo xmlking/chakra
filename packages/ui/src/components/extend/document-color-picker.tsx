@@ -24,7 +24,7 @@ import {
   type OklchColor,
   type RgbColor,
 } from "#lib/color-picker-utils"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { Popover, PopoverTrigger } from "#components/shadcn/popover"
 import {

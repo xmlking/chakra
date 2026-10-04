@@ -33,7 +33,7 @@ import {
 } from "@embedpdf/plugin-annotation/react"
 import { useFormCapability } from "@embedpdf/plugin-form/react"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { Input } from "#components/shadcn/input"
 import {

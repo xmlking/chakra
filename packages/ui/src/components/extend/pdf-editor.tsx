@@ -127,7 +127,7 @@ import {
 } from "@embedpdf/plugin-zoom/react"
 
 import { loadSharedPdfEngine } from "#lib/pdf-thumbnail-utils"
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Badge } from "#components/shadcn/badge"
 import { Button } from "#components/shadcn/button"
 import {

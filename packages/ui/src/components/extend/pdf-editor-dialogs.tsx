@@ -38,7 +38,7 @@ import {
   type SignatureTypePadHandle,
 } from "@embedpdf/plugin-signature/react"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Badge } from "#components/shadcn/badge"
 import { Button } from "#components/shadcn/button"
 import {
