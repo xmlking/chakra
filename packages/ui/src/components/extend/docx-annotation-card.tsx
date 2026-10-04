@@ -5,7 +5,7 @@ import type {
   DocxTrackedChangeCardRenderProps,
 } from "@extend-ai/react-docx"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Badge } from "#components/shadcn/badge"
 import { Card } from "#components/shadcn/card"
 

@@ -52,7 +52,7 @@ import {
 } from "@embedpdf/plugin-thumbnail/react"
 import type { degrees, ParseSpeeds, PDFDocument } from "pdf-lib"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Badge } from "#components/shadcn/badge"
 import { Button } from "#components/shadcn/button"
 import {

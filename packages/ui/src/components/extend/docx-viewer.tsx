@@ -15,7 +15,7 @@ import {
 } from "@extend-ai/react-docx"
 import { useVirtualizer } from "@tanstack/react-virtual"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import {
   DropdownMenu,

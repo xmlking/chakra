@@ -10,7 +10,7 @@ import type {
 import { PdfAnnotationSubtype } from "@embedpdf/models"
 import type { CaptureAreaEvent } from "@embedpdf/plugin-capture/react"
 
-import { cn } from "#lib/utils"
+import { cn } from "cn"
 import { Button } from "#components/shadcn/button"
 import { Kbd } from "#components/shadcn/kbd"
 import {
