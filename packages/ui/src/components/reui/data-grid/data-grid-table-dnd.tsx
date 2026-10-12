@@ -8,7 +8,10 @@ import {
   useState,
 } from "react"
 import type { CSSProperties, ReactNode } from "react"
-import { useDataGrid } from "#components/reui/data-grid/data-grid"
+import {
+  getDataGridHeaderSpans,
+  useDataGrid,
+} from "#components/reui/data-grid/data-grid"
 import type {
   DataGridFeatures,
   DataGridTableInstance,
@@ -31,6 +34,10 @@ import {
   DataGridTableHeadRowCellResize,
   DataGridTableRowSpacer,
   DataGridTableViewport,
+  getDataGridHeadCellResizeHeader,
+  getDataGridHeadCellSizeVar,
+  getDataGridTableMergedHeaderGroups,
+  renderDataGridTableHeadCellContent,
 } from "#components/reui/data-grid/data-grid-table"
 import {
   closestCenter,
@@ -53,32 +60,36 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { flexRender } from "@tanstack/react-table"
-import type {
-  Cell,
-  Header,
-  HeaderGroup,
-  Row,
-  Table,
-} from "@tanstack/react-table"
+import type { Cell, Header, Row, Table } from "@tanstack/react-table"
 
 import { Button } from "#components/shadcn/button"
 import { GripVerticalIcon } from "lucide-react"
 
 function DataGridTableDndHeader<TData extends object>({
   header,
+  coveredHeaders = [],
 }: {
   header: Header<DataGridFeatures, TData, unknown>
+  /** Headers this cell spans through meta.headerColSpan. */
+  coveredHeaders?: Header<DataGridFeatures, TData, unknown>[]
 }) {
   const { i18n, props } = useDataGrid()
   const { column } = header
 
   // Pinning decides where a pinned column renders whatever columnOrder says,
   // so dragging one could only rewrite hidden order. It gets no grip and is
-  // neither a drag source nor a drop target.
+  // neither a drag source nor a drop target. Neither is a group cell: its
+  // id is not in columnOrder, which holds leaves only.
   const isPinned = !!column.getIsPinned()
+  const isGroup = column.columns.length > 0
+  // A span is no drag source: a drop moves one leaf, never its covered ones.
+  const isSpan = coveredHeaders.length > 0
   const canOrder =
     (column.columnDef as { enableColumnOrdering?: boolean })
-      .enableColumnOrdering !== false && !isPinned
+      .enableColumnOrdering !== false &&
+    !isPinned &&
+    !isGroup &&
+    !isSpan
 
   const {
     attributes,
@@ -89,8 +100,9 @@ function DataGridTableDndHeader<TData extends object>({
     transition,
   } = useSortable({
     id: header.column.id,
-    disabled: isPinned,
+    disabled: isPinned || isGroup || isSpan,
   })
+  const resizeHeader = getDataGridHeadCellResizeHeader(header, coveredHeaders)
 
   // This style spreads after getPinningStyles, so a sticky pinned cell must
   // not take the drag keys: relative and z-index 0 would unstick it and sink
@@ -109,13 +121,17 @@ function DataGridTableDndHeader<TData extends object>({
     cursor: isDragging ? "grabbing" : undefined,
     whiteSpace: "nowrap",
     width: props.tableLayout?.columnsResizable
-      ? `calc(var(--header-${header.id}-size) * 1px)`
-      : header.column.getSize(),
+      ? getDataGridHeadCellSizeVar(header, coveredHeaders)
+      : coveredHeaders.reduce(
+          (sum, covered) => sum + covered.column.getSize(),
+          header.column.getSize()
+        ),
   }
 
   return (
     <DataGridTableHeadRowCell
       header={header}
+      coveredHeaders={coveredHeaders}
       dndStyle={style}
       dndRef={setNodeRef}
     >
@@ -132,14 +148,11 @@ function DataGridTableDndHeader<TData extends object>({
             <GripVerticalIcon className="opacity-60 hover:opacity-100" aria-hidden="true" />
           </Button>
         )}
-        <div className="grow">
-          {header.isPlaceholder
-            ? null
-            : flexRender(header.column.columnDef.header, header.getContext())}
-        </div>
-        {props.tableLayout?.columnsResizable && column.getCanResize() && (
-          <DataGridTableHeadRowCellResize header={header} />
-        )}
+        <div className="grow">{renderDataGridTableHeadCellContent(header)}</div>
+        {props.tableLayout?.columnsResizable &&
+          resizeHeader.column.getCanResize() && (
+            <DataGridTableHeadRowCellResize header={resizeHeader} />
+          )}
       </div>
     </DataGridTableHeadRowCell>
   )
@@ -308,6 +321,37 @@ function toLtrScrollView(element: Element): Element {
   })
 }
 
+/** A drop on a span's leaves targets its far edge, after its last leaf moving
+ *  forward and before its owner moving back, so no move lands inside it. */
+function getDataGridDropBesideSpans<TData extends object>(
+  table: DataGridTableInstance<TData>,
+  event: DragEndEvent
+): DragEndEvent {
+  const { active, over } = event
+  if (!over || active.id === over.id) return event
+
+  const rendered = [
+    ...table.getStartVisibleLeafColumns(),
+    ...table.getCenterVisibleLeafColumns(),
+    ...table.getEndVisibleLeafColumns(),
+  ].map((column) => column.id)
+  const from = rendered.indexOf(String(active.id))
+  const to = rendered.indexOf(String(over.id))
+  if (from === -1 || to === -1) return event
+
+  for (const [ownerId, covered] of getDataGridHeaderSpans(table)) {
+    const leaves = [ownerId, ...covered.map((column) => column.id)]
+    if (!leaves.includes(String(over.id))) continue
+    if (leaves.includes(String(active.id))) return event
+    const edge = from < to ? leaves[leaves.length - 1]! : leaves[0]!
+    return edge === String(over.id)
+      ? event
+      : { ...event, over: { ...over, id: edge } }
+  }
+
+  return event
+}
+
 class DataGridKeyboardSensor extends KeyboardSensor {
   constructor(props: KeyboardSensorProps) {
     const { context, options } = props
@@ -349,6 +393,7 @@ function DataGridTableDnd<TData extends object>({
   accessibility?: DndContextProps["accessibility"]
 }) {
   const { table, props } = useDataGrid()
+  const mergedHeaderGroups = getDataGridTableMergedHeaderGroups(table)
   const containerRef = useRef<HTMLDivElement>(null)
   const [isDraggingColumn, setIsDraggingColumn] = useState(false)
 
@@ -417,7 +462,7 @@ function DataGridTableDnd<TData extends object>({
       onDragCancel={() => setIsDraggingColumn(false)}
       onDragEnd={(event) => {
         setIsDraggingColumn(false)
-        handleDragEnd(event)
+        handleDragEnd(getDataGridDropBesideSpans(table, event))
       }}
       onDragStart={() => setIsDraggingColumn(true)}
       sensors={sensors}
@@ -432,51 +477,56 @@ function DataGridTableDnd<TData extends object>({
       >
         <DataGridTableBase>
           <DataGridTableHead>
-            {table
-              .getHeaderGroups()
-              .map(
-                (headerGroup: HeaderGroup<DataGridFeatures, TData>, index) => {
-                  return (
-                    <DataGridTableHeadRow key={index} rowId={headerGroup.id}>
-                      <SortableContext
-                        items={table.state.columnOrder}
-                        strategy={horizontalListSortingStrategy}
-                      >
-                        {/* Every row follows DataGridTableBase's colgroup,
-                            which puts the fill col between the center and
-                            end-pinned groups; a fill cell appended last hands
-                            its width to the end-pinned column. One keyed
-                            list, not three, so a column pinned into or out of
-                            the end group moves instead of remounting, which
-                            would drop keyboard focus. */}
-                        {[
-                          ...headerGroup.headers
-                            .filter(
-                              (header) => header.column.getIsPinned() !== "end"
-                            )
-                            .map((header) => (
-                              <DataGridTableDndHeader
-                                header={header}
-                                key={header.id}
-                              />
-                            )),
-                          <DataGridTableFillHeadCell key="__data-grid-fill" />,
-                          ...headerGroup.headers
-                            .filter(
-                              (header) => header.column.getIsPinned() === "end"
-                            )
-                            .map((header) => (
-                              <DataGridTableDndHeader
-                                header={header}
-                                key={header.id}
-                              />
-                            )),
-                        ]}
-                      </SortableContext>
-                    </DataGridTableHeadRow>
-                  )
-                }
-              )}
+            {mergedHeaderGroups.map((headerGroup, index) => {
+              return (
+                <DataGridTableHeadRow key={index} rowId={headerGroup.id}>
+                  <SortableContext
+                    items={table.state.columnOrder}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    {/* Every row follows DataGridTableBase's colgroup,
+                        which puts the fill col between the center and
+                        end-pinned groups; a fill cell appended last hands
+                        its width to the end-pinned column. One keyed
+                        list, not three, so a column pinned into or out of
+                        the end group moves instead of remounting, which
+                        would drop keyboard focus. The fill spans every
+                        head row, so only the first renders it. */}
+                    {[
+                      ...[
+                        ...headerGroup.startHeaders,
+                        ...headerGroup.centerHeaders,
+                      ].map((header) => (
+                        <DataGridTableDndHeader
+                          header={header}
+                          coveredHeaders={headerGroup.coveredHeaders.get(
+                            header.id
+                          )}
+                          key={header.id}
+                        />
+                      )),
+                      ...(index === 0
+                        ? [
+                            <DataGridTableFillHeadCell
+                              key="__data-grid-fill"
+                              rowSpan={mergedHeaderGroups.length}
+                            />,
+                          ]
+                        : []),
+                      ...headerGroup.endHeaders.map((header) => (
+                        <DataGridTableDndHeader
+                          header={header}
+                          coveredHeaders={headerGroup.coveredHeaders.get(
+                            header.id
+                          )}
+                          key={header.id}
+                        />
+                      )),
+                    ]}
+                  </SortableContext>
+                </DataGridTableHeadRow>
+              )
+            })}
           </DataGridTableHead>
 
           {(props.tableLayout?.stripped || !props.tableLayout?.rowBorder) && (

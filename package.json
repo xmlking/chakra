@@ -147,7 +147,7 @@
     "nitro": "3.0.260903-beta",
     "nuqs": "2.8.9",
     "oxc-transform-react": "0.153.0",
-    "oxlint-plugin-react-doctor": "0.9.14",
+    "oxlint-plugin-react-doctor": "0.9.17",
     "pg": "8.23.1",
     "react": "19.3.0",
     "react-dom": "19.3.0",

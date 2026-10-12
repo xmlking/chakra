@@ -103,6 +103,8 @@ export interface DataGridColumnMeta<TData> {
   skeleton?: ReactNode
   expandedContent?: (row: TData) => ReactNode
   autoSize?: boolean
+  /** Header spans this many leaves: this one and its next adjacent siblings. */
+  headerColSpan?: number
   cellEdit?: DataGridColumnCellEdit<TData>
   /**
    * Under `columnsResizable`, this column absorbs the free space the filler
@@ -214,6 +216,54 @@ export function getColumnHeaderLabel<TData extends RowData, TValue>(
   const defHeader = column.columnDef.header
   if (typeof defHeader === "string") return defHeader
   return String(column.id)
+}
+
+/**
+ * meta.headerColSpan: the sibling leaves each owning leaf's header covers,
+ * by owner id. Each must render right after the last in its pin family, or
+ * the span ends there; the header rows, the resize indicator and the move
+ * and drop targets all read spans from here.
+ */
+export function getDataGridHeaderSpans<TData extends object>(
+  table: DataGridTableInstance<TData>
+) {
+  const spans = new Map<string, Column<DataGridFeatures, TData, unknown>[]>()
+  const families = [
+    table.getStartVisibleLeafColumns(),
+    table.getCenterVisibleLeafColumns(),
+    table.getEndVisibleLeafColumns(),
+  ] as Column<DataGridFeatures, TData, unknown>[][]
+
+  for (const family of families) {
+    for (let index = 0; index < family.length; index++) {
+      const owner = family[index]!
+      const span = Math.floor(owner.columnDef.meta?.headerColSpan ?? 1)
+      if (span < 2) continue
+
+      // The next span - 1 siblings in definition order, so a span never
+      // leaves its parent group; a hidden one is skipped, not a gap.
+      const siblings = owner.parent?.columns ?? table.getAllColumns()
+      const at = siblings.findIndex((sibling) => sibling.id === owner.id)
+      const intended =
+        at < 0
+          ? []
+          : siblings
+              .slice(at + 1, at + span)
+              .filter((sibling) => sibling.getIsVisible())
+      const covered: Column<DataGridFeatures, TData, unknown>[] = []
+      for (const sibling of intended) {
+        const next = family[index + 1 + covered.length]
+        if (next?.id !== sibling.id) break
+        covered.push(next)
+      }
+      if (!covered.length) continue
+
+      spans.set(owner.id, covered)
+      index += covered.length
+    }
+  }
+
+  return spans
 }
 
 /**
