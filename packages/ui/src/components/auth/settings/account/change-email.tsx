@@ -1,4 +1,4 @@
-import { getViewURL } from "@better-auth-ui/core"
+import { getViewURL, validateEmailAddress } from "@better-auth-ui/core"
 import { useAuth, useChangeEmail, useSession } from "@better-auth-ui/react"
 import { useEffect } from "react"
 import { toast } from "sonner"
