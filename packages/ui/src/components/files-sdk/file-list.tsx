@@ -25,7 +25,7 @@ export interface FileListProps {
   /** Hide the delete action. */
   readOnly?: boolean;
   /** Called when a file row is clicked. Rows are inert without it. */
-  onSelect?: (file: StoredFile) => void;
+  onSelect?: (file: FileInfo) => void;
   /** Called after a successful delete. */
   onChanged?: () => void;
   className?: string;
@@ -43,6 +43,36 @@ const formatBytes = (bytes: number): string => {
   return `${(bytes / 1024 ** exponent).toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`;
 };
 
+// Stored types that say nothing about the content, e.g. an upload nobody set a
+// type on. A file stored with one gets a thumbnail if its extension is an image.
+const GENERIC_TYPES = new Set([
+  "",
+  "application/octet-stream",
+  "binary/octet-stream",
+]);
+
+// Raster formats, which browsers sniff and render in an <img> whatever type
+// they're served as. SVG is left out: it only renders as `image/svg+xml`.
+const IMAGE_EXTENSIONS = new Set([
+  "avif",
+  "bmp",
+  "gif",
+  "jpeg",
+  "jpg",
+  "png",
+  "webp",
+]);
+
+const isImageFile = (file: FileInfo): boolean => {
+  const type = file.contentType.replace(/;.*/su, "").trim().toLowerCase();
+  if (!GENERIC_TYPES.has(type)) {
+    return type.startsWith("image/");
+  }
+  const name = file.key.slice(file.key.lastIndexOf("/") + 1);
+  const dot = name.lastIndexOf(".");
+  return dot > 0 && IMAGE_EXTENSIONS.has(name.slice(dot + 1).toLowerCase());
+};
+
 const Thumbnail = ({
   canSign,
   endpoint,
@@ -51,12 +81,12 @@ const Thumbnail = ({
 }: {
   canSign: boolean | undefined;
   endpoint: string;
-  file: StoredFile;
+  file: FileInfo;
   filesRef: { current: UseFilesResult };
 }) => {
   const [src, setSrc] = useState<string>();
   const [failed, setFailed] = useState(false);
-  const isImage = file.type.startsWith("image/");
+  const isImage = isImageFile(file);
 
   useEffect(() => {
     if (!isImage || canSign === undefined) {
@@ -128,7 +158,7 @@ export const FileList = ({
   onChanged,
   className,
 }: FileListProps) => {
-  const [items, setItems] = useState<StoredFile[]>([]);
+  const [items, setItems] = useState<FileInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [canSign, setCanSign] = useState<boolean>();
   const [actionError, setActionError] = useState<string>();
@@ -200,7 +230,7 @@ export const FileList = ({
     [onChanged]
   );
 
-  const download = useCallback(async (file: StoredFile) => {
+  const download = useCallback(async (file: FileInfo) => {
     setActionError(undefined);
     try {
       const downloaded = await filesRef.current.download(file.key);
@@ -291,7 +321,7 @@ export const FileList = ({
                   {item.key}
                 </span>
                 <span className="text-muted-foreground block text-xs">
-                  {formatBytes(item.size)} · {item.type || "unknown"}
+                  {formatBytes(item.size)} · {item.contentType || "unknown"}
                 </span>
               </span>
             </button>

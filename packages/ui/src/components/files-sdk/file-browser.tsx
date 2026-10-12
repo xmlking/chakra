@@ -20,8 +20,14 @@ export interface FileBrowserProps {
   initialPrefix?: string;
   /** Delimiter that marks a folder boundary. Default `"/"`. */
   delimiter?: string;
+  /**
+   * Called with the open folder's prefix (`""` for the root) on mount and
+   * whenever the user opens another folder, e.g. to point a `Dropzone`'s
+   * `prefix` at it.
+   */
+  onNavigate?: (prefix: string) => void;
   /** Called when a file row (not a folder) is clicked. */
-  onSelect?: (file: StoredFile) => void;
+  onSelect?: (file: FileInfo) => void;
   /** Called after a successful copy/rename/move/delete from a row's actions menu. */
   onChanged?: () => void;
   /** Hide the per-file actions menu. */
@@ -80,12 +86,14 @@ const fileLabel = (key: string, parent: string): string =>
  * `capabilities().delimiter` is `false` (they have no folder concept and reject
  * a delimiter) it lists flat instead: every key under the current prefix, with
  * its path relative to it. A failed listing is shown, not mistaken for an empty
- * folder.
+ * folder. The open folder is re-listed after its own row actions and whenever
+ * uploads through the same `files` instance (a `Dropzone`, say) finish.
  */
 export const FileBrowser = ({
   files,
   initialPrefix = "",
   delimiter = "/",
+  onNavigate,
   onSelect,
   onChanged,
   readOnly = false,
@@ -93,7 +101,7 @@ export const FileBrowser = ({
 }: FileBrowserProps) => {
   const [prefix, setPrefix] = useState(initialPrefix);
   const [folders, setFolders] = useState<string[]>([]);
-  const [items, setItems] = useState<StoredFile[]>([]);
+  const [items, setItems] = useState<FileInfo[]>([]);
   const [cursor, setCursor] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [listError, setListError] = useState<string>();
@@ -112,6 +120,14 @@ export const FileBrowser = ({
   // overwrite the one you're looking at.
   const requestRef = useRef(0);
 
+  // Report the open folder. The callback is read through a ref so an inline
+  // arrow (a new function every render) doesn't re-fire it for the same folder.
+  const onNavigateRef = useRef(onNavigate);
+  onNavigateRef.current = onNavigate;
+  useEffect(() => {
+    onNavigateRef.current?.(prefix);
+  }, [prefix]);
+
   useEffect(() => {
     let cancelled = false;
     const resolve = async () => {
@@ -120,7 +136,7 @@ export const FileBrowser = ({
       let supported = true;
       try {
         const caps = await filesRef.current.capabilities();
-        supported = caps.delimiter;
+        supported = caps.delimiter !== false;
       } catch {
         // Keep the default above.
       }
@@ -184,6 +200,25 @@ export const FileBrowser = ({
     setCursor(undefined);
     void load();
   }, [load]);
+
+  // Uploads through the same `files` instance (a Dropzone, or the page calling
+  // `files.upload()`) can land in this folder, so re-list it when they finish.
+  // The rows on screen stay put until the new listing replaces them. A
+  // Dropzone uploads one file at a time, so `isUploading` dips between files;
+  // the timer is cancelled when the next file starts, so a batch re-lists
+  // once, at its end.
+  const wasUploading = useRef(files.isUploading);
+  useEffect(() => {
+    const settled = wasUploading.current && !files.isUploading;
+    wasUploading.current = files.isUploading;
+    if (!settled) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      void load();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [files.isUploading, load]);
 
   // A copy/rename/move/delete can move a key out of (or into) the current
   // folder, so re-list the prefix from scratch rather than splicing locally.
@@ -273,7 +308,7 @@ export const FileBrowser = ({
                   {fileLabel(item.key, prefix)}
                 </span>
                 <span className="text-muted-foreground block text-xs">
-                  {formatBytes(item.size)} · {item.type || "unknown"}
+                  {formatBytes(item.size)} · {item.contentType || "unknown"}
                 </span>
               </span>
             </button>
