@@ -2,6 +2,7 @@ import {
   authMutationKeys,
   getAdditionalFieldDefaultValues,
   getAdditionalFieldSubmitValues,
+  getAuthCallbackURL,
   getAuthLinkURL,
   isPasswordCompromisedError,
   validateEmailAddress,
@@ -41,18 +42,6 @@ import {
 } from "./auth-form"
 import { PasswordStrengthMeter } from "./password-strength-meter"
 import { ProviderButtons, type SocialLayout } from "./provider-buttons"
-
-
-/** Resolve a callback destination against an optional base URL. */
-const ABSOLUTE_HTTP_URL = /^https?:\/\//i
-export function getAuthCallbackURL(
-  baseURL: string,
-  redirectTo: string
-): string {
-  if (!baseURL || ABSOLUTE_HTTP_URL.test(redirectTo)) return redirectTo
-
-  return `${baseURL.replace(/\/+$/, "")}/${redirectTo.replace(/^\/+/, "")}`
-}
 
 export type SignUpProps = {
   className?: string
