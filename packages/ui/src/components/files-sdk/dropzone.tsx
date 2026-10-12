@@ -9,6 +9,8 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
@@ -22,6 +24,8 @@ export interface UploadedEntry {
   key: string;
   /** Display name — the relative path for folder uploads, else the file name. */
   name: string;
+  /** What the gateway's `onUploadComplete` returned for this file, if anything. */
+  data?: unknown;
 }
 
 interface PendingFile {
@@ -37,8 +41,10 @@ interface DropzoneContextValue {
   maxSize?: number;
   isUploading: boolean;
   uploaded: UploadedEntry[];
-  /** Failure summary for the most recent batch, if any. */
+  /** Failure summary for the most recent batch, until the next upload starts. */
   error?: string;
+  /** Id for the success summary, which the zone uses as part of its description. */
+  contentId: string;
   open: () => void;
 }
 
@@ -207,7 +213,9 @@ export interface DropzoneProps {
  * `<DropzoneContent />`, `<DropzoneEmptyState />` and `<DropzoneError />`, or
  * pass your own children. The prompt stays visible after uploads so users can
  * keep adding files. The zone is a `<button>`, so custom children should be
- * phrasing content (spans, icons, text) rather than `<div>`s or `<p>`s.
+ * phrasing content (spans, icons, text) rather than `<div>`s or `<p>`s. Its
+ * accessible name is the prompt; the success and error summaries describe it,
+ * and errors are announced through a polite live region.
  */
 export const Dropzone = ({
   files,
@@ -224,16 +232,39 @@ export const Dropzone = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [uploaded, setUploaded] = useState<UploadedEntry[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  // `attempt` numbers each batch so the live region re-announces a repeated
+  // message (two oversize drops in a row) instead of skipping it.
+  const [failure, setFailure] = useState<{
+    attempt: number;
+    message: string;
+  }>();
+  const attemptRef = useRef(0);
+  const contentId = useId();
+  const statusId = useId();
+  const errorMessage = failure?.message;
 
   const maxFiles = maxFilesProp ?? (directory ? Number.POSITIVE_INFINITY : 1);
+
+  // An upload started anywhere on the shared `files` instance (a retry from
+  // the page, another uploader) supersedes the last batch's failure, so clear
+  // it rather than leave a stale error on the zone. The dropzone's own batches
+  // clear it up front and set it once they end, when nothing is in flight.
+  const wasUploading = useRef(files.isUploading);
+  useEffect(() => {
+    if (files.isUploading && !wasUploading.current) {
+      setFailure(undefined);
+    }
+    wasUploading.current = files.isUploading;
+  }, [files.isUploading]);
 
   const upload = useCallback(
     async (pending: PendingFile[]) => {
       if (!pending.length) {
         return;
       }
-      setErrorMessage(undefined);
+      attemptRef.current += 1;
+      const attempt = attemptRef.current;
+      setFailure(undefined);
       const failures: string[] = [];
       const fail = (name: string, file: File, cause: Error): void => {
         failures.push(`${name} (${cause.message})`);
@@ -262,7 +293,11 @@ export const Dropzone = ({
               await files.upload(key, file, { contentType: file.type })
             : // eslint-disable-next-line no-await-in-loop -- uploads run sequentially to avoid firing an unbounded burst of parallel requests at the server
               await files.upload(file);
-          const entry: UploadedEntry = { key: result.key, name };
+          const entry: UploadedEntry = {
+            key: result.key,
+            name,
+            ...(result.data !== undefined && { data: result.data }),
+          };
           setUploaded((prev) => [...prev, entry]);
           onUploaded?.(entry);
         } catch (error) {
@@ -280,11 +315,13 @@ export const Dropzone = ({
         );
       }
       if (failures.length) {
-        setErrorMessage(
-          failures.length === 1
-            ? `Upload failed: ${failures[0]}`
-            : `${failures.length} uploads failed: ${failures.join(", ")}`
-        );
+        setFailure({
+          attempt,
+          message:
+            failures.length === 1
+              ? `Upload failed: ${failures[0]}`
+              : `${failures.length} uploads failed: ${failures.join(", ")}`,
+        });
       }
     },
     [accept, files, maxFiles, maxSize, onError, onUploaded, prefix]
@@ -304,6 +341,7 @@ export const Dropzone = ({
   const contextValue = useMemo(
     () => ({
       accept,
+      contentId,
       directory,
       error: errorMessage,
       isUploading: files.isUploading,
@@ -314,6 +352,7 @@ export const Dropzone = ({
     }),
     [
       accept,
+      contentId,
       directory,
       errorMessage,
       files.isUploading,
@@ -334,10 +373,21 @@ export const Dropzone = ({
   // file dropped mid-upload would reach the page and the browser would
   // navigate away to open it. Keeping the handlers live lets the drop be
   // swallowed and ignored instead.
+  //
+  // A button's content is its accessible name, so the success and error
+  // summaries inside it are hidden from assistive tech (the prompt alone names
+  // the zone) and wired up as its description instead. The error is also
+  // mirrored into a polite live region beside the button, so it's announced
+  // when it appears rather than only when the zone is next focused.
   const busy = files.isUploading;
+  const describedBy =
+    [uploaded.length ? contentId : "", errorMessage ? statusId : ""]
+      .filter(Boolean)
+      .join(" ") || undefined;
   return (
     <DropzoneContext.Provider value={contextValue}>
       <Button
+        aria-describedby={describedBy}
         aria-disabled={busy || undefined}
         className={cn(
           "relative flex h-auto w-full flex-col items-center justify-center gap-2 overflow-hidden p-8 whitespace-normal",
@@ -388,6 +438,11 @@ export const Dropzone = ({
         }}
         type="file"
       />
+      {/* <output> is a status live region; aria-live is spelled out for
+          screen readers that don't map the element's implicit role. */}
+      <output aria-live="polite" className="sr-only" id={statusId}>
+        {failure && <span key={failure.attempt}>{failure.message}</span>}
+      </output>
     </DropzoneContext.Provider>
   );
 };
@@ -456,19 +511,31 @@ export const DropzoneContent = ({
   className,
   children,
 }: DropzoneContentProps) => {
-  const { uploaded } = useDropzoneContext();
+  const { contentId, uploaded } = useDropzoneContext();
 
   if (!uploaded.length) {
     return null;
   }
 
+  // Hidden from the zone's accessible name; the zone points its
+  // `aria-describedby` at this id instead.
   if (children) {
-    return <span className={cn("block", className)}>{children}</span>;
+    return (
+      <span
+        aria-hidden="true"
+        className={cn("block", className)}
+        id={contentId}
+      >
+        {children}
+      </span>
+    );
   }
 
   return (
     <span
+      aria-hidden="true"
       className={cn("flex items-center gap-1.5 text-sm font-medium", className)}
+      id={contentId}
     >
       <CheckCircle2Icon className="text-primary size-4" />
       {uploaded.length === 1
@@ -483,7 +550,10 @@ export interface DropzoneErrorProps {
   children?: ReactNode;
 }
 
-/** Failure summary — renders only when the most recent batch had errors. */
+/**
+ * Failure summary — renders only when the most recent batch had errors, and
+ * clears as soon as another upload starts on the same `files` instance.
+ */
 export const DropzoneError = ({ className, children }: DropzoneErrorProps) => {
   const { error } = useDropzoneContext();
 
@@ -491,12 +561,19 @@ export const DropzoneError = ({ className, children }: DropzoneErrorProps) => {
     return null;
   }
 
+  // Visual only: the zone announces the same error from its own live region
+  // and describes itself with it, so keep it out of the zone's name.
   if (children) {
-    return <span className={cn("block", className)}>{children}</span>;
+    return (
+      <span aria-hidden="true" className={cn("block", className)}>
+        {children}
+      </span>
+    );
   }
 
   return (
     <span
+      aria-hidden="true"
       className={cn(
         "text-destructive flex items-center gap-1.5 text-sm",
         className

@@ -9,20 +9,23 @@ import { cn } from "cn";
 export interface FilePreviewProps {
   /** A `useFiles()` instance — resolves metadata and bytes through it. */
   files: UseFilesResult;
-  /** A key string, or an already-resolved `StoredFile`. */
-  file: string | StoredFile;
+  /** A key string, or an already-resolved `FileInfo` (e.g. a `list()` item). */
+  file: string | FileInfo;
   /** Endpoint for the gateway download-proxy fallback. Default `"/api/files"`. */
   endpoint?: string;
   /**
    * Replace the built-in preview with a custom viewer (e.g. a PDF, DOCX or
-   * CSV viewer component). Called once metadata resolves, with the same `src`
-   * and `text` the built-in preview would use — except that when this is set,
-   * a `src` is resolved for **every** non-text type, not just images and
-   * PDFs, so viewers for formats the built-in preview can't render still get
-   * a URL. PDFs arrive as a `blob:` URL; other types as a signed or proxy URL.
+   * CSV viewer component). Called once metadata resolves, with the same
+   * `type`, `src` and `text` the built-in preview would use — except that
+   * when this is set, a `src` is resolved for **every** non-text type, not
+   * just images and PDFs, so viewers for formats the built-in preview can't
+   * render still get a URL. PDFs arrive as a `blob:` URL; other types as a
+   * signed or proxy URL. `type` is the stored type without parameters, or the
+   * inferred one when the stored type is generic (`application/octet-stream`).
    */
   renderPreview?: (preview: {
-    file: StoredFile;
+    file: FileInfo;
+    type: string;
     src?: string;
     text?: string;
   }) => ReactNode;
@@ -30,8 +33,94 @@ export interface FilePreviewProps {
 }
 
 /** The `file` prop is either a bare key or an already-resolved record. */
-const isKey = (file: string | StoredFile): file is string =>
+const isKey = (file: string | FileInfo): file is string =>
   typeof file === "string";
+
+// Stored types that say nothing about the content, e.g. an upload nobody set a
+// type on. A file stored with one is previewed by its extension instead.
+const GENERIC_TYPES = new Set([
+  "",
+  "application/octet-stream",
+  "binary/octet-stream",
+]);
+
+// The extensions the built-in preview can render. SVG is left out: browsers
+// only render it from a response served as `image/svg+xml`.
+const TYPES_BY_EXTENSION = new Map([
+  ["avif", "image/avif"],
+  ["bmp", "image/bmp"],
+  ["csv", "text/csv"],
+  ["gif", "image/gif"],
+  ["jpeg", "image/jpeg"],
+  ["jpg", "image/jpeg"],
+  ["json", "application/json"],
+  ["log", "text/plain"],
+  ["md", "text/markdown"],
+  ["pdf", "application/pdf"],
+  ["png", "image/png"],
+  ["txt", "text/plain"],
+  ["webp", "image/webp"],
+]);
+
+const PDF_SIGNATURE = "%PDF-";
+
+/** The extension of a key's last segment, lowercased; `""` when it has none. */
+const extensionOf = (key: string): string => {
+  const name = key.slice(key.lastIndexOf("/") + 1);
+  const dot = name.lastIndexOf(".");
+  return dot > 0 ? name.slice(dot + 1).toLowerCase() : "";
+};
+
+/**
+ * The type to preview a file as: its stored type without parameters, or —
+ * when that's generic — the type its extension implies, if the preview can
+ * render it.
+ */
+const previewTypeOf = (file: FileInfo): string => {
+  const type = file.contentType.replace(/;.*/su, "").trim().toLowerCase();
+  if (!GENERIC_TYPES.has(type)) {
+    return type;
+  }
+  return TYPES_BY_EXTENSION.get(extensionOf(file.key)) ?? type;
+};
+
+/**
+ * Whether a file starts with the PDF signature. Reads only those bytes, so an
+ * extension-less key stored with a generic type can still preview as a PDF
+ * without downloading the whole object first. A failed read is treated as no
+ * match — the file just gets no inline preview.
+ */
+const hasPdfSignature = async (
+  files: UseFilesResult,
+  key: string
+): Promise<boolean> => {
+  try {
+    const head = await files.download(key, {
+      range: { end: PDF_SIGNATURE.length - 1, start: 0 },
+    });
+    return (await head.text()) === PDF_SIGNATURE;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * {@link previewTypeOf}, plus one more check for a generic type with no
+ * telling extension: the PDF signature, on adapters that can serve the range.
+ */
+const resolvePreviewType = async (
+  files: UseFilesResult,
+  file: FileInfo
+): Promise<string> => {
+  const type = previewTypeOf(file);
+  if (!GENERIC_TYPES.has(type) || file.size < PDF_SIGNATURE.length) {
+    return type;
+  }
+  const caps = await files.capabilities();
+  return caps.rangeRead && (await hasPdfSignature(files, file.key))
+    ? "application/pdf"
+    : type;
+};
 
 const formatBytes = (bytes: number): string => {
   if (bytes === 0) {
@@ -109,7 +198,9 @@ const Body = ({
 /**
  * Lazy preview of a single stored file. Images prefer a direct `url()`,
  * falling back to the gateway download proxy; PDFs are downloaded and shown
- * from a `blob:` URL; text is fetched and shown inline. Bytes are only loaded
+ * from a `blob:` URL; text is fetched and shown inline. A file stored with a
+ * generic type (`application/octet-stream`) is previewed by its extension, or
+ * as a PDF when its first bytes are the PDF signature. Bytes are only loaded
  * when the component mounts.
  */
 export const FilePreview = ({
@@ -120,9 +211,10 @@ export const FilePreview = ({
   className,
 }: FilePreviewProps) => {
   const key = isKey(file) ? file : file.key;
-  const [meta, setMeta] = useState<StoredFile | undefined>(
+  const [meta, setMeta] = useState<FileInfo | undefined>(
     isKey(file) ? undefined : file
   );
+  const [type, setType] = useState<string>();
   const [src, setSrc] = useState<string>();
   const [text, setText] = useState<string>();
   const [loadError, setLoadError] = useState<string>();
@@ -146,26 +238,32 @@ export const FilePreview = ({
 
     const run = async () => {
       setLoadError(undefined);
+      setType(undefined);
       setSrc(undefined);
       setText(undefined);
       setIsLoading(true);
       try {
         const resolved = isKey(file) ? await filesRef.current.head(key) : file;
+        const resolvedType = await resolvePreviewType(
+          filesRef.current,
+          resolved
+        );
         if (controller.signal.aborted) {
           return;
         }
         setMeta(resolved);
+        setType(resolvedType);
 
         if (
-          resolved.type.startsWith("text/") ||
-          resolved.type === "application/json"
+          resolvedType.startsWith("text/") ||
+          resolvedType === "application/json"
         ) {
           const downloaded = await filesRef.current.download(key);
           const body = await downloaded.text();
           if (!controller.signal.aborted) {
             setText(body);
           }
-        } else if (resolved.type === "application/pdf") {
+        } else if (resolvedType === "application/pdf") {
           // The gateway forces `Content-Disposition: attachment` on both
           // `url()` and the download proxy (its stored-XSS guard), and
           // browsers download an <object>'s document instead of rendering it
@@ -181,7 +279,7 @@ export const FilePreview = ({
             );
             setSrc(objectUrl);
           }
-        } else if (resolved.type.startsWith("image/") || hasCustomRenderer) {
+        } else if (resolvedType.startsWith("image/") || hasCustomRenderer) {
           // Prefer a signed/direct URL, but only when the adapter can actually
           // sign — otherwise `url()` returns a non-loadable placeholder. Fall
           // back to the gateway download proxy, which works on every adapter.
@@ -230,21 +328,28 @@ export const FilePreview = ({
     >
       <div className="bg-muted/30 flex min-h-40 items-center justify-center p-4">
         {renderPreview && !isLoading && !loadError && meta ? (
-          renderPreview({ file: meta, src, text })
+          renderPreview({
+            file: meta,
+            src,
+            text,
+            type: type ?? meta.contentType,
+          })
         ) : (
           <Body
             error={loadError}
             isLoading={isLoading}
             src={src}
             text={text}
-            type={meta?.type}
+            type={type}
           />
         )}
       </div>
       <figcaption className="border-border border-t px-3 py-2">
         <p className="truncate text-sm font-medium">{key}</p>
         <p className="text-muted-foreground text-xs">
-          {meta ? `${formatBytes(meta.size)} · ${meta.type || "unknown"}` : "—"}
+          {meta
+            ? `${formatBytes(meta.size)} · ${meta.contentType || "unknown"}`
+            : "—"}
           {meta?.etag ? ` · ${meta.etag}` : ""}
         </p>
       </figcaption>

@@ -124,6 +124,30 @@ const MintedLink = ({
 };
 
 /**
+ * What a link may ask for, given what's known about the adapter. Uploads and
+ * downloads have separate signing caps. An adapter that only hands out
+ * permanent download links can't honor an expiry (the gateway answers one with
+ * a 422), so a download link carries one only once the adapter is known to
+ * sign, and waits until the capabilities request has settled.
+ */
+const signingPlan = (
+  mode: "download" | "upload",
+  caps: AdapterCapabilities | undefined,
+  capsSettled: boolean
+): { awaitingCaps: boolean; expires: boolean; maxExpiresIn?: number } =>
+  mode === "upload"
+    ? {
+        awaitingCaps: false,
+        expires: true,
+        maxExpiresIn: caps?.signedUpload.maxExpiresIn,
+      }
+    : {
+        awaitingCaps: !capsSettled,
+        expires: caps?.signedUrl.supported === true,
+        maxExpiresIn: caps?.signedUrl.maxExpiresIn,
+      };
+
+/**
  * A dialog that mints a shareable link for one key. Download links go through
  * `url()` (a signed URL where the adapter supports it, otherwise a public one);
  * upload links go through `signedUploadUrl()` and show the method plus any
@@ -148,6 +172,9 @@ export const ShareDialog = ({
   const [copied, setCopied] = useState(false);
   const [feedback, setFeedback] = useState<string>();
   const [caps, setCaps] = useState<AdapterCapabilities>();
+  // Whether the capabilities request has settled (even by failing), so a
+  // download link isn't minted before we know whether it may carry an expiry.
+  const [capsSettled, setCapsSettled] = useState(false);
 
   const filesRef = useRef(files);
   filesRef.current = files;
@@ -178,9 +205,15 @@ export const ShareDialog = ({
         const result = await filesRef.current.capabilities();
         if (!cancelled) {
           setCaps(result);
+          setCapsSettled(true);
         }
       } catch {
-        // Non-fatal: we just lose the expiry clamp + support hint.
+        // Non-fatal: we just lose the expiry clamp + support hint, and the
+        // download link is minted without an expiry (the gateway signs it
+        // with its own default when the adapter can).
+        if (!cancelled) {
+          setCapsSettled(true);
+        }
       }
     };
     void run();
@@ -189,7 +222,12 @@ export const ShareDialog = ({
     };
   }, [open]);
 
-  const maxExpiresIn = caps?.signedUrl.maxExpiresIn;
+  const { awaitingCaps, expires, maxExpiresIn } = signingPlan(
+    mode,
+    caps,
+    capsSettled
+  );
+  const busy = isGenerating || awaitingCaps;
   const presets = EXPIRY_PRESETS.filter(
     (preset) => !maxExpiresIn || preset.seconds <= maxExpiresIn
   );
@@ -210,7 +248,7 @@ export const ShareDialog = ({
         }
       } else {
         const url = await filesRef.current.url(fileKey, {
-          expiresIn: ttl,
+          ...(expires && { expiresIn: ttl }),
           responseContentDisposition: disposition,
         });
         if (current()) {
@@ -228,7 +266,7 @@ export const ShareDialog = ({
     } finally {
       setIsGenerating(false);
     }
-  }, [clear, mode, fileKey, expiresIn, disposition, maxExpiresIn]);
+  }, [clear, mode, fileKey, expiresIn, disposition, maxExpiresIn, expires]);
 
   const view = minted ? viewOf(minted) : undefined;
   const copyText = view?.copyText;
@@ -331,7 +369,7 @@ export const ShareDialog = ({
           {caps && !caps.signedUrl.supported && mode === "download" && (
             <p className="text-muted-foreground text-xs">
               This adapter can't sign URLs, so the link is a permanent public
-              URL and ignores the expiry.
+              URL with no expiry.
             </p>
           )}
 
@@ -345,13 +383,13 @@ export const ShareDialog = ({
             />
           ) : (
             <Button
-              disabled={isGenerating}
+              disabled={busy}
               onClick={() => {
                 void generate();
               }}
               type="button"
             >
-              {isGenerating && <Loader2Icon className="animate-spin" />}
+              {busy && <Loader2Icon className="animate-spin" />}
               Generate link
             </Button>
           )}
