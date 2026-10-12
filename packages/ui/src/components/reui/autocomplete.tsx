@@ -164,8 +164,9 @@ function AutocompleteItem({
         "text-foreground data-highlighted:text-foreground data-highlighted:before:bg-accent gap-1.5",
         "rounded-md",
         "data-highlighted:before:rounded-md",
-        // Icon sizing mirrors .cn-select-item. Rhea tracks nova, matching its
-        // .cn-input metrics; the row radius above follows .cn-*-item at xl.
+        /* Icon sizing mirrors the shadcn Select item. Rhea tracks nova, as its
+           shadcn Input metrics match nova's; the row radius above follows the
+           shadcn Select and Dropdown Menu items, xl in rhea. */
         "px-1.5 py-1 text-sm [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden transition-colors select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:relative data-highlighted:z-0 data-highlighted:before:absolute data-highlighted:before:inset-x-0 data-highlighted:before:inset-y-0 data-highlighted:before:z-[-1] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([role=img]):not([class*=text-])]:opacity-60",
         className
       )}

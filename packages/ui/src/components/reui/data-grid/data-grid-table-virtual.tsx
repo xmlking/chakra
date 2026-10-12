@@ -20,13 +20,14 @@ import {
   DataGridTableRenderedRow,
   DataGridTableRowSpacer,
   DataGridTableViewport,
+  getDataGridHeadCellResizeHeader,
   getDataGridScrollAreaViewport,
   getDataGridTableMergedHeaderGroups,
   getDataGridTableRowSections,
   getPinningStyles,
   hasDataGridTableRightPinnedColumns,
+  renderDataGridTableHeadCellContent,
 } from "#components/reui/data-grid/data-grid-table"
-import { flexRender } from "@tanstack/react-table"
 import type { Column, Row, Table } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import type {
@@ -34,8 +35,8 @@ import type {
   Virtualizer,
   VirtualizerOptions,
 } from "@tanstack/react-virtual"
-
 import { cn } from "cn"
+
 import { Spinner } from "#components/shadcn/spinner"
 
 type DataGridTableVirtualScrollElements = {
@@ -679,15 +680,16 @@ function DataGridTableVirtual<TData extends object>({
   // Column windows only where the geometry is provable: a fixed table
   // layout (undefined defaults to fixed; the colgroup then owns every
   // width, so colSpan spacers cannot drift) and a single ungrouped header
-  // row (a colSpan group cannot be windowed). Anything else falls back to
-  // full-column rendering silently, the same posture as row virtualization
-  // toward unsupported shapes.
+  // row (a colSpan group or meta.headerColSpan cell cannot be windowed).
+  // Anything else falls back to full-column rendering silently, the same
+  // posture as row virtualization toward unsupported shapes.
   const columnVirtualizationActive =
     columnVirtualizerOptions?.enabled === true &&
     props.tableLayout?.width !== "auto" &&
     mergedHeaderGroups.length === 1 &&
     (mergedHeaderGroups[0]?.headers.every((header) => header.colSpan <= 1) ??
-      false)
+      false) &&
+    !mergedHeaderGroups[0]?.coveredHeaders.size
   const { topRows, centerRows, bottomRows } = getDataGridTableRowSections(
     table,
     props.tableLayout?.rowsPinnable
@@ -1052,117 +1054,86 @@ function DataGridTableVirtual<TData extends object>({
     () =>
       renderHeader && (
         <DataGridTableHead>
-          {mergedHeaderGroups.map((headerGroup) => (
-            <DataGridTableHeadRow key={headerGroup.id} rowId={headerGroup.id}>
-              {/* Under an active column window the single ungrouped header
+          {mergedHeaderGroups.map((headerGroup, rowIndex) => {
+            // The fill strip is one cell spanning every head row, so only
+            // the first row renders it.
+            const fillHeadCell =
+              props.tableLayout?.columnsResizable && rowIndex === 0 ? (
+                <DataGridTableFillHeadCell
+                  rowSpan={mergedHeaderGroups.length}
+                />
+              ) : null
+            const renderHeadCell = (
+              header: (typeof headerGroup.startHeaders)[number]
+            ) => {
+              const coveredHeaders = headerGroup.coveredHeaders.get(header.id)
+              const resizeHeader = getDataGridHeadCellResizeHeader(
+                header,
+                coveredHeaders
+              )
+
+              return (
+                <DataGridTableHeadRowCell
+                  header={header}
+                  coveredHeaders={coveredHeaders}
+                  key={header.id}
+                >
+                  {renderDataGridTableHeadCellContent(header)}
+                  {props.tableLayout?.columnsResizable &&
+                    resizeHeader.column.getCanResize() && (
+                      <DataGridTableHeadRowCellResize header={resizeHeader} />
+                    )}
+                </DataGridTableHeadRowCell>
+              )
+            }
+
+            return (
+              <DataGridTableHeadRow key={headerGroup.id} rowId={headerGroup.id}>
+                {/* Under an active column window the single ungrouped header
                         row is bucketed start / windowed center / end, with each
                         off-window flank one colSpan spacer sized by the intact
                         colgroup - the same shape the body rows take. */}
-              {centerColumnWindow
-                ? headerGroup.headers
-                    .filter((header) => header.column.getIsPinned() === "start")
-                    .map((header) => (
-                      <DataGridTableHeadRowCell header={header} key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        {props.tableLayout?.columnsResizable &&
-                          header.column.getCanResize() && (
-                            <DataGridTableHeadRowCellResize header={header} />
-                          )}
-                      </DataGridTableHeadRowCell>
-                    ))
-                : null}
-              {centerColumnWindow && centerColumnWindow.start > 0 ? (
-                <th
-                  aria-hidden="true"
-                  data-slot="data-grid-table-virtual-col-spacer"
-                  colSpan={centerColumnWindow.start}
-                  className="p-0"
-                />
-              ) : null}
-              {centerColumnWindow
-                ? headerGroup.headers
-                    .filter((header) => !header.column.getIsPinned())
-                    .slice(centerColumnWindow.start, centerColumnWindow.end + 1)
-                    .map((header) => (
-                      <DataGridTableHeadRowCell header={header} key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        {props.tableLayout?.columnsResizable &&
-                          header.column.getCanResize() && (
-                            <DataGridTableHeadRowCellResize header={header} />
-                          )}
-                      </DataGridTableHeadRowCell>
-                    ))
-                : null}
-              {centerColumnWindow &&
-              centerVisibleColumns.length - 1 - centerColumnWindow.end > 0 ? (
-                <th
-                  aria-hidden="true"
-                  data-slot="data-grid-table-virtual-col-spacer"
-                  colSpan={
-                    centerVisibleColumns.length - 1 - centerColumnWindow.end
-                  }
-                  className="p-0"
-                />
-              ) : null}
-              {!centerColumnWindow &&
-                headerGroup.headers
-                  .filter((header) => header.column.getIsPinned() !== "end")
-                  .map((header) => {
-                    const { column } = header
-
-                    return (
-                      <DataGridTableHeadRowCell header={header} key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                        {props.tableLayout?.columnsResizable &&
-                          column.getCanResize() && (
-                            <DataGridTableHeadRowCellResize header={header} />
-                          )}
-                      </DataGridTableHeadRowCell>
-                    )
-                  })}
-              {props.tableLayout?.columnsResizable && hasRightPinnedColumns ? (
-                <DataGridTableFillHeadCell />
-              ) : null}
-              {headerGroup.headers
-                .filter((header) => header.column.getIsPinned() === "end")
-                .map((header) => {
-                  const { column } = header
-
-                  return (
-                    <DataGridTableHeadRowCell header={header} key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                      {props.tableLayout?.columnsResizable &&
-                        column.getCanResize() && (
-                          <DataGridTableHeadRowCellResize header={header} />
-                        )}
-                    </DataGridTableHeadRowCell>
-                  )
-                })}
-              {props.tableLayout?.columnsResizable && !hasRightPinnedColumns ? (
-                <DataGridTableFillHeadCell />
-              ) : null}
-            </DataGridTableHeadRow>
-          ))}
+                {centerColumnWindow
+                  ? headerGroup.startHeaders.map(renderHeadCell)
+                  : null}
+                {centerColumnWindow && centerColumnWindow.start > 0 ? (
+                  <th
+                    aria-hidden="true"
+                    data-col-spacer="start"
+                    colSpan={centerColumnWindow.start}
+                    className="p-0"
+                  />
+                ) : null}
+                {centerColumnWindow
+                  ? headerGroup.centerHeaders
+                      .slice(
+                        centerColumnWindow.start,
+                        centerColumnWindow.end + 1
+                      )
+                      .map(renderHeadCell)
+                  : null}
+                {centerColumnWindow &&
+                centerVisibleColumns.length - 1 - centerColumnWindow.end > 0 ? (
+                  <th
+                    aria-hidden="true"
+                    data-col-spacer="end"
+                    colSpan={
+                      centerVisibleColumns.length - 1 - centerColumnWindow.end
+                    }
+                    className="p-0"
+                  />
+                ) : null}
+                {!centerColumnWindow &&
+                  [
+                    ...headerGroup.startHeaders,
+                    ...headerGroup.centerHeaders,
+                  ].map(renderHeadCell)}
+                {hasRightPinnedColumns ? fillHeadCell : null}
+                {headerGroup.endHeaders.map(renderHeadCell)}
+                {!hasRightPinnedColumns ? fillHeadCell : null}
+              </DataGridTableHeadRow>
+            )
+          })}
         </DataGridTableHead>
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps

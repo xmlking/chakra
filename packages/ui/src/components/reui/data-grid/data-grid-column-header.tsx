@@ -1,7 +1,8 @@
-import { memo, useMemo } from "react"
+import { memo, useLayoutEffect, useMemo, useRef } from "react"
 import type { HTMLAttributes, ReactNode } from "react"
 import {
   getColumnHeaderLabel,
+  getDataGridHeaderSpans,
   useDataGrid,
 } from "#components/reui/data-grid/data-grid"
 import type { DataGridFeatures } from "#components/reui/data-grid/data-grid"
@@ -39,6 +40,11 @@ interface DataGridColumnHeaderProps<
   visibility?: boolean
 }
 
+// Unpinning moves a column into another header list (pinned, windowed center),
+// which remounts its header, so the focus request outlives the button: the next
+// header rendered for that column takes it. `column` is a stable reference.
+const pendingUnpinFocus = new WeakSet<object>()
+
 function DataGridColumnHeaderInner<TData extends object, TValue>({
   column,
   title,
@@ -69,6 +75,10 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
       : ""
   const isSorted = column.getIsSorted()
   const isPinned = column.getIsPinned()
+  const menuTriggerRef = useRef<HTMLButtonElement>(null)
+  useLayoutEffect(() => {
+    if (pendingUnpinFocus.delete(column)) menuTriggerRef.current?.focus()
+  })
   const canSort = column.getCanSort()
   const canPin = column.getCanPin()
   const canResize = column.getCanResize()
@@ -85,7 +95,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
     groupedColumnMode !== false &&
     typeof (target as { getIsGrouped?: unknown }).getIsGrouped === "function" &&
     (target as { getIsGrouped: () => boolean }).getIsGrouped()
-  const renderedPeers = (
+  const renderedLeaves = (
     isPinned === "start"
       ? table.getStartVisibleLeafColumns()
       : isPinned === "end"
@@ -94,7 +104,29 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
   )
     .filter((leafColumn) => !isHoistedByGrouping(leafColumn))
     .map((leafColumn) => leafColumn.id)
-  const renderedIndex = renderedPeers.indexOf(column.id)
+  const renderedOrder = new Map(renderedLeaves.map((id, index) => [id, index]))
+  const byRenderedOrder = (a: string, b: string) =>
+    renderedOrder.get(a)! - renderedOrder.get(b)!
+  // A peer is a sibling at this column's header level with its rendered
+  // leaves, so a group or a meta.headerColSpan span moves as one.
+  const headerSpans = getDataGridHeaderSpans(table)
+  const coveredIds = new Set(
+    [...headerSpans.values()].flat().map((leafColumn) => leafColumn.id)
+  )
+  // Siblings only: a leaf stepping out of its group would split its header.
+  const renderedPeers = (column.parent?.columns ?? table.getAllColumns())
+    .filter((sibling) => !coveredIds.has(sibling.id))
+    .map((sibling) =>
+      [...sibling.getLeafColumns(), ...(headerSpans.get(sibling.id) ?? [])]
+        .map((leafColumn) => leafColumn.id)
+        .filter((id) => renderedOrder.has(id))
+        .sort(byRenderedOrder)
+    )
+    .filter((leaves) => leaves.length > 0)
+    .sort((a, b) => byRenderedOrder(a[0]!, b[0]!))
+  const renderedIndex = column.columns.length
+    ? -1
+    : renderedPeers.findIndex((leaves) => leaves[0] === column.id)
   const leftNeighbour =
     renderedIndex > 0 ? renderedPeers[renderedIndex - 1] : undefined
   const rightNeighbour =
@@ -104,13 +136,16 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
   const canMoveLeft = leftNeighbour !== undefined
   const canMoveRight = rightNeighbour !== undefined
 
-  /** Re-seats this column beside a rendered neighbour; every other column,
-   * hidden or pinned ones included, keeps its place in the full order. */
-  const moveBeside = (neighbourId: string, side: "before" | "after") => {
-    const newOrder = columnOrder.filter((id) => id !== column.id)
-    const at = newOrder.indexOf(neighbourId)
+  /** Re-seats this column, with the leaves its header spans, beside a rendered
+   * neighbour; every other column, hidden or pinned, keeps its place. */
+  const moveBeside = (neighbour: string[], side: "before" | "after") => {
+    const moving = renderedPeers[renderedIndex] ?? [column.id]
+    const newOrder = columnOrder.filter((id) => !moving.includes(id))
+    const anchor =
+      side === "before" ? neighbour[0] : neighbour[neighbour.length - 1]
+    const at = anchor === undefined ? -1 : newOrder.indexOf(anchor)
     if (at === -1) return
-    newOrder.splice(side === "before" ? at : at + 1, 0, column.id)
+    newOrder.splice(side === "before" ? at : at + 1, 0, ...moving)
     table.setColumnOrder(newOrder)
   }
 
@@ -349,6 +384,7 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
       <div className="-ms-2 flex h-full items-center justify-between gap-1.5">
         <DropdownMenu>
           <DropdownMenuTrigger
+            ref={menuTriggerRef}
             render={
               <Button
                 variant="ghost"
@@ -376,7 +412,18 @@ function DataGridColumnHeaderInner<TData extends object, TValue>({
               size="icon-sm"
               variant="ghost"
               className="rounded-lg size-7"
-              onClick={() => column.pin(false)}
+              onClick={(event) => {
+                const scrollArea = event.currentTarget.closest<HTMLElement>(
+                  '[data-slot="scroll-area-viewport"]'
+                )
+                pendingUnpinFocus.add(column)
+                column.pin(false)
+                // A column the virtual window leaves unmounted claims nothing,
+                // so the grid's scroll area takes focus instead of the page.
+                requestAnimationFrame(() => {
+                  if (pendingUnpinFocus.delete(column)) scrollArea?.focus()
+                })
+              }}
               aria-label={i18n.labels.unpinColumn(resolvedTitle)}
               title={i18n.labels.unpinColumn(resolvedTitle)}
             >
