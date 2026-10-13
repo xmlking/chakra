@@ -236,6 +236,7 @@ function Calendar({
   yearRange = 50,
   ...props
 }: DayPickerProps & { yearRange?: number }) {
+  const [today] = React.useState(() => new Date());
   let locale: Pick<Locale, "options" | "localize" | "formatLong"> = enUS;
   const { options, localize, formatLong } = props.locale || {};
   if (options && localize && formatLong) {
@@ -249,7 +250,6 @@ function Calendar({
 
   const YEARS = genYears(yearRange);
   const disableLeftNavigation = () => {
-    const today = new Date();
     const startDate = new Date(today.getFullYear() - yearRange, 0, 1);
     if (props.month) {
       return (
@@ -260,7 +260,6 @@ function Calendar({
     return false;
   };
   const disableRightNavigation = () => {
-    const today = new Date();
     const endDate = new Date(today.getFullYear() + yearRange, 11, 31);
     if (props.month) {
       return (
@@ -445,7 +444,7 @@ function TimePickerInput({
   value,
   id,
   name,
-  date = new Date(new Date().setHours(0, 0, 0, 0)),
+  date,
   onDateChange,
   onChange,
   onKeyDown,
@@ -456,6 +455,12 @@ function TimePickerInput({
   ref,
   ...props
 }: TimePickerInputProps) {
+  const [defaultDate] = React.useState(() => {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    return currentDate;
+  });
+  const dateValue = date === undefined ? defaultDate : date;
   const flagRef = React.useRef<boolean>(false);
   const prevIntKeyRef = React.useRef<string>("0");
   const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -466,7 +471,7 @@ function TimePickerInput({
     };
   }, []);
 
-  const calculatedValue = getDateByType(date, picker);
+  const calculatedValue = getDateByType(dateValue, picker);
 
   const calculateNewValue = (key: string) => {
     /*
@@ -496,7 +501,7 @@ function TimePickerInput({
         if (timerRef.current) clearTimeout(timerRef.current);
         flagRef.current = false;
       }
-      const tempDate = date ? new Date(date) : new Date();
+      const tempDate = dateValue ? new Date(dateValue) : new Date();
       onDateChange?.(setDateByType(tempDate, newValue, picker, period));
     }
     if (e.key >= "0" && e.key <= "9") {
@@ -513,7 +518,7 @@ function TimePickerInput({
         }, 2000);
       }
 
-      const tempDate = date ? new Date(date) : new Date();
+      const tempDate = dateValue ? new Date(dateValue) : new Date();
       onDateChange?.(setDateByType(tempDate, newValue, picker, period));
     }
   };
@@ -694,7 +699,7 @@ type DateTimePickerPropsWithRef = DateTimePickerProps & {
 
 function DateTimePicker({
   locale = enUS,
-  defaultPopupValue = new Date(new Date().setHours(0, 0, 0, 0)),
+  defaultPopupValue,
   value,
   onChange,
   onMonthChange,
@@ -708,7 +713,13 @@ function DateTimePicker({
   ref,
   ...props
 }: DateTimePickerPropsWithRef) {
-  const [month, setMonth] = React.useState<Date>(value ?? defaultPopupValue);
+  const [defaultDate] = React.useState(() => {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+    return currentDate;
+  });
+  const popupValue = defaultPopupValue ?? defaultDate;
+  const [month, setMonth] = React.useState<Date>(value ?? popupValue);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [displayDate, setDisplayDate] = React.useState<Date | undefined>(value ?? undefined);
   onMonthChange ||= onChange;
@@ -730,15 +741,15 @@ function DateTimePicker({
     if (!newDay) {
       return;
     }
-    if (!defaultPopupValue) {
+    if (!popupValue) {
       newDay.setHours(month?.getHours() ?? 0, month?.getMinutes() ?? 0, month?.getSeconds() ?? 0);
       onMonthChange?.(newDay);
       setMonth(newDay);
       return;
     }
-    const diff = newDay.getTime() - defaultPopupValue.getTime();
+    const diff = newDay.getTime() - popupValue.getTime();
     const diffInDays = diff / (1000 * 60 * 60 * 24);
-    const newDateFull = add(defaultPopupValue, {
+    const newDateFull = add(popupValue, {
       days: Math.ceil(diffInDays),
     });
     newDateFull.setHours(

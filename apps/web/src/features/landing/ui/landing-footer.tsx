@@ -1,5 +1,7 @@
 import { BoxIcon } from "lucide-react";
 
+const currentYear = new Date().getFullYear();
+
 export function LandingFooter() {
   return (
     <footer className="bg-background">
@@ -11,7 +13,7 @@ export function LandingFooter() {
           <span className="text-sm font-semibold">Acme</span>
         </div>
         <p className="text-sm text-muted-foreground" suppressHydrationWarning={true}>
-          © {new Date().getFullYear()} Acme Inc. All rights reserved.
+          © {currentYear} Acme Inc. All rights reserved.
         </p>
       </div>
     </footer>
