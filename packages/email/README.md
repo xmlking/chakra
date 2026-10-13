@@ -22,17 +22,18 @@ We use [Email SDK](https://email-sdk.dev/) to send transactional emails which in
 1. [Resend](https://resend.com/)
 2. [SMTP](https://datatracker.ietf.org/doc/html/rfc5321)
 3. [Cloudflare Email Sending](https://developers.cloudflare.com/email-service/)
+4. [Microsoft Graph](https://email-sdk.dev/docs/adapters/graph)
 
 ## Usage
 
 Resend and React Email play nicely together. For example, here's how you can send a transactional email using a React email template:
 
 ```tsx title="apps/web/src/actions/contact.tsx"
+import { renderEmail } from "@opencoredev/email-sdk/react";
 import { email } from "@workspace/email";
-import { VercelInviteUserEmail } from "@workspace/email/vercel-invite-user";
-import { render } from "react-email";
+import { VerificationCodeEmail } from "@workspace/email/ui/verification-code";
 
-const html = await render(<VercelInviteUserEmail />);
+const html = await renderEmail(<VerificationCodeEmail code="123456" />);
 
 const message = {
   from: "Acme <hello@acme.com>",
@@ -89,8 +90,9 @@ vp run @workspace/email#dev
 Other supported commands
 
 ```shell
-vp run @workspace/email#build
-vp run @workspace/email#export
+vp run @workspace/email#build # Copies the preview app for onto .react-email and builds it.
+vp run @workspace/email#start # Runs the built preview app that is inside .react-email
+vp run @workspace/email#export # Generates the plain HTML files of your emails into a out directory.
 vp run @workspace/email#clean
 vp run @workspace/email#cli --help
 ```
@@ -110,7 +112,7 @@ vp run @workspace/email#cli send \
   --dry-run
 ```
 
-## Add better-auth email templates
+## Add email templates
 
 To `add/update` **better-auth-ui** email `templates`, run the following commands:
 
@@ -125,4 +127,11 @@ bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/email-changed-ema
 bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/otp-email.json
 bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/new-device-email.json
 bunx shadcn@latest add  -p emails https://better-auth-ui.com/r/organization-invitation-email.json
+
+# optionally add email-sdk email templates
+bunx shadcn@latest add https://email-sdk.dev/r/verification-code.json
+bunx shadcn@latest add https://email-sdk.dev/r/password-reset.json
+bunx shadcn@latest add https://email-sdk.dev/r/team-invite.json
+bunx shadcn@latest add https://email-sdk.dev/r/welcome.json
+bunx shadcn@latest add https://email-sdk.dev/r/usage-alert.json
 ```
