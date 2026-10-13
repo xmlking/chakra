@@ -11,17 +11,20 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./ui/*": "./src/ui/email/*.tsx",
     "./*": "./emails/*.tsx",
     "./env": "./env.ts"
   },
   "scripts": {
-    "build": "email build",
+    "build": "varlock run -- email build",
     "clean": "git clean -xdf .react-email dist out node_modules",
-    "cli": "email-sdk",
+    "cli": "varlock run -- email-sdk",
     "codegen": "varlock codegen",
-    "dev": "email dev --port 3010",
-    "export": "email export",
-    "postinstall": "varlock codegen"
+    "dev": "varlock run -- email dev --port 3010",
+    "dev2": "varlock run -- email dev --dir src/ui/email --port 3010",
+    "export": "varlock run -- email export --pretty",
+    "postinstall": "varlock codegen",
+    "start": "varlock run -- email start"
   },
   "dependencies": {
     "@opencoredev/email-sdk": "catalog:",
