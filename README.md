@@ -94,6 +94,7 @@ This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for lint
 ```shell
 vp check
 vp check --fix
+vp check --fix --quiet
 ```
 
 ## Run

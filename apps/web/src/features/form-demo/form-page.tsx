@@ -41,6 +41,7 @@ import { toast } from "@workspace/ui/components/shadcn/toast";
 import { addDays, addYears } from "date-fns";
 import { Check, XIcon } from "lucide-react";
 import { m } from "motion/react";
+import { useState } from "react";
 import { z, ZodError } from "zod";
 
 import { applyZodIssues } from "#lib/zod-error-handler";
@@ -53,6 +54,17 @@ type FormData = z.infer<typeof projectSchema>;
 
 // oxlint-disable-next-line react-doctor/no-giant-component
 export function FormPage() {
+  const [dateDefaults] = useState(() => {
+    const today = new Date();
+    return {
+      period: {
+        from: addDays(today, -1),
+        to: addYears(today, 1),
+      },
+      endMonth: addYears(today, 5),
+      startMonth: addYears(today, -5),
+    };
+  });
   const form = useAppForm({
     // HINT: Do not include optional fields in defaultValues
     defaultValues: {
@@ -69,10 +81,7 @@ export function FormPage() {
       techStack: [{ label: "nextjs", value: "nextjs" }],
       users: [{ email: "" }],
       plan: "",
-      period: {
-        from: addDays(new Date(), -1),
-        to: addYears(new Date(), 1),
-      },
+      period: dateDefaults.period,
       otp: "432123",
       addons: [],
       status: "draft",
@@ -356,12 +365,12 @@ export function FormPage() {
                       classNames={{ base: "col-span-full gap-1 md:col-span-2" }}
                       description="select start and end period"
                       // oxlint-disable-next-line react-doctor/rendering-hydration-mismatch-time TODO
-                      endMonth={addYears(new Date(), 5)}
+                      endMonth={dateDefaults.endMonth}
                       label="Period"
                       mode="range"
                       placeholder="Pick date range"
                       // oxlint-disable-next-line react-doctor/rendering-hydration-mismatch-time TODO
-                      startMonth={addYears(new Date(), -5)}
+                      startMonth={dateDefaults.startMonth}
                     />
                   )}
                 </form.AppField>
