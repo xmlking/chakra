@@ -1,0 +1,44 @@
+---
+title: Tag-Based Cache Invalidation
+description: Exploration of PostgreSQL LISTEN/NOTIFY for distributed cache invalidation.
+---
+
+This page collects design ideas, references, and open questions for tag-based cache invalidation using PostgreSQL `LISTEN`/`NOTIFY` without Redis. This is an exploration, not an approved architecture decision.
+
+## Idea
+
+Publish cache-tag invalidation events from the database transaction that changes the underlying data. A long-lived realtime service listens for those events and fans invalidations out to connected application instances.
+
+## Implementation option
+
+```text
+                         ┌───────────────────────────────────────┐
+   browser ─── HTTPS ───▶│ apps/web — TanStack Start             │
+      │                  │ SSR first paint, server functions     │
+      │                  └──────────────────┬────────────────────┘
+      │                                     │ SQL + pg_notify
+      │                                     │ in the same transaction
+      │                                     ▼
+      │                           ┌─────────────────────┐
+      │                           │      Postgres       │
+      │                           │  tables + NOTIFY    │
+      │                           └──────────┬──────────┘
+      │                                      │ LISTEN pulse_events
+      │                                      ▼
+      └───── WebSocket ────────▶ ┌───────────────────────────────┐
+                                 │ apps/realtime — rooms,         │
+                                 │ presence, and cache fanout     │
+                                 └───────────────────────────────┘
+```
+
+## Third-party references
+
+- [nest-native/cache](https://github.com/nest-native/cache)
+- [pulse](https://github.com/Lingikaushikreddy/pulse)
+
+## Questions to resolve
+
+- What cache layers and tag format should invalidation events target?
+- How should services recover missed notifications after disconnects or restarts?
+- Should PostgreSQL notifications carry the tags directly, or only signal that durable invalidation events are available?
+- What delivery and fanout responsibilities belong in `apps/realtime` versus `apps/web`?
