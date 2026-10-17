@@ -20,10 +20,10 @@ await files.upload("backups/db.tar", stream, {
 - **OneDrive / SharePoint**: bodies over 250 MB (and any `multipart` request) use a chunked upload session.
 - **GCS / Firebase**: switch to a resumable upload; `partSize` maps to chunk size.
 - **Azure Blob**: maps `partSize`/`concurrency` to parallel block-upload tuning.
-- **Dropbox**: streams `ReadableStream` bodies through its upload session chunk-by-chunk (never buffers the whole file); `partSize` rounds to a 4 MiB multiple.
+- **Dropbox**: streams `ReadableStream` bodies through its upload session chunk-by-chunk (never buffers the whole file); `partSize` rounds to a 4 MiB multiple. Buffered bodies over 150 MB use a concurrent session with `dropbox` 10.47+ (`concurrency` chunks in parallel, default 4; `concurrency: 1` keeps it sequential).
 - Everything else either streams natively or only takes a buffered body, so it ignores the flag — except the `fetch` S3 engine (`files-sdk/s3-fetch`, or `client: "fetch"` on `r2`/`minio`/`rustfs`), which throws rather than buffer a body it was asked to chunk.
 
-Adapters that chunk natively round `partSize` to their own granularity (OneDrive → 320 KiB multiple, GCS/Firebase → 256 KiB); S3 enforces a 5 MiB minimum per part except the last, and caps an object at 10,000 parts (so very large objects need a big enough `partSize`). Memory footprint is up to `partSize × concurrency`. Multipart is still **one `upload` call** for retries/timeouts/cancellation — a failure retries the whole call, not a part. To retry individual parts and pause/resume, use `control` below.
+Adapters that chunk natively round `partSize` to their own granularity (OneDrive → 320 KiB multiple, GCS/Firebase → 256 KiB); S3 adapters raise `partSize` to the 5 MiB per-part minimum and, when the body's length is known, until it fits S3's 10,000-part cap (an unknown-length stream can't be fitted, so very large streams need a big enough `partSize`). Memory footprint is up to `partSize × concurrency`. Multipart is still **one `upload` call** for retries/timeouts/cancellation — a failure retries the whole call, not a part. To retry individual parts and pause/resume, use `control` below.
 
 ## `control` — resumable uploads
 
@@ -54,29 +54,36 @@ It's an `AbortSignal`-style handle: a plain object you construct and drive from 
 
 ### Resume across processes
 
-`control.toJSON()` is a small JSON-serializable token. Persist it (disk, `localStorage`, a DB row), then rebuild with `UploadControl.from(token)` and call `upload` again with the **same body** — the SDK discovers what already landed and uploads only the rest.
+`control.toJSON()` is a small JSON-serializable token. Persist it (disk, a DB row), then rebuild with `UploadControl.from(token)` and call `upload` again with the **same body** — the SDK discovers what already landed and uploads only the rest.
 
 ```ts
 // First run — pause and persist.
 const control = new UploadControl();
 files.upload("backups/db.tar", file, { control }).catch(() => {});
 // …once a session exists, control.toJSON() is populated…
-localStorage.setItem("upload", JSON.stringify(control.toJSON()));
+await writeFile("upload.json", JSON.stringify(control.toJSON()));
 
-// Later — new tab / process / after a crash.
-const token = JSON.parse(localStorage.getItem("upload")!);
+// Later — new process / after a crash.
+const token = JSON.parse(await readFile("upload.json", "utf8"));
 await files.upload("backups/db.tar", file, {
   control: UploadControl.from(token),
 });
+
+// …or give up on it: discard the provider session from the token.
+await files.abortUpload("backups/db.tar", token);
 ```
+
+- **Discarding a persisted session:** `UploadControl.from(token).abort()` can't discard anything — a control only reaches the adapter while `upload()` drives it — so it just marks itself aborted. Use `files.abortUpload(key, token)`: same logical key, token must match (else it throws before discarding), already-gone sessions resolve, `ReadOnly` on a read-only view. Appwrite only deletes a still-partial file.
+- **Not in the browser client.** `UploadControl` runs where `Files` (and its credentials) runs: server, worker, CLI. `files-sdk/client` and `useFiles` send each file in one request (gateway or presigned URL), can't pause, and can't resume across a reload.
 
 ### Requirements & support
 
 - **Known-length body only** (`File`, `Blob`, `ArrayBuffer`, typed array, `string`). A bare `ReadableStream` is rejected — a consumed stream can't be replayed. Keep the `File` handle around (as a browser upload widget does).
 - **Cross-process resume:** S3 + S3-compatible on the AWS SDK engine (token carries the `UploadId`; resume via `ListParts`, abort via `AbortMultipartUpload`), GCS, Firebase, Google Drive, Azure, OneDrive, SharePoint, Dropbox, Vercel Blob, local `fs`, FTP, and SFTP (these three stage to `<key>.fls-part` and rename onto the key on completion, so a partial upload is never visible at the key), Supabase (TUS), Appwrite, Cloudinary.
 - **In-process only** (`toJSON()` can't resume in a new process): Box, bun-s3, memory.
-- **Throws** `FilesError` "not supported" when `control` is passed: Netlify Blobs, UploadThing, PocketBase, Bunny Storage, Convex, WebDAV, the R2 Workers binding, the fetch engine (`files-sdk/s3-fetch`, or `client: "fetch"` on `r2`/`minio`/`rustfs`), and the rest.
-- `partSize`/`concurrency` come from `multipart` and tune the same trade-off; each part is retried individually under the call's retry policy.
+- **Throws** an `Unsupported` `FilesError` when `control` is passed: Netlify Blobs, UploadThing, PocketBase, Bunny Storage, Convex, WebDAV, the R2 Workers binding, the fetch engine (`files-sdk/s3-fetch`, or `client: "fetch"` on `r2`/`minio`/`rustfs`), and the rest.
+- `partSize`/`concurrency` come from `multipart` and tune the same trade-off (both positive integers, else `Invalid` before any request); each part is retried individually under the call's retry policy.
+- Opening the session, the resume probe, and finalizing run like parts: per-attempt `timeout`, the caller's `signal` / `control.abort()`, and retries on transient `Provider` errors. A session that opens after its attempt timed out is discarded when it lands. A finalize retry that finds the session gone throws a permanent `Provider` error saying the object may already exist (first failure in `cause`): `head()` it before re-uploading.
 
 > The Supabase (TUS), Appwrite, and Cloudinary resumable drivers are built to each provider's documented protocol and covered by mocked tests, but haven't been exercised against a live account — verify end-to-end before relying on them in production.
 
@@ -94,7 +101,7 @@ const head = await files.download("video.mp4", {
 const rest = await files.download("video.mp4", { range: { start: 1024 } });
 ```
 
-Both bounds are **0-based** and `end` is **inclusive**. The returned `StoredFile.size` reflects the range length, not the full object. **Supported** by adapters with a native range primitive: S3 + S3-compatible (both engines, incl. R2 HTTP and the R2 Workers binding), bun-s3, GCS, Firebase, Azure, Google Drive, Dropbox, Box, OneDrive, SharePoint, Cloudinary, UploadThing, PocketBase, WebDAV, FTP, SFTP, Vercel Blob (public mode), `fs`, and memory. **Throws** a `FilesError` on Appwrite, Bunny Storage, Convex, Netlify Blobs, Supabase, and Vercel Blob (private mode) rather than silently downloading the whole object and slicing it — check `files.capabilities.rangeRead` (or `adapter.supportsRange`) to branch at runtime.
+Both bounds are **0-based** and `end` is **inclusive**. The returned `StoredFile.size` reflects the range length, not the full object. **Supported** by adapters with a native range primitive: S3 + S3-compatible (both engines, incl. R2 HTTP and the R2 Workers binding), bun-s3, GCS, Firebase, Azure, Google Drive, Dropbox, Box, OneDrive, SharePoint, Cloudinary, UploadThing, PocketBase, WebDAV, FTP, SFTP, Vercel Blob (public mode), `fs`, and memory. **Throws** an `Unsupported` `FilesError` on Appwrite, Bunny Storage, Convex, Netlify Blobs, Supabase, and Vercel Blob (private mode) rather than silently downloading the whole object and slicing it — check `files.capabilities.rangeRead` to branch at runtime.
 
 ## `onProgress` — upload progress
 

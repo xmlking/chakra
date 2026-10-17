@@ -14,13 +14,16 @@ Tools are a record shaped for `tools: { ... }` on `generateText`/`streamText`/`T
 import { Files } from "files-sdk";
 import { createFileTools } from "files-sdk/ai-sdk";
 import { s3 } from "files-sdk/s3";
-import { generateText } from "ai";
+import { generateText, isStepCount } from "ai";
 
 const files = new Files({ adapter: s3({ bucket: "uploads" }) });
 
 await generateText({
   model,
   tools: createFileTools({ files }),
+  // generateText stops after one step by default; without this the run ends
+  // at the first tool call and never answers.
+  stopWhen: isStepCount(10),
   prompt: "Find every CSV under reports/ and summarize the latest one.",
 });
 ```
@@ -59,6 +62,10 @@ createFileTools({
 ```
 
 `execute`, `inputSchema`, and `outputSchema` cannot be overridden. If you need to change behavior, wrap the tool yourself or call the `Files` methods directly.
+
+### AI SDK 7 `toolApproval` overrides the gates
+
+`requireApproval` works through each tool's `needsApproval`. On AI SDK 7, a `toolApproval` passed to `generateText` / `streamText` / `ToolLoopAgent` takes precedence. The object form only replaces the tools it names. The **function** form replaces `needsApproval` for every tool, and returning `undefined` (or `"not-applicable"`) runs the call without approval, so a function must return `"user-approval"` for `uploadFile`, `deleteFile`, `copyFile`, and `signUploadUrl` itself or the writes become ungated.
 
 ## OpenAI — `files-sdk/openai`
 

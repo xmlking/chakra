@@ -1,6 +1,6 @@
 ---
 name: files-sdk
-description: Use files-sdk to add file storage to a TypeScript/JavaScript app with a unified API across 48 adapters (S3, R2, GCS, Azure, Vercel Blob, the local filesystem, and more). Triggers when the user wants to upload/download/list/search/move/delete/copy files, generate presigned URLs, do multipart or resumable uploads, range downloads, conditional (ETag) writes, bulk (array) operations, migrate or mirror between providers, list folders, scope to a prefix, observe activity with hooks, add plugins (encryption, validation, versioning, caching, …), expose storage to the browser with `useFiles` and a server gateway, use the `files` CLI or its MCP server, expose storage to an AI agent (Vercel AI SDK, OpenAI Responses/Agents, Claude Agent SDK), or asks about "files-sdk", "Files SDK", `new Files(...)`, `createFiles(...)`, `files.upload`, `files.move`, `files.url`, `files.signedUploadUrl`, `files.search`, `transfer(...)`, `sync(...)`, `UploadControl`, or any `files-sdk/<adapter>` subpath import.
+description: Use files-sdk to add file storage to a TypeScript/JavaScript app with a unified API across 49 adapters (S3, R2, GCS, Azure, Vercel Blob, the local filesystem, and more). Triggers when the user wants to upload/download/list/search/move/delete/copy files, generate presigned URLs, do multipart or resumable uploads, range downloads, conditional (ETag) writes, bulk (array) operations, migrate or mirror between providers, list folders, scope to a prefix, observe activity with hooks, add plugins (encryption, validation, versioning, caching, …), react to files being created or deleted (bucket notifications from S3/SQS/EventBridge, MinIO, R2 Queues, GCS Pub/Sub, Storj via Pub/Sub, Azure Event Grid, B2/Box/Cloudinary/Appwrite/Supabase/Tigris webhooks), expose storage to the browser with `useFiles` and a server gateway, use the `files` CLI or its MCP server, expose storage to an AI agent (Vercel AI SDK, OpenAI Responses/Agents, Claude Agent SDK), or asks about "files-sdk", "Files SDK", `new Files(...)`, `createFiles(...)`, `files.upload`, `files.move`, `files.url`, `files.signedUploadUrl`, `files.search`, `transfer(...)`, `sync(...)`, `UploadControl`, or any `files-sdk/<adapter>` subpath import.
 ---
 
 # files-sdk
@@ -9,16 +9,16 @@ A unified storage SDK for object and blob backends. One small API. Web-standard 
 
 When the user asks for help integrating it, follow this skill. It is the source of truth — prefer it over training-data memory of the package.
 
-> **Bundled docs:** When `files-sdk` is installed, the full documentation ships inside the package at `node_modules/files-sdk/docs`. Read those MDX files for the complete, version-matched reference: per-adapter setup under `docs/adapters/`, concept pages (bulk, multipart, resumable, retries, prefixes, capabilities, conditional operations, …) under `docs/(concepts)/`, the method reference under `docs/api/`, plugins under `docs/plugins/`, the browser/gateway layer under `docs/ui/`, AI tools under `docs/ai/`, the CLI under `docs/cli/`, plus `index`, `installation`, `usage`, `providers`, `faq`, and `troubleshooting`. Prefer them over <https://files-sdk.dev> when the package is present locally — they match the installed version exactly.
+> **Bundled docs:** When `files-sdk` is installed, the full documentation ships inside the package at `node_modules/files-sdk/docs`. Read those MDX files for the complete, version-matched reference: per-adapter setup under `docs/adapters/`, concept pages (bulk, multipart, resumable, retries, prefixes, capabilities, conditional operations, …) under `docs/(concepts)/`, the method reference under `docs/api/`, plugins under `docs/plugins/`, storage events under `docs/events/`, the browser/gateway layer under `docs/ui/`, AI tools under `docs/ai/`, the CLI under `docs/cli/`, plus `index`, `installation`, `usage`, `providers`, `faq`, `troubleshooting`, and `migrating-to-v3`. Prefer them over <https://files-sdk.dev> when the package is present locally — they match the installed version exactly.
 
 ## Mental model
 
 - One core class `Files`, configured once with an adapter at construction time. The adapter is fixed for the life of the instance.
-- 48 adapters, each a separate subpath export so only what you import is bundled (`files-sdk/s3`, `files-sdk/r2`, `files-sdk/gcs`, `files-sdk/azure`, `files-sdk/vercel-blob`, `files-sdk/fs`, …).
+- 49 adapters, each a separate subpath export so only what you import is bundled (`files-sdk/s3`, `files-sdk/r2`, `files-sdk/gcs`, `files-sdk/azure`, `files-sdk/vercel-blob`, `files-sdk/fs`, …).
 - The unified API is the **common subset** of what every adapter can do. Provider-specific features (S3 versioning, lifecycle, storage classes, etc.) live behind `files.raw`, which returns the underlying native client.
 - Bodies are web-standard: `Blob`, `File`, `ReadableStream<Uint8Array>`, `Uint8Array`, `ArrayBuffer`, `ArrayBufferView`, or `string`. No provider types leak.
 - Every method takes the same `OperationOptions` (`signal`, `timeout`, `retries`), and most of those can also be set once on the constructor as instance defaults. The constructor additionally takes `prefix`, `readonly`, `hooks`, `plugins` (see [Plugins](#plugins)), and `receipts` (opt-in provenance records on `onAction`).
-- Where an adapter can't do something the unified surface offers (a range download, a folder listing, a resumable session), it **throws a `FilesError` rather than silently degrading** — so a missed capability is loud, not a quiet correctness bug. `files.capabilities` (or the adapter's `supportsRange` / `supportsDelimiter` flags) lets you branch at runtime.
+- Where an adapter can't do something the unified surface offers (a range download, a folder listing, a resumable session), it **throws a `FilesError` rather than silently degrading** — so a missed capability is loud, not a quiet correctness bug. `files.capabilities` lets you branch at runtime.
 
 ## Install
 
@@ -49,28 +49,30 @@ All methods live on the `Files` instance; the single-key forms are also availabl
 
 | Method | Returns | Notes |
 | --- | --- | --- |
-| `upload(key, body, opts?)` | `UploadResult` | `opts`: `contentType`, `cacheControl`, `metadata`, `onProgress`, `multipart`, `control`, `condition`. Array form → `{ uploaded, errors? }`. |
-| `download(key, opts?)` | `StoredFile` | `opts.as` is `"blob"` or `"stream"`; `opts.range` for a byte slice. Array form → `{ downloaded, errors? }`. |
-| `head(key, opts?)` | `StoredFile` | Metadata only. The returned object still has `text()`/`blob()`/`arrayBuffer()`/`stream()` but they lazy-GET. Array form → `{ files, errors? }`. |
+| `upload(key, body, opts?)` | `FileInfo` | `opts`: `contentType`, `cacheControl`, `metadata`, `onProgress`, `multipart`, `control`, `condition`. Array form → `{ results, errors? }`. |
+| `download(key, opts?)` | `StoredFile` | `opts.as` is `"blob"` or `"stream"`; `opts.range` for a byte slice. Array form → `{ results, errors? }`. |
+| `head(key, opts?)` | `FileInfo` | Metadata only (`key`, `size`, `contentType`, `etag`, `lastModified`, `metadata`), no body — use `download` for bytes. Array form → `{ results, errors? }`. |
 | `exists(key, opts?)` | `boolean` | `false` only on `NotFound`. Auth/transport errors still throw. Array form → `{ existing, missing, errors? }`. |
-| `delete(key, opts?)` | `void` | Array form → `{ deleted, errors? }` (uses native batch delete on S3-family, Azure, Supabase, UploadThing). |
+| `delete(key, opts?)` | `void` | Array form → `{ results, errors? }` (the deleted keys) (uses native batch delete on S3-family, Azure, Supabase, UploadThing). |
 | `copy(from, to, opts?)` | `void` | Within one adapter. |
 | `move(from, to, opts?)` | `void` | Rename. Native rename where available (`fs`, FTP, SFTP, WebDAV, Cloudinary, memory), else copy+delete. Throws on immutable stores (Convex). |
-| `list(opts?)` | `{ items, prefixes?, cursor? }` | `opts`: `prefix`, `cursor`, `limit`, `delimiter`. `delimiter` returns folder `prefixes` — see [Folder listing](#folder-listing). |
-| `listAll(opts?)` | `AsyncGenerator<StoredFile>` | Walks every page for you, following the cursor. `for await (const f of files.listAll({ prefix }))`. |
-| `search(pattern, opts?)` | `AsyncGenerator<StoredFile>` | Key match over every page: a glob by default (`photos/**/*.jpg`), a `RegExp`, or `match: "regex" \| "substring" \| "exact"`. `opts`: `prefix`, `maxResults`, `caseInsensitive`, `limit`. |
+| `list(opts?)` | `{ items, prefixes?, cursor? }` | `opts`: `prefix`, `cursor`, `limit` (a positive integer, else `Invalid`), `delimiter`. `delimiter` returns folder `prefixes` — see [Folder listing](#folder-listing). |
+| `listAll(opts?)` | `AsyncGenerator<FileInfo>` | Walks every page for you, following the cursor. `for await (const f of files.listAll({ prefix }))`. |
+| `search(pattern, opts?)` | `AsyncGenerator<FileInfo>` | Key match over every page: a glob by default (`photos/**/*.jpg`), a `RegExp`, or `match: "regex" \| "substring" \| "exact"`. `opts`: `prefix`, `maxResults`, `caseInsensitive`, `limit`. |
 | `url(key, opts?)` | `string` | See [URL behavior](#url-behavior) — varies by adapter. |
 | `signedUploadUrl(key, opts)` | `SignedUpload` | See [Signed upload URLs](#signed-upload-urls) — pass `maxSize`. |
+| `abortUpload(key, token, opts?)` | `void` | Discard a persisted resumable session (`control.toJSON()`) you won't resume — what `UploadControl.abort()` does mid-upload, which a restored control can't. See [references/large-uploads.md](references/large-uploads.md). |
 | `file(key)` | `FileHandle` | Same single-key methods, key pre-bound. Also `copyTo`/`copyFrom`/`moveTo`/`moveFrom`. |
-| `capabilities` (getter) | `AdapterCapabilities` | What the adapter can do: `rangeRead`, `delimiter`, `metadata`, `cacheControl`, `multipart`, `serverSideCopy`, `uploadProgress`, `signedUrl`, `conditional`. Plugins can narrow it (see [Plugins](#plugins)). Branch on it up front instead of catching a throw. |
+| `capabilities` (getter) | `AdapterCapabilities` | What the adapter can do: `rangeRead`, `delimiter` (`"any"`, `"slash"`, or `false`), `metadata`, `cacheControl`, `resumable`, `serverSideCopy`, `uploadProgress`, `signedUrl` (with `expiry` / `disposition`), `signedUpload` (with `maxSize` / `contentType`), `publicUrl`, `events`, `conditional`. Plugins can narrow it (see [Plugins](#plugins)). Branch on it up front instead of catching a throw. |
 | `raw` / `adapter` (getters) | native client / `Adapter` | Escape hatch — see [Escape hatch](#escape-hatch). |
 | `readonly()` (method) | `Files` | A read-only view reusing the same adapter/prefix/hooks — see [Instance options](#instance-options). |
 
 Plus top-level `transfer(source, dest, opts?)` for a one-shot cross-provider migration and `sync(source, dest, opts?)` to mirror only new or changed objects — see [Bulk, move & transfer](#bulk-move--transfer).
 
-### `StoredFile` shape
+### `FileInfo` and `StoredFile`
 
-`name`, `key`, `size`, `type`, `lastModified?`, `etag?`, `metadata?`, plus `arrayBuffer()`, `text()`, `blob()`, `stream()`.
+- `head`, `list`, `listAll`, `search`, and `upload` return a **`FileInfo`**: `key`, `size`, `contentType`, `etag?`, `lastModified?`, `metadata?`, and no body.
+- `download` returns a **`StoredFile`**: a `FileInfo` plus the `File`-like `name` / `type` aliases and `arrayBuffer()`, `text()`, `blob()`, `stream()`.
 
 ### Conditional operations
 
@@ -108,11 +110,11 @@ await avatar.delete();
 Pass these to `new Files({ adapter, ... })`. The three `OperationOptions` (`signal`, `timeout`, `retries`) are also accepted per-call, where a per-call value wins.
 
 - **`prefix`** — every key is resolved relative to it: prepended on the way in, stripped from results on the way out (including in `list`, hooks, and bulk forms). Your app code works in its own namespace. `new Files({ adapter, prefix: "users" })` → `upload("123/a.png")` writes `users/123/a.png` and the result's `key` is `"123/a.png"`.
-- **`readonly: true`** — blocks every write surface (`upload`, `delete`, `copy`, `move`, `signedUploadUrl`, and the `file(key)` write helpers) with `FilesError { code: "ReadOnly" }`. Reads still work. `files.readonly()` derives such a view from an existing instance (same adapter/prefix/timeout/retries/hooks, no second client). Does **not** lock down `files.raw`. `files.isReadOnly` reports whether an instance is read-only.
+- **`readonly: true`** — blocks every write surface (`upload`, `delete`, `copy`, `move`, `signedUploadUrl`, `abortUpload`, and the `file(key)` write helpers) with `FilesError { code: "ReadOnly" }`. Reads still work. `files.readonly()` derives such a view from an existing instance (same adapter/prefix/timeout/retries/hooks, no second client). Does **not** lock down `files.raw`. `files.isReadOnly` reports whether an instance is read-only.
 - **`hooks`** — fire-and-forget observability: `onAction` (fires once per settled call, success or error, with `type`/`key`/`keys`/`from`/`to`/`status`/`result`/`durationMs`), `onError` (rejections), `onRetry` (each scheduled retry). Caller-facing payloads only — never the internal prefixed path. A throwing hook can't fail the operation.
 - **`signal`** — an `AbortSignal`; aborting fails in-flight single-key calls fast with `FilesError { aborted: true }` (still `code: "Provider"`). Constructor + per-call signals compose (either aborts).
 - **`timeout`** — per-attempt deadline in ms (not per call). Aborts and is **not** retried. `0`/negative disables. No default.
-- **`retries`** — a number (`{ max }`) or `{ max, backoff }`. Retries only transient `Provider` failures; `NotFound`/`Unauthorized`/`Conflict`, aborts, timeouts, and `ReadableStream` uploads are never retried. Default backoff is exponential (100ms·2ⁿ, capped 30s).
+- **`retries`** — a number (`{ max }`) or `{ max, backoff }`. Retries only transient `Provider` failures; `NotFound`/`Unauthorized`/`Conflict`, the SDK's own `Invalid`/`Unsupported`/`ReadOnly`, aborts, timeouts, and `ReadableStream` uploads are never retried. Default backoff is exponential (100ms·2ⁿ, capped 30s).
 
 > **Bulk forms don't take `signal` or `retries`** — they manage work through `concurrency`/`stopOnError` and surface per-key failures in `errors[]` instead. See [references/resilience-and-hooks.md](references/resilience-and-hooks.md).
 
@@ -121,32 +123,34 @@ Pass these to `new Files({ adapter, ... })`. The three `OperationOptions` (`sign
 `upload`, `download`, `head`, and `exists` take a single key **or an array**; `delete` takes one key or many. The array form fans out with bounded concurrency (8 by default) and returns a structured result that keeps successes and failures separate, in input order — **one bad key never sinks the batch, and it does not throw on partial failure**.
 
 ```ts
-const { uploaded, errors } = await files.upload([
+const { results, errors } = await files.upload([
   { key: "a.txt", body: "alpha" },
   { key: "b.txt", body: "beta", contentType: "text/plain" },
 ]);
 
 const { existing, missing } = await files.exists(["a.txt", "b.txt", "c.txt"]);
-const { deleted } = await files.delete(["a.txt", "b.txt"], { concurrency: 16 });
+const { results: deleted } = await files.delete(["a.txt", "b.txt"], {
+  concurrency: 16,
+});
 ```
 
-Result shapes: `upload → { uploaded, errors? }`, `download → { downloaded, errors? }`, `head → { files, errors? }`, `exists → { existing, missing, errors? }`, `delete → { deleted, errors? }`. `errors` is `{ key, error }[]`, omitted entirely when everything succeeded. Pass `stopOnError: true` to bail at the first failure (runs sequentially). Bulk calls are not retried and fire one aggregated `onAction`.
+Result shapes: every array form but `exists` returns `{ results, errors? }` (`upload` / `head` → `FileInfo[]`, `download` → `StoredFile[]`, `delete` → the deleted keys); `exists → { existing, missing, errors? }`. `errors` is `{ key, error }[]`, omitted entirely when everything succeeded. Pass `stopOnError: true` to bail at the first failure (runs sequentially). Bulk calls are not retried and fire one aggregated `onAction`.
 
 ## Large & resilient uploads
 
 Three per-call `upload`/`download` options for big objects — all detailed in [references/large-uploads.md](references/large-uploads.md):
 
-- **`multipart`** on `upload` — split a large body into parallel parts (`true`, or `{ partSize, concurrency }`). The robust path past the single-request limit and for `ReadableStream` bodies of unknown length (which **auto-engage** multipart on S3-family adapters even without the flag). Maps to each provider's native chunking; unsupported adapters that only take buffered bodies ignore it, except the `fetch` S3 engine, which throws.
+- **`multipart`** on `upload` — split a large body into parallel parts (`true`, or `{ partSize, concurrency }`, both positive integers or the upload throws `Invalid`). The robust path past the single-request limit and for `ReadableStream` bodies of unknown length (which **auto-engage** multipart on S3-family adapters even without the flag). Maps to each provider's native chunking; unsupported adapters that only take buffered bodies ignore it, except the `fetch` S3 engine, which throws.
 - **`control`** on `upload` (resumable) — pass an `UploadControl` (exported from `files-sdk`) to `pause()`/`resume()`/`abort()`, and persist `control.toJSON()` to resume in a later process after a crash. Requires a **known-length** body (no bare `ReadableStream`). Supported on S3-family, GCS, Firebase, Azure, OneDrive, Dropbox, and more; unsupported adapters throw. Distinct from `multipart` (this drives the provider's resumable session and exposes the upload id).
-- **`range`** on `download` — fetch a contiguous byte slice (`{ start, end? }`, 0-based, `end` inclusive — HTTP `Range` semantics, not `slice()`). The primitive behind video seeking and resuming. **Throws** on adapters with no range primitive (check `adapter.supportsRange`).
+- **`range`** on `download` — fetch a contiguous byte slice (`{ start, end? }`, 0-based, `end` inclusive — HTTP `Range` semantics, not `slice()`). The primitive behind video seeking and resuming. **Throws** on adapters with no range primitive (check `files.capabilities.rangeRead`).
 - **`onProgress`** on `upload` — `({ loaded, total? }) => void`. S3-family reports true byte-level progress (via the optional `@aws-sdk/lib-storage` peer dep).
 
 ## Bulk, move & transfer
 
 - **`move(from, to)`** — rename within an adapter (native rename where the provider has one, else copy+delete; moving onto itself is a no-op). `FileHandle` has `moveTo`/`moveFrom`.
 - **`listAll(opts?)`** — async iterable over every page; each page is a real `list` call so retries/timeouts/prefix all apply.
-- **`transfer(source, dest, opts?)`** — top-level export. Streams every object from one `Files` instance to another across backends (the one thing the unified surface uniquely enables, since `copy`/`move` are single-adapter). Built on `listAll` + streaming `download` + `exists` + `upload`. Body, content type, and user metadata travel (metadata is dropped when the destination has no metadata support, rather than failing each key); `etag`/`lastModified` are destination-assigned and `Cache-Control` is **not** carried. Returns `{ transferred, skipped?, errors? }` (no throw on partial failure). A throwing `onProgress` is ignored. Options: `prefix`, `transformKey`, `overwrite`, `concurrency` (default 8), `limit`, `stopOnError`, `signal`, `onProgress`.
-- **`sync(source, dest, opts?)`** — top-level export for repeatable mirrors: uploads only new or changed objects (`compare: "etag"` by default, or `"size"`, or a function) and, with `prune: true`, deletes destination keys the source no longer has (destructive). `dryRun: true` returns the plan without writing. Metadata and `onProgress` behave as in `transfer`. Returns `{ uploaded, skipped, deleted?, errors? }`.
+- **`transfer(source, dest, opts?)`** — top-level export. Streams every object from one `Files` instance to another across backends (the one thing the unified surface uniquely enables, since `copy`/`move` are single-adapter). Built on `listAll` + streaming `download` + `exists` + `upload`. Body, content type, and user metadata travel (metadata is dropped when the destination has no metadata support, rather than failing each key); `etag`/`lastModified` are destination-assigned and `Cache-Control` is **not** carried. Returns `{ transferred, skipped?, errors? }` (no throw on partial failure). `onProgress` reports every settled key with `status` `"transferred"` | `"skipped"` | `"failed"`, so `done` reaches `total`; a throwing `onProgress` is ignored. Options: `prefix`, `transformKey`, `overwrite`, `concurrency` (default 8), `limit`, `stopOnError`, `signal`, `onProgress`.
+- **`sync(source, dest, opts?)`** — top-level export for repeatable mirrors: uploads only new or changed objects (`compare: "etag"` by default, or `"size"`, or a function) and, with `prune: true`, deletes destination keys the source no longer has (destructive). `dryRun: true` returns the plan without writing. Metadata and `onProgress` behave as in `transfer` (statuses `"uploaded"` | `"skipped"` | `"deleted"` | `"failed"`). Returns `{ uploaded, skipped, deleted?, errors? }`.
 
 ```ts
 import { Files, transfer } from "files-sdk";
@@ -172,15 +176,15 @@ See [references/bulk-and-transfer.md](references/bulk-and-transfer.md).
 
 `url(key, opts?)` returns the most direct URL the adapter can produce. Behavior is not uniform:
 
-- **Signing adapters** (S3, R2 HTTP, MinIO, RustFS, DigitalOcean Spaces, Storj, Hetzner, Akamai, Backblaze B2, Wasabi, Tigris): presigned `GetObject` URL expiring after `opts.expiresIn` seconds (default ~3600). If the adapter was constructed with `publicBaseUrl`, the URL is built against that origin instead and does not expire.
+- **Signing adapters** (S3, R2 HTTP, MinIO, RustFS, DigitalOcean Spaces, Storj, Hetzner, Akamai, Backblaze B2, Wasabi, Tigris): presigned `GetObject` URL expiring after `opts.expiresIn` seconds (default ~3600). With `publicBaseUrl`, a plain `url(key)` is permanent; `expiresIn` or `responseContentDisposition` still signs.
 - **R2 binding**: uses `publicBaseUrl` if set; falls back to HTTP signing if HTTP credentials were also passed (hybrid); otherwise throws.
-- **Vercel Blob (public)**: permanent CDN URL. `expiresIn` is ignored.
+- **Vercel Blob (public)**: permanent CDN URL; an `expiresIn` throws `Unsupported`.
 - **Vercel Blob (private)**: presigned `GET` scoped to that key, expiring after `expiresIn` (default 3600, or the adapter's `defaultUrlExpiresIn`; Vercel caps it at 7 days).
 - **FTP / SFTP / WebDAV**: need `publicBaseUrl` (an HTTP server fronting the same tree); otherwise `url()` throws. `fs` returns a `file://` URL unless `urlBaseUrl` is set.
 
 ### Two `UrlOptions` worth knowing
 
-- `expiresIn` — seconds. Honored by signing adapters (including Vercel Blob private); ignored by Vercel Blob public and `publicBaseUrl` URLs; N/A where `url()` throws.
+- `expiresIn` — a positive integer number of seconds (`0`, negative, fractional, or `NaN` throws `Invalid`), and always means "a link that expires": on a signing adapter it returns a signed URL even when `publicBaseUrl` is set (a plain `url(key)` still returns the CDN link); on an adapter that only has permanent links (Vercel Blob public, UploadThing public-read, Convex, Appwrite, fs) it throws `Unsupported`. `files.capabilities.publicUrl` / `signedUrl.supported` tell you which you have.
 - `responseContentDisposition` — **strongly recommend `"attachment"` (or `'attachment; filename="..."'`) for user-uploaded buckets.** Without it, a user-uploaded `.html` or scripted SVG executes inline at the bucket origin (stored XSS). Passing this option **forces the signing path** on signing adapters (even when `publicBaseUrl` is set) because a permanent CDN URL has no signature to bind the override to. Throws on Vercel Blob (no primitive) and R2 binding without HTTP creds.
 
 ### Key encoding
@@ -205,10 +209,10 @@ See [references/client-uploads.md](references/client-uploads.md).
 
 Every adapter error is wrapped in `FilesError` (re-exported from `files-sdk`). It has:
 
-- `.code` of type `FilesErrorCode`: `"NotFound" | "Unauthorized" | "Conflict" | "ReadOnly" | "Provider"`.
+- `.code` of type `FilesErrorCode`: `"NotFound" | "Unauthorized" | "Conflict" | "ReadOnly" | "Invalid" | "Unsupported" | "Provider"`. `Invalid` means the call is wrong (bad key, range, option, config, or a `validation()` rejection); `Unsupported` means this adapter/mode/plugin can't do it (check `files.capabilities`); `Provider` means the backend or transport failed.
 - `.aborted` — `true` when the failure came from a [cancellation or timeout](#instance-options) (still `code: "Provider"`); this flag, not the code, is how you tell an abort from a real provider failure.
 - `.cause` — the underlying provider error (may carry request IDs/headers; don't blindly `JSON.stringify` it across a trust boundary).
-- `.permanent` — `true` for deterministic SDK-side rejections (an option the adapter can't honor, a fail-closed plugin). Still `code: "Provider"`, but never retried, and the `failover` plugin doesn't fail over on them.
+- `.permanent` — `true` when the same call can only fail the same way: always for `Invalid`, `Unsupported`, and `ReadOnly`, and for deterministic `Provider` failures (a host that ignores `Range`, corrupt stored data). Never retried, and the `failover` plugin doesn't fail over on them.
 
 Catch `FilesError` at the boundary; branch on `.code`. Only non-permanent `Provider` failures are retried. See [references/errors-and-recipes.md](references/errors-and-recipes.md).
 
@@ -223,7 +227,7 @@ Use this for provider features that aren't in the unified API (versioning, lifec
 
 ## Adapter catalog
 
-48 adapters. S3-family and S3-compatible stores wrap the `s3()` adapter with provider-friendly defaults (MinIO, RustFS, DigitalOcean Spaces, Wasabi, Backblaze B2, Tigris, Storj, Hetzner, Scaleway, OVH, Vultr, IBM COS, Oracle, Tencent, Alibaba, Yandex, …). Direct-binding adapters (R2 worker binding, fs, Vercel Blob, Netlify Blobs, GCS, Azure, Supabase, Dropbox, Google Drive, OneDrive, Box, SharePoint, Cloudinary, UploadThing, Appwrite, Convex, Firebase Storage, PocketBase, FTP, SFTP, WebDAV, Bunny Storage, bun-s3, …) have their own implementation. There's also an in-memory adapter at **`files-sdk/memory`** — full `Adapter` contract backed by a `Map`, zero deps, isomorphic — for testing code that uses `Files` without touching real storage (`url()` returns an opaque `memory://` URL; not for production).
+49 adapters. S3-family and S3-compatible stores wrap the `s3()` adapter with provider-friendly defaults (MinIO, RustFS, DigitalOcean Spaces, Wasabi, Backblaze B2, Tigris, Railway Buckets, Storj, Hetzner, Scaleway, OVH, Vultr, IBM COS, Oracle, Tencent, Alibaba, Yandex, …). Direct-binding adapters (R2 worker binding, fs, Vercel Blob, Netlify Blobs, GCS, Azure, Supabase, Dropbox, Google Drive, OneDrive, Box, SharePoint, Cloudinary, UploadThing, Appwrite, Convex, Firebase Storage, PocketBase, FTP, SFTP, WebDAV, Bunny Storage, bun-s3, …) have their own implementation. There's also an in-memory adapter at **`files-sdk/memory`** — full `Adapter` contract backed by a `Map`, zero deps, isomorphic — for testing code that uses `Files` without touching real storage (`url()` returns an opaque `memory://` URL; not for production).
 
 Always check the live list and per-adapter options at <https://files-sdk.dev> (or the bundled `docs/adapters/`) rather than guessing. The `exports` map in `node_modules/files-sdk/package.json` is authoritative for what subpaths exist, and `files-sdk/providers` exports the same catalog as data (`PROVIDERS`, `getProvider(slug)`, each adapter's env vars and required config).
 
@@ -242,7 +246,7 @@ S3-compatible wrappers need the `@aws-sdk/*` peers. On Cloudflare Workers (or an
 | `files-sdk/dedup` | `dedup()` | Content-addressed storage; identical bodies stored once. |
 | `files-sdk/versioning` | `versioning()` | Snapshot on overwrite/delete; `files.versions()` / `restoreVersion()`. |
 | `files-sdk/soft-delete` | `softDelete()` | Recycle bin; `trashed()` / `restoreTrashed()` / `purge()`. |
-| `files-sdk/cache` | `cache()` | LRU/KV cache for `head()` / `url()` / small downloads. |
+| `files-sdk/cache` | `cache()` | LRU/KV cache for `head()` / `url()` / small downloads. A custom `store` requires `namespace` naming the bucket (`cache({ store, namespace: "uploads-prod" })`, else `Invalid`); entries are scoped by namespace + instance `prefix`. One `cache()` per instance. Invalidates on writes and on provider storage events. |
 | `files-sdk/tiering` | `tiering()` | Route hot/cold objects across two backends. |
 | `files-sdk/failover` | `failover()` | Retry provider failures against replica backends. |
 | `files-sdk/signed-url-policy` | `signedUrlPolicy()` | Force `attachment` disposition on `url()` and cap signed-URL lifetimes. |
@@ -250,6 +254,7 @@ S3-compatible wrappers need the `@aws-sdk/*` peers. On Cloudflare Workers (or an
 | `files-sdk/usage` | `usage()` | Meter ops and bytes; `files.usage()`. |
 | `files-sdk/tracing` | `tracing()` | OpenTelemetry span per operation. |
 | `files-sdk/zip` | `zip()` | Stream objects as a ZIP archive and extract archives into keys. |
+| `files-sdk/events` | `events()` | Normalize bucket notifications into one `FileEvent`; `files.events.on()` / `dispatch()` / `webhook()`. See [Storage events](#storage-events). |
 
 ```ts
 import { createFiles } from "files-sdk";
@@ -266,7 +271,7 @@ await files.versions("report.pdf"); // typed because createFiles was used
 
 Use `createFiles` (not `new Files`) when a plugin adds methods, so they show up on the type. Order matters. `contentType()` goes before `validation()`, so the check sees the sniffed type rather than the claimed one. `validation()` goes before `versioning()`, `softDelete()`, and `dedup()`: their internal keys (snapshots, trash, blobs) only pass through plugins placed after them, so a `validation()` further in would reject them. `encryption()` goes after anything that must see plaintext (`[compression(), encryption(key)]`), but before `failover()` and `tiering()` (`[encryption(key), tiering(...)]`): they drive their secondary / cold backend outside the rest of the onion, so placed ahead of `encryption()` whatever they route there is stored unencrypted. Read each plugin's page under the bundled `docs/plugins/` (or <https://files-sdk.dev/docs/plugins>) before composing others.
 
-Body-transforming plugins fail closed rather than hand out something that bypasses them: `encryption()` and `compression()` throw on `url()`, `signedUploadUrl()`, range reads, and resumable `control` uploads (and report `multipart: false`); `dedup()` throws on `url()`, `signedUploadUrl()`, and conditional operations. These refusals, like `validation()` and `contentType()` rejections, are `permanent`, so `failover()` never re-sends them to a replica that runs without the plugin. A plugin can declare what it refuses through the `FilesPlugin.capabilities?(caps)` hook, which narrows `files.capabilities`, so callers and the gateway see it up front (for example, the gateway proxies downloads instead of redirecting to a signed URL; `versioning()`, `softDelete()`, `tiering()`, and `failover()` switch off the `conditional` flags for the compare-and-set operations they refuse). On adapters whose `list()` carries no object metadata (S3 and the S3-compatibles), `list()` items under `encryption()`, `compression()`, or `dedup()` report the stored object's size (for `dedup()`, the empty pointer's), though their body accessors still return the decoded content.
+Body-transforming plugins fail closed rather than hand out something that bypasses them: `encryption()` and `compression()` throw on `url()`, `signedUploadUrl()`, range reads, and resumable `control` uploads (and report `signedUrl`, `signedUpload`, `rangeRead`, and `resumable` as unsupported); `dedup()` throws on `url()`, `signedUploadUrl()`, and conditional operations. These refusals, like `validation()` and `contentType()` rejections, are `permanent`, so `failover()` never re-sends them to a replica that runs without the plugin. A plugin can declare what it refuses through the `FilesPlugin.capabilities?(caps)` hook, which narrows `files.capabilities`, so callers and the gateway see it up front (for example, the gateway proxies downloads and uploads instead of using signed URLs, and an option a plugin turns off is refused before any plugin runs; `versioning()`, `softDelete()`, `tiering()`, and `failover()` switch off the `conditional` flags for the compare-and-set operations they refuse). On adapters whose `list()` carries no object metadata (S3 and the S3-compatibles), `list()` items under `encryption()`, `compression()`, or `dedup()` report the stored object's size (for `dedup()`, the empty pointer's), though `download()` still returns the decoded content.
 
 ## Browser uploads & the gateway (`useFiles`)
 
@@ -274,10 +279,20 @@ To give a browser the whole `Files` API without shipping credentials, mount a ga
 
 - **Server:** `createFilesRouter({ files, authorize, allowedOrigins })` from `files-sdk/api`, mounted with a framework adapter's `createRouteHandler` — `files-sdk/next`, `hono`, `express`, `fastify`, `koa`, `nitro`, `astro`, `sveltekit`, `tanstack-start` (and `FilesModule` from `files-sdk/nestjs`). The gateway is **deny-by-default**: with no `authorize` hook and no `operations` allow-list, every verb but `capabilities` returns 403. `authorize` throws to deny or returns a constraint, typically a per-user `keyPrefix` such as `"users/<id>/"`.
   - `defaultExpiresIn` is only the default URL lifetime, not a ceiling: cap client-requested expiries with `maxExpiresIn` from `authorize`.
-  - The gateway bounds client-driven load: `maxBatchSize` (array lengths, default 1000, 413), `maxConcurrency` (default 16), `maxJsonBodySize` (default 1 MiB, 413), search pages clamped to `maxListLimit`, and `search` patterns limited by `maxSearchPatternLength` (256) / `maxSearchWildcards` (4) (422); a `match: "regex"` pattern that doesn't compile or could backtrack catastrophically is also a 422.
-- **Client:** `useFiles({ endpoint: "/api/files" })` from `files-sdk/react`, `files-sdk/vue`, or `files-sdk/svelte` (every verb, upload progress, plus reactive `useList` / `useFile` / `useSearch`); `createFilesClient` from `files-sdk/client` for non-framework callers. `uploads` accumulates one `FileUploadState` per file across calls (single and bulk) until `reset()` clears the finished ones; every state ends `success`, `error` (with `error` set), or `aborted`. Errors from every verb, including `listAll` / `search` iteration, are mirrored into `error`.
+  - Keyless uploads: `presign` refuses a declared `size` over `maxUploadSize` (422, `reason: "size"`), and the token binds the declared size (capped by `maxUploadSize`) plus the minting origin, path, and query; the proxy `PUT` is a bearer-token upload (the token alone authorizes writing the one minted key until it expires, no `authorize` call, no client `headers`), so a per-request `files` factory must pick the instance from the URL, never a cookie or header; `complete` refuses a token whose key is outside the caller's `keyPrefix` and deletes an object larger than the token allows. A client content type that isn't exactly one media type (`image/png, text/html`) is a 422 (`reason: "type"`).
+  - On adapters whose `url()` refuses `responseContentDisposition` (Vercel Blob, Box, Dropbox, `fs`, …), `downloadMode: "auto"` proxies downloads so `attachment` still applies, and an `authorize` `{ disposition: "inline" }` mints URLs without a disposition. Without that inline policy the `url` op fails with a `422` `Unsupported` error, since the gateway can't guarantee `attachment`.
+  - Proxied downloads on a non-range adapter answer `Range: bytes=0-` (how `<video>`/`<audio>` open) with the full object (200), and send a quoted `ETag` plus `Last-Modified`, `Cache-Control: private, no-store`, `Content-Disposition: attachment; filename="<key's last segment>"` by default, and (except raster images/audio/video/PDF, judged on a well-formed type) a `Content-Security-Policy: sandbox` so stored HTML/SVG can't run script inline. `HEAD` gets the same headers with no body. A 416 has a JSON body (`Validation`, reason `range`; the client throws `Invalid`). In `auto` mode a `url()` that refuses with `Unsupported` falls back to the proxy.
+  - Keys and `list`/`search` prefixes inside `versioning()`'s / `softDelete()`'s / `dedup()`'s storage (`.versions`, `.trash`, `.dedup`) get 403 unless under a `keyPrefix`; use the plugin verbs. A plugin verb the gateway's `Files` lacks is `Unsupported` (reason `capability`). `filterKeys` also covers versions / restoreVersion / restoreTrashed / complete. `authorize` gets upload `params` (presign: `{ files: [{ name, size?, type }], expiresIn? }`; keyed PUT: `{ contentType?, size? }`). Reserved prefixes match case-insensitively and with `\` as a separator (`.TRASH/x`, `.trash\x` are refused too).
+  - Anything thrown that isn't a `FilesError`/`RouterError` (from `authorize`, `onUploadComplete`, the completions store) answers a generic 500 and goes to the router's `onError(error, req)` (default `console.error`). An adapter's `NotFound`/`Unauthorized`/`Conflict`/`Provider` message is replaced by a fixed one (`not found`, …; it can carry fs paths or hostnames), and `Provider`/`Unauthorized` ones go to `onError`; `Invalid`/`Unsupported`/`ReadOnly` and a `FilesError` your hooks throw keep their message, rewritten to the client's key.
+  - The gateway bounds client-driven load: `maxBatchSize` (array lengths, default 1000, 413), `maxConcurrency` (default 16), `maxJsonBodySize` (default 1 MiB, 413), a `search` walks in `maxListLimit`-sized pages whatever its `limit`, one `search` reads at most `maxSearchScan` keys (default 10,000) before answering `truncated: true`, and `search` patterns limited by `maxSearchPatternLength` (256) / `maxSearchWildcards` (4) (422); a `match: "regex"` pattern that doesn't compile or could backtrack catastrophically is also a 422.
+  - **Record uploads with `onUploadComplete({ file, storageKey, files, req, context, uploadId, via })`**, not a second "confirm" endpoint. It runs once per verified upload: in `complete` for keyless uploads (after `head` + the `maxUploadSize` check) and after a keyed `upload(key, body)` stores its body; never on the proxy PUT. Its resolved value comes back to the client as the upload result's `data`. `authorize` can return `context` (the user, the tenant) that the hook receives typed. Throw to reject: the object is deleted (`onRejected: "keep"` to quarantine instead) and the client gets the error; `UploadRejectedError` from `files-sdk/api` gives a 422 with your message. Tokens are stateless, so a replayed `complete` fires again with the same `uploadId`: make the hook idempotent on it, or pass a `completions` `{ get, set }` store (Map-backed in one process, Redis/KV across instances) to make completions single-use (the proxy PUT then answers 409 after `complete` accepted the upload). `complete` accepts a token up to `completeGracePeriod` (default 3600 s) past its expiry; a presigned direct-to-storage target stays writable until it expires regardless. A client that never calls `complete` never fires the hook; reconcile with `files-sdk/events`.
+- **Client:** `useFiles({ endpoint: "/api/files" })` from `files-sdk/react`, `files-sdk/vue`, or `files-sdk/svelte` (every verb, upload progress, plus reactive `useList` / `useFile` / `useSearch`); `createFilesClient` from `files-sdk/client` for non-framework callers. Type the hook's `data` with `useFiles<InferUploadData<typeof router>>()` (a type-only import of the router). `uploads` accumulates one `FileUploadState` per file across calls (single and bulk) until `reset()` clears the finished ones; every state ends `success`, `error` (with `error` set), or `aborted`. Errors from every verb, including `listAll` / `search` iteration, are mirrored into `error`. Every rejection is a `FilesError`: a network failure is `Provider` (original in `cause`), a cancelled call has `aborted: true`, and a non-envelope response (auth middleware, a storage host) is classified by status. Bulk `upload([...])` / `download([...])` with `stopOnError` run sequentially and resolve `{ results, errors }` like the SDK. A query hook's `data` belongs to its current input (cleared on a key/endpoint change or when disabled; kept across `refetch()`), and the hooks honor the `signal` option. `search()`'s generator returns `{ truncated }` (`SearchSummary`) when the gateway's bounded walk stopped early.
 
 See the bundled `docs/ui/` (or <https://files-sdk.dev/docs/ui>) for per-framework setup, authorization, and the shadcn component registry.
+
+## Storage events
+
+`files-sdk/events` turns every provider's bucket notifications (S3 via SQS/Lambda/EventBridge/SNS, MinIO webhooks, R2 Queues, GCS Pub/Sub, Storj via Pub/Sub, Azure Event Grid, B2, Tigris, Supabase, Cloudinary, Appwrite, Box) into one `FileEvent` (`type: "created" | "deleted"`, caller-facing `key`, `size?`, `etag?`, `versionId?`, `contentType?`, `time`, `source`, `provider`, `id`, `raw`) and routes it to `files.events.on(type, glob?, handler)`. Queue consumers call `files.events.dispatch(message)`; push providers mount `files.events.webhook({ verify })` with any gateway binding (`verify` is required: `{ token }`, `{ google: { audience, email } }` (both required), `{ secret }`, `{ sns: { topicArn } }` (topic required, signed `Timestamp` checked), or `false`). Other buckets' events are dropped by default (`bucket` defaults to the adapter's; `false` accepts all). Gateway uploads and (with `events({ sdk: true })`) the instance's own writes reach the same handlers. Delivery is at-least-once (Supabase's webhooks: once, no retries) and unordered: make handlers idempotent on `event.id`, or pass a `dedupe` store. The memory adapter emits events natively (`await files.events.settled()` in tests). See [references/events.md](references/events.md).
 
 ## CLI & MCP server
 
@@ -289,7 +304,7 @@ files --provider s3 --bucket uploads list --prefix reports/ --all | jq '.items[]
 files --provider s3 --bucket old transfer --to '{"provider":"r2","bucket":"new",...}' --prefix uploads/
 ```
 
-Commands: `upload download head exists list search copy move delete url sign-upload capabilities transfer sync mcp`. Global flags mirror the constructor: `--key-prefix` (instance prefix, distinct from `list --prefix`), `--timeout`, `--retries`. `head`/`exists`/`delete` take multiple keys + `--concurrency`/`--stop-on-error`; `download --range`, `upload --multipart`/`--part-size`, `list --all`, `upload --dir`/`download --out-dir`.
+Commands: `upload download head exists list search copy move delete url sign-upload capabilities transfer sync events mcp` (`files events parse [file] --format <s3|r2|gcs|…>` prints the events a notification delivery normalizes to). Global flags mirror the constructor: `--key-prefix` (instance prefix, distinct from `list --prefix`), `--timeout`, `--retries`. `head`/`exists`/`delete` take multiple keys + `--concurrency`/`--stop-on-error`; `download --range`, `upload --multipart`/`--part-size`, `list --all`, `upload --dir`/`download --out-dir`.
 
 The built-in **MCP server** (`files … mcp`) is **read-only by default** — exposes `download`, `head`, `exists`, `list`, `search`, `url`, `capabilities`. Pass **`--allow-writes`** to also expose `upload`, `delete`, `copy`, `move`, `sign-upload`; `transfer` and `sync` additionally need an operator-fixed destination via `mcp --allow-writes --to '<json>'` (the agent never picks the destination). Provider + credentials are bound at startup; the agent only passes operation arguments, never secrets. Binary payloads roundtrip as base64.
 
@@ -328,6 +343,33 @@ Key options on `createFileTools` (mirrored across the three):
 
 See [references/ai-tools.md](references/ai-tools.md).
 
+## Effect
+
+`files-sdk/effect` bridges a `Files` instance into Effect v4 (optional peer `effect@^4`). `Files` is a `Context.Service`; `Files.layer(instanceOrOptions)` provides it (options the constructor rejects fail the layer with an `Invalid` reason). The service mirrors the `Files` methods and options: operations return `Effect<A, FilesError>`, `listAll`/`search` return `Stream<FileInfo, FilesError>`, and `download` resolves to a `DownloadedFile` whose `text`/`arrayBuffer`/`blob` are Effects and `stream` is a `Stream<Uint8Array>`.
+
+```ts
+import { Effect } from "effect";
+import { Files } from "files-sdk/effect";
+import { s3 } from "files-sdk/s3";
+
+const program = Effect.gen(function* () {
+  const files = yield* Files;
+  const file = yield* files.download("settings.json");
+  return yield* file.text;
+}).pipe(
+  Effect.catchReason("FilesError", "NotFound", () => Effect.succeed("{}"))
+);
+
+await Effect.runPromise(
+  program.pipe(Effect.provide(Files.layer({ adapter: s3({ bucket: "app" }) })))
+);
+```
+
+- **Errors**: one `FilesError` (tag `"FilesError"`) whose `reason` is a tagged error per SDK code (`NotFound`, `Unauthorized`, `Conflict`, `ReadOnly`, `Invalid`, `Unsupported`, `Provider`) carrying `message`, `permanent`, `timedOut`, `aborted`, `applied`, `appliedEtag`, and `cause` (the SDK's `FilesError`). Use `Effect.catchReason`/`catchReasons`, or `Effect.unwrapReason("FilesError")` then `catchTag`. To match the SDK's retry policy, use `Effect.retry({ while: (e) => e.reason._tag === "Provider" && !e.reason.permanent && !e.reason.aborted })`, with the instance's `retries` unset.
+- **Cancellation**: the fiber's `AbortSignal` is passed as `signal`; `Effect.timeout`/interruption stops waiting for the SDK call and forwards cancellation to the adapter, but not all provider SDKs can stop the underlying request. The bulk (array) forms take no per-call signal and run to completion. Interrupting a buffered body accessor (`text`, `arrayBuffer`, `blob`) cancels the body read unless another read still waits on it; later reads of a cancelled body fail as `aborted`, so download again.
+- **Storage events** (needs the `events()` plugin, else `Unsupported`): `files.events.on(type, glob?, handler)` runs an Effect handler for the life of the `Scope`, and deliveries wait for it (at-least-once). `files.events.stream()` is a `Stream`, but it acknowledges on buffering, so buffered events are lost if the process stops; use `on` for durable work. `parse`/`dispatch` for queue consumers.
+- **Plugin methods** (`versions()`, `usage()`, …) aren't on the service: `files.tryPromise((client, signal) => client.versions(key))`. For typed plugin methods or several buckets, declare your own `Context.Service<Self, FilesService<typeof client>>` and provide `make(client)`.
+
 ## Decision guide
 
 - **"How do I add file uploads to my app?"** → Pick the adapter that matches their hosting/provider, show `new Files({ adapter: x({...}) })` + `upload`/`url`.
@@ -347,6 +389,7 @@ See [references/ai-tools.md](references/ai-tools.md).
 - **Audit log / metrics / activity feed** → `hooks` (`onAction`/`onError`/`onRetry`).
 - **Shell scripts / CI / a quick poke at a bucket** → the `files` CLI. **Give an MCP client (Claude Code, etc.) bucket access** → `files … mcp` (read-only; add `--allow-writes` deliberately).
 - **Give an in-app LLM bucket access** → the matching AI-tools subpath. Default to leaving `requireApproval` on for writes; suggest `readOnly: true` if it only needs to read.
+- **Effect (v4) codebase** → `files-sdk/effect`: provide `Files.layer(...)`, `yield* Files`, recover with `Effect.catchReason("FilesError", "NotFound", …)`.
 - **Test code that uses `Files`** → swap in `files-sdk/memory`.
 - **Feature not in the unified API** → `files.raw` + the provider's native client.
 

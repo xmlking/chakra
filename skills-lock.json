@@ -17,7 +17,7 @@
       "source": "assistant-ui/skills",
       "sourceType": "github",
       "skillPath": "assistant-ui/skills/assistant-ui/SKILL.md",
-      "computedHash": "edc38a25714b02933ae054cb80fed046011fdac5086d9ad76ba331bd9e42452c"
+      "computedHash": "865443c51b1c784123f923b0add5cbda88e46da641f72734a0af4d3e63ac95d9"
     },
     "better-auth-best-practices": {
       "source": "better-auth/skills",
@@ -36,12 +36,6 @@
       "sourceType": "github",
       "skillPath": "better-auth/create-auth/SKILL.md",
       "computedHash": "9a9b498bc144367b8e237233f89def63fb2bd69e8cafe173eaa58fe3a863cdc4"
-    },
-    "create-auth-skill": {
-      "source": "better-auth/skills",
-      "sourceType": "github",
-      "skillPath": "better-auth/create-auth/SKILL.md",
-      "computedHash": "31c027d02dbf1faa37f58191f574b9443143042fb2b684fe32df53ab0270487c"
     },
     "drizzle-best-practices": {
       "source": "honra-io/drizzle-best-practices",
@@ -65,7 +59,7 @@
       "source": "opencoredev/email-sdk",
       "sourceType": "github",
       "skillPath": "skills/email-sdk/SKILL.md",
-      "computedHash": "b9d511bcd9e061ad7adeeb2e496abe708fcaba52b627eb9b2cea48d39f1724ed"
+      "computedHash": "e887f87ab5cd6d6685490c6a2e3c3ebbe48da06640812b89d8d33b0c1079ad04"
     },
     "email-sdk-migrate": {
       "source": "opencoredev/email-sdk",
@@ -83,7 +77,7 @@
       "source": "haydenbleasel/files-sdk",
       "sourceType": "github",
       "skillPath": "skills/files-sdk/SKILL.md",
-      "computedHash": "2941c41abe63500cc1a47fd7ee10df3cdaff59d62c958358035cce52857dcaaf"
+      "computedHash": "96f88a657b40eb6cc20f85c9cd89a69c50f7b006829c973a3c54f1c8c1bbe6c3"
     },
     "improve": {
       "source": "shadcn/improve",
@@ -119,14 +113,14 @@
       "source": "evlog.dev",
       "sourceUrl": "https://www.evlog.dev",
       "sourceType": "well-known",
-      "computedHash": "af203391f97353cadab02889db09d091616422179f9cf0fa8da6debcc0f06d3e",
-      "wellKnownDigest": "sha256:6c85bea9902983a0a6236d124cd18123889f730929cc3d6ef833865665577abd"
+      "computedHash": "96858a9f88502382975c0b5e84f04561ddfaed29bc26ae27d03e6ff38440e246",
+      "wellKnownDigest": "sha256:23d7940003f7b6889c8032933bc3ec3aaa545a088c5a48be450627f5656cb1fd"
     },
     "shadcn": {
       "source": "shadcn/ui",
       "sourceType": "github",
       "skillPath": "skills/shadcn/SKILL.md",
-      "computedHash": "f615de216e085a84e31593ad0fa9062232adc40cd87b7c7ab2b8e49abf6500be"
+      "computedHash": "b864a958765563321f485a96f4d59c0bb6539f4286ab6d8b8b66895b7ebd302d"
     },
     "two-factor-authentication-best-practices": {
       "source": "better-auth/skills",
@@ -138,7 +132,7 @@
       "source": "dmno-dev/varlock",
       "sourceType": "github",
       "skillPath": "skills/varlock/SKILL.md",
-      "computedHash": "aad1f0cba6eebc70db9cf6772c23a555bc9727784070126b6d70bf18545adeac"
+      "computedHash": "dd6f7de5155f31c602c7b92361f832e32e12cb632feaadd0c0022740d0e5da5b"
     },
     "web-design-guidelines": {
       "source": "vercel-labs/agent-skills",
