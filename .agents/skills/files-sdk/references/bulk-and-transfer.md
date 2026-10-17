@@ -7,33 +7,33 @@ Acting on many objects, renaming, walking a whole bucket, and migrating or mirro
 `upload`, `download`, `head`, and `exists` take a single key **or an array**; `delete` takes one key or many. The array form fans out with bounded concurrency (8 by default) and **does not throw on partial failure** — successes and failures come back separated, in input order.
 
 ```ts
-const { uploaded, errors } = await files.upload([
+const { results, errors } = await files.upload([
   { key: "a.txt", body: "alpha" },
   { key: "b.txt", body: "beta", contentType: "text/plain", multipart: true },
 ]);
 
 const { existing, missing } = await files.exists(["a.txt", "b.txt", "c.txt"]);
-const { files: metas } = await files.head(["a.txt", "b.txt"]);
-const { downloaded } = await files.download(["a.txt", "b.txt"]);
-const { deleted } = await files.delete(["a.txt", "b.txt"]);
+const { results: metas } = await files.head(["a.txt", "b.txt"]);
+const { results: downloaded } = await files.download(["a.txt", "b.txt"]);
+const { results: deleted } = await files.delete(["a.txt", "b.txt"]);
 ```
 
-| Method     | Array form returns               |
-| ---------- | -------------------------------- |
-| `upload`   | `{ uploaded, errors? }`          |
-| `download` | `{ downloaded, errors? }`        |
-| `head`     | `{ files, errors? }`             |
-| `exists`   | `{ existing, missing, errors? }` |
-| `delete`   | `{ deleted, errors? }`           |
+| Method     | Array form returns                          |
+| ---------- | ------------------------------------------- |
+| `upload`   | `{ results: FileInfo[], errors? }`          |
+| `download` | `{ results: StoredFile[], errors? }`        |
+| `head`     | `{ results: FileInfo[], errors? }`          |
+| `delete`   | `{ results: string[], errors? }` (the keys) |
+| `exists`   | `{ existing, missing, errors? }`            |
 
-The success arrays are in supplied order. Each `errors` entry is `{ key, error }` with a normalized `FilesError`; invalid keys (empty, null bytes) are reported there too, never thrown. `errors` is omitted entirely when every item succeeded.
+Every form but `exists` returns the same `BulkResult` shape: successes in `results`, in supplied order. With `stopOnError: true` the items run one at a time, and a bulk `delete` skips the native batch so it behaves the same with or without plugins. Each `errors` entry is `{ key, error }` with a normalized `FilesError`; invalid keys (empty, null bytes) are reported there too, never thrown. `errors` is omitted entirely when every item succeeded.
 
 ### Options & semantics
 
 - **`concurrency`** (default 8) — how many per-key ops run in parallel.
 - **`stopOnError: true`** — bail at the first failure, returning results gathered so far plus that error. Runs **sequentially** (ignores `concurrency`).
 - **No `signal` or `retries`** — bulk calls aren't retried (`onRetry` never fires) and don't take a per-call signal; re-drive failed keys from `errors[]` instead. Cancellation/retries are single-key concerns.
-- **Native batch delete:** `delete([...])` uses a provider's native bulk primitive where it has one (S3-family `DeleteObjects` chunked at 1000, Azure Blob Batch chunked at 256, Supabase, UploadThing; FTP/SFTP run the whole batch over one connection) and ignores `concurrency`; others fall back to bounded fan-out. The other four methods always fan out (no provider batch primitive).
+- **Native batch delete:** `delete([...])` uses a provider's native bulk primitive where it has one (S3-family `DeleteObjects` chunked at 1000, Azure Blob Batch chunked at 256, Supabase chunked at 1000, UploadThing; FTP/SFTP run the whole batch over one connection) and ignores `concurrency`; others fall back to bounded fan-out. The other four methods always fan out (no provider batch primitive).
 - **Hooks:** one aggregated `onAction` per call (carries `keys` + the aggregated result; per-item failures live in `result.errors`, not `onError`).
 - **`prefix`** is honored throughout — resolved on the way in, stripped on the way out.
 
@@ -53,7 +53,7 @@ await files.move("uploads/tmp-abc.png", "avatars/user-123.png");
 await files.file("avatars/user-123.png").moveFrom("uploads/tmp-abc.png");
 ```
 
-Uses the adapter's native rename where one exists (`fs` renames in place atomically; FTP, SFTP, and WebDAV use the server's rename/`MOVE`; Cloudinary uses server-side `rename`, keeping the same `asset_id` with no re-upload; the in-memory adapter re-keys the entry) and otherwise falls back to `copy` + `delete` — the same two-step every object store takes (none offer an atomic move). Moving a key onto itself is a no-op, so the fallback can't delete a file out of existence. **Throws on Convex** (immutable storage ids, no rename), where `copy` also throws. Fires the lifecycle hooks with a `"move"` action type (`from`/`to`).
+Uses the adapter's native rename where one exists (`fs` renames in place atomically; FTP, SFTP, and WebDAV use the server's rename/`MOVE`, overwriting an existing destination like every other adapter — FTP servers that refuse to rename over a file, and SFTP generally, delete the destination first, so the key is briefly absent; Cloudinary uses server-side `rename`, keeping the same `asset_id` with no re-upload; the in-memory adapter re-keys the entry) and otherwise falls back to `copy` + `delete` — the same two-step every object store takes (none offer an atomic move). Moving a key onto itself is a no-op, so the fallback can't delete a file out of existence. **Throws on Convex** (immutable storage ids, no rename), where `copy` also throws. Fires the lifecycle hooks with a `"move"` action type (`from`/`to`).
 
 ## `listAll`
 
@@ -80,7 +80,7 @@ const { items, prefixes } = await files.list({
 // prefixes → subfolders:       [ "photos/2023/", "photos/2024/" ]   (full keys, trailing delimiter)
 ```
 
-`ListResult.prefixes` is omitted when no delimiter is set or none are found; when the instance has a `prefix`, prefixes are scoped/stripped like item keys. **Supported** by object stores and folder-based providers (the latter only accept `"/"`); **throws** a `FilesError` on flat stores (UploadThing, Appwrite, PocketBase, Convex, Bunny Storage) — check `files.capabilities.delimiter` (or `adapter.supportsDelimiter`). A cursor is valid only for the exact `prefix` **and** `delimiter` it was produced with — hold both constant across a paginated sequence.
+`ListResult.prefixes` is omitted when no delimiter is set or none are found; when the instance has a `prefix`, prefixes are scoped/stripped like item keys. **Supported** by object stores and folder-based providers (the latter only accept `"/"`); **throws** a `FilesError` on flat stores (UploadThing, Appwrite, PocketBase, Convex, Bunny Storage) — check `files.capabilities.delimiter`. A cursor is valid only for the exact `prefix` **and** `delimiter` it was produced with — hold both constant across a paginated sequence.
 
 ## `transfer` — cross-provider migration
 
@@ -112,7 +112,7 @@ const { transferred, skipped, errors } = await transfer(from, to, {
 | `skipped` | Keys skipped because they already existed. Omitted when none. |
 | `errors` | Per-key `{ key, error }` failures. Omitted when every key wins. |
 
-Each object is streamed download-to-upload — the destination never buffers a whole large file. **Body, content type, and user metadata travel; `etag`/`lastModified` are destination-assigned and `Cache-Control` is not carried.** Metadata is dropped when the destination has no metadata support (`dest.capabilities.metadata` is `false`, e.g. Bunny, Appwrite, PocketBase) rather than failing each key; any other destination rejection surfaces as a per-key error. Like the bulk forms, `transfer` doesn't throw on partial failure. `transformKey` maps the _logical_ key (each instance applies its own `prefix` independently). The source's keys are walked up front (bodies still stream one at a time), so each progress report carries `total` alongside `done`. Also exposed as the CLI `transfer` command and an MCP `transfer` tool — the MCP tool needs `--allow-writes` **and** an operator-fixed destination (`files … mcp --allow-writes --to '<json>'`); the agent can't choose where data goes.
+Each object is streamed download-to-upload — the destination never buffers a whole large file. **Body, content type, and user metadata travel; `etag`/`lastModified` are destination-assigned and `Cache-Control` is not carried.** Metadata is dropped when the destination has no metadata support (`dest.capabilities.metadata` is `false`, e.g. Bunny, Appwrite, PocketBase) rather than failing each key; any other destination rejection surfaces as a per-key error. Like the bulk forms, `transfer` doesn't throw on partial failure. `transformKey` maps the _logical_ key (each instance applies its own `prefix` independently). The source's keys are walked up front (bodies still stream one at a time), so each progress report carries `total` alongside `done`, plus a `status` of `"transferred"`, `"skipped"`, or `"failed"` (failed keys are counted too, so `done` reaches `total` unless `stopOnError` bails). Also exposed as the CLI `transfer` command and an MCP `transfer` tool — the MCP tool needs `--allow-writes` **and** an operator-fixed destination (`files … mcp --allow-writes --to '<json>'`); the agent can't choose where data goes.
 
 ## `sync` — repeatable mirrors
 
@@ -129,4 +129,4 @@ const { uploaded, skipped, deleted, errors } = await sync(from, to, {
 });
 ```
 
-`destPrefix` scopes the destination walk (compare + prune) when `transformKey` re-homes keys; it defaults to `prefix`. ETags only match across providers that compute them the same way — use `compare: "size"` (or a function) between different backends. Like `transfer`, it doesn't throw on partial failure. Also the CLI `sync` command and, with `mcp --allow-writes --to '<json>'`, an MCP `sync` tool.
+`destPrefix` scopes the destination walk (compare + prune) when `transformKey` re-homes keys; it defaults to `prefix`. ETags only match across providers that compute them the same way — use `compare: "size"` (or a function) between different backends. Like `transfer`, it doesn't throw on partial failure. With a `signal`, the prune deletes in batches of 100 and stops before the next batch once aborted; the unpruned keys come back in `errors` as aborted. Also the CLI `sync` command and, with `mcp --allow-writes --to '<json>'`, an MCP `sync` tool.

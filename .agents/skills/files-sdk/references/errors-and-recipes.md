@@ -13,7 +13,7 @@ Shape:
 
 ```ts
 class FilesError extends Error {
-  readonly code: FilesErrorCode; // "NotFound" | "Unauthorized" | "Conflict" | "ReadOnly" | "Provider"
+  readonly code: FilesErrorCode; // "NotFound" | "Unauthorized" | "Conflict" | "ReadOnly" | "Invalid" | "Unsupported" | "Provider"
   readonly aborted: boolean; // true for a cancellation or timeout
   readonly cause?: unknown; // the original provider error
 }
@@ -27,9 +27,11 @@ class FilesError extends Error {
 | `Unauthorized` | Credentials are missing, wrong, or lack the required permission. |
 | `Conflict` | Precondition failed — e.g. `If-Match` mismatch, create-only collision. |
 | `ReadOnly` | A write was attempted on a `new Files({ readonly: true })` / `files.readonly()`. |
-| `Provider` | Catch-all for anything else (transport, throttling, malformed input, timeouts). |
+| `Invalid` | The call is wrong: an empty / `..` key, a malformed range, ETag, or condition, contradictory options, bad constructor config, a `validation()` rejection. Fix the call. |
+| `Unsupported` | The call is fine but this adapter (mode, plugins) can't do it: `range` without range reads, `metadata` on Vercel Blob, `url()` under `encryption()`. Check `files.capabilities` first. |
+| `Provider` | The backend or transport failed (network, throttling, 5xx, timeouts, aborts). |
 
-Codes map from the provider's own error/HTTP status (`404` → `NotFound`, `401`/`403` → `Unauthorized`, `409`/`412` → `Conflict`); `ReadOnly` is the one SDK-native code. Only `Provider` is retried — the rest are deterministic and returned immediately.
+`NotFound` / `Unauthorized` / `Conflict` / `Provider` map from the provider's own error/HTTP status (`404` → `NotFound`, `401`/`403` → `Unauthorized`, `409`/`412` → `Conflict`); `ReadOnly`, `Invalid`, and `Unsupported` are the SDK's own. Only `Provider` is retried — the rest are deterministic and returned immediately. The CLI exits `2` for `Invalid` / `Unsupported` / `ReadOnly` (like a usage error) and `5` for `Provider`.
 
 ### The `aborted` flag
 
@@ -79,7 +81,7 @@ If you actually want "best effort, log and move on," catch `FilesError` and insp
 
 ## The `head()` accessor footgun
 
-`head(key)` returns a `StoredFile`. The metadata fields (`size`, `type`, `etag`, `lastModified`, `metadata`) are populated immediately, but `text()` / `arrayBuffer()` / `blob()` / `stream()` **lazily issue a full GET on first use**. If all you want is metadata, don't touch the body accessors — they are not free.
+`head(key)` returns a `FileInfo` (`key`, `size`, `contentType`, `etag`, `lastModified`, `metadata`) with **no body** — the same shape as `list` / `search` items. To read the bytes, call `download(key)`, which returns a `StoredFile` (the same fields plus `name` / `type` and `text()` / `arrayBuffer()` / `blob()` / `stream()`). Before v3, head/list results had lazy body accessors; code calling `.text()` on them must switch to `download`.
 
 ## URL key encoding
 
