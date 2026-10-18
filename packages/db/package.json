@@ -6,6 +6,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./event-bus": "./src/event-bus/index.ts",
     "./*": "./src/*.ts",
     "./env": "./env.ts"
   },
@@ -33,6 +34,7 @@
     "drizzle-orm": "catalog:",
     "evlog": "catalog:",
     "pg": "catalog:",
+    "uuid": "catalog:",
     "varlock": "catalog:",
     "zod": "catalog:"
   },

@@ -26,15 +26,39 @@ Publish cache-tag invalidation events from the database transaction that changes
       │                                      │ LISTEN pulse_events
       │                                      ▼
       └───── WebSocket ────────▶ ┌───────────────────────────────┐
-                                 │ apps/realtime — rooms,         │
-                                 │ presence, and cache fanout     │
+                                 │ apps/realtime — rooms,        │
+                                 │ presence, and cache fanout    │
                                  └───────────────────────────────┘
+```
+
+## Architecture
+
+```
+Process A (handles POST)            Postgres                    Process B (holds SSE)
+        │                               │                                 │
+createContactMessage()                  │                                 │
+        │                               │  ┌─── LISTEN ius_notif ───-─────┤
+        ├── INSERT contact_messages     │  │                              │
+        ├── INSERT notifications x N    │  │                              │
+        └── NOTIFY ius_notif, '<json>'  │  │                              │
+        ──────────────────────────────▶ ┤  │                              │
+                                        ├──┴── notification delivered ───▶│
+                                        │                                 │
+                                        │      pg client emits 'notification' event
+                                        │      controller.enqueue(...)    │
+                                        │      Browser EventSource fires  │
+                                        │      queryClient.invalidate(...)│
 ```
 
 ## Third-party references
 
 - [nest-native/cache](https://github.com/nest-native/cache)
+  - https://github.com/nest-native/cache/blob/main/packages/core/postgres/postgres-bus.ts
 - [pulse](https://github.com/Lingikaushikreddy/pulse)
+  - https://github.com/Lingikaushikreddy/pulse/blob/main/apps/realtime/src/subscriber.ts
+- https://github.com/iunlockersolutions/ius-storefront/blob/main/docs/realtime-option-c-postgres-listen-notify.md
+- https://github.com/ingres-si/ingressi/blob/develop/src/lib/db/events.ts
+  - [invalidation bus](https://github.com/ingres-si/ingressi/blob/develop/src/lib/db/README.md)
 
 ## Questions to resolve
 

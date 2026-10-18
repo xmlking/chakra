@@ -213,6 +213,7 @@
         "drizzle-orm": "catalog:",
         "evlog": "catalog:",
         "pg": "catalog:",
+        "uuid": "catalog:",
         "varlock": "catalog:",
         "zod": "catalog:",
       },
