@@ -14,7 +14,7 @@ services:
   # docker compose exec -it postgres pg_dump -U postgres -d postgres --schema-only --no-owner --no-privileges --schema=workflow > workflow_schema_dump.sql
   ###########################################################################
   postgres:
-    image: timescale/timescaledb:latest-pg18
+    image: pgvector/pgvector:pg18
     hostname: postgres
     container_name: postgres
     restart: unless-stopped
