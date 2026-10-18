@@ -19,6 +19,7 @@ export default defineConfig({
     "./src/server/plugins/evlog-auth.ts",
     "./src/server/plugins/evlog-drain.ts",
     "./src/server/plugins/start-pg-world.ts",
+    "./src/server/plugins/event-bus.ts",
   ],
   tasks: {
     "work:onramp-webhooks-check": {

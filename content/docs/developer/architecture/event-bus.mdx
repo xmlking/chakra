@@ -1,0 +1,111 @@
+---
+title: Event Bus
+description: Process-wide pub/sub over PostgreSQL LISTEN/NOTIFY, bootstrapped as a Nitro plugin.
+---
+
+`EventBus` (`@workspace/db/event-bus`) is a typed pub/sub layer on top of PostgreSQL `LISTEN`/`NOTIFY`. It needs no extra infrastructure: every app instance that shares the database receives every event. Use it for cross-instance signals such as [tag-based cache invalidation](./cache-invalidation), waking a workflow, or fanning a change out to realtime subscribers.
+
+It is a signal bus, not a durable queue. A notification that fires while an instance is disconnected is lost; design consumers so a missed event only delays work rather than breaking it (for example, a cache invalidation consumer should also expire entries by TTL).
+
+## Usage
+
+Declare the channel contract once, then publish and subscribe anywhere on the server:
+
+```ts title="apps/web/src/server/services/event-bus.ts"
+export type AppEvents = {
+  "cache:invalidate": { tags: string[] };
+};
+
+export const eventBus = new EventBus<AppEvents>({
+  connectionString: ENV.DATABASE_URL ?? "",
+  publisher: db,
+  channelPrefix: `${ENV.APP_NAME}_`,
+});
+```
+
+```ts
+// Subscribe. Returns an unsubscribe function.
+const off = eventBus.on("cache:invalidate", async ({ id, ts, data }) => {
+  await cache.invalidateTags(data.tags);
+});
+
+// Publish standalone (goes through the Drizzle pool).
+await eventBus.publish("cache:invalidate", { tags: ["user:42"] });
+
+// Publish inside a transaction: delivered only if the transaction commits.
+await db.transaction(async (tx) => {
+  await tx.update(users).set({ name }).where(eq(users.id, id));
+  await eventBus.publish("cache:invalidate", { tags: [`user:${id}`] }, tx);
+});
+```
+
+Every delivered event is wrapped in an envelope:
+
+| Field     | Meaning                                                                                 |
+| --------- | --------------------------------------------------------------------------------------- |
+| `id`      | UUIDv7 idempotency key. Time-ordered to the millisecond, usable for dedupe and reorder. |
+| `ts`      | Publish time in epoch milliseconds; the bus uses it for processing-latency metrics.     |
+| `channel` | Logical channel name (without the prefix).                                              |
+| `data`    | The typed payload.                                                                      |
+
+## Behavior
+
+**Connections.** The bus owns one dedicated `pg.Client` used only for `LISTEN`. It never borrows from the Drizzle pool for listening, because a pooled connection can be handed to another caller at any moment. `publish()` runs `pg_notify` through whatever executor it is given: the Drizzle `db`, or a `tx` so the notification commits atomically with the surrounding writes.
+
+**Ordering and dedupe.** Incoming notifications are queued in memory and processed one at a time, so handlers observe arrival order. Envelope ids are remembered in a bounded ring (`dedupeWindowSize`, default 1000) and duplicates are dropped. Postgres only orders notifications within a single transaction, so publish related events from the same `tx` when order matters.
+
+**Handler errors.** A throwing handler is retried per-subscription (`retries`, `retryDelayMs` with doubling). The final failure is logged and counted; it never crashes the bus or blocks other handlers.
+
+**Heartbeat.** Every `heartbeatIntervalMs` the bus sends `pg_notify` on a reserved channel over the listen connection and expects it back on the same connection. A missing pong within `heartbeatTimeoutMs` is treated as a dead socket and triggers a reconnect, which catches half-open connections that TCP keepalive misses.
+
+**Reconnect.** On any connection loss the bus backs off exponentially with jitter (`reconnectBaseDelayMs` up to `reconnectMaxDelayMs`), reconnects, and re-issues `LISTEN` for every subscribed channel. Subscriptions added while disconnected are picked up on the next connect.
+
+**Payload limit.** Postgres caps `NOTIFY` payloads at 8000 bytes. `publish()` measures the serialised envelope and throws `EventPayloadTooLargeError` before touching the database. Send identifiers, not documents; consumers can re-read the row.
+
+**Shutdown.** `close()` issues `UNLISTEN *`, waits for queued events to finish (bounded by `shutdownDrainTimeoutMs`), then ends the connection. The Nitro plugin wires this to the app's `close` hook.
+
+## Metrics
+
+`getMetrics()` returns an in-memory snapshot suitable for a health endpoint:
+
+```json
+{
+  "status": "healthy",
+  "connection": {
+    "state": "connected",
+    "uptime_seconds": 86400,
+    "reconnect_count": 2,
+    "last_heartbeat_at": "…"
+  },
+  "metrics": {
+    "total_events_received": 145020,
+    "total_events_published": 90210,
+    "events_per_channel": { "cache:invalidate": 120400 },
+    "duplicates_dropped": 3,
+    "queue_depth": 0,
+    "avg_processing_latency_ms": 12.4,
+    "errors": {
+      "payload_parse_failures": 0,
+      "payload_too_large": 0,
+      "handler_execution_failures": 4,
+      "connection_drops": 2,
+      "heartbeat_timeouts": 0
+    }
+  }
+}
+```
+
+`status` is `healthy` while connected, `degraded` while connecting or reconnecting, and `unhealthy` when disconnected or closed.
+
+## Bootstrapping
+
+`apps/web/src/server/plugins/event-bus.ts` is registered in `nitro.config.ts`. It starts the bus on boot and closes it on the Nitro `close` hook. A failed initial connect is logged, not fatal; the bus keeps retrying on its own.
+
+## Testing
+
+Unit tests run without a database. The integration suite needs a Postgres and is skipped unless `EVENT_BUS_TEST_DATABASE_URL` is set:
+
+```sh
+docker run -d --rm --name eventbus-pg -e POSTGRES_PASSWORD=test -e POSTGRES_DB=eventbus -p 55432:5432 postgres:18-alpine
+EVENT_BUS_TEST_DATABASE_URL=postgresql://postgres:test@localhost:55432/eventbus vp test event-bus
+```
