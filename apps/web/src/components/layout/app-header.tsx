@@ -1,7 +1,7 @@
 import { useRouter } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { UserButton } from "@workspace/ui/components/auth/user/user-button";
-import { Button } from "@workspace/ui/components/shadcn/button";
+import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
@@ -33,10 +33,11 @@ export function AppHeader() {
           <LayoutToggle className="hidden lg:flex" />
           {/* <ModeToggle /> */}
           <ThemeSwitcher />
-          <Button variant="ghost" size="icon" aria-label="Notifications">
-            <InboxButton client={authClient} onNavigate={(href) => router.navigate({ to: href })} />
-            <span className="sr-only">Notifications</span>
-          </Button>
+          <InboxButton
+            client={authClient}
+            onNavigate={(href) => router.navigate({ href })}
+            buttonClassName={buttonVariants({ variant: "ghost", size: "icon" })}
+          />
           <UserButton size="icon" align="end" />
         </div>
       </div>
