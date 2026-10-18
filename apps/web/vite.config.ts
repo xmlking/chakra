@@ -18,6 +18,20 @@ export default defineConfig(() => {
     // },
     resolve: { tsconfigPaths: true },
     plugins: [
+      {
+        name: "workflow-virtual-handler-vite-ignore",
+        enforce: "pre",
+        transform(code, id) {
+          if (!id.includes("#workflow/webhook.mjs") && !id.includes("#workflow/workflows.mjs")) {
+            return;
+          }
+
+          return code.replaceAll(
+            "import(currentImportPath)",
+            "import(/* @vite-ignore */ currentImportPath)",
+          );
+        },
+      },
       // The server is always started via `varlock run` (see Dockerfile), so the
       // built SSR bundle only needs the init calls, not a second schema load.
       varlockVitePlugin({ ssrInjectMode: "init-only" }),
@@ -45,6 +59,15 @@ export default defineConfig(() => {
     build: {
       rolldownOptions: {
         external: ["shiki/wasm"],
+        onwarn(warning, warn) {
+          if (
+            warning.code === "DYNAMIC_IMPORT_NO_EXT" ||
+            warning.message.includes("The above dynamic import cannot be analyzed by Vite")
+          ) {
+            return;
+          }
+          warn(warning);
+        },
       },
     },
     ssr: {
