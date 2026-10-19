@@ -3,7 +3,7 @@ import {
   ComposerAttachments,
   UserMessageAttachments,
 } from "#components/assistant-ui/elements/attachment.aui";
-import { File } from "#components/assistant-ui/elements/file";
+import { File, getFileHref } from "#components/assistant-ui/elements/file";
 import { ThreadFollowupSuggestions } from "#components/assistant-ui/elements/follow-up-suggestions.aui";
 import { Image } from "#components/assistant-ui/elements/image";
 import { MarkdownText } from "#components/assistant-ui/elements/markdown-text";
@@ -63,12 +63,19 @@ import {
 import {
   createContext,
   useContext,
+  useLayoutEffect,
+  useRef,
   type ComponentType,
   type FC,
   type PropsWithChildren,
 } from "react";
 
 export type ThreadGroupPart = MessagePrimitive.GroupedParts.GroupPart;
+
+const reasoningDuration = (timing: ThreadGroupPart["timing"]) =>
+  timing?.completedAt === undefined
+    ? undefined
+    : Math.round((timing.completedAt - timing.startedAt) / 1000);
 
 /**
  * Optional component overrides for the thread. `AssistantMessage` and
@@ -197,7 +204,7 @@ const ThreadRoot: FC<{ isEmpty: boolean; autoFocus: boolean }> = ({
       }}
     >
       <ThreadPrimitive.Viewport
-        // turnAnchor="top" // IMPORTANT: removing this will fix chat input stay at bottom
+        turnAnchor="top"
         data-slot="aui_thread-viewport"
         className="relative flex flex-1 flex-col overflow-x-auto overflow-y-scroll scroll-smooth"
       >
@@ -213,6 +220,8 @@ const ThreadRoot: FC<{ isEmpty: boolean; autoFocus: boolean }> = ({
           <AuiIf condition={isHistoryLoadingView}>
             <ThreadHistorySkeleton />
           </AuiIf>
+
+          <ThreadLoadEarlier />
 
           <div
             data-slot="aui_message-group"
@@ -349,6 +358,65 @@ const SpokenActionBar: FC = () => {
                       <CopyIcon className="animate-in zoom-in-75 fade-in duration-150" />
                     </AuiIf></ActionBarPrimitive.Copy>
     </ActionBarPrimitive.Root>
+  );
+};
+
+const FOCUSABLE_SELECTOR =
+  "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex='-1']):not([disabled])";
+
+const nextFocusable = (start: Element) => {
+  for (
+    let element = start.nextElementSibling;
+    element;
+    element = element.nextElementSibling
+  ) {
+    const target = element.matches(FOCUSABLE_SELECTOR)
+      ? element
+      : element.querySelector(FOCUSABLE_SELECTOR);
+    if (target instanceof HTMLElement) return target;
+  }
+  return null;
+};
+
+const ThreadLoadEarlier: FC = () => {
+  const visible = useAuiState(
+    (s) => s.thread.hasEarlier || s.thread.isLoadingEarlier,
+  );
+  const loading = useAuiState((s) => s.thread.isLoadingEarlier);
+  const slotRef = useRef<HTMLDivElement>(null);
+  const focusedRef = useRef<Element | null>(null);
+
+  // The last page removes the button; a keyboard user on it continues from the
+  // next control in tab order rather than from the document body.
+  useLayoutEffect(() => {
+    const focused = focusedRef.current;
+    const slot = slotRef.current;
+    if (visible || !focused || focused.isConnected || !slot) return;
+    focusedRef.current = null;
+    const active = document.activeElement;
+    if (active && active !== document.body) return;
+    nextFocusable(slot)?.focus();
+  }, [visible]);
+
+  return (
+    <div
+      ref={slotRef}
+      className="contents"
+      onFocus={(event) => {
+        focusedRef.current = event.target;
+      }}
+    >
+      <span role="status" className="sr-only">
+        {loading ? "Loading earlier messages" : ""}
+      </span>
+      {visible && (
+        <ThreadPrimitive.LoadEarlier render={<Button variant="ghost" size="sm" data-slot="aui_thread-load-earlier" className="aui-thread-load-earlier text-muted-foreground mb-6 self-center rounded-full" />}><span
+                            className={cn(loading && "shimmer motion-reduce:animate-none")}
+                          >
+                            {loading ? "Loading earlier messages" : "Load earlier messages"}
+                          </span></ThreadPrimitive.LoadEarlier>
+      )}
+    </div>
   );
 };
 
@@ -516,7 +584,10 @@ const AssistantMessage: FC = () => {
                 const running = part.status.type === "running";
                 return (
                   <ReasoningRoot streaming={running}>
-                    <ReasoningTrigger active={running} />
+                    <ReasoningTrigger
+                      active={running}
+                      duration={reasoningDuration(part.timing)}
+                    />
                     <ReasoningContent aria-busy={running}>
                       <ReasoningText>{children}</ReasoningText>
                     </ReasoningContent>
@@ -534,7 +605,7 @@ const AssistantMessage: FC = () => {
               case "file":
                 return (
                   <div data-slot="aui_assistant-message-file" className="py-1">
-                    <File {...part} />
+                    <MessageFile {...part} />
                   </div>
                 );
               case "image":
@@ -605,9 +676,24 @@ const AssistantActionBar: FC = () => {
   );
 };
 
+const MessageFile: FileMessagePartComponent = (part) => {
+  const image = part.mimeType.toLowerCase().startsWith("image/")
+    ? getFileHref(part.data, part.mimeType, part.sourceType)
+    : null;
+  if (!image) return <File {...part} />;
+  return (
+    <Image
+      type="image"
+      image={image}
+      status={part.status}
+      {...(part.filename !== undefined && { filename: part.filename })}
+    />
+  );
+};
+
 const UserFilePart: FileMessagePartComponent = (part) => (
   <div data-slot="aui_user-message-file" className="py-1">
-    <File {...part} />
+    <MessageFile {...part} />
   </div>
 );
 

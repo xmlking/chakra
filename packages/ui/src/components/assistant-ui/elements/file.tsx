@@ -135,6 +135,15 @@ function getDataUrlSize(data: string): number {
     .byteLength;
 }
 
+function getFileLabel(mimeType: string): string {
+  const subtype = /^[^/;]+\/(?:x-)?(?:[^;+]*\.)?([^;+.\s]+)/.exec(
+    mimeType.toLowerCase(),
+  )?.[1];
+  if (!subtype || subtype === "octet-stream") return "File";
+  if (subtype === "plain") return "Text file";
+  return `${subtype.toUpperCase()} file`;
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`;
@@ -332,7 +341,7 @@ const FileImpl: FileMessagePartComponent = ({
               bytes={
                 kind === "data-uri" ? getDataUrlSize(data) : getBase64Size(data)
               }
-              className="text-foreground/45 text-[11px]"
+              className="text-muted-foreground text-[11px]"
             />
           )}
           <FileDownload
@@ -350,7 +359,7 @@ const FileImpl: FileMessagePartComponent = ({
     <FileRoot>
       <FileIconDisplay mimeType={mimeType} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <FileName>{filename}</FileName>
+        <FileName>{filename || getFileLabel(mimeType)}</FileName>
         {showSize && (
           <FileSize
             bytes={
@@ -398,6 +407,7 @@ export {
   fileVariants,
   getMimeTypeIcon,
   getFileDataKind,
+  getFileHref,
   getBase64Size,
   formatFileSize,
 };
