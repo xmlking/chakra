@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { UseFilesResult } from "files-sdk/react";
 import {
   CheckCircle2Icon,
@@ -18,7 +19,6 @@ import {
 import type { ReactNode } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { cn } from "cn";
 
 export interface UploadedEntry {
   key: string;
