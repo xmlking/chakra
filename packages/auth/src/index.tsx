@@ -29,6 +29,7 @@ import {
 } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { inbox } from "better-inbox";
+import { log } from "evlog";
 
 import { ENV } from "../env";
 import { additionalSessionFields, additionalUserFields } from "./additional-fields";
@@ -389,7 +390,11 @@ export const auth = betterAuth({
        * TODO: check if email is in ADMIN_EMAILS[]
        */
       async allowUserToCreateOrganization(user) {
-        console.info(user.name);
+        log.info({
+          source: "auth.organization",
+          action: "creation.allowed",
+          user: user.name,
+        });
         // const subscription = await getSubscription(user.id)
         // return subscription.plan === "pro"
         return true;

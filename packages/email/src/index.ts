@@ -1,6 +1,7 @@
 import { createEmailClient, type EmailMessage } from "@opencoredev/email-sdk";
 import { resend } from "@opencoredev/email-sdk/resend";
 import { smtp } from "@opencoredev/email-sdk/smtp";
+import { log } from "evlog";
 import { render } from "react-email";
 
 import { ENV } from "../env";
@@ -40,16 +41,36 @@ export const email = createEmailClient({
   },
   hooks: {
     beforeSend(event) {
-      console.log("email.attempt", event.adapter, event.attempt);
+      log.info({
+        source: "email",
+        action: "attempt",
+        adapter: event.adapter,
+        attempt: event.attempt,
+      });
     },
     onRetry(event) {
-      console.warn("email.retry", event.adapter, event.nextAttempt);
+      log.warn({
+        source: "email",
+        action: "retry",
+        adapter: event.adapter,
+        nextAttempt: event.nextAttempt,
+      });
     },
     onError(event) {
-      console.error("email.error", event.adapter, event.error);
+      log.error({
+        source: "email",
+        action: "error",
+        adapter: event.adapter,
+        error: event.error,
+      });
     },
     afterSend(event) {
-      console.log("email.sent", event.adapter, event.response.id);
+      log.info({
+        source: "email",
+        action: "sent",
+        adapter: event.adapter,
+        responseId: event.response.id,
+      });
     },
   },
 });

@@ -30,6 +30,7 @@
     "@opencoredev/email-sdk": "catalog:",
     "@workspace/ui": "workspace:*",
     "cn": "catalog:",
+    "evlog": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-email": "catalog:",
