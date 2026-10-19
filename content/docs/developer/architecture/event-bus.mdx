@@ -13,7 +13,8 @@ Declare the channel contract once, then publish and subscribe anywhere on the se
 
 ```ts title="apps/web/src/server/services/event-bus.ts"
 export type AppEvents = {
-  "cache:invalidate": { tags: string[] };
+  "cache:invalidate": { organizationId: string; tags: string[] };
+  "billing:payment_failed": { organizationId: string; subscriptionId: string };
 };
 
 export const eventBus = new EventBus<AppEvents>({
@@ -25,19 +26,81 @@ export const eventBus = new EventBus<AppEvents>({
 
 ```ts
 // Subscribe. Returns an unsubscribe function.
-const off = eventBus.on("cache:invalidate", async ({ id, ts, data }) => {
+const off = eventBus.on("cache:invalidate", async ({ data }) => {
   await cache.invalidateTags(data.tags);
 });
 
 // Publish standalone (goes through the Drizzle pool).
-await eventBus.publish("cache:invalidate", { tags: ["user:42"] });
+await eventBus.publish("cache:invalidate", {
+  organizationId: "org_123",
+  tags: ["user:42"],
+});
 
 // Publish inside a transaction: delivered only if the transaction commits.
 await db.transaction(async (tx) => {
   await tx.update(users).set({ name }).where(eq(users.id, id));
-  await eventBus.publish("cache:invalidate", { tags: [`user:${id}`] }, tx);
+  await eventBus.publish(
+    "cache:invalidate",
+    { organizationId: "org_123", tags: [`user:${id}`] },
+    tx,
+  );
 });
 ```
+
+## Sending Better Inbox notifications
+
+An EventBus subscriber can turn a domain event into a Better Auth in-app notification. Declare the
+channel in `AppEvents`, then register the subscriber once during server startup, before starting the
+bus. Do not register it inside a webhook or request handler, where repeated requests could create
+duplicate subscriptions.
+
+```ts title="apps/web/src/server/plugins/event-bus.ts (inside the Nitro plugin)"
+import { auth } from "@workspace/auth";
+
+import { eventBus } from "#server/services/event-bus";
+
+const unsubscribePaymentFailed = eventBus.on(
+  "billing:payment_failed",
+  async ({ data }) => {
+    await auth.api.notify({
+      body: {
+        organizationId: data.organizationId,
+        roles: ["owner", "admin"], // Omit to notify every organization member.
+        type: "billing.payment_failed",
+        title: "Payment failed — update your card",
+        href: "/settings/billing",
+        data: { subscriptionId: data.subscriptionId },
+      },
+    });
+  },
+  { retries: 3 },
+);
+
+nitroApp.hooks?.hook("close", async () => {
+  unsubscribePaymentFailed();
+  await eventBus.close();
+});
+
+await eventBus.start();
+```
+
+Publish the event from trusted server code, such as a verified billing webhook. Set organization
+metadata when creating the subscription and validate it before publishing:
+
+```ts
+const organizationId = subscription.metadata.orgId;
+if (!organizationId) throw new Error("Subscription is missing its organization id");
+
+await eventBus.publish("billing:payment_failed", {
+  organizationId,
+  subscriptionId: subscription.id,
+});
+```
+
+`auth.api.notify()` is server-only and fans the notification out to matching organization members.
+The `roles` filter is optional; omit it to notify all members. EventBus is not a durable queue, so
+events published while disconnected can be lost. For notifications that must never be missed, use
+durable event processing or create the notification as part of the webhook's persisted workflow.
 
 Every delivered event is wrapped in an envelope:
 
