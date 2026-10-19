@@ -101,6 +101,19 @@ const defaultFilenameFromImage = (image: string): string => {
   return "image.png";
 };
 
+const safeImageDownloadHref = (image: string): string | null => {
+  try {
+    const url = new URL(image, document.baseURI);
+    return url.protocol === "http:" ||
+      url.protocol === "https:" ||
+      url.protocol === "blob:"
+      ? image
+      : null;
+  } catch {
+    return null;
+  }
+};
+
 const downloadImagePart = (
   part: Pick<ImageMessagePart, "image" | "filename">,
 ): void => {
@@ -110,7 +123,8 @@ const downloadImagePart = (
   const blob = isDataUri ? dataUriToBlob(part.image) : null;
   if (isDataUri && !blob) return;
   const objectUrl = blob ? URL.createObjectURL(blob) : null;
-  const href = objectUrl ?? part.image;
+  const href = objectUrl ?? safeImageDownloadHref(part.image);
+  if (!href) return;
   const a = document.createElement("a");
   a.href = href;
   a.download = filename;
@@ -467,7 +481,7 @@ function ImageZoom({ src, alt = "Image preview", children }: ImageZoomProps) {
               data-slot="image-zoom-content"
               src={src}
               alt={alt}
-              className="aui-image-zoom-content fade-in zoom-in-95 animate-in max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain duration-200"
+              className="aui-image-zoom-content fade-in zoom-in-95 animate-in max-h-[90%] max-w-[90%] cursor-zoom-out object-contain duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 handleClose();
