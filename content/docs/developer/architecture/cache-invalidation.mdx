@@ -1,68 +1,77 @@
 ---
 title: Tag-Based Cache Invalidation
-description: Exploration of PostgreSQL LISTEN/NOTIFY for distributed cache invalidation.
+description: Organization-scoped cache invalidation over PostgreSQL LISTEN/NOTIFY and SSE.
 ---
 
-This page collects design ideas, references, and open questions for tag-based cache invalidation using PostgreSQL `LISTEN`/`NOTIFY` without Redis. This is an exploration, not an approved architecture decision.
-
-## Idea
-
-Publish cache-tag invalidation events from the database transaction that changes the underlying data. A long-lived realtime service listens for those events and fans invalidations out to connected application instances.
-
-## Implementation option
-
-```text
-                         ┌───────────────────────────────────────┐
-   browser ─── HTTPS ───▶│ apps/web — TanStack Start             │
-      │                  │ SSR first paint, server functions     │
-      │                  └──────────────────┬────────────────────┘
-      │                                     │ SQL + pg_notify
-      │                                     │ in the same transaction
-      │                                     ▼
-      │                           ┌─────────────────────┐
-      │                           │      Postgres       │
-      │                           │  tables + NOTIFY    │
-      │                           └──────────┬──────────┘
-      │                                      │ LISTEN pulse_events
-      │                                      ▼
-      └───── WebSocket ────────▶ ┌───────────────────────────────┐
-                                 │ apps/realtime — rooms,        │
-                                 │ presence, and cache fanout    │
-                                 └───────────────────────────────┘
-```
+Tag-based cache invalidation connects transaction-bound PostgreSQL notifications to each browser's
+TanStack Query cache. Cache invalidation events contain identifiers and tags only; the server derives
+the organization scope from the authenticated session rather than accepting an organization id from
+the browser.
 
 ## Architecture
 
-```
-Process A (handles POST)            Postgres                    Process B (holds SSE)
-        │                               │                                 │
-createContactMessage()                  │                                 │
-        │                               │  ┌─── LISTEN ius_notif ───-─────┤
-        ├── INSERT contact_messages     │  │                              │
-        ├── INSERT notifications x N    │  │                              │
-        └── NOTIFY ius_notif, '<json>'  │  │                              │
-        ──────────────────────────────▶ ┤  │                              │
-                                        ├──┴── notification delivered ───▶│
-                                        │                                 │
-                                        │      pg client emits 'notification' event
-                                        │      controller.enqueue(...)    │
-                                        │      Browser EventSource fires  │
-                                        │      queryClient.invalidate(...)│
+```text
+Mutation transaction           PostgreSQL              Web app instance             Browser
+        │                          │                           │                       │
+        ├── write data             │                           │                       │
+        ├── NOTIFY via tx ────────▶│                           │                       │
+        │                          ├── LISTEN event ──────────▶│                       │
+        │                          │                           ├── SSE ───────────────▶│
+        │                          │                           │                       └─ invalidate
+        │                          │                           │                          matching
+        │                          │                           │                          query tags
 ```
 
-## Third-party references
+The web app uses **Server-Sent Events (SSE)** because invalidations flow only from server to
+browser. The browser's native `EventSource` reconnects automatically. WebSocket support is
+unnecessary for this one-way stream.
 
-- [nest-native/cache](https://github.com/nest-native/cache)
-  - https://github.com/nest-native/cache/blob/main/packages/core/postgres/postgres-bus.ts
-- [pulse](https://github.com/Lingikaushikreddy/pulse)
-  - https://github.com/Lingikaushikreddy/pulse/blob/main/apps/realtime/src/subscriber.ts
-- https://github.com/iunlockersolutions/ius-storefront/blob/main/docs/realtime-option-c-postgres-listen-notify.md
-- https://github.com/ingres-si/ingressi/blob/develop/src/lib/db/events.ts
-  - [invalidation bus](https://github.com/ingres-si/ingressi/blob/develop/src/lib/db/README.md)
+## Publishing from a transaction
 
-## Questions to resolve
+`publishCacheInvalidation` publishes through the Drizzle transaction executor. PostgreSQL only
+delivers the invalidation after the underlying data change commits; rollback discards both:
 
-- What cache layers and tag format should invalidation events target?
-- How should services recover missed notifications after disconnects or restarts?
-- Should PostgreSQL notifications carry the tags directly, or only signal that durable invalidation events are available?
-- What delivery and fanout responsibilities belong in `apps/realtime` versus `apps/web`?
+```ts
+await db.transaction(async (tx) => {
+  await tx.update(projects).set({ name }).where(eq(projects.id, projectId));
+  await publishCacheInvalidation(tx, organizationId, ["projects", `project:${projectId}`]);
+});
+```
+
+Always use the organization id already authorized by the mutation. Tags describe affected query
+sets or entities, for example `projects` for a list and `project:<id>` for a detail query. Keep
+payloads small; PostgreSQL limits `NOTIFY` payloads to 8000 bytes.
+
+## Subscribing and invalidating TanStack Query
+
+`GET /api/cache-events` requires an authenticated session with an active organization. It does not
+accept an organization id from the request. Each stream receives only events matching that session's
+active organization. The client checks the organization again before invalidating queries.
+
+Organization data queries should include the organization id in their query key and use query
+metadata to associate tags:
+
+```ts
+queryOptions({
+  queryKey: ["organization", organizationId, "projects"],
+  queryFn: () => listProjects(organizationId),
+  meta: organizationCacheMeta(organizationId, ["projects"]),
+});
+```
+
+Including the organization id in the query key prevents one organization's cached result from being
+reused when the user switches organizations. The metadata is used to match invalidation tags.
+Queries without organization/tag metadata are not affected.
+
+When an SSE connection opens or reconnects, and when the server's EventBus reconnects to Postgres,
+the client invalidates all cached queries tagged for its active organization. This recovers from
+notifications missed during either kind of disconnect. For each received event, only queries in
+that organization with at least one matching tag are invalidated.
+
+## Delivery guarantees
+
+The stream is a bridge over the existing [EventBus](./event-bus). `LISTEN`/`NOTIFY` is not durable:
+events published while a web instance is disconnected can be lost. The reconnect-time organization
+invalidation and normal query stale/refetch behavior limit the effect of missed events. Keep
+appropriate query `staleTime` and server-side cache TTLs; this mechanism is a freshness optimization,
+not a substitute for authorization or tenant scoping.

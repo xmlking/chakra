@@ -17,7 +17,6 @@ import { inboxClient } from "better-inbox/client";
 
 import type { auth } from ".";
 import { ENV } from "../env";
-import { additionalUserFields } from "./additional-fields";
 import { ac, roles } from "./permissions";
 
 export const authClient = createAuthClient({
@@ -81,9 +80,7 @@ export const authClient = createAuthClient({
     }),
     multiSessionClient(),
     magicLinkClient(),
-    inferAdditionalFields<typeof auth>({
-      user: additionalUserFields,
-    }),
+    inferAdditionalFields<typeof auth>(),
   ],
 });
 

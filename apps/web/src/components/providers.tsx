@@ -21,6 +21,7 @@ import { passkeyPlugin } from "@workspace/ui/lib/auth/passkey-plugin";
 import { domAnimation, LazyMotion, MotionConfig } from "motion/react";
 import { Suspense, type ReactNode } from "react";
 
+import { CacheInvalidationListener } from "#components/cache-invalidation-listener";
 import { MetaTheme } from "#components/meta-theme";
 import { TurnstileWidget } from "#components/turnstile-widget";
 
@@ -120,6 +121,7 @@ export function Providers({ children }: { children: ReactNode }) {
                   Link={({ href, ...props }) => <Link to={href} {...props} />}
                 >
                   <RouteProgressController />
+                  <CacheInvalidationListener />
                   {children}
                 </AuthProvider>
                 <MetaTheme />
