@@ -1,3 +1,6 @@
+// Opted out of React Compiler with the rest of the grid (see data-grid.tsx).
+"use no memo"
+
 import {
   createContext,
   memo,
@@ -61,12 +64,11 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
-  verticalListSortingStrategy,
   type SortingStrategy,
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { flexRender } from "@tanstack/react-table"
-import type { Cell, Header, Row, Table } from "@tanstack/react-table"
+import type { Cell, Header, Row } from "@tanstack/react-table"
 import { cn } from "cn"
 import { createPortal } from "react-dom"
 
@@ -410,7 +412,7 @@ function DataGridTableDndRowsBody<TData extends object>({
  */
 const MemoizedDataGridTableDndRowsBody = memo(
   DataGridTableDndRowsBody,
-  (_prev, next) => !!next.table.state.columnResizing.isResizingColumn
+  (_prev, next) => !!next.table.state.columnResizing?.isResizingColumn
 ) as typeof DataGridTableDndRowsBody
 
 function DataGridTableDndRows<TData extends object>({

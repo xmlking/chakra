@@ -1,6 +1,12 @@
+// Opted out of React Compiler with the rest of the grid (see data-grid.tsx).
+"use no memo"
+
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type { CSSProperties, ReactNode } from "react"
-import { useDataGrid } from "#components/reui/data-grid/data-grid"
+import {
+  useDataGrid,
+  useDataGridAtom,
+} from "#components/reui/data-grid/data-grid"
 import type {
   DataGridFeatures,
   DataGridTableInstance,
@@ -28,7 +34,7 @@ import {
   hasDataGridTableRightPinnedColumns,
   renderDataGridTableHeadCellContent,
 } from "#components/reui/data-grid/data-grid-table"
-import type { Column, Row, Table } from "@tanstack/react-table"
+import type { Column, Row } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import type {
   VirtualItem,
@@ -651,7 +657,7 @@ function DataGridTableVirtualBody<TData extends object>({
 const MemoizedVirtualBody = memo(
   DataGridTableVirtualBody,
   (_prev, next) =>
-    !!next.table.state.columnResizing.isResizingColumn ||
+    !!next.table.state.columnResizing?.isResizingColumn ||
     next.table._isSelectingCells === true
 ) as typeof DataGridTableVirtualBody
 
@@ -674,6 +680,7 @@ function DataGridTableVirtual<TData extends object>({
   virtualizerOptions,
 }: DataGridTableVirtualProps<TData>) {
   const { i18n, table, props } = useDataGrid<TData>()
+  const columnSizing = useDataGridAtom(table.atoms.columnSizing)
   const mergedHeaderGroups = getDataGridTableMergedHeaderGroups(table)
   const hasRightPinnedColumns = hasDataGridTableRightPinnedColumns(table)
   const centerVisibleColumns = table.getCenterVisibleLeafColumns()
@@ -808,8 +815,7 @@ function DataGridTableVirtual<TData extends object>({
   }, [
     columnVirtualizationActive,
     columnVirtualizer,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    table.state.columnSizing,
+    columnSizing,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     table.state.columnVisibility,
     // eslint-disable-next-line react-hooks/exhaustive-deps

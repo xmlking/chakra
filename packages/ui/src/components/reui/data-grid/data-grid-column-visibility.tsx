@@ -1,3 +1,5 @@
+"use no memo"
+
 import type { ReactElement } from "react"
 import {
   getColumnHeaderLabel,
