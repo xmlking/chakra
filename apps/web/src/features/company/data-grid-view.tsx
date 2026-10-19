@@ -13,6 +13,18 @@ import { DataGridPagination } from "@workspace/ui/components/reui/data-grid/data
 import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data-grid-scroll-area";
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
 import { Filters } from "@workspace/ui/components/reui/filters/filters";
+import { formatBooleanFilterValue } from "@workspace/ui/components/reui/filters/filters-boolean";
+import { BooleanSwitchFilterEditor } from "@workspace/ui/components/reui/filters/filters-boolean-editor";
+import {
+  DATE_FILTER_OPERATORS,
+  formatDateFilterValue,
+} from "@workspace/ui/components/reui/filters/filters-date";
+import { DateFilterEditor } from "@workspace/ui/components/reui/filters/filters-date-editor";
+import {
+  createNumberSliderDisplay,
+  type NumberFilterScale,
+} from "@workspace/ui/components/reui/filters/filters-number";
+import { createNumberSliderEditor } from "@workspace/ui/components/reui/filters/filters-number-editor";
 import {
   createFilterQuery,
   createFilterRule,
@@ -93,6 +105,7 @@ import {
   type CompanyRowAction,
   type ICompany,
 } from "./data";
+import { matchesCompanyFilterValue } from "./filter-utils";
 import { AddColumnCascader } from "./ui/add-column-cascader";
 import { CompanyCreateDialog, type CompanyFormValues } from "./ui/company-create-dialog";
 import { CompanyDetailsSheet } from "./ui/company-details-sheet";
@@ -122,6 +135,53 @@ const INITIAL_ATTRIBUTE_IDS = [
   LOCKED_ATTRIBUTE_IDS[2],
   ...DEFAULT_ATTRIBUTE_IDS,
 ];
+
+const ARR_FORMATTER = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  notation: "compact",
+  maximumFractionDigits: 1,
+});
+const NUMBER_FILTER_SCALES: Record<
+  string,
+  { scale: NumberFilterScale; defaultOperator: string; emptyLabel: string }
+> = {
+  "deal-arr": {
+    scale: {
+      min: 0,
+      max: 1_500_000,
+      step: 10_000,
+      format: (value) => ARR_FORMATTER.format(value),
+    },
+    defaultOperator: "gte",
+    emptyLabel: "any ARR",
+  },
+  "deal-probability": {
+    scale: { min: 0, max: 100, step: 1, format: (value) => `${value}%` },
+    defaultOperator: "between",
+    emptyLabel: "any probability",
+  },
+  "firmographics-employees": {
+    scale: { min: 0, max: 10_000, step: 100, format: (value) => value.toLocaleString() },
+    defaultOperator: "gte",
+    emptyLabel: "any employee count",
+  },
+  "engagement-health": {
+    scale: { min: 0, max: 100, step: 1, format: (value) => `${value}/100` },
+    defaultOperator: "between",
+    emptyLabel: "any health score",
+  },
+  "engagement-rating": {
+    scale: { min: 1, max: 5, step: 1, format: (value) => `${value}/5` },
+    defaultOperator: "gte",
+    emptyLabel: "any rating",
+  },
+  "billing-seats": {
+    scale: { min: 0, max: 1_500, step: 10, format: (value) => value.toLocaleString() },
+    defaultOperator: "gte",
+    emptyLabel: "any seat count",
+  },
+};
 
 /**
  * The one default row: Company | contains | empty. It stands in for a search
@@ -164,77 +224,6 @@ function companyFilterValue(company: ICompany, attributeId: string): unknown {
   return getAttributeValue(company, attributeId);
 }
 
-/** `null` means the condition places no constraint, so a negated rule keeps the row. */
-function matchFilterValue(
-  fieldValue: unknown,
-  operator: string,
-  values: unknown[],
-): boolean | null {
-  const list = Array.isArray(fieldValue) ? fieldValue.map(String) : null;
-  const num = Number(fieldValue);
-  const bound = (index: number) => Number(values[index]);
-
-  switch (operator) {
-    // text + select
-    case "is":
-    case "is_any_of":
-      return values.some((value) => String(value) === String(fieldValue));
-    case "is_not":
-    case "is_none_of":
-      return !values.some((value) => String(value) === String(fieldValue));
-    case "contains": {
-      const tokens = values.map((value) => String(value).trim()).filter(Boolean);
-      if (tokens.length === 0) return null;
-      return tokens.some((token) => String(fieldValue).toLowerCase().includes(token.toLowerCase()));
-    }
-    case "not_contains":
-      return !values.some((value) =>
-        String(fieldValue).toLowerCase().includes(String(value).toLowerCase()),
-      );
-    case "starts_with":
-      return values.some((value) =>
-        String(fieldValue).toLowerCase().startsWith(String(value).toLowerCase()),
-      );
-    case "ends_with":
-      return values.some((value) =>
-        String(fieldValue).toLowerCase().endsWith(String(value).toLowerCase()),
-      );
-
-    // multiselect
-    case "has_any_of":
-      return list ? values.some((value) => list.includes(String(value))) : false;
-    case "has_all_of":
-      return list ? values.every((value) => list.includes(String(value))) : false;
-    case "has_none_of":
-      return list ? !values.some((value) => list.includes(String(value))) : true;
-
-    // number
-    case "eq":
-      return num === bound(0);
-    case "neq":
-      return num !== bound(0);
-    case "gt":
-      return num > bound(0);
-    case "gte":
-      return num >= bound(0);
-    case "lt":
-      return num < bound(0);
-    case "lte":
-      return num <= bound(0);
-    case "between":
-      return num >= bound(0) && num <= bound(1);
-    case "not_between":
-      return num < bound(0) || num > bound(1);
-
-    case "empty":
-      return fieldValue === "" || fieldValue == null || list?.length === 0;
-    case "not_empty":
-      return fieldValue !== "" && fieldValue != null && list?.length !== 0;
-    default:
-      return null;
-  }
-}
-
 function applyFilters(data: ICompany[], filters: FilterCondition[]) {
   const active = getActiveFilters(filters);
   let result = [...data];
@@ -242,7 +231,8 @@ function applyFilters(data: ICompany[], filters: FilterCondition[]) {
   active.forEach(({ field, operator, values, negated }) => {
     result = result.filter((company) => {
       const raw = companyFilterValue(company, field);
-      const matched = matchFilterValue(raw ?? "", operator, values);
+      const attributeType = ATTRIBUTE_BY_ID.get(field)?.type;
+      const matched = matchesCompanyFilterValue(raw, operator, values, attributeType);
       if (matched === null) return true;
       return negated ? !matched : matched;
     });
@@ -602,14 +592,26 @@ export function DataGridView() {
       attributes
         .map((attribute) => {
           const type = ATTRIBUTE_FILTER_TYPE[attribute.type];
-          if (!type) return null;
+          const isDate = attribute.type === "date";
+          if (!type && !isDate) return null;
 
           const field: FilterField = {
             id: attribute.id,
             label: attribute.label,
             icon: ATTRIBUTE_TYPE_ICONS[attribute.type],
-            type,
+            ...(type ? { type } : {}),
           };
+
+          if (isDate) {
+            field.defaultOperator = "is";
+            field.operators = DATE_FILTER_OPERATORS;
+            field.editor = DateFilterEditor;
+            field.valueText = ({ values, operator }) => formatDateFilterValue(values, operator);
+            field.renderValue = ({ values, operator }) => (
+              <span className="tabular-nums">{formatDateFilterValue(values, operator)}</span>
+            );
+            return field;
+          }
 
           if (type === "text") {
             field.defaultOperator = "contains";
@@ -618,6 +620,24 @@ export function DataGridView() {
                 ? "Search companies..."
                 : `Search ${attribute.label.toLowerCase()}...`;
             return field;
+          }
+
+          if (type === "number") {
+            const config = NUMBER_FILTER_SCALES[attribute.id];
+            if (config) {
+              const display = createNumberSliderDisplay(config.scale, config.emptyLabel);
+              field.defaultOperator = config.defaultOperator;
+              field.editor = createNumberSliderEditor(config.scale);
+              field.renderValue = display.renderValue;
+              field.valueText = display.valueText;
+            }
+          }
+
+          if (type === "boolean") {
+            field.defaultOperator = "is";
+            field.editor = BooleanSwitchFilterEditor;
+            field.renderValue = ({ value }) => formatBooleanFilterValue(value);
+            field.valueText = ({ value }) => formatBooleanFilterValue(value);
           }
 
           if (type === "select" || type === "multiselect") {

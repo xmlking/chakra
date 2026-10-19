@@ -20,6 +20,12 @@ import { DataGridScrollArea } from "@workspace/ui/components/reui/data-grid/data
 import { DataGridTable } from "@workspace/ui/components/reui/data-grid/data-grid-table";
 import { Filters } from "@workspace/ui/components/reui/filters/filters";
 import {
+  DATE_FILTER_OPERATORS,
+  formatDateFilterValue,
+  matchesDateFilter,
+} from "@workspace/ui/components/reui/filters/filters-date";
+import { DateFilterEditor } from "@workspace/ui/components/reui/filters/filters-date-editor";
+import {
   createFilterQuery,
   createFilterRule,
   flattenFilterConditions,
@@ -65,6 +71,7 @@ import { cn } from "cn";
 import {
   BellRingIcon,
   Building2Icon,
+  CalendarDaysIcon,
   FilterIcon,
   GitBranchIcon,
   PlusIcon,
@@ -263,13 +270,18 @@ function matchesRenewalFilter(raw: unknown, operator: string, values: unknown[])
 
 function applyFiltersToData(data: IRenewalRiskRecord[], filters: FilterCondition[]) {
   const active = getActiveFilters(filters);
+  const now = new Date();
 
   return active.reduce(
     (result, filter) => {
       const { field, operator, values, negated } = filter;
 
       return result.filter((item) => {
-        const matched = matchesRenewalFilter(filterFieldValue(item, field), operator, values);
+        const rawValue = filterFieldValue(item, field);
+        const matched =
+          field === "renewalDate"
+            ? matchesDateFilter(rawValue, operator, values, now)
+            : matchesRenewalFilter(rawValue, operator, values);
 
         // An unanswered operator keeps the row, and keeps it when the rule is
         // negated too: inverting "no opinion" would drop every row instead.
@@ -576,6 +588,17 @@ export function DataGridView() {
         type: "select",
         searchable: false,
         options: alertOptions,
+      },
+      {
+        id: "renewalDate",
+        label: "Renewal date",
+        icon: <CalendarDaysIcon className="size-3.5" aria-hidden="true" />,
+        operators: DATE_FILTER_OPERATORS,
+        editor: DateFilterEditor,
+        valueText: ({ values, operator }) => formatDateFilterValue(values, operator),
+        renderValue: ({ values, operator }) => (
+          <span className="tabular-nums">{formatDateFilterValue(values, operator)}</span>
+        ),
       },
     ],
     [alertOptions, ownerOptions, signalOptions, stageOptions],

@@ -8,6 +8,7 @@ import {
   parse,
   startOfDay,
 } from "date-fns"
+import type { FilterOperator } from "./filters-types"
 
 /**
  * A date filter value. NOT a `Date`: a filter gets persisted (saved views,
@@ -29,6 +30,23 @@ export interface FilterRelativeDate {
   unit: "day" | "week" | "month" | "year"
   offset: number
 }
+
+export type DateFilterValue =
+  | FilterDateValue
+  | [FilterDateValue | undefined, FilterDateValue | undefined]
+
+export const DATE_FILTER_OPERATORS: FilterOperator[] = [
+  { value: "is", label: "is", inverse: "is_not" },
+  { value: "is_not", label: "is not", inverse: "is" },
+  { value: "is_before", label: "is before", inverse: "is_on_or_after" },
+  { value: "is_after", label: "is after", inverse: "is_on_or_before" },
+  { value: "is_on_or_before", label: "is on or before", inverse: "is_after" },
+  { value: "is_on_or_after", label: "is on or after", inverse: "is_before" },
+  { value: "between", label: "is between", arity: "range", inverse: "not_between" },
+  { value: "not_between", label: "is not between", arity: "range", inverse: "between" },
+  { value: "empty", label: "is empty", arity: "none", inverse: "not_empty" },
+  { value: "not_empty", label: "is not empty", arity: "none", inverse: "empty" },
+]
 
 export const FILTER_DATE_FORMAT = "yyyy-MM-dd"
 
@@ -206,6 +224,100 @@ export function formatFilterDate(
   if (!resolved) return ""
   const day = format(resolved, pattern)
   return value.time ? `${day} ${value.time}` : day
+}
+
+function isFilterDateValue(value: unknown): value is FilterDateValue {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false
+  if ("date" in value) return typeof value.date === "string"
+  if (!("relative" in value)) return false
+
+  const relative = value.relative
+  if (
+    typeof relative !== "object" ||
+    relative === null ||
+    !("unit" in relative) ||
+    !("offset" in relative)
+  ) {
+    return false
+  }
+
+  const { unit, offset } = relative
+  return (
+    (unit === "day" || unit === "week" || unit === "month" || unit === "year") &&
+    typeof offset === "number"
+  )
+}
+
+function getDateValue(value: unknown, now: Date): Date | null {
+  if (value instanceof Date) return isValid(value) ? value : null
+  if (typeof value === "string") {
+    const resolved = resolveFilterDate({ date: value }, now)
+    return resolved && isValid(resolved) ? resolved : null
+  }
+
+  if (!isFilterDateValue(value)) return null
+  const resolved = resolveFilterDate(value, now)
+  return resolved && isValid(resolved) ? resolved : null
+}
+
+function getDayTimestamp(value: unknown, now: Date): number | null {
+  const date = getDateValue(value, now)
+  if (!date) return null
+
+  const timestamp = startOfDay(date).getTime()
+  return Number.isFinite(timestamp) ? timestamp : null
+}
+
+export function matchesDateFilter(
+  raw: unknown,
+  operator: string,
+  values: unknown[],
+  now: Date = new Date(),
+): boolean | null {
+  if (operator === "empty") return raw === null || raw === undefined || raw === ""
+  if (operator === "not_empty") return raw !== null && raw !== undefined && raw !== ""
+
+  const date = getDayTimestamp(raw, now)
+  if (date === null) return null
+
+  if (operator === "between" || operator === "not_between") {
+    const from = getDayTimestamp(values[0], now)
+    const to = getDayTimestamp(values[1], now)
+    if (from === null || to === null) return null
+
+    const inRange = date >= from && date <= to
+    return operator === "between" ? inRange : !inRange
+  }
+
+  const value = getDayTimestamp(values[0], now)
+  if (value === null) return null
+
+  switch (operator) {
+    case "is":
+      return date === value
+    case "is_not":
+      return date !== value
+    case "is_before":
+      return date < value
+    case "is_after":
+      return date > value
+    case "is_on_or_before":
+      return date <= value
+    case "is_on_or_after":
+      return date >= value
+    default:
+      return null
+  }
+}
+
+export function formatDateFilterValue(values: unknown[], operator: FilterOperator): string {
+  if (operator.arity === "range") {
+    const from = isFilterDateValue(values[0]) ? formatFilterDate(values[0]) : ""
+    const to = isFilterDateValue(values[1]) ? formatFilterDate(values[1]) : ""
+    return from && to ? `${from} - ${to}` : from || to
+  }
+
+  return isFilterDateValue(values[0]) ? formatFilterDate(values[0]) : ""
 }
 
 export function isFilterTime(time: string): boolean {

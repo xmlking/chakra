@@ -828,10 +828,7 @@ export const ATTRIBUTE_TYPE_ICONS: Record<AttributeType, ReactNode> = {
   link: linkIcon,
 };
 
-/**
- * How each attribute type is filtered. A type absent here is not offered as a
- * filter: date and timestamp have no value type in the Filters catalog.
- */
+/** Native Filters value types; date attributes use their custom date editor. */
 export const ATTRIBUTE_FILTER_TYPE: Partial<Record<AttributeType, FilterValueType>> = {
   text: "text",
   longText: "text",
@@ -1050,7 +1047,13 @@ export const IDENTITY_ATTRIBUTE_ID = "company-name";
 export const LOCKED_ATTRIBUTE_IDS = ["company-name", "people-owner", "deal-stage"];
 
 /** Columns the grid opens with, in this order. Removable from the picker. */
-export const DEFAULT_ATTRIBUTE_IDS = ["deal-arr", "company-categories", "engagement-health"];
+export const DEFAULT_ATTRIBUTE_IDS = [
+  "deal-arr",
+  "deal-close",
+  "company-categories",
+  "engagement-health",
+  "lifecycle-contract",
+];
 
 // ── Cascader tree ──
 
