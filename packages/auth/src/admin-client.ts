@@ -1,3 +1,5 @@
+import { log } from "evlog";
+
 import { authClient } from "./client";
 
 /**
@@ -98,7 +100,11 @@ export async function createUser(data: {
         callbackURL: "/dashboard",
       });
     } catch (error) {
-      console.error("Failed to send verification email:", error);
+      log.error({
+        source: "auth.admin",
+        action: "verification_email.failed",
+        error,
+      });
       // Don't throw here as user was created successfully
     }
   }
