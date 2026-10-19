@@ -1,3 +1,4 @@
+import { sleep } from "@workspace/shared";
 import { log } from "evlog";
 import type { TaskPayload } from "nitro/types";
 
@@ -10,4 +11,5 @@ export async function doBackgroundWork(payload: TaskPayload) {
     payload,
     eventBusMetrics: eventBus.getMetrics(),
   });
+  await sleep(1000); // Sleep for 1 second
 }
