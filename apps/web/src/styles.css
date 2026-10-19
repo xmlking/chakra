@@ -5,7 +5,7 @@
 @import "tw-shimmer";
 
 @source "../**/*.{ts,tsx}";
-@source "../../../node_modules/better-inbox/dist";
+@source "../node_modules/better-inbox/dist";
 
 /* used for fixed width vs flex layout switch */
 @custom-variant fixed (&:is(.layout-fixed *));
