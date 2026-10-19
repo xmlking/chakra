@@ -1,11 +1,11 @@
-import type { SearchMatch, StoredFile } from "files-sdk";
+import { cn } from "cn";
+import type { FileInfo, SearchMatch } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import { FileIcon, Loader2Icon, SearchIcon } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
 import { Input } from "#components/shadcn/input";
-import { cn } from "cn";
 
 export interface FileSearchProps {
   /** A `useFiles()` instance — matches are found through `search()`. */
