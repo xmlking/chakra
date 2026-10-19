@@ -40,6 +40,7 @@ bunx --bun shadcn@latest add https://files-sdk.dev/r/all.json
 # reui
 bunx --bun shadcn@latest add @reui/data-grid
 bunx --bun shadcn@latest add @reui/filters
+bunx --bun shadcn@latest add @reui/date-selector
 bunx --bun shadcn@latest add @reui/rating
 bunx --bun shadcn@latest add @reui/icon-tile
 bunx --bun shadcn@latest add @reui/alert
@@ -58,13 +59,13 @@ bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/image.json
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/color-and-highlight.json
 bunx --bun shadcn@latest add -p src/components/tiptap https://tiptap.niazmorshed.dev/r/image-placeholder.json
-# creatable-combobox - base-ui based https://flowkit-ui.vzkiss.com/docs
+# creatable-combobox - base-ui based https://flowkit-ui.vzkiss.com/docs (optional)
 bunx --bun shadcn@latest add -p src/components/flowkit-ui @flowkit-ui/creatable-combobox
 #  Extend UI components for document viewers for PDF, DOCX, XLSX, and CSV (optional)
 bunx --bun shadcn@latest add @extend/pdf-viewer
 bunx --bun shadcn@latest add @extend/csv-viewer
-bunx --bun shadcn@latest add @extend/docx-viewer
-bunx --bun shadcn@latest add @extend/schema-builder
+bunx --bun shadcn@latest add @extend/docx-viewer # (optional)
+bunx --bun shadcn@latest add @extend/schema-builder # (optional)
 # assistant-ui
 bunx --bun shadcn@latest add @assistant-ui/thread
 bunx --bun shadcn@latest add @assistant-ui/thread-list
