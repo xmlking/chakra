@@ -1,4 +1,5 @@
-import type { StoredFile } from "files-sdk";
+import { cn } from "cn";
+import type { FileInfo } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import {
   ChevronRightIcon,
@@ -11,7 +12,6 @@ import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 
 import { FileActions } from "#components/files-sdk/file-actions";
 import { Button } from "#components/shadcn/button";
-import { cn } from "cn";
 
 export interface FileBrowserProps {
   /** A `useFiles()` instance — folders and files are listed through it. */

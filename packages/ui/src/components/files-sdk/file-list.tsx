@@ -1,4 +1,5 @@
-import type { StoredFile } from "files-sdk";
+import { cn } from "cn";
+import type { FileInfo } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import {
   DownloadIcon,
@@ -10,7 +11,6 @@ import {
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { cn } from "cn";
 
 export interface FileListProps {
   /** A `useFiles()` instance — lists, downloads and deletes through it. */

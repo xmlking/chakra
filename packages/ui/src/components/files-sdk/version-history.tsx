@@ -1,9 +1,9 @@
+import { cn } from "cn";
 import type { FileVersion, UseFilesResult } from "files-sdk/react";
 import { HistoryIcon, Loader2Icon, RotateCcwIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "#components/shadcn/button";
-import { cn } from "cn";
 
 export interface VersionHistoryProps {
   /** A `useFiles()` instance backed by a gateway with the `versioning()` plugin. */

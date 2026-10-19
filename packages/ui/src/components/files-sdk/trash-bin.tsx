@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { TrashedFile, UseFilesResult } from "files-sdk/react";
 import {
   Loader2Icon,
@@ -16,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "#components/shadcn/dialog";
-import { cn } from "cn";
 
 export interface TrashBinProps {
   /** A `useFiles()` instance backed by a gateway with the `softDelete()` plugin. */

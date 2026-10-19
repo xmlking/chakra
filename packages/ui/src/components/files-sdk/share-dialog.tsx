@@ -1,3 +1,4 @@
+import { cn } from "cn";
 import type { AdapterCapabilities, SignedUpload } from "files-sdk";
 import type { UseFilesResult } from "files-sdk/react";
 import { CheckIcon, CopyIcon, Link2Icon, Loader2Icon } from "lucide-react";
@@ -14,7 +15,6 @@ import {
   DialogTrigger,
 } from "#components/shadcn/dialog";
 import { Input } from "#components/shadcn/input";
-import { cn } from "cn";
 
 export interface ShareDialogProps {
   /** A `useFiles()` instance — the link is minted through it. */
