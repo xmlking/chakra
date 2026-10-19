@@ -42,7 +42,7 @@
     "fumadocs-mdx": "15.4.8",
     "fumadocs-openapi": "12.5.3",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.7",
-    "fumapress": "1.6.1",
+    "fumapress": "1.6.2",
     "lucide-react": "catalog:",
     "mermaid": "12.2.0",
     "next-themes": "catalog:",
