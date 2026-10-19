@@ -23,6 +23,7 @@ import { Route as publicAboutRouteImport } from './routes/(public)/about'
 import { Route as publicThemeRouteImport } from './routes/(public)/theme'
 import { Route as publicUnauthorizedRouteImport } from './routes/(public)/unauthorized'
 import { Route as publicVersionRouteImport } from './routes/(public)/version'
+import { Route as ApiCacheEventsRouteImport } from './routes/api/cache-events'
 import { Route as ApiFilesRouteImport } from './routes/api/files'
 import { Route as ApiFilesTestRouteImport } from './routes/api/files-test'
 import { Route as ApiImagesRouteImport } from './routes/api/images'
@@ -115,6 +116,11 @@ const publicVersionRoute = publicVersionRouteImport.update({
   id: '/version',
   path: '/version',
   getParentRoute: () => publicRouteRoute,
+} as any)
+const ApiCacheEventsRoute = ApiCacheEventsRouteImport.update({
+  id: '/api/cache-events',
+  path: '/api/cache-events',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiFilesRoute = ApiFilesRouteImport.update({
   id: '/api/files',
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/theme': typeof publicThemeRoute
   '/unauthorized': typeof publicUnauthorizedRoute
   '/version': typeof publicVersionRoute
+  '/api/cache-events': typeof ApiCacheEventsRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
@@ -293,6 +300,7 @@ export interface FileRoutesByTo {
   '/theme': typeof publicThemeRoute
   '/unauthorized': typeof publicUnauthorizedRoute
   '/version': typeof publicVersionRoute
+  '/api/cache-events': typeof ApiCacheEventsRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/(public)/theme': typeof publicThemeRoute
   '/(public)/unauthorized': typeof publicUnauthorizedRoute
   '/(public)/version': typeof publicVersionRoute
+  '/api/cache-events': typeof ApiCacheEventsRoute
   '/api/files': typeof ApiFilesRoute
   '/api/files-test': typeof ApiFilesTestRoute
   '/api/images': typeof ApiImagesRoute
@@ -375,6 +384,7 @@ export interface FileRouteTypes {
     | '/theme'
     | '/unauthorized'
     | '/version'
+    | '/api/cache-events'
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/theme'
     | '/unauthorized'
     | '/version'
+    | '/api/cache-events'
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
@@ -454,6 +465,7 @@ export interface FileRouteTypes {
     | '/(public)/theme'
     | '/(public)/unauthorized'
     | '/(public)/version'
+    | '/api/cache-events'
     | '/api/files'
     | '/api/files-test'
     | '/api/images'
@@ -486,6 +498,7 @@ export interface RootRouteChildren {
   appRouteRoute: typeof appRouteRouteWithChildren
   app2RouteRoute: typeof app2RouteRouteWithChildren
   publicRouteRoute: typeof publicRouteRouteWithChildren
+  ApiCacheEventsRoute: typeof ApiCacheEventsRoute
   ApiFilesRoute: typeof ApiFilesRoute
   ApiFilesTestRoute: typeof ApiFilesTestRoute
   ApiImagesRoute: typeof ApiImagesRoute
@@ -595,6 +608,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/version'
       preLoaderRoute: typeof publicVersionRouteImport
       parentRoute: typeof publicRouteRoute
+    }
+    '/api/cache-events': {
+      id: '/api/cache-events'
+      path: '/api/cache-events'
+      fullPath: '/api/cache-events'
+      preLoaderRoute: typeof ApiCacheEventsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/files': {
       id: '/api/files'
@@ -864,6 +884,7 @@ const rootRouteChildren: RootRouteChildren = {
   appRouteRoute: appRouteRouteWithChildren,
   app2RouteRoute: app2RouteRouteWithChildren,
   publicRouteRoute: publicRouteRouteWithChildren,
+  ApiCacheEventsRoute: ApiCacheEventsRoute,
   ApiFilesRoute: ApiFilesRoute,
   ApiFilesTestRoute: ApiFilesTestRoute,
   ApiImagesRoute: ApiImagesRoute,

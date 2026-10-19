@@ -8,8 +8,8 @@ import { ENV } from "#env";
  * both sides are then typed end-to-end.
  */
 export type AppEvents = {
-  /** Invalidate cached data tagged with any of `tags` on every instance. */
-  "cache:invalidate": { tags: string[] };
+  /** Invalidate cached data tagged with any of `tags` inside `organizationId`. */
+  "cache:invalidate": { organizationId: string; tags: string[] };
 };
 
 export const eventBus = new EventBus<AppEvents>({
