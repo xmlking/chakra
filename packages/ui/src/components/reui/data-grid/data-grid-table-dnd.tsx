@@ -1,3 +1,5 @@
+"use no memo"
+
 import {
   Fragment,
   memo,
@@ -60,7 +62,7 @@ import {
 } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { flexRender } from "@tanstack/react-table"
-import type { Cell, Header, Row, Table } from "@tanstack/react-table"
+import type { Cell, Header, Row } from "@tanstack/react-table"
 
 import { Button } from "#components/shadcn/button"
 import { GripVerticalIcon } from "lucide-react"
@@ -282,7 +284,7 @@ function DataGridTableDndBodyRows<TData extends object>({
  */
 const MemoizedDataGridTableDndBodyRows = memo(
   DataGridTableDndBodyRows,
-  (_prev, next) => !!next.table.state.columnResizing.isResizingColumn
+  (_prev, next) => !!next.table.state.columnResizing?.isResizingColumn
 ) as typeof DataGridTableDndBodyRows
 
 // dnd-kit's KeyboardSensor scrolls instead of moving when the target sits

@@ -1,3 +1,5 @@
+"use no memo"
+
 import { useMemo, useState } from "react"
 import { Badge } from "#components/reui/badge"
 import { useDataGrid } from "#components/reui/data-grid/data-grid"
