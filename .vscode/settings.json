@@ -62,6 +62,8 @@
 
   // vite+ for npm scripts
   "npm.scriptRunner": "vp",
+  "oxc.disableNestedConfig": true,
+  "oxc.fmt.disableNestedConfig": true,
 
   // AI Tools
   "chat.useAgentSkills": true,
