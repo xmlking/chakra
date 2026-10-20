@@ -1,5 +1,5 @@
-# Database Services
-# Postgres, redis, mongo, clickhouse, etc.
+# App Services
+# chakra web
 
 services:
   ###########################################################################

@@ -1,0 +1,21 @@
+# Pubsub Services
+# Queen MQ with Kafka
+
+services:
+  ###########################################################################
+  # Queen MQ - A Streaming Data Processing engine with Kafka facade
+  # Deployment: https://queenmq.com/operate
+  # Source    : https://github.com/queen-mq/queen/blob/master/deploy/compose/three-node/compose.kafka.yaml
+  # run       : varlock run -- docker compose up queen
+  #
+  # SERVICE URLS:
+  #   Dashboard:     http://localhost:6632
+  #   Healthcheck:   http://localhost:6632/health
+  ###########################################################################
+  queen:
+    environment:
+      QUEEN_KAFKA_EMBEDDED: "true"
+      QUEEN_TOKEN: kafka-facade
+      QUEEN_KAFKA_NODE_ID: "1"
+      QUEEN_KAFKA_ADVERTISED_ADDR: 127.0.0.1:6092
+    ports: ["6092:9092"]

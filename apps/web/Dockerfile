@@ -70,6 +70,9 @@ HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
 # varlock validates the runtime env (from the container platform) against the
 # schema and injects it before the server boots. ENTRYPOINT, not CMD, so a
 # custom `command:` in compose still goes through it.
+# With varlock run as the entrypoint, varlock is PID 1.
+# It forwards SIGTERM, SIGINT, SIGHUP, and SIGQUIT to your app’s process group,
+# waits for the app to finish its own shutdown handlers, and exits with the app’s status
 ENTRYPOINT ["bun", "/app/node_modules/varlock/bin/cli.js", "run", "--"]
 CMD ["bun", "server/index.mjs"]
 
