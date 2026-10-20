@@ -139,6 +139,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/eslint-config": "0.4.0",
+    "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@types/papaparse": "^5.5.2",
     "@types/react": "catalog:",

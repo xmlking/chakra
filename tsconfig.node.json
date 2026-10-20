@@ -3,6 +3,6 @@
   "compilerOptions": {
     "module": "nodenext",
     "lib": ["ESNext"],
-    "types": ["node"]
+    "types": ["node", "bun"]
   }
 }
