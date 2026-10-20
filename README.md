@@ -106,9 +106,11 @@ Your local database is managed by [Docker Compose](./compose.yml)
 ```shell
 # Start database
 docker compose up
+# varlock run -- docker compose up
 
 # Stop database after use.
 docker compose down
+# varlock run -- docker compose down
 
 # (Danger) you can remove all data and reset database with:
 docker compose down -v

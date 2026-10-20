@@ -22,6 +22,8 @@ include:
   # - path: infra/compose/auth.yml
   - path: infra/compose/database.yml
   - path: infra/compose/storage.yml
+  - path: infra/compose/streaming.yml
+  # - path: infra/compose/streaming.kafka.yml
   - path: infra/compose/mcp-toolbox.yml
   # - path: infra/compose/broker.yml
   # - path: infra/compose/web.yml

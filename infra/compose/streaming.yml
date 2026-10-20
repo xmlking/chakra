@@ -1,0 +1,50 @@
+# Pubsub Services
+# Queen MQ
+
+services:
+  ###########################################################################
+  # Queen MQ - A Streaming Data Processing engine
+  # Deployment: https://queenmq.com/operate
+  # Source    : https://github.com/queen-mq/queen/blob/master/deploy/compose/three-node/compose.yaml
+  # run       : varlock run -- docker compose up queen
+  #
+  # SERVICE URLS:
+  #   Dashboard:     http://localhost:6632
+  #   Healthcheck:   http://localhost:6632/health
+  ###########################################################################
+  queen:
+    image: ghcr.io/queen-mq/queen:2.5.0
+    container_name: queen
+    hostname: queen
+    restart: unless-stopped
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://localhost:6632/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 60s
+    environment:
+      QUEEN_RAFT_REPLICATOR: openraft
+      JWT_ENABLED: "false"
+      LOG_LEVEL: info
+      QUEEN_RAFT_TOKEN: ${QUEEN_RAFT_TOKEN:?put QUEEN_RAFT_TOKEN in .env.local next to compose.yaml, see the header}
+      QUEEN_ENCRYPTION_KEY: ${QUEEN_ENCRYPTION_KEY:?put QUEEN_ENCRYPTION_KEY in .env.local next to compose.yaml, see the header}
+      # QUEEN_RAFT_DIR: /var/lib/queen/raft
+      # QUEEN_PG_CONNECTORS: ${DATABASE_URL:?put DATABASE_URL in .env.local next to compose.yaml, see the header}
+      # QUEEN_S3_EMBEDDED: "true"
+      # QUEEN_S3_QUEUES: orders
+      # QUEEN_S3_ENDPOINT: https://s3.eu-central-1.amazonaws.com
+      # QUEEN_S3_REGION: eu-central-1
+      # QUEEN_S3_BUCKET: my-lake
+      # QUEEN_S3_ACCESS_KEY: …
+      # QUEEN_S3_SECRET_KEY: …
+    ports: ["6632:6632"]
+    volumes: ["queen_data:/var/lib/queen/raft"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+volumes:
+  queen_data:
