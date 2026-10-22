@@ -75,6 +75,7 @@ import {
   FilterIcon,
   GitBranchIcon,
   PlusIcon,
+  Scale,
   SearchIcon,
   Settings2Icon,
   TriangleAlertIcon,
@@ -82,6 +83,8 @@ import {
   XIcon,
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+
+import { InfoHover } from "#components/info-hover";
 
 import { createRenewalRiskColumns } from "./columns";
 import {
@@ -96,6 +99,7 @@ import {
   type RenewalStage,
   type RiskTag,
 } from "./data";
+import { RenewalsRiskOverviewHelp } from "./ui/info-hover-helpers";
 
 const DEFAULT_COLUMN_ORDER = [
   "pin",
@@ -641,7 +645,13 @@ export function DataGridView() {
       <Card className={cn("w-full gap-0 p-0")}>
         {/* Header */}
         <CardHeader className="gap-1 border-b px-5 py-4">
-          <CardTitle>Renewals Risk</CardTitle>
+          <CardTitle className="flex items-center gap-1">
+            <Scale className="size-5" aria-hidden="true" />
+            Renewals Risk
+            <InfoHover>
+              <RenewalsRiskOverviewHelp />
+            </InfoHover>
+          </CardTitle>
           <CardDescription className="text-xs">
             <span className="inline-flex flex-wrap items-center gap-1.5">
               <span>{RENEWAL_RISKS.length} renewals</span>
