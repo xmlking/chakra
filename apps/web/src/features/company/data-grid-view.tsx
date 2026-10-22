@@ -80,6 +80,8 @@ import { PlusIcon, FilterIcon, Settings2Icon, RotateCcwIcon, Trash2Icon } from "
 import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 
+import { InfoHover } from "#components/info-hover";
+
 import {
   ACTIONS_COLUMN_ID,
   createCompanyColumns,
@@ -109,6 +111,7 @@ import { matchesCompanyFilterValue } from "./filter-utils";
 import { AddColumnCascader } from "./ui/add-column-cascader";
 import { CompanyCreateDialog, type CompanyFormValues } from "./ui/company-create-dialog";
 import { CompanyDetailsSheet } from "./ui/company-details-sheet";
+import { CompanyOverviewHelp } from "./ui/info-hover-helpers";
 
 type TableDensity = "compact" | "comfortable";
 
@@ -699,7 +702,12 @@ export function DataGridView() {
         <Frame dense variant="default" spacing="sm" className="w-full">
           <FrameHeader className="flex-row items-center justify-between gap-3 max-sm:flex-col max-sm:items-start">
             <div className="flex flex-col gap-px">
-              <FrameTitle className="text-balance">Companies</FrameTitle>
+              <FrameTitle className="flex items-center gap-1 text-balance">
+                Companies
+                <InfoHover>
+                  <CompanyOverviewHelp />
+                </InfoHover>
+              </FrameTitle>
               <FrameDescription className="text-xs">
                 <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
                   <span>{activeCount} active</span>
