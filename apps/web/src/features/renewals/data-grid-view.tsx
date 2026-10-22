@@ -22,7 +22,15 @@ import {
 import type { FilterCondition } from "@workspace/ui/components/reui/filters/filters-query";
 import type { FilterField, FilterQuery } from "@workspace/ui/components/reui/filters/filters-types";
 import { Button } from "@workspace/ui/components/shadcn/button";
-import { CardContent, CardFooter } from "@workspace/ui/components/shadcn/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/shadcn/card";
 import {
   Field,
   FieldGroup,
@@ -77,7 +85,6 @@ import {
   type RenewalRisk,
   type RenewalStage,
 } from "./data";
-import { CommandCard } from "./ui/command-card";
 import { SelectionBar } from "./ui/selection-bar";
 
 /** Operators that take no value, so an empty `values` list is expected. */
@@ -732,69 +739,75 @@ export function DataGridView() {
         width: "auto",
       }}
     >
-      <CommandCard
-        title="Renewals Review"
-        description={`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
-        action={
-          <Button
-            type="button"
-            size="sm"
-            onClick={() =>
-              toast.add({
-                title: "Transaction started",
-                description: "New renewal entry opened.",
-                type: "success",
-              })
-            }
-          >
-            <PlusIcon aria-hidden="true" />
-            New transaction
-          </Button>
-        }
-      >
-        <Toolbar
-          filterQuery={filterQuery}
-          fields={filterFields}
-          onFiltersChange={handleFiltersChange}
-          onClearFilters={handleClearFilters}
-          showClearButton={showClearButton}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          tableDensity={tableDensity}
-          onTableDensityChange={setTableDensity}
-          columnsResizable={columnsResizable}
-          onColumnsResizableChange={setColumnsResizable}
-          columnsMovable={columnsMovable}
-          onColumnsMovableChange={setColumnsMovable}
-          visibleColumns={visibleColumns}
-          onToggleColumn={handleToggleColumn}
-        />
+      <Card className={cn("w-full gap-0 p-0")}>
+        <CardHeader className="gap-1 border-b px-5 py-4">
+          <CardTitle>Renewals Review</CardTitle>
+          <CardDescription className="text-xs">
+            {`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
+          </CardDescription>
+          <CardAction className="self-center">
+            <Button
+              type="button"
+              size="sm"
+              onClick={() =>
+                toast.add({
+                  title: "Transaction started",
+                  description: "New renewal entry opened.",
+                  type: "success",
+                })
+              }
+            >
+              <PlusIcon aria-hidden="true" />
+              New transaction
+            </Button>
+          </CardAction>
+        </CardHeader>
 
-        {selectedCount > 0 ? (
-          <SelectionBar
-            selectedCount={selectedCount}
-            ownerValue={bulkOwnerValue}
-            stageValue={bulkStageValue}
-            ownerOptions={RENEWAL_OWNERS}
-            onOwnerChange={setBulkOwnerValue}
-            onStageChange={setBulkStageValue}
-            onApply={handleApplySelected}
-            onClear={handleClearSelection}
-          />
-        ) : (
-          <Separator />
-        )}
         <CardContent className={cn("p-0")}>
+          <Toolbar
+            filterQuery={filterQuery}
+            fields={filterFields}
+            onFiltersChange={handleFiltersChange}
+            onClearFilters={handleClearFilters}
+            showClearButton={showClearButton}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            tableDensity={tableDensity}
+            onTableDensityChange={setTableDensity}
+            columnsResizable={columnsResizable}
+            onColumnsResizableChange={setColumnsResizable}
+            columnsMovable={columnsMovable}
+            onColumnsMovableChange={setColumnsMovable}
+            visibleColumns={visibleColumns}
+            onToggleColumn={handleToggleColumn}
+          />
+
+          {selectedCount > 0 ? (
+            <SelectionBar
+              selectedCount={selectedCount}
+              ownerValue={bulkOwnerValue}
+              stageValue={bulkStageValue}
+              ownerOptions={RENEWAL_OWNERS}
+              onOwnerChange={setBulkOwnerValue}
+              onStageChange={setBulkStageValue}
+              onApply={handleApplySelected}
+              onClear={handleClearSelection}
+            />
+          ) : (
+            <Separator />
+          )}
+
           <DataGridScrollArea className="h-[540px]">
             <DataGridTable />
           </DataGridScrollArea>
         </CardContent>
+
         <CardFooter className={cn("border-t px-5 py-3")}>
           <div className="flex w-full justify-end">
             <DataGridPagination />
           </div>
         </CardFooter>
-      </CommandCard>
+      </Card>
     </DataGrid>
   );
 }
