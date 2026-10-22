@@ -21,9 +21,12 @@ import {
 } from "@workspace/ui/components/shadcn/select";
 import { ToggleGroup, ToggleGroupItem } from "@workspace/ui/components/shadcn/toggle-group";
 import { useIsMobile } from "@workspace/ui/hooks/use-mobile";
+import { ChartNoAxesColumnIncreasingIcon } from "lucide-react";
 import * as React from "react";
 // oxlint-disable-next-line react-doctor/prefer-dynamic-import TODO
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+
+import { InfoHover } from "#components/info-hover";
 
 // oxlint-disable-next-line react/only-export-components react-doctor/only-export-components OK
 export const description = "An interactive area chart";
@@ -164,7 +167,31 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Total Visitors</CardTitle>
+        <div className="flex items-center gap-1.5">
+          <CardTitle>Total Visitors</CardTitle>
+          <InfoHover>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <ChartNoAxesColumnIncreasingIcon
+                  className="size-4 text-primary"
+                  aria-hidden="true"
+                />
+                <p className="text-sm font-semibold">Total Visitors</p>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Daily visitor activity is shown as separate desktop and mobile series. Use the range
+                controls to change which dates appear in the chart.
+              </p>
+              <div className="space-y-1.5 rounded-md border bg-muted/40 px-3 py-2">
+                <p className="text-[11px] font-medium">Explore the chart</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Choose the last 3 months, 30 days, or 7 days to adjust the time window. Hover over
+                  a date to inspect the desktop and mobile visitor values for that day.
+                </p>
+              </div>
+            </div>
+          </InfoHover>
+        </div>
         <CardDescription>
           <span className="hidden @[540px]/card:block">Total for the last 3 months</span>
           <span className="@[540px]/card:hidden">Last 3 months</span>
