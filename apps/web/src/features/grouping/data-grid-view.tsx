@@ -45,8 +45,9 @@ import { PlusIcon, SearchIcon, XIcon, FilterIcon, Settings2Icon, CheckIcon } fro
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { InfoHover } from "#components/info-hover";
+
 import { createStoryColumns, type StoryAction } from "./columns";
-import { StorySectionCard } from "./components/story-section";
 import {
   buildSections,
   countUnchecked,
@@ -65,6 +66,8 @@ import {
   type Story,
   type StorySection,
 } from "./data";
+import { ProductionDeskOverviewHelp } from "./ui/info-hover-helpers";
+import { StorySectionCard } from "./ui/story-section";
 
 type TableDensity = "compact" | "comfortable";
 
@@ -205,7 +208,12 @@ export function DataGridView() {
         {/* Header */}
         <FrameHeader className="flex-col items-start gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex min-w-0 flex-col">
-            <FrameTitle>Production Desk</FrameTitle>
+            <FrameTitle className="flex items-center gap-1">
+              Production Desk
+              <InfoHover>
+                <ProductionDeskOverviewHelp />
+              </InfoHover>
+            </FrameTitle>
             <FrameDescription className="flex min-w-0 items-center gap-1.5">
               <span className="truncate">{PUBLICATION}</span>
               <span
