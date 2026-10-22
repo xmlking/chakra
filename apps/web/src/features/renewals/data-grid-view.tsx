@@ -72,6 +72,8 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
+import { InfoHover } from "#components/info-hover";
+
 import { createRenewalColumns, RiskBadge, StageBadge } from "./columns";
 import {
   getRenewalWindowValue,
@@ -85,6 +87,7 @@ import {
   type RenewalRisk,
   type RenewalStage,
 } from "./data";
+import { RenewalsOverviewHelp } from "./ui/info-hover-helpers";
 import { SelectionBar } from "./ui/selection-bar";
 
 /** Operators that take no value, so an empty `values` list is expected. */
@@ -741,7 +744,13 @@ export function DataGridView() {
     >
       <Card className={cn("w-full gap-0 p-0")}>
         <CardHeader className="gap-1 border-b px-5 py-4">
-          <CardTitle>Renewals Review</CardTitle>
+          <CardTitle className="flex items-center gap-1">
+            <CalendarClockIcon className="size-5" aria-hidden="true" />
+            Renewals Review
+            <InfoHover>
+              <RenewalsOverviewHelp />
+            </InfoHover>
+          </CardTitle>
           <CardDescription className="text-xs">
             {`${dueInThirtyCount} due in 30d, ${blockerCount} blocked, ${formatCompactCurrency(arrAtRisk)} ARR at risk.`}
           </CardDescription>
