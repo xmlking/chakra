@@ -1,3 +1,4 @@
+import { InboxButton } from "@byo-oss/notifications/react";
 import { useRouter } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { UserButton } from "@workspace/ui/components/auth/user/user-button";
@@ -5,7 +6,6 @@ import { buttonVariants } from "@workspace/ui/components/shadcn/button";
 import { Separator } from "@workspace/ui/components/shadcn/separator";
 import { SidebarTrigger } from "@workspace/ui/components/shadcn/sidebar";
 import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
-import { InboxButton } from "better-inbox/react";
 
 import { LayoutToggle } from "#components/layout-toggle";
 import { LocaleSwitcher } from "#components/locale-switcher";

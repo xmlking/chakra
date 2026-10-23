@@ -114,7 +114,40 @@ export const notification = pgTable("notification", {
   href: text("href"),
   data: jsonb("data"),
   read: boolean("read").default(false).notNull(),
+  seenAt: timestamp("seen_at"),
   createdAt: timestamp("created_at").notNull(),
+});
+
+export const notificationDelivery = pgTable("notification_delivery", {
+  id: uuid("id")
+    .default(sql`uuidv7()`)
+    .primaryKey(),
+  notificationId: uuid("notification_id")
+    .notNull()
+    .references(() => notification.id, { onDelete: "cascade" }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  type: text("type").notNull(),
+  channel: text("channel").notNull(),
+  status: text("status").notNull(),
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  attempts: integer("attempts").default(0).notNull(),
+  claimedAt: timestamp("claimed_at"),
+  sentAt: timestamp("sent_at"),
+  detail: text("detail"),
+  createdAt: timestamp("created_at").notNull(),
+});
+
+export const inboxPresence = pgTable("inbox_presence", {
+  id: uuid("id")
+    .default(sql`uuidv7()`)
+    .primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  lastSeenAt: timestamp("last_seen_at").notNull(),
 });
 
 export const deviceCode = pgTable(
@@ -531,6 +564,8 @@ export const authRelations = defineRelationsPart(
     account,
     verification,
     notification,
+    notificationDelivery,
+    inboxPresence,
     deviceCode,
     jwks,
     oauthClient,
@@ -562,6 +597,14 @@ export const authRelations = defineRelationsPart(
       notifications: r.many.notification({
         from: r.user.id,
         to: r.notification.userId,
+      }),
+      notificationDeliverys: r.many.notificationDelivery({
+        from: r.user.id,
+        to: r.notificationDelivery.userId,
+      }),
+      inboxPresence: r.one.inboxPresence({
+        from: r.user.id,
+        to: r.inboxPresence.userId,
       }),
       oauthClients: r.many.oauthClient({
         from: r.user.id,
@@ -619,6 +662,26 @@ export const authRelations = defineRelationsPart(
     notification: {
       user: r.one.user({
         from: r.notification.userId,
+        to: r.user.id,
+      }),
+      notificationDeliverys: r.many.notificationDelivery({
+        from: r.notification.id,
+        to: r.notificationDelivery.notificationId,
+      }),
+    },
+    notificationDelivery: {
+      notification: r.one.notification({
+        from: r.notificationDelivery.notificationId,
+        to: r.notification.id,
+      }),
+      user: r.one.user({
+        from: r.notificationDelivery.userId,
+        to: r.user.id,
+      }),
+    },
+    inboxPresence: {
+      user: r.one.user({
+        from: r.inboxPresence.userId,
         to: r.user.id,
       }),
     },
