@@ -71,6 +71,8 @@ bunx --bun shadcn@latest add @assistant-ui/thread
 bunx --bun shadcn@latest add @assistant-ui/thread-list
 bunx --bun shadcn@latest add @assistant-ui/threadlist-sidebar
 bunx --bun shadcn@latest add @assistant-ui/model-selector
+# [organui](https://organui.com/) - The interfaces healthcare deserves
+bunx --bun shadcn@latest add @organui/ecg-trace # (optional)
 ```
 
 This will place the ui components in the `packages/ui/src/components` directory.
