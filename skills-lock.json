@@ -31,11 +31,22 @@
       "skillPath": "security/SKILL.md",
       "computedHash": "7a230edf3a24ce18162cb4379f59b6a19b8d24ca04db530609d0f15cede556dc"
     },
+    "byo-notifications": {
+      "source": "byo-oss/notifications",
+      "sourceType": "github",
+      "skillPath": "skills/byo-notifications/SKILL.md",
+      "computedHash": "dd1b1b0125b4132794082f96461949250cbc235c371c55c074f9e02826791a0a"
+    },
     "create-auth": {
       "source": "better-auth/skills",
       "sourceType": "github",
       "skillPath": "better-auth/create-auth/SKILL.md",
       "computedHash": "9a9b498bc144367b8e237233f89def63fb2bd69e8cafe173eaa58fe3a863cdc4"
+    },
+    "drizzle": {
+      "source": "./node_modules/.bun/drizzle-kit@1.0.0-rc.5+4ff31034054f58c6/node_modules/drizzle-kit/skills",
+      "sourceType": "local",
+      "computedHash": "27540b3acc549af69f3882a32f4daa68b2efea9c8724d4506631770cd4b13c88"
     },
     "drizzle-best-practices": {
       "source": "honra-io/drizzle-best-practices",
