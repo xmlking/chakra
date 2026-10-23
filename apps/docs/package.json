@@ -29,7 +29,7 @@
     "@fuma-translate/react": "1.0.2",
     "@fumapress/feedback": "1.1.5",
     "@fumapress/tegami": "1.1.4",
-    "@takumi-rs/core": "2.17.0",
+    "@takumi-rs/core": "2.17.1",
     "@thesvg/react": "catalog:",
     "@workspace/i18n": "workspace:*",
     "@workspace/shared": "workspace:*",
@@ -39,8 +39,8 @@
     "cn": "catalog:",
     "d3-force": "3.0.0",
     "fumadocs-core": "16.17.7",
-    "fumadocs-mdx": "15.4.8",
-    "fumadocs-openapi": "12.5.3",
+    "fumadocs-mdx": "15.4.9",
+    "fumadocs-openapi": "12.5.4",
     "fumadocs-ui": "npm:@fumadocs/base-ui@16.17.7",
     "fumapress": "1.6.2",
     "lucide-react": "catalog:",
@@ -55,7 +55,7 @@
     "tegami": "1.5.0",
     "use-sync-external-store": "1.7.0",
     "varlock": "catalog:",
-    "waku": "1.0.0-rc.3",
+    "waku": "1.0.0-rc.4",
     "zod": "catalog:"
   },
   "devDependencies": {

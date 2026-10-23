@@ -1,6 +1,7 @@
 import { apiKeyClient } from "@better-auth/api-key/client";
 import { oauthProviderClient } from "@better-auth/oauth-provider/client";
 import { passkeyClient } from "@better-auth/passkey/client";
+import { inboxClient } from "@byo-oss/notifications/client";
 import {
   adminClient,
   deviceAuthorizationClient,
@@ -13,7 +14,6 @@ import {
   organizationClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
-import { inboxClient } from "better-inbox/client";
 
 import type { auth } from ".";
 import { ENV } from "../env";

@@ -3,6 +3,7 @@ import { apiKey } from "@better-auth/api-key";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
 import { oauthProvider } from "@better-auth/oauth-provider";
 import { passkey } from "@better-auth/passkey";
+import { inbox } from "@byo-oss/notifications";
 import { db } from "@workspace/db";
 import { getFirstMembership } from "@workspace/db/queries";
 import * as schema from "@workspace/db/schema/index";
@@ -28,7 +29,6 @@ import {
   testUtils,
 } from "better-auth/plugins";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
-import { inbox } from "better-inbox";
 import { log } from "evlog";
 
 import { ENV } from "../env";
