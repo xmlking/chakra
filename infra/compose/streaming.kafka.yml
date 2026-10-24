@@ -14,7 +14,7 @@ services:
   ###########################################################################
   queen:
     environment:
-      QUEEN_KAFKA_EMBEDDED: "true"
+      QUEEN_KAFKA_EMBEDDED: "true" # default: false
       QUEEN_TOKEN: kafka-facade
       QUEEN_KAFKA_NODE_ID: "1"
       QUEEN_KAFKA_ADVERTISED_ADDR: 127.0.0.1:6092

@@ -20,6 +20,8 @@ varlock telemetry disable
 
 # optional
 brew install cloudflared
+
+brew install rustfs/tap/rc
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
