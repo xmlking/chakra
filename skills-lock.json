@@ -35,7 +35,7 @@
       "source": "byo-oss/notifications",
       "sourceType": "github",
       "skillPath": "skills/byo-notifications/SKILL.md",
-      "computedHash": "dd1b1b0125b4132794082f96461949250cbc235c371c55c074f9e02826791a0a"
+      "computedHash": "a0a07c3e262e091810b5684e59a078a95c5a9e73cf10d1a51800de7d58d45562"
     },
     "create-auth": {
       "source": "better-auth/skills",
