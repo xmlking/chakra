@@ -7,6 +7,9 @@ services:
   # Deployment: https://queenmq.com/operate
   # Source    : https://github.com/queen-mq/queen/blob/master/deploy/compose/three-node/compose.yaml
   # run       : varlock run -- docker compose up queen
+  # Install queenctl:
+  #   go install github.com/queen-mq/queen/clients/client-cli/cmd/queenctl@v2
+  #   source <(queenctl completion zsh)
   #
   # SERVICE URLS:
   #   Dashboard:     http://localhost:6632
