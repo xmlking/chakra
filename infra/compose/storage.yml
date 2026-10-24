@@ -22,6 +22,7 @@ services:
       - RUSTFS_VOLUMES=/data
       - RUSTFS_ADDRESS=0.0.0.0:9000
       - RUSTFS_CONSOLE_ENABLE=true
+      - RUSTFS_NOTIFY_ENABLE=true
       - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
       - RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS="*"
       - RUSTFS_CORS_ALLOWED_ORIGINS="*"
@@ -69,12 +70,16 @@ services:
       until rc ready local; do echo 'waiting for rustfs...'; sleep 2; done;
       rc admin user add local $${S3_ACCESS_KEY_ID} $${S3_SECRET_ACCESS_KEY};
       rc admin policy attach local readwrite --user=$${S3_ACCESS_KEY_ID};
+      rc admin user add local $${QUEEN_S3_ACCESS_KEY} $${QUEEN_S3_SECRET_KEY};
+      rc admin policy attach local readwrite --user=$${QUEEN_S3_ACCESS_KEY};
       rc mb local/$${S3_IMAGES_BUCKET} --ignore-existing;
       rc bucket cors set local/$${S3_IMAGES_BUCKET} --file /cors.json;
       rc mb local/$${S3_FILES_BUCKET} --ignore-existing;
       rc bucket cors set local/$${S3_FILES_BUCKET} --file /cors.json;
       rc mb local/$${S3_AGENTS_BUCKET} --ignore-existing;
       rc bucket cors set local/$${S3_AGENTS_BUCKET} --file /cors.json;
+      rc mb local/$${S3_DATA_BUCKET} --ignore-existing;
+      rc bucket cors set local/$${S3_DATA_BUCKET} --file /cors.json;
       rc anonymous set download local/$${S3_IMAGES_BUCKET};
       echo 'Storage app user and buckets created and configured';
       exit 0;
@@ -84,9 +89,12 @@ services:
       RUSTFS_ROOT_PASSWORD: ${RUSTFS_ROOT_PASSWORD:-rustfsadmin}
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-appuser}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-apppassword}
+      QUEEN_S3_ACCESS_KEY: ${QUEEN_S3_ACCESS_KEY:-queenuser}
+      QUEEN_S3_SECRET_KEY: ${QUEEN_S3_SECRET_KEY:-queenpassword}
       S3_IMAGES_BUCKET: ${S3_IMAGES_BUCKET:-images}
       S3_FILES_BUCKET: ${S3_FILES_BUCKET:-files}
       S3_AGENTS_BUCKET: ${S3_AGENTS_BUCKET:-agents}
+      S3_DATA_BUCKET: ${S3_DATA_BUCKET:-data}
 
 volumes:
   storage_data:
