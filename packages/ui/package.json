@@ -124,7 +124,7 @@
     "pdf-lib": "^1.17.1",
     "react-day-picker": "^10.0.2",
     "react-email": "catalog:",
-    "react-resizable-panels": "^4.14.8",
+    "react-resizable-panels": "^4.15.0",
     "recharts": "catalog:",
     "remark-gfm": "^4.0.1",
     "shadcn": "4.22.1",

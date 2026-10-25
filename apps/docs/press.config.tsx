@@ -1,3 +1,4 @@
+// import { mcpPlugin } from "@fumapress/ai";
 // oxlint-disable react/only-export-components react-doctor/only-export-components
 import { changelogPlugin, createChangelogIndexPage } from "@fumapress/tegami";
 import { getPageTreePeers } from "fumadocs-core/page-tree";
@@ -136,6 +137,7 @@ const config = defineConfig({
     flexsearchPlugin(),
     llmsPlugin(),
     takumiPlugin({ basePath }),
+    // mcpPlugin(),
     sitemapPlugin(),
     // linkValidationPlugin(), // FIXME
     openapiPlugin({
