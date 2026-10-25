@@ -124,7 +124,7 @@
     "@vitest/ui": "5.0.5",
     "@workflow/vitest": "5.0.6",
     "@workflow/world-postgres": "5.0.5",
-    "ai": "7.0.152",
+    "ai": "7.0.153",
     "auth": "1.7.12",
     "better-auth": "1.7.12",
     "@byo-oss/notifications": "^0.11.1",
