@@ -20,9 +20,11 @@ export default defineConfig({
     // @fuma-translate/react ships "use client" modules and is imported by
     // bare specifier from virtual:vite-rsc/client-references, so it must
     // resolve from the app root (and be a direct dependency below).
+    // FumaPress depends on another Waku release; both must share the app router context.
     dedupe: [
       "fumadocs-ui",
       "fumadocs-core",
+      "waku",
       "react",
       "react-dom",
       "lucide-react",
