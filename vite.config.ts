@@ -37,7 +37,7 @@ export default defineConfig({
     "*.{js,ts,jsx,tsx,vue,svelte,json,jsonc,css,md,mdx}": "vp check --fix",
     // Fail the commit if any resolved sensitive value appears in a staged file.
     // The root schema declares no secrets, so the app schemas are the entry points.
-    // "*": " varlock scan --staged --path apps/web/ --path apps/docs/",
+    "*": " varlock scan --staged --path apps/web/ --path apps/docs/",
   },
   fmt: {
     sortPackageJson: {
