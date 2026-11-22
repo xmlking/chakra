@@ -8,6 +8,7 @@ import {
   FieldError,
   FieldLabel,
 } from "#components/shadcn/field";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "#components/shadcn/hover-card";
 import { Tooltip, TooltipContent, TooltipTrigger } from "#components/shadcn/tooltip";
 
 import { useFieldContext } from "./context";
@@ -36,12 +37,52 @@ export type FieldControlProps = {
   description?: string;
   tooltip?: React.ReactNode;
   tooltipSide?: "top" | "right" | "bottom" | "left";
+  tooltipAlign?: "start" | "center" | "end";
 };
 
 type BaseFieldProps = FieldControlProps & {
   children: ReactNode;
   orientation?: React.ComponentPropsWithoutRef<typeof Field>["orientation"];
 };
+
+const hintTrigger = (
+  <button
+    aria-label="More information"
+    className="inline-flex items-center justify-center"
+    type="button"
+  >
+    <HelpCircle
+      aria-hidden="true"
+      className="size-4 text-muted-foreground transition-colors hover:text-foreground"
+    />
+  </button>
+);
+
+/** Plain-text hints render as a Tooltip; rich (ReactNode) hints render as a HoverCard. */
+function FieldHint({
+  tooltip,
+  side,
+  align,
+}: {
+  tooltip: ReactNode;
+  side: FieldControlProps["tooltipSide"];
+  align: FieldControlProps["tooltipAlign"];
+}) {
+  if (typeof tooltip === "string") {
+    return (
+      <Tooltip>
+        <TooltipTrigger render={hintTrigger} />
+        <TooltipContent align={align} side={side}>{tooltip}</TooltipContent>
+      </Tooltip>
+    );
+  }
+  return (
+    <HoverCard>
+      <HoverCardTrigger closeDelay={100} delay={120} render={hintTrigger} />
+      <HoverCardContent align={align} className="w-80" side={side}>{tooltip}</HoverCardContent>
+    </HoverCard>
+  );
+}
 
 export function BaseField({
   children,
@@ -51,6 +92,7 @@ export function BaseField({
   classNames,
   tooltip,
   tooltipSide = "top",
+  tooltipAlign = "center",
 }: BaseFieldProps) {
   const field = useFieldContext();
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
@@ -60,20 +102,7 @@ export function BaseField({
       <FieldLabel className={classNames?.label} htmlFor={field.name}>
         {label}{" "}
         {tooltip && (
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <button
-                  className="inline-flex items-center justify-center"
-                  tabIndex={-1}
-                  type="button"
-                >
-                  <HelpCircle className="size-4 text-muted-foreground transition-colors hover:text-foreground" />
-                </button>
-              }
-            />
-            <TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
-          </Tooltip>
+          <FieldHint align={tooltipAlign} side={tooltipSide} tooltip={tooltip} />
         )}
       </FieldLabel>
       {children}
@@ -93,6 +122,7 @@ export function BaseAltField({
   classNames,
   tooltip,
   tooltipSide = "top",
+  tooltipAlign = "center",
   controlFirst,
 }: BaseFieldProps & { controlFirst?: boolean }) {
   const field = useFieldContext();
@@ -103,20 +133,7 @@ export function BaseAltField({
       <FieldLabel className={classNames?.label} htmlFor={field.name}>
         {label}{" "}
         {tooltip && (
-          <Tooltip>
-            <TooltipTrigger
-              render={
-                <button
-                  className="inline-flex items-center justify-center"
-                  tabIndex={-1}
-                  type="button"
-                >
-                  <HelpCircle className="size-4 text-muted-foreground transition-colors hover:text-foreground" />
-                </button>
-              }
-            />
-            <TooltipContent side={tooltipSide}>{tooltip}</TooltipContent>
-          </Tooltip>
+          <FieldHint align={tooltipAlign} side={tooltipSide} tooltip={tooltip} />
         )}
       </FieldLabel>
       {description && (

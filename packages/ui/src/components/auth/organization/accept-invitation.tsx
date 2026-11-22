@@ -21,7 +21,7 @@ import {
 import { FieldDescription } from "#components/shadcn/field"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { UserAvatar } from "../user/user-avatar"
 import { cn } from "cn"
 import { useIsHydrated } from "../use-is-hydrated"
@@ -43,9 +43,9 @@ function isPendingInvitation(invitation: UserInvitation | undefined) {
  * parameter and let the signed-in recipient accept or reject it directly.
  */
 export function AcceptInvitation({ className }: AcceptInvitationProps) {
-  const { authClient, navigate, redirectTo } = useAuth()
+  const { authClient, navigate, redirectTo } = useAuth<OrganizationAuthClient>()
   const { localization, roles } = useAuthPlugin(organizationPlugin)
-  const organizationAuthClient = authClient as OrganizationAuthClient
+  const organizationAuthClient = authClient
   const isHydrated = useIsHydrated()
   const invitationId = isHydrated
     ? new URLSearchParams(window.location.search).get("invitationId")
@@ -55,7 +55,8 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
     query: { id: invitationId ?? "" },
     enabled: Boolean(invitationId)
   })
-  const invitation = invitationQuery.data as UserInvitation | undefined
+  const invitation: UserInvitation | undefined =
+    invitationQuery.data ?? undefined
 
   const returnToApplication = () => {
     navigate({
@@ -93,7 +94,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
           <BriefcaseBusiness aria-hidden="true" className="size-7" />
         </div>
         <div className="grid gap-1">
-          <CardTitle className="max-w-full break-words text-xl font-semibold">
+          <CardTitle className="max-w-full wrap-break-word text-xl font-semibold">
             {isLoading ? (
               <Skeleton className="h-6 w-48" />
             ) : isAvailable ? (
@@ -137,7 +138,7 @@ export function AcceptInvitation({ className }: AcceptInvitationProps) {
             />
             {session.data ? (
               <div className="grid min-w-0 gap-0.5">
-                <p className="break-words text-sm font-medium">
+                <p className="wrap-break-word text-sm font-medium">
                   {session.data.user.name || session.data.user.email}
                 </p>
                 {session.data.user.name ? (

@@ -15,9 +15,11 @@ import {
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
+import { ENV } from "#env";
+
 import type { auth } from ".";
-import { ENV } from "../env";
-import { ac, roles } from "./permissions";
+import { additionalUserFields } from "./additional-fields";
+import { ac, sysRoles, orgRoles } from "./permissions";
 
 export const authClient = createAuthClient({
   baseURL: ENV.BETTER_AUTH_URL,
@@ -63,11 +65,11 @@ export const authClient = createAuthClient({
     jwtClient(),
     adminClient({
       ac,
-      roles,
+      roles: sysRoles,
     }),
     organizationClient({
       ac, // Must be defined in order for dynamic access control to work
-      roles,
+      roles: orgRoles,
       dynamicAccessControl: {
         enabled: true,
       },
@@ -80,7 +82,9 @@ export const authClient = createAuthClient({
     }),
     multiSessionClient(),
     magicLinkClient(),
-    inferAdditionalFields<typeof auth>(),
+    inferAdditionalFields<typeof auth>({
+      user: additionalUserFields,
+    }),
   ],
 });
 

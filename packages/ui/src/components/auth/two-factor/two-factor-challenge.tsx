@@ -32,7 +32,7 @@ import {
   readTwoFactorMethods,
   type TwoFactorMethod
 } from "#lib/auth/two-factor-methods"
-import { twoFactorPlugin } from "#lib/auth/two-factor-plugin"
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor"
 import {
   RESEND_COOLDOWN_SECONDS,
   useResendCooldown
@@ -68,7 +68,7 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
     redirectTo,
     viewPaths,
     Link
-  } = useAuth()
+  } = useAuth<TwoFactorAuthClient>()
   const {
     backupCodes: backupCodesEnabled,
     codeLength,
@@ -76,7 +76,7 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
     trustDevice: trustDeviceEnabled
   } = useAuthPlugin(twoFactorPlugin)
 
-  const twoFactorClient = authClient as TwoFactorAuthClient
+  const twoFactorClient = authClient
   const session = useSession(authClient)
   const queryClient = useQueryClient()
   const isHydrated = useIsHydrated()
@@ -232,7 +232,6 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                         id="backupCode"
                         name={field.name}
                         autoComplete="one-time-code"
-                        autoFocus
                         required
                         disabled={isPending}
                         value={field.state.value}
@@ -248,7 +247,6 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                 <form.AppField name="code">
                   {(field) => (
                     <OtpField
-                      autoFocus
                       disabled={isPending || needsOtpRequest}
                       label={
                         method === "otp"
@@ -275,7 +273,9 @@ export function TwoFactorChallenge({ className }: TwoFactorChallengeProps) {
                         checked={field.state.value}
                         disabled={isPending}
                         onCheckedChange={(checked) =>
-                          field.handleChange(checked === true)
+                          field.handleChange(
+                            typeof checked === "boolean" && checked
+                          )
                         }
                       />
 

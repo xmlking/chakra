@@ -18,7 +18,7 @@ import { Card, CardContent } from "#components/shadcn/card"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import {
   getAuthAdditionalFieldValidators,
@@ -84,10 +84,7 @@ export function OrganizationProfile({
     if (!activeOrganization) return
     form.reset({
       additionalFields: getAdditionalFieldDefaultValues(
-        fieldsWithModelValues(
-          additionalFields,
-          activeOrganization as Record<string, unknown>
-        )
+        fieldsWithModelValues(additionalFields, activeOrganization)
       ),
       name: activeOrganization.name,
       slug: activeOrganization.slug

@@ -65,7 +65,7 @@ import {
   TableHeader,
   TableRow
 } from "#components/shadcn/table"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import {
   getAuthAdditionalFieldValidators,
@@ -159,7 +159,7 @@ export function OrganizationRoles({
   const { globalFilter, pagination } = tableState
   useEffect(() => {
     tableState.setColumnVisibility((current) =>
-      current.permissionResources === false
+      "permissionResources" in current && !current.permissionResources
         ? current
         : { ...current, permissionResources: false }
     )
@@ -186,8 +186,9 @@ export function OrganizationRoles({
     () => null
   )
   const deleteRoles = useDeleteRole(authClient, organizationId)
-  const permissionFilter = String(
-    table.getColumn("permissionResources")?.getFilterValue() ?? "all"
+  const permissionFilter = toStringValue(
+    table.getColumn("permissionResources")?.getFilterValue(),
+    "all"
   )
   const permissionFacetRows = table
     .getColumn("permissionResources")
@@ -565,7 +566,9 @@ function OrganizationRoleRow({
                     {localization.deleteRoleDescription}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <p className="break-words text-sm font-medium">{role.role}</p>
+                <p className="wrap-break-word text-sm font-medium">
+                  {role.role}
+                </p>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={deleteRole.isPending}>
                     {authLocalization.settings.cancel}
@@ -640,7 +643,7 @@ function RoleDialog({
     defaultValues: {
       additionalFields: getAdditionalFieldDefaultValues(configuredRoleFields),
       name: role?.role ?? "",
-      permission: role?.permission ?? ({} as Record<string, string[]>)
+      permission: role?.permission ?? {}
     },
     onSubmit: async ({ value }) => {
       const roleName = value.name.trim()
@@ -652,9 +655,7 @@ function RoleDialog({
         ) {
           const access = await authClient.organization.hasPermission({
             organizationId,
-            permissions: value.permission as Parameters<
-              OrganizationRolesAuthClient["organization"]["hasPermission"]
-            >[0]["permissions"]
+            permissions: value.permission
           })
 
           if (access.error || !access.data?.success) {
@@ -858,9 +859,7 @@ function RolePermissionCheckbox({
   const { authClient } = useAuth<OrganizationRolesAuthClient>()
   const canAssign = useHasPermission(authClient, {
     organizationId,
-    permissions: { [resource]: [action] } as Parameters<
-      OrganizationRolesAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"]
+    permissions: { [resource]: [action] }
   })
   const id = `role-permission-${resource}-${action}`
   const disabled =
@@ -876,9 +875,20 @@ function RolePermissionCheckbox({
         checked={checked}
         disabled={disabled}
         id={id}
-        onCheckedChange={(selected) => onCheckedChange(selected === true)}
+        onCheckedChange={(selected) =>
+          onCheckedChange(typeof selected === "boolean" && selected)
+        }
       />
       {label}
     </label>
   )
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? String(value)
+    : fallback
 }

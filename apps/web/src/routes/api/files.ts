@@ -1,52 +1,23 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getRequestHeaders } from "@tanstack/react-start/server";
-import { auth } from "@workspace/auth";
 import { files } from "@workspace/storage";
-import { log } from "evlog";
-import { FilesError } from "files-sdk";
 import { createFilesRouter } from "files-sdk/api";
 import { createRouteHandler } from "files-sdk/tanstack-start";
 
 import { ENV } from "#env";
+import { authorizePreview, filesAllowedOrigins } from "#features/files/api/gateway";
 
 /**
  * Ref: https://files-sdk.dev/docs/ui/server/tanstack-start
  */
 
-const allowedOrigins = [ENV.BETTER_AUTH_URL!];
-if (import.meta.env.DEV) {
-  allowedOrigins.push(
-    "http://localhost:3000",
-    "https://console-127-0-0-1.nip.io",
-    "http://localhost:9000",
-  );
-}
-
 const router = createFilesRouter({
-  files,
-  // HINT: https://files-sdk.dev/docs/ui/server/multiple-buckets
-  // files: (req) =>
-  //   new URL(req.url).searchParams.get("bucket") === "images"
-  //     ? imagesInstance
-  //     : filesInstance,
-  allowedOrigins,
+  // Hard gates that run before `authorize`: a hook bug still can't write or list.
+  files: files.readonly(),
+  operations: ["head", "exists", "url", "download"],
+  allowedOrigins: filesAllowedOrigins(),
   // defaultExpiresIn: 300, // Default 300
   secret: ENV.FILES_API_SECRET,
-  authorize: async ({ key, operation, from, to }) => {
-    log.info({ key, operation, from, to });
-    /* throw to deny, or return a per-user constraint — see /ui/server/authorization */
-    const headers = getRequestHeaders();
-    const session = await auth.api.getSession({ headers });
-    if (session?.user === undefined) {
-      throw new FilesError("Unauthorized", "NOT_AUTHENTICATED");
-    }
-
-    if (session.session.activeOrganizationId === undefined) {
-      throw new FilesError("Unauthorized", "NOT_MEMBER_OF_ORGANIZATION");
-    }
-
-    return { keyPrefix: `org/${session.session.activeOrganizationId}/` }; // scope every key to this org
-  },
+  authorize: authorizePreview,
 });
 
 export const Route = createFileRoute("/api/files")({

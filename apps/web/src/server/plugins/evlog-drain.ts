@@ -14,6 +14,7 @@ function isCloudflareWorker(): boolean {
  */
 // oxlint-disable-next-line import/no-default-export
 export default definePlugin(async (nitroApp: NitroApp) => {
+  // TODO: enable logging in non-dev environments
   if (!import.meta.env.DEV) {
     return;
   }
@@ -28,6 +29,7 @@ export default definePlugin(async (nitroApp: NitroApp) => {
   nitroApp.hooks?.hook(
     "evlog:drain",
     createFsDrain({
+      dir: import.meta.env.DEV ? ".evlog/logs" : "/logs/chakra-webapp",
       maxFiles: 7,
     }),
   );

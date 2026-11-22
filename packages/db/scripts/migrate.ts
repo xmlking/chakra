@@ -1,4 +1,4 @@
-import { migrate } from "drizzle-orm/postgres-js/migrator";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 
 import { db } from "../src";
 
@@ -12,7 +12,10 @@ async function run() {
   console.log("⏳ Running migrations...");
 
   console.time("🌱 Database migrated");
-  await migrate(db, { migrationsFolder: "../drizzle" });
+  await migrate(db, {
+    migrationsFolder: "../drizzle",
+    migrationsSchema: "public",
+  });
   console.timeEnd("🌱 Database migrated");
 }
 

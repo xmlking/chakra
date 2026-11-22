@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
@@ -8,10 +8,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 /**
  * Contract test for the varlock env schemas.
  *
- * The web app schema must resolve without real secrets when APP_ENV=build,
- * using only committed schema files. This is exactly what the Docker image
- * build relies on, and it also proves the
- * @import graph between the web app, packages and root schema is complete.
+ * The web app schema must resolve with APP_ENV=build using only the committed
+ * `.env.schema` files plus the root `.env.build`, which supplies fake
+ * placeholders for every `@required` deployment-supplied item (all `@dynamic`,
+ * so real values resolve at runtime; shipped to the Docker build via
+ * `.dockerignore`). This is
+ * exactly what the CI build relies on, and it also proves the @import graph
+ * between the web app, packages and root schema is complete.
  *
  * Only the committed env files are copied into a temp workspace, so a
  * developer's root .env.local cannot mask (or cause) a failure, and the child
@@ -24,6 +27,7 @@ const webDir = "apps/web";
 
 const committedEnvFiles = [
   [".env.schema", ".env.schema"],
+  [".env.build", ".env.build"],
   [join(webDir, ".env.schema"), join(webDir, ".env.schema")],
   ...["packages/db", "packages/email", "packages/storage", "packages/auth"].map((dir) => [
     join(dir, ".env.schema"),
@@ -40,6 +44,13 @@ beforeAll(() => {
     mkdirSync(dirname(target), { recursive: true });
     copyFileSync(join(workspaceRoot, source), target);
   }
+  // Plugins such as @varlock/xyz-plugin are resolved from node_modules.
+  symlinkSync(join(workspaceRoot, "node_modules"), join(sandbox, "node_modules"), "dir");
+  symlinkSync(
+    join(workspaceRoot, webDir, "node_modules"),
+    join(sandbox, webDir, "node_modules"),
+    "dir",
+  );
 });
 
 afterAll(() => {

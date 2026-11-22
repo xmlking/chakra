@@ -17,11 +17,7 @@ export const Route = createFileRoute("/(app)/admin/users")({
       });
     }
 
-    // Check if the user has the 'admin' role
-    // @ts-ignore TODO
-    if (session?.user.role !== "admin") {
-      throw redirect({ to: "/forbidden" });
-    }
+    // HINT:<Admin view="users" /> component do server-side permission check
 
     /**
      * Before performing any admin operations, the user must be authenticated with an admin account.

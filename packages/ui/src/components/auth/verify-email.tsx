@@ -1,3 +1,5 @@
+import { getAuthCallbackURL } from "@better-auth-ui/core"
+
 import { useAuth, useSendVerificationEmail } from "@better-auth-ui/react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
@@ -51,7 +53,7 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
   }, [])
 
   useEffect(() => {
-    if (cooldown <= 0 || !email) return
+    if (cooldown <= 0 || !email) return undefined
 
     const interval = setInterval(() => {
       setCooldown((current) => (current > 0 ? current - 1 : 0))
@@ -97,7 +99,7 @@ export function VerifyEmail({ className }: VerifyEmailProps) {
                 onClick={() =>
                   sendVerificationEmail({
                     email,
-                    callbackURL: `${baseURL}${redirectTo}`
+                    callbackURL: getAuthCallbackURL(baseURL, redirectTo)
                   })
                 }
               >

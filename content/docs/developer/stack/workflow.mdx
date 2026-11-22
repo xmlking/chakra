@@ -43,8 +43,6 @@ Workflows can also pause and resume via `createHook()` / `resumeHook()` for exte
 
 Workflow entrypoints live under `apps/web/src/workflows/*.workflow.ts`, with side-effecting logic (DB writes, external API calls) kept in server-side services under `apps/web/src/server/workflows/*` so it can be called from steps. The Vite plugin (`workflow/vite`) compiles the `"use workflow"` / `"use step"` directives, and durable state is persisted via `@workflow/world-postgres` in its own `workflow.*` Postgres schema, separate from the Drizzle domain tables.
 
-See the [document sampling workflow spec](/docs/developer/specifications/workflows) for a concrete, end-to-end example (triggers, hooks, webhooks, and local setup).
-
 For implementation guidance, agents load `.agents/skills/workflow/SKILL.md`, which points at the bundled docs in `node_modules/workflow/docs/` for the exact installed API surface.
 
 ## Postgres world setup

@@ -18,7 +18,7 @@ import {
 } from "#components/shadcn/dialog"
 import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { passkeyPlugin } from "#lib/auth/passkey-plugin"
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey"
 import { useAuthForm } from "../auth-form"
 import { ReauthenticationAction } from "../reauthentication"
 
@@ -57,7 +57,7 @@ export function AddPasskeyDialog({
       await submitRequest({
         ...(name ? { name } : {}),
         ...(authenticatorAttachment ? { authenticatorAttachment } : {})
-      } as AddPasskeyParams<PasskeyAuthClient>)
+      })
     }
   })
 
@@ -108,7 +108,6 @@ export function AddPasskeyDialog({
                     <Input
                       id="passkey-name"
                       name={field.name}
-                      autoFocus
                       placeholder={localization.settings.optional}
                       disabled={addPasskey.isPending}
                       value={field.state.value}

@@ -14,6 +14,7 @@ import { MagicLinkEmail } from "@workspace/email/magic-link";
 import { OrganizationInvitationEmail } from "@workspace/email/organization-invitation";
 import { ResetPasswordEmail } from "@workspace/email/reset-password";
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import {
   admin,
   captcha,
@@ -31,12 +32,13 @@ import {
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { log } from "evlog";
 
-import { ENV } from "../env";
+import { ENV } from "#env";
+
 import { additionalSessionFields, additionalUserFields } from "./additional-fields";
-import { ac, roles } from "./permissions";
+import { ac, orgRoles, sysRoles } from "./permissions";
 
 const MAGIC_LINK_EXPIRES_SECONDS = 300;
-const from = ENV.EMAIL_FROM;
+
 // const to = ENV.EMAIL_TO || "";
 
 /**
@@ -60,7 +62,6 @@ if (import.meta.env.DEV) {
   trustedOrigins.push("http://localhost:3000", "https://console-127-0-0-1.nip.io");
 }
 
-const baseURL = ENV.BETTER_AUTH_URL;
 const appName = ENV.APP_NAME;
 
 export const auth = betterAuth({
@@ -71,6 +72,14 @@ export const auth = betterAuth({
       generateId: "uuid",
       joins: true,
     },
+    ...(ENV.BETTER_AUTH_TRUSTED_PROXIES
+      ? {
+          ipAddress: {
+            ipAddressHeaders: ["X-Forwarded-For", "x-azure-clientip"],
+            trustedProxies: ENV.BETTER_AUTH_TRUSTED_PROXIES,
+          },
+        }
+      : {}),
     // crossSubDomainCookies: {
     //   enabled: isProduction(),
     //   domain: ".chakra.ai",
@@ -78,12 +87,32 @@ export const auth = betterAuth({
   },
   telemetry: { enabled: false },
   secret: ENV.BETTER_AUTH_SECRET,
-  baseURL,
+  baseURL: ENV.BETTER_AUTH_URL,
   // baseURL: {
   //   allowedHosts: ["localhost:3000", "localhost:5173", "myapp.com", "*.vercel.app"],
   //   protocol: process.env.NODE_ENV === "development" ? "http" : "https",
   // },
   databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const domain = user.email.trim().toLowerCase().split("@")[1];
+          if (
+            !domain ||
+            !ENV.ALLOWED_SIGN_UP_DOMAINS.some(
+              (allowedDomain) => allowedDomain.toLowerCase() === domain,
+            )
+          ) {
+            throw new APIError("BAD_REQUEST", {
+              code: "EMAIL_DOMAIN_NOT_ALLOWED",
+              message: `Sign up is restricted to ${ENV.ALLOWED_SIGN_UP_DOMAINS.map(
+                (allowedDomain) => `@${allowedDomain}`,
+              ).join(", ")} email addresses.`,
+            });
+          }
+        },
+      },
+    },
     session: {
       create: {
         before: async (session) => {
@@ -107,7 +136,7 @@ export const auth = betterAuth({
     resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
     async sendResetPassword({ user, url }) {
       await sendMail({
-        from,
+        from: ENV.EMAIL_FROM,
         to: user.email,
         subject: "Reset your password",
         react: (
@@ -115,8 +144,8 @@ export const auth = betterAuth({
             url={url}
             appName={appName}
             logoURL={{
-              light: `${baseURL}/favicon-96x96.png`,
-              dark: `${baseURL}/favicon-96x96-inverted.png`,
+              light: `${ENV.BETTER_AUTH_URL}/favicon-96x96.png`,
+              dark: `${ENV.BETTER_AUTH_URL}/favicon-96x96-inverted.png`,
             }}
             email={user.email}
             expirationMinutes={60}
@@ -130,7 +159,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
       await sendMail({
-        from,
+        from: ENV.EMAIL_FROM,
         to: user.email,
         subject: "Verify your email address",
         text: `Click the link to verify your email: ${url}`,
@@ -139,8 +168,8 @@ export const auth = betterAuth({
             url={url}
             appName={appName}
             logoURL={{
-              light: `${baseURL}/favicon-96x96.png`,
-              dark: `${baseURL}/favicon-96x96-inverted.png`,
+              light: `${ENV.BETTER_AUTH_URL}/favicon-96x96.png`,
+              dark: `${ENV.BETTER_AUTH_URL}/favicon-96x96-inverted.png`,
             }}
             email={user.email}
             expirationMinutes={60}
@@ -159,7 +188,7 @@ export const auth = betterAuth({
       enabled: false,
       sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
         await sendMail({
-          from,
+          from: ENV.EMAIL_FROM,
           to: user.email, // Sent to the CURRENT email
           subject: "Approve email change",
           text: `Click the link to approve the change to ${newEmail}: ${url}`,
@@ -169,8 +198,8 @@ export const auth = betterAuth({
               newEmail={newEmail}
               appName={appName}
               logoURL={{
-                light: `${baseURL}/favicon-96x96.png`,
-                dark: `${baseURL}/favicon-96x96-inverted.png`,
+                light: `${ENV.BETTER_AUTH_URL}/favicon-96x96.png`,
+                dark: `${ENV.BETTER_AUTH_URL}/favicon-96x96-inverted.png`,
               }}
               supportEmail="support@example.com"
               revertURL={url}
@@ -190,6 +219,7 @@ export const auth = betterAuth({
     accountLinking: {
       trustedProviders: ["github", "google", "microsoft"],
       allowDifferentEmails: true,
+      // requireLocalEmailVerified: true, // Default: true
     },
   },
   socialProviders: {
@@ -218,8 +248,18 @@ export const auth = betterAuth({
           clientId: ENV.MICROSOFT_CLIENT_ID,
           clientSecret: ENV.MICROSOFT_CLIENT_SECRET,
           tenantId: ENV.MICROSOFT_TENANT_ID,
-          // requireEmailVerification: false,
+          requireEmailVerification: false,
           // overrideUserInfoOnSignIn: true,
+          mapProfileToUser: async (_profile) => {
+            // console.debug("[microsoft SSO claims]", JSON.stringify(profile, null, 2));
+            // console.info(profile.roles);
+            // HINT: microsoft doesn't always return email_verified,
+            // forcefully mark it verified in the user object
+            return {
+              // role: 'admin', // TODO: add admin role if user has specific AD group membership
+              emailVerified: true,
+            };
+          },
         },
       }),
   },
@@ -319,7 +359,7 @@ export const auth = betterAuth({
       expiresIn: MAGIC_LINK_EXPIRES_SECONDS,
       sendMagicLink: async ({ email, url }) => {
         await sendMail({
-          from,
+          from: ENV.EMAIL_FROM,
           to: email,
           subject: `Sign in to ${appName}`,
           text: `Sign in with this link (expires in ${String(MAGIC_LINK_EXPIRES_SECONDS / 60)} minutes): ${url}`,
@@ -329,8 +369,8 @@ export const auth = betterAuth({
               url={url}
               appName={appName}
               logoURL={{
-                light: `${baseURL}/favicon-96x96.png`,
-                dark: `${baseURL}/favicon-96x96-inverted.png`,
+                light: `${ENV.BETTER_AUTH_URL}/favicon-96x96.png`,
+                dark: `${ENV.BETTER_AUTH_URL}/favicon-96x96-inverted.png`,
               }}
               email={email}
               expirationMinutes={MAGIC_LINK_EXPIRES_SECONDS / 60}
@@ -381,7 +421,7 @@ export const auth = betterAuth({
       //   team: { additionalFields: additionalTeamFields },
       // },
       ac, // Must be defined in order for dynamic access control to work
-      roles,
+      roles: orgRoles,
       dynamicAccessControl: {
         enabled: true,
       },
@@ -408,12 +448,12 @@ export const auth = betterAuth({
       },
       async sendInvitationEmail(data) {
         await sendMail({
-          from,
+          from: ENV.EMAIL_FROM,
           to: data.email,
           subject: `You're invited to ${data.organization.name}`,
           react: (
             <OrganizationInvitationEmail
-              url={`${baseURL}/user/organizations`}
+              url={`${ENV.BETTER_AUTH_URL}/user/organizations`}
               email={data.email}
               inviterName={data.inviter.user.name}
               inviterEmail={data.inviter.user.email}
@@ -423,8 +463,8 @@ export const auth = betterAuth({
               appName={appName}
               poweredBy={false}
               logoURL={{
-                light: `${baseURL}/favicon-96x96.png`,
-                dark: `${baseURL}/favicon-96x96-inverted.png`,
+                light: `${ENV.BETTER_AUTH_URL}/favicon-96x96.png`,
+                dark: `${ENV.BETTER_AUTH_URL}/favicon-96x96-inverted.png`,
               }}
               expirationHours={48}
               darkMode={true}
@@ -439,12 +479,13 @@ export const auth = betterAuth({
     /**
      * In the Better Auth admin plugin, you can define administrators in two distinct ways:
      * - by assigning the admin role to users in the database, or
-     * - by listing their IDs in the `adminUserIds` configuration option
+     * - by listing their IDs in the `adminUserIds` configuration option, or
+     * - by adding admin role if user has specific AD group membership. see socialProviders - **preferred**
      * HINT: recommend to do both
      */
     admin({
       ac,
-      roles,
+      roles: sysRoles,
       adminUserIds: ENV.BETTER_AUTH_ADMINS,
     }),
     /**
@@ -470,7 +511,7 @@ export const auth = betterAuth({
            * permissions system/UI
            */
           defaultPermissions: {
-            ...roles.member.statements,
+            ...orgRoles.member.statements,
           },
         },
         // storage: "database", // Default, can be omitted

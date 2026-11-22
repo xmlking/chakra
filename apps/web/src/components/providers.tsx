@@ -111,7 +111,7 @@ export function Providers({ children }: { children: ReactNode }) {
                       // Disable logo upload, or customize the resize / size.
                       // logo: { enabled: false },
                       // Add labels for custom server roles without redefining built-ins.
-                      additionalRoles: { billing: "Billing" },
+                      // additionalRoles: { billing: "Billing" },
                       teams: true,
                       // Limit invitations and members to one role.
                       allowMultipleRoles: false,
@@ -119,6 +119,7 @@ export function Providers({ children }: { children: ReactNode }) {
                     captchaPlugin({ render: TurnstileWidget }),
                   ]}
                   Link={({ href, ...props }) => <Link to={href} {...props} />}
+                  // localization={localization}
                 >
                   <RouteProgressController />
                   <CacheInvalidationListener />

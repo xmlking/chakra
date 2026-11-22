@@ -19,7 +19,7 @@ import { Badge } from "#components/shadcn/badge"
 import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { Spinner } from "#components/shadcn/spinner"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { UserView } from "../user/user-view"
 
 export type RemoveMemberDialogProps = {

@@ -62,7 +62,7 @@ vp run @workspace/db#generate --name=init
 # `for first time`, generate empty migration file
 # to write your own custom SQL functions/DDL
 vp run @workspace/db#generate --custom --name=extra
-#  Generate migrations for subsequent schema changes
+#  Generate migrations for subsequent schema changes (use this after production release)
 vp run @workspace/db#generate
 ```
 
@@ -74,9 +74,14 @@ vp run --no-cache @workspace/db#workflow:bootstrap
 # Apply migrations to local database
 # vp run @workspace/db#push
 vp run --no-cache @workspace/db#migrate
-# Apply migrations to local database
+# Apply seeds to local database
 vp run --no-cache @workspace/db#seed
 ```
+
+> [!IMPORTANT]
+> Database migrations and seeds have side effects and must execute every time.
+> Use `--no-cache`; otherwise Vite+ may replay a cached task result without
+> contacting the database.
 
 Start DB Viewer App to see the data
 

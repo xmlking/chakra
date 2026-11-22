@@ -32,7 +32,7 @@ describe.skipIf(process.env.CI)("auth (better-auth + testUtils plugin)", () => {
   });
 
   it("creates an authenticated session for a saved user (getAuthHeaders + getSession)", async () => {
-    const user = test.createUser({ id: uuidv7() });
+    const user = test.createUser({ id: uuidv7(), email: `session-${Date.now()}@example.com` });
     const saved = await test.saveUser(user);
     createdUserIds.push(saved.id);
 

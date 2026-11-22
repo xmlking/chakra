@@ -1,7 +1,9 @@
 import { hashPassword } from "@better-auth/utils/password";
+import { eq } from "drizzle-orm";
 import { reset, seed } from "drizzle-seed";
 
-import { ENV } from "../env";
+import { ENV } from "#env";
+
 import { db } from "../src";
 import * as schema from "../src/schema";
 import {
@@ -109,13 +111,10 @@ async function run() {
       count: 3,
     },
     settings: {
-      columns: {
-        key: f.valuesFromArray({
-          values: settingKeys,
-          isUnique: true,
-        }),
-      },
       count: settingKeys.length,
+      columns: {
+        key: f.valuesFromArray({ values: settingKeys, isUnique: true }),
+      },
     },
   }));
   console.timeEnd("🌱 Database has been seeded");

@@ -17,24 +17,51 @@ Middleware chain for access control and authorization. Stack from most restricti
    - Tags request with user/org context for `evlog`
    - Throws `UnauthorizedError` if no session
 
-2. **memberRequiredMiddleware** - Organization Membership
-   - Requires `authMiddleware` in stack
-   - Validates user is a member of their active organization
-   - Queries member record from database
-   - Sets `context.member` with member data and role
-   - Throws `ForbiddenError` if user is not a member
+2. **orgRequiredMiddleware** - Active Organization
 
-3. **permissionRequiredMiddleware** - Permission Checks
-   - Requires `memberRequiredMiddleware` in stack
-   - Validates user has required permissions
-   - TODO: Implement permission checking logic
-   - Throws `ForbiddenError` if lacking permissions
+- Requires `authMiddleware` in the stack
+- Requires an active organization in the session
+- Throws `ForbiddenError` when no organization is active
 
-4. **adminRequiredMiddleware** - Admin Access
-   - Requires `memberRequiredMiddleware` in stack
-   - Validates user has admin role in organization
-   - TODO: Use Better Auth admin plugin APIs for checking
-   - Throws `ForbiddenError` if not admin
+3. **memberRequiredMiddleware** - Organization Membership
+
+- Requires `orgRequiredMiddleware` in the stack
+- Loads the active organization member
+- Sets `context.member` with member data and role
+- Throws `ForbiddenError` if the user is not a member
+
+4. **roleRequiredMiddleware** - System User Role
+
+- Requires authentication only
+- Checks the database user's `role`
+- Does not require an organization
+
+1. **orgRoleRequiredMiddleware** - Organization Member Role
+
+- Requires `memberRequiredMiddleware` in the stack
+- Checks the active organization member's `role`
+- Throws `ForbiddenError` if the role is not allowed
+
+6. **systemPermissionRequiredMiddleware** - System admin/user permissions
+
+- Requires authentication only
+- Uses Better Auth's admin permission endpoint
+- Does not require an active organization
+- Throws `ForbiddenError` if lacking permissions
+
+7. **organizationPermissionRequiredMiddleware** - Organization permissions
+
+- Requires an active organization and member
+- Uses Better Auth's organization permission endpoint
+- Sets `context.member` through `memberRequiredMiddleware`
+- Throws `ForbiddenError` if lacking permissions or membership
+
+8. **systemOrOrganizationPermissionRequiredMiddleware** - Either permission scope
+
+- Allows global admins without an active organization
+- Falls back to the active organization member permission check
+- Does not add `context.member` because global access has no member context
+- Throws `ForbiddenError` if neither scope grants access
 
 ## Context Flow
 
@@ -42,8 +69,12 @@ Middleware builds context progressively:
 
 - `authMiddleware` → `context.session`
 - `memberRequiredMiddleware` → `context.session`, `context.member`
-- `permissionRequiredMiddleware` → inherits all above
-- `adminRequiredMiddleware` → inherits all above
+- `orgRequiredMiddleware` → `context.session` with an active organization
+- `systemPermissionRequiredMiddleware` → authentication only
+- `organizationPermissionRequiredMiddleware` → `context.session`, `context.member`
+- `systemOrOrganizationPermissionRequiredMiddleware` → authentication only; member context is not guaranteed
+- `roleRequiredMiddleware(["admin"])` → global user role check
+- `orgRoleRequiredMiddleware(["owner", "admin"])` → organization member role check
 
 ## Usage Examples
 
@@ -63,19 +94,41 @@ createServerFn()
     // member contains: id, role, permissions, etc
   });
 
-// Route requiring admin access
+// Route requiring an active organization
 createServerFn()
-  .middleware([adminRequiredMiddleware])
+  .middleware([orgRequiredMiddleware])
   .handler(({ context }) => {
-    const { session, member } = context;
-    // member.role verified as admin
+    const { session } = context;
   });
 
-// Route with permission check
+// Route requiring a global admin role
 createServerFn()
-  .middleware([permissionRequiredMiddleware])
+  .middleware([roleRequiredMiddleware(["admin"])])
   .handler(({ context }) => {
-    // user has verified permissions
+    const { session } = context;
+    // session.user.role verified as admin
+  });
+
+// Route with a global admin/user permission check
+createServerFn()
+  .middleware([systemPermissionRequiredMiddleware({ filters: ["manage"] })])
+  .handler(({ context }) => {
+    // authenticated user has the global permission
+  });
+
+// Route with an organization-member permission check
+createServerFn()
+  .middleware([organizationPermissionRequiredMiddleware({ filters: ["view"] })])
+  .handler(({ context }) => {
+    const { session, member } = context;
+    // member has the organization-scoped permission
+  });
+
+// Route allowing either a global admin or an organization member
+createServerFn()
+  .middleware([systemOrOrganizationPermissionRequiredMiddleware({ filters: ["view"] })])
+  .handler(() => {
+    // access granted by either permission scope
   });
 ```
 

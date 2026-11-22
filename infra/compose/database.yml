@@ -44,7 +44,7 @@ services:
         source: pg_data
         target: /var/lib/postgresql
         read_only: false
-      - ../postgres/init-database.sh:/docker-entrypoint-initdb.d/init-data.sh:Z
+      - ${PWD}/infra/postgres/init-database.sh:/docker-entrypoint-initdb.d/init-data.sh:Z
     deploy:
       resources:
         limits:

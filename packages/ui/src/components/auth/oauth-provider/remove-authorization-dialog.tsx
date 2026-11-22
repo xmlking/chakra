@@ -19,7 +19,7 @@ import {
 } from "#components/shadcn/alert-dialog"
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
-import { oauthProviderPlugin } from "#lib/auth/oauth-provider-plugin"
+import { oauthProviderPlugin } from "@better-auth-ui/core/plugins/oauth-provider"
 
 export type RemoveAuthorizationDialogProps = {
   /** @remarks `AuthorizedOAuthApplication` */
@@ -42,13 +42,11 @@ export function RemoveAuthorizationDialog({
   open,
   onOpenChange
 }: RemoveAuthorizationDialogProps) {
-  const { authClient, localization } = useAuth()
+  const { authClient, localization } = useAuth<OAuthProviderAuthClient>()
   const { localization: oauthLocalization } = useAuthPlugin(oauthProviderPlugin)
   const [isRemoving, setIsRemoving] = useState(false)
 
-  const { mutateAsync: deleteConsent } = useDeleteOAuthConsent(
-    authClient as OAuthProviderAuthClient
-  )
+  const { mutateAsync: deleteConsent } = useDeleteOAuthConsent(authClient)
 
   const removeAuthorization = async () => {
     setIsRemoving(true)
@@ -97,7 +95,7 @@ export function RemoveAuthorizationDialog({
             type="button"
             variant="destructive"
             disabled={isRemoving}
-            onClick={removeAuthorization}
+            onClick={() => void removeAuthorization()}
           >
             {isRemoving && <Spinner />}
 

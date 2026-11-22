@@ -16,7 +16,7 @@ import {
 } from "#components/shadcn/alert-dialog"
 import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { twoFactorPlugin } from "#lib/auth/two-factor-plugin"
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor"
 import { useTwoFactorPasswordRequirement } from "#lib/auth/use-two-factor-password"
 import { useAuthForm } from "../auth-form"
 
@@ -35,13 +35,13 @@ export function DisableTwoFactorDialog({
   open,
   onOpenChange
 }: DisableTwoFactorDialogProps) {
-  const { authClient, localization } = useAuth()
+  const { authClient, localization } = useAuth<TwoFactorAuthClient>()
   const { localization: twoFactorLocalization } = useAuthPlugin(twoFactorPlugin)
   const { isPending: isResolvingPasswordRequirement, requiresPassword } =
     useTwoFactorPasswordRequirement()
 
   const { mutateAsync: disableTwoFactor, isPending: isDisabling } =
-    useDisableTwoFactor(authClient as TwoFactorAuthClient, {
+    useDisableTwoFactor(authClient, {
       onSuccess: () => {
         toast.success(twoFactorLocalization.twoFactorDisabled)
         onOpenChange(false)
@@ -53,9 +53,7 @@ export function DisableTwoFactorDialog({
   const form = useAuthForm({
     defaultValues: { password: "" },
     onSubmit: async ({ value }) =>
-      await disableTwoFactor(
-        requiresPassword ? { password: value.password } : {}
-      )
+      disableTwoFactor(requiresPassword ? { password: value.password } : {})
   })
 
   return (
@@ -92,7 +90,6 @@ export function DisableTwoFactorDialog({
                       name={field.name}
                       type="password"
                       autoComplete="current-password"
-                      autoFocus
                       required
                       placeholder={localization.auth.passwordPlaceholder}
                       disabled={isPending}

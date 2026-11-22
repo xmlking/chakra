@@ -19,7 +19,8 @@ import {
   setAdminUserPasswordOptions,
   setAdminUserRoleOptions,
   unbanAdminUserOptions,
-  updateAdminUserOptions
+  updateAdminUserOptions,
+  adminPlugin
 } from "@better-auth-ui/core/plugins/admin"
 import {
   useAuth,
@@ -36,7 +37,6 @@ import {
 import { useDebouncedValue } from "@tanstack/react-pacer"
 import { keepPreviousData, useMutation } from "@tanstack/react-query"
 import type { SortingState } from "@tanstack/react-table"
-import type { BetterFetchError } from "better-auth/react"
 import {
   BanIcon,
   CheckIcon,
@@ -53,7 +53,7 @@ import {
   UserPlusIcon,
   UserRound
 } from "lucide-react"
-import { type FormEvent, useEffect, useMemo, useState } from "react"
+import { type SubmitEvent, useEffect, useMemo, useState } from "react"
 import { UserAvatar } from "#components/auth/user/user-avatar"
 import {
   AlertDialog,
@@ -101,7 +101,6 @@ import { RadioGroup, RadioGroupItem } from "#components/shadcn/radio-group"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -118,15 +117,16 @@ import {
   TableRow
 } from "#components/shadcn/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/shadcn/tabs"
-import { adminPlugin } from "#lib/auth/admin-plugin"
 import { getAuthAdditionalFieldValidators, useAuthForm } from "../auth-form"
 import { useServerTableState } from "../server-table-state"
 
 import { createAdminColumnHelper, useAdminTable } from "./admin-table"
 
-type SearchField = "email" | "name"
-type SearchOperator = "contains" | "ends_with" | "starts_with"
-type StatusFilter = "all" | "active" | "banned"
+const SEARCH_FIELDS = ["email", "name"] as const
+type SearchField = (typeof SEARCH_FIELDS)[number]
+const SEARCH_OPERATORS = ["contains", "ends_with", "starts_with"] as const
+type SearchOperator = (typeof SEARCH_OPERATORS)[number]
+const STATUS_FILTERS = ["all", "active", "banned"] as const
 type DangerousAction = "ban" | "delete" | "impersonate" | "revokeAll"
 
 export type AdminUsersProps = {
@@ -142,7 +142,9 @@ const formatDate = (value: Date | string | undefined | null) =>
       )
     : "–"
 
-const asAdminRoles = (roles: string[]) => roles as ("user" | "admin")[]
+const asAdminRoles = (roles: string[]) =>
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the server can define custom admin roles; the client type lists only the defaults
+  roles as ("user" | "admin")[]
 
 const parseAdminRoles = (
   role: string | undefined,
@@ -166,8 +168,12 @@ const getBanDurationSeconds = (value: string) => {
 }
 
 const getAdminErrorMessage = (error: Error | null) => {
-  const authError = error as BetterFetchError | null
-  return authError?.error?.message ?? authError?.message
+  const details: unknown = error && "error" in error ? error.error : undefined
+  const message =
+    details && typeof details === "object" && "message" in details
+      ? details.message
+      : undefined
+  return typeof message === "string" ? message : error?.message
 }
 
 const adminColumnHelper = createAdminColumnHelper<AdminUser>()
@@ -189,6 +195,14 @@ const EMPTY_USERS: AdminUser[] = []
 const INITIAL_ADMIN_SORTING: SortingState = [{ id: "createdAt", desc: true }]
 
 /** Server-paginated user management with optional controlled inspector state. */
+function parseOption<T extends string>(
+  options: readonly T[],
+  value: unknown,
+  fallback: T
+): T {
+  return options.find((option) => option === value) ?? fallback
+}
+
 export function AdminUsers({
   className,
   onSelectedUserIdChange,
@@ -211,23 +225,11 @@ export function AdminUsers({
   const [debouncedSearch] = useDebouncedValue(globalFilter.trim(), {
     wait: DEFAULT_TABLE_SEARCH_DEBOUNCE_MS
   })
-  const status = String(
-    columnFilters.find((filter) => filter.id === "status")?.value ?? "all"
-  ) as StatusFilter
-  const searchFieldItems = [
-    { label: localization.email, value: "email" },
-    { label: localization.name, value: "name" }
-  ]
-  const searchOperatorItems = [
-    { label: localization.searchContains, value: "contains" },
-    { label: localization.startsWith, value: "starts_with" },
-    { label: localization.endsWith, value: "ends_with" }
-  ]
-  const statusItems = [
-    { label: localization.filterAllStatuses, value: "all" },
-    { label: localization.active, value: "active" },
-    { label: localization.banned, value: "banned" }
-  ]
+  const status = parseOption(
+    STATUS_FILTERS,
+    columnFilters.find((filter) => filter.id === "status")?.value ?? "all",
+    "all"
+  )
   const primarySort = sorting[0]
   const sortBy = primarySort?.id === "name" ? "name" : "createdAt"
   const sortDirection = primarySort?.desc ? "desc" : "asc"
@@ -337,11 +339,9 @@ export function AdminUsers({
 
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-[9rem_10rem_minmax(14rem,1fr)_10rem]">
           <Select
-            items={searchFieldItems}
             value={searchField}
             onValueChange={(value) => {
-              if (!value) return
-              setSearchField(value as SearchField)
+              setSearchField(parseOption(SEARCH_FIELDS, value, "email"))
               table.setPageIndex(0)
             }}
           >
@@ -352,21 +352,16 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {searchFieldItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="email">{localization.email}</SelectItem>
+              <SelectItem value="name">{localization.name}</SelectItem>
             </SelectContent>
           </Select>
           <Select
-            items={searchOperatorItems}
             value={searchOperator}
             onValueChange={(value) => {
-              if (!value) return
-              setSearchOperator(value as SearchOperator)
+              setSearchOperator(
+                parseOption(SEARCH_OPERATORS, value, "contains")
+              )
               table.setPageIndex(0)
             }}
           >
@@ -374,13 +369,13 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {searchOperatorItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="contains">
+                {localization.searchContains}
+              </SelectItem>
+              <SelectItem value="starts_with">
+                {localization.startsWith}
+              </SelectItem>
+              <SelectItem value="ends_with">{localization.endsWith}</SelectItem>
             </SelectContent>
           </Select>
           <InputGroup>
@@ -405,10 +400,8 @@ export function AdminUsers({
             />
           </InputGroup>
           <Select
-            items={statusItems}
             value={status}
             onValueChange={(value) => {
-              if (!value) return
               table
                 .getColumn("status")
                 ?.setFilterValue(value === "all" ? undefined : value)
@@ -421,13 +414,11 @@ export function AdminUsers({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectGroup>
-                {statusItems.map((item) => (
-                  <SelectItem key={item.value} value={item.value}>
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
+              <SelectItem value="all">
+                {localization.filterAllStatuses}
+              </SelectItem>
+              <SelectItem value="active">{localization.active}</SelectItem>
+              <SelectItem value="banned">{localization.banned}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -446,7 +437,7 @@ export function AdminUsers({
             title={localization.loadUsersError}
             description={localization.loadUsersErrorDescription}
             action={
-              <Button variant="outline" onClick={() => users.refetch()}>
+              <Button variant="outline" onClick={() => void users.refetch()}>
                 {localization.retry}
               </Button>
             }
@@ -953,6 +944,7 @@ function UserInspector({
   const auth = useAuth<AdminAuthClient>()
   const config = useAuthPlugin(adminPlugin)
   const contributedTabs = auth.plugins.flatMap((plugin) =>
+    // oxlint-disable-next-line oxc/no-map-spread -- Copies keep plugin-owned objects unmutated.
     (plugin.adminUserTabs ?? []).map((tab) => ({
       ...tab,
       value: `${plugin.id}:${tab.id}`
@@ -1078,11 +1070,7 @@ function UserInspector({
     revokeAdminUserSessionsOptions(auth.authClient, actor?.user.id, userId)
   )
   const configuredUserFields = useMemo(
-    () =>
-      fieldsWithModelValues(
-        auth.additionalFields ?? [],
-        user ? (user as unknown as Record<string, unknown>) : {}
-      ),
+    () => fieldsWithModelValues(auth.additionalFields ?? [], user ?? {}),
     [auth.additionalFields, user]
   )
   const profileForm = useAuthForm({
@@ -1136,17 +1124,26 @@ function UserInspector({
   })
 
   useEffect(() => {
-    profileForm.reset({
-      additionalFields: getAdditionalFieldDefaultValues(configuredUserFields),
-      email: user?.email ?? "",
-      emailVerified: user?.emailVerified ?? false,
-      name: user?.name ?? "",
-      roles: parseAdminRoles(
-        user?.role,
-        config.defaultRole,
-        config.allowMultipleRoles
-      )
-    })
+    // keepDefaultValues is required: useAppForm calls update(opts) on
+    // every render, and update() resets untouched values back to
+    // defaultValues whenever they differ. Without this flag the reset
+    // below would swap defaultValues to the loaded user, letting the
+    // next re-render clobber the fields back to the empty defaults
+    // (blank name/email and the default role) before this effect re-ran.
+    profileForm.reset(
+      {
+        additionalFields: getAdditionalFieldDefaultValues(configuredUserFields),
+        email: user?.email ?? "",
+        emailVerified: user?.emailVerified ?? false,
+        name: user?.name ?? "",
+        roles: parseAdminRoles(
+          user?.role,
+          config.defaultRole,
+          config.allowMultipleRoles
+        )
+      },
+      { keepDefaultValues: true }
+    )
   }, [
     config.allowMultipleRoles,
     config.defaultRole,
@@ -1254,17 +1251,7 @@ function UserInspector({
                       : config.localization.active}
                   </Badge>
                   <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button
-                          aria-label={config.localization.moreActions}
-                          size="icon-sm"
-                          variant="ghost"
-                        >
-                          <EllipsisIcon />
-                        </Button>
-                      }
-                    />
+                    <DropdownMenuTrigger render={<Button aria-label={config.localization.moreActions} size="icon-sm" variant="ghost" />}><EllipsisIcon /></DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuGroup>
                         <DropdownMenuItem
@@ -1528,7 +1515,7 @@ function UserInspector({
                                         .copiedToClipboard
                                     : config.localization.copyUserId
                                 }
-                                onClick={() => copyUserId(user.id)}
+                                onClick={() => void copyUserId(user.id)}
                                 size="icon-xs"
                                 type="button"
                                 variant="ghost"
@@ -1652,10 +1639,9 @@ function UserInspector({
                         {config.localization.cancel}
                       </Button>
                       <profileForm.Subscribe
-                        selector={(state) => [
-                          state.values.name,
-                          state.values.email
-                        ]}
+                        selector={(state) =>
+                          [state.values.name, state.values.email] as const
+                        }
                       >
                         {([name, email]) => (
                           <profileForm.AuthFormSubmitButton
@@ -1873,7 +1859,7 @@ function PasswordDialog({
     mutation.reset()
     onOpenChange(false)
   }
-  const submit = (event: FormEvent) => {
+  const submit = (event: SubmitEvent) => {
     event.preventDefault()
     setErrorMessage(undefined)
     if (userId)

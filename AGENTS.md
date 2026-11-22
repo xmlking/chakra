@@ -68,6 +68,8 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ## Essentials
 
 - Stack: TypeScript + React (TanStack Start) in a bun + Vite+ monorepo, with Drizzle ORM, resend, shadcn/ui, and Better Auth.
+- `apps/web` follows a feature-sliced layout under `apps/web/src/features/*`; keep feature logic inside its domain folder and avoid cross-feature coupling.
+- Long-running orchestration uses `workflow` with entrypoints in `apps/web/src/workflows/*.workflow.ts` and server-side workflow services in `apps/web/src/server/workflows/*`.
 - Prefer shared `@workspace/ui` components; add primitives via shadcn CLI (`vpx shadcn@latest add <component>`).
 - Use `lucide-react` for UI icons (use `Icon` suffix, e.g. `import { Loader2Icon } from "lucide-react"`); for brand icons use `@thesvg/react` (e.g. `import Github from '@thesvg/react/github'; <Github className="size-6" />`).
 - When resolving module specifiers that begin with `#`, always respect the nearest ancestor `package.json` `"imports"` field using TypeScript’s `resolvePackageJsonImports` behavior.

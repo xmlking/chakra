@@ -5,7 +5,8 @@ import {
 } from "@better-auth-ui/core"
 import {
   type SiweAuthClient,
-  siweMutationKeys
+  siweMutationKeys,
+  siwePlugin
 } from "@better-auth-ui/core/plugins/siwe"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useSignInSiwe } from "@better-auth-ui/react/plugins/siwe"
@@ -25,7 +26,6 @@ import {
 import { Field, FieldDescription, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
-import { siwePlugin } from "#lib/auth/siwe-plugin"
 import { cn } from "cn"
 import {
   isAuthFormFieldInvalid,

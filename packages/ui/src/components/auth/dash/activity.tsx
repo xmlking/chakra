@@ -8,11 +8,13 @@ import {
   formatDashEventName,
   getDashEventDetail,
   getDashEventKey,
-  getDashEventLocation
+  getDashEventLocation,
+  dashPlugin
 } from "@better-auth-ui/core/plugins/dash"
 import {
   hasMemberRole,
-  type OrganizationAuthClient
+  type OrganizationAuthClient,
+  organizationPlugin
 } from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import {
@@ -71,7 +73,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -79,8 +80,6 @@ import {
 import { Separator } from "#components/shadcn/separator"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { dashPlugin } from "#lib/auth/dash-plugin"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { cn } from "cn"
 import { useServerTableState } from "../server-table-state"
 
@@ -236,12 +235,13 @@ function ActivityFeed({
   className,
   userId
 }: ActivityFeedProps) {
-  const { authClient } = useAuth()
+  const { authClient } = useAuth<DashAuthClient>()
   const { localization, pageSize } = useAuthPlugin(dashPlugin)
   const tableState = useServerTableState({ pageSize })
   const { columnFilters, globalFilter, pagination, setPagination } = tableState
-  const eventType = String(
-    columnFilters.find((filter) => filter.id === "eventType")?.value ?? "all"
+  const eventType = toStringValue(
+    columnFilters.find((filter) => filter.id === "eventType")?.value,
+    "all"
   )
   const [debouncedIdentifier] = useDebouncedValue(globalFilter.trim(), {
     wait: DEFAULT_TABLE_SEARCH_DEBOUNCE_MS
@@ -250,10 +250,6 @@ function ActivityFeed({
     () => Object.entries(localization.eventLabels),
     [localization.eventLabels]
   )
-  const eventItems = [
-    { label: localization.allEvents, value: "all" },
-    ...eventOptions.map(([value, label]) => ({ label, value }))
-  ]
   const offset = pagination.pageIndex * pagination.pageSize
   const params = {
     eventType: eventType === "all" ? undefined : eventType,
@@ -262,29 +258,25 @@ function ActivityFeed({
     offset,
     organizationId
   }
-  const userQuery = useDashAuditLogs(authClient as DashAuthClient, {
+  const userQuery = useDashAuditLogs(authClient, {
     enabled: ready && access === "user",
     params,
     placeholderData: keepPreviousData
   })
-  const organizationQuery = useDashAllAuditLogs(authClient as DashAuthClient, {
+  const organizationQuery = useDashAllAuditLogs(authClient, {
     enabled: ready && (access === "admin" || access === "organization"),
     params,
     placeholderData: keepPreviousData
   })
-  const adminUserQuery = useDashUserAuditLogs(
-    authClient as DashAuthClient,
-    userId,
-    {
-      enabled: ready && access === "admin-user",
-      params: {
-        eventType: params.eventType,
-        identifier: params.identifier,
-        limit: pagination.pageSize,
-        offset
-      }
+  const adminUserQuery = useDashUserAuditLogs(authClient, userId, {
+    enabled: ready && access === "admin-user",
+    params: {
+      eventType: params.eventType,
+      identifier: params.identifier,
+      limit: pagination.pageSize,
+      offset
     }
-  )
+  })
   const query =
     access === "admin" || access === "organization"
       ? organizationQuery
@@ -294,6 +286,7 @@ function ActivityFeed({
   const { data, error, isFetching, isPending } = query
   const showPending = !ready || isPending
   const pageEnd = offset + (data?.events.length ?? 0)
+
   useEffect(() => {
     if (!ready || !query.isSuccess) return
     const pageIndex = getClampedTablePageIndex(
@@ -359,10 +352,8 @@ function ActivityFeed({
               {localization.eventType}
             </FieldLabel>
             <Select
-              items={eventItems}
               value={eventType}
               onValueChange={(value) => {
-                if (!value) return
                 table
                   .getColumn("eventType")
                   ?.setFilterValue(value === "all" ? undefined : value)
@@ -372,13 +363,12 @@ function ActivityFeed({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  {eventItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
+                <SelectItem value="all">{localization.allEvents}</SelectItem>
+                {eventOptions.map(([key, label]) => (
+                  <SelectItem key={key} value={key}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Field>
@@ -425,7 +415,7 @@ function ActivityFeed({
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => query.refetch()}
+                onClick={() => void query.refetch()}
               >
                 {localization.retry}
               </Button>
@@ -513,12 +503,11 @@ export function OrganizationActivity({
   organizationSlug: _organizationSlug,
   ...props
 }: OrganizationActivityProps) {
-  const { authClient } = useAuth()
+  const { authClient } = useAuth<OrganizationAuthClient>()
   const { creatorRole } = useAuthPlugin(organizationPlugin)
-  const { data: memberRole, isPending } = useActiveMemberRole(
-    authClient as OrganizationAuthClient,
-    { query: { organizationId } }
-  )
+  const { data: memberRole, isPending } = useActiveMemberRole(authClient, {
+    query: { organizationId }
+  })
   const canViewOrganization =
     hasMemberRole(memberRole?.role, creatorRole) ||
     hasMemberRole(memberRole?.role, "admin")
@@ -543,4 +532,13 @@ export function OrganizationActivity({
       {...props}
     />
   )
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? String(value)
+    : fallback
 }

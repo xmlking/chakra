@@ -22,6 +22,7 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
+    "files-sdk": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

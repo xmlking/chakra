@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger
 } from "#components/shadcn/dropdown-menu"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 
 export type TeamSwitcherProps = {
@@ -62,7 +62,7 @@ export function TeamSwitcher({
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       {trigger ? (
-        <DropdownMenuTrigger render={trigger} />
+        <DropdownMenuTrigger>{trigger}</DropdownMenuTrigger>
       ) : (
         <DropdownMenuTrigger
           className={cn(

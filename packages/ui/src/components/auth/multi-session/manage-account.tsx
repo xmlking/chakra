@@ -19,7 +19,7 @@ import {
 } from "#components/shadcn/dropdown-menu"
 import { Item, ItemActions } from "#components/shadcn/item"
 import { Spinner } from "#components/shadcn/spinner"
-import { multiSessionPlugin } from "#lib/auth/multi-session-plugin"
+import { multiSessionPlugin } from "@better-auth-ui/core/plugins/multi-session"
 import { cn } from "cn"
 
 export type ManageAccountProps = {

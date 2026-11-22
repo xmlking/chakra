@@ -1,8 +1,16 @@
 // oxlint-disable react-doctor/react-compiler-no-manual-memoization
 "use client";
+import { navigate } from "astro:transitions/client";
 import { forceCollide, forceLink, forceManyBody } from "d3-force";
-import { useRouter } from "fumadocs-core/framework";
-import { lazy, type RefObject, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import {
+  lazy,
+  type RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type {
   ForceGraphMethods,
   ForceGraphProps,
@@ -43,6 +51,23 @@ function useIsHydrated() {
   );
 }
 
+/** the content size of `ref`, the canvas defaults to the window size without it */
+function useElementSize(ref: RefObject<HTMLElement | null>) {
+  const [size, setSize] = useState<{ width: number; height: number }>();
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return size;
+}
+
 export function GraphView(props: GraphViewProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isHydrated = useIsHydrated();
@@ -50,7 +75,7 @@ export function GraphView(props: GraphViewProps) {
   return (
     <div
       ref={ref}
-      className="bg-fd-background relative h-[600px] overflow-hidden rounded-xl border [&_canvas]:size-full"
+      className="bg-fd-background relative min-h-[400px] flex-1 overflow-hidden rounded-xl border"
     >
       {isHydrated && <ClientOnly {...props} containerRef={ref} />}
     </div>
@@ -63,7 +88,8 @@ function ClientOnly({
 }: GraphViewProps & { containerRef: RefObject<HTMLDivElement | null> }) {
   const graphRef = useRef<ForceGraphMethods<Node, Link> | undefined>(undefined);
   const hoveredRef = useRef<Node | null>(null);
-  const router = useRouter();
+  const fittedRef = useRef(false);
+  const size = useElementSize(containerRef);
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
@@ -150,6 +176,8 @@ function ClientOnly({
     };
   }, [graph]);
 
+  if (!size) return null;
+
   return (
     <>
       <ForceGraph2D<NodeType, LinkType>
@@ -166,12 +194,21 @@ function ClientOnly({
             }
           },
         }}
+        width={size.width}
+        height={size.height}
+        // fit every node once the first layout settles, later drags keep the user's zoom
+        onEngineStop={() => {
+          if (fittedRef.current) return;
+          fittedRef.current = true;
+          graphRef.current?.zoomToFit(400, 40);
+        }}
         graphData={enrichedNodes}
         nodeCanvasObject={nodeCanvasObject}
         linkColor={linkColor}
         onNodeHover={handleNodeHover}
         onNodeClick={async (node) => {
-          await router.push(node.url);
+          // page URLs have no base path
+          await navigate(`${import.meta.env.BASE_URL.replace(/\/$/, "")}${node.url}`);
         }}
         linkWidth={2}
         enableNodeDrag

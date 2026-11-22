@@ -212,6 +212,7 @@ export const FileActions = ({
 
           {!isDelete && (
             <Input
+              aria-label={isRename ? "New name" : "Destination key"}
               autoFocus
               onChange={(event) => setDest(event.target.value)}
               placeholder={isRename ? "New name" : "Destination key"}

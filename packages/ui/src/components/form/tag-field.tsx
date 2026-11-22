@@ -65,7 +65,7 @@ export function TagField({
         autocompleteOptions={autocompleteTags}
         id={field.name}
         name={field.name}
-        // onBlur={field.handleBlur}
+        onBlur={field.handleBlur}
         setActiveTagIndex={setActiveTagIndex}
         setTags={handleTagsChange}
         styleClasses={{

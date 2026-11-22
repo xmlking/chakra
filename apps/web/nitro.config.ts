@@ -3,7 +3,7 @@ import { defineConfig } from "nitro";
 
 import { ENV } from "./env";
 
-const ONRAMP_SCHEDULER_CRON = ENV.ONRAMP_SCHEDULER_CRON || "* * * * *";
+const EVENT_BUS_METRICS_CRON = ENV.EVENT_BUS_METRICS_CRON || "* * * * *";
 
 export default defineConfig({
   // Nitro 3 defaults this to false, so `server/` is not scanned at all and
@@ -22,15 +22,15 @@ export default defineConfig({
     "./src/server/plugins/event-bus.ts",
   ],
   tasks: {
-    "work:onramp-webhooks-check": {
-      handler: "#server/tasks/onramp-webhooks-check.ts",
-      description: "Run onramp webhooks check",
+    "monitor:event-bus-metrics": {
+      handler: "#server/tasks/event-bus-metrics.ts",
+      description: "Log event bus connection metrics",
     },
   },
   scheduledTasks: {
     // FIXME: https://github.com/nitrojs/nitro/pull/4416
-    // Run `onramp-webhooks-check` task on schedule
-    [ONRAMP_SCHEDULER_CRON]: ["work:onramp-webhooks-check"],
+    // Run the `event-bus-metrics` example task on schedule
+    [EVENT_BUS_METRICS_CRON]: ["monitor:event-bus-metrics"],
   },
   // preset: "bun",
   // compressPublicAssets: { brotli: true },
@@ -48,6 +48,11 @@ export default defineConfig({
     }),
   ],
   rollupConfig: { external: [/^@sentry\//, "motion"] },
+  // `@workflow/core` can still fall back to resolving the target world package
+  // from disk at runtime. The production image ships only `.output`, so trace
+  // the whole package (and its `pg` dependency) into
+  // `.output/server/node_modules` as a safety net for that path.
+  traceDeps: ["@workflow/world-postgres*"],
   // Nitro enables wasm by default, which adds the "unwasm" export
   // condition. That routes `shiki/wasm` to its raw `onig.wasm` file, which
   // Vite/Rolldown cannot load during the SSR build ([UNLOADABLE_DEPENDENCY]).

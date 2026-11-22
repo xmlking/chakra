@@ -1,14 +1,14 @@
-import { authMutationKeys } from "@better-auth-ui/core"
+import { authMutationKeys, validateEmailAddress } from "@better-auth-ui/core"
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp"
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso"
-import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
+import { useAuth, useAuthPlugin, useFetchOptions } from "@better-auth-ui/react"
 import {
   useSendVerificationOtp,
   useSignInEmailOtp
 } from "@better-auth-ui/react/plugins/email-otp"
 import { useSelector } from "@tanstack/react-form"
 import { useIsMutating } from "@tanstack/react-query"
-import { useState } from "react"
+import { useId, useState } from "react"
 
 import { Button } from "#components/shadcn/button"
 import {
@@ -26,11 +26,16 @@ import {
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp"
 import { useResendCooldown } from "#lib/auth/use-resend-cooldown"
 import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
 import { cn } from "cn"
-import { runAuthFormAction, submitAuthForm, useAuthForm } from "../auth-form"
+import {
+  isAuthFormFieldInvalid,
+  runAuthFormAction,
+  submitAuthForm,
+  useAuthForm
+} from "../auth-form"
 import { OpenEmailButton } from "../open-email-button"
 import { OtpField } from "../otp-field"
 import { ProviderButtons, type SocialLayout } from "../provider-buttons"
@@ -57,6 +62,7 @@ export function EmailOtp({
   socialLayout,
   socialPosition = "bottom"
 }: EmailOtpProps) {
+  const emailErrorId = useId()
   const {
     authClient,
     basePaths,
@@ -66,11 +72,15 @@ export function EmailOtp({
     socialProviders,
     viewPaths,
     Link
-  } = useAuth()
+  } = useAuth<EmailOtpAuthClient>()
   const { localization: emailOtpLocalization, otpLength } =
     useAuthPlugin(emailOtpPlugin)
 
-  const otpClient = authClient as EmailOtpAuthClient
+  const { fetchOptions, resetCaptcha } = useFetchOptions()
+  const Captcha = plugins.find((plugin) =>
+    Boolean(plugin.captchaComponent)
+  )?.captchaComponent
+  const otpClient = authClient
   const continueSignIn = useSignInContinuation()
   const { cooldown, isCoolingDown, startCooldown } = useResendCooldown()
 
@@ -78,7 +88,9 @@ export function EmailOtp({
 
   const { mutateAsync: sendVerificationOtp, isPending: isSending } =
     useSendVerificationOtp(otpClient, {
+      onError: () => resetCaptcha(),
       onSuccess: () => {
+        resetCaptcha()
         setCodeSent(true)
         startCooldown()
       }
@@ -86,7 +98,10 @@ export function EmailOtp({
 
   const { mutateAsync: signInEmailOtp, isPending: isSigningIn } =
     useSignInEmailOtp(otpClient, {
-      onError: () => form.setFieldValue("code", ""),
+      onError: () => {
+        form.setFieldValue("code", "")
+        resetCaptcha()
+      },
       onSuccess: (data) => continueSignIn(data)
     })
 
@@ -99,16 +114,18 @@ export function EmailOtp({
   const isPending = signInMutating + signUpMutating > 0 || isSending
 
   const sendCode = async () =>
-    await sendVerificationOtp({
+    sendVerificationOtp({
       email: form.state.values.email,
-      type: "sign-in"
+      type: "sign-in",
+      fetchOptions
     })
   const verifyCode = async (completedCode: string) => {
     if (isPending || isSigningIn) return
 
     await signInEmailOtp({
       email: form.state.values.email,
-      otp: completedCode
+      otp: completedCode,
+      fetchOptions
     })
   }
 
@@ -116,7 +133,11 @@ export function EmailOtp({
     defaultValues: { code: "", email: getSsoFallbackEmail() },
     onSubmit: async ({ value }) => {
       if (!codeSent) {
-        await sendVerificationOtp({ email: value.email, type: "sign-in" })
+        await sendVerificationOtp({
+          email: value.email,
+          type: "sign-in",
+          fetchOptions
+        })
         return
       }
 
@@ -161,13 +182,12 @@ export function EmailOtp({
           )}
 
           <form.AppForm>
-            <form.AuthFormRoot>
+            <form.AuthFormRoot noValidate>
               <FieldGroup>
                 {codeSent ? (
                   <form.AppField name="code">
                     {(field) => (
                       <OtpField
-                        autoFocus
                         disabled={isPending || isSigningIn}
                         label={emailOtpLocalization.code}
                         length={otpLength}
@@ -179,15 +199,34 @@ export function EmailOtp({
                     )}
                   </form.AppField>
                 ) : (
-                  <form.AppField name="email">
+                  <form.AppField
+                    name="email"
+                    validators={{
+                      onChange: ({ value }) =>
+                        validateEmailAddress(value, {
+                          invalidMessage: localization.auth.invalidEmail,
+                          requiredMessage: localization.auth.fieldRequired
+                        })
+                    }}
+                  >
                     {(field) => (
-                      <Field>
+                      <Field
+                        data-invalid={isAuthFormFieldInvalid(field.state.meta)}
+                      >
                         <FieldLabel htmlFor="email">
                           {localization.auth.email}
                         </FieldLabel>
                         <Input
                           id="email"
+                          aria-describedby={
+                            isAuthFormFieldInvalid(field.state.meta)
+                              ? emailErrorId
+                              : undefined
+                          }
                           name={field.name}
+                          aria-invalid={isAuthFormFieldInvalid(
+                            field.state.meta
+                          )}
                           type="email"
                           autoComplete="email"
                           value={field.state.value}
@@ -199,13 +238,17 @@ export function EmailOtp({
                           required
                           disabled={isPending}
                         />
-                        <field.AuthFormFieldError />
+                        <field.AuthFormFieldError id={emailErrorId} />
                       </Field>
                     )}
                   </form.AppField>
                 )}
 
                 <form.AuthFormServerError />
+
+                {Captcha && (
+                  <div className="flex justify-center">{Captcha}</div>
+                )}
 
                 <div className="flex flex-col gap-3">
                   <form.AuthFormSubmitButton

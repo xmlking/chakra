@@ -28,7 +28,7 @@ import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { siwePlugin } from "#lib/auth/siwe-plugin"
+import { siwePlugin } from "@better-auth-ui/core/plugins/siwe"
 import { cn } from "cn"
 
 const shortAddress = (address: string) =>

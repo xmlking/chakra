@@ -30,6 +30,8 @@ const TERMINAL_LINES = [
 const SUCCESS_LINE = "Done! Theme system ready.";
 
 // oxlint-disable-next-line react-doctor/prefer-useReducer
+const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
 export function HeroSection() {
   const [typedCommand, setTypedCommand] = useState("");
   const [isTyping, setIsTyping] = useState(true);
@@ -58,25 +60,20 @@ export function HeroSection() {
   }, [typedCommand]);
 
   const showTerminalLinesSequence = async () => {
-    await TERMINAL_LINES.reduce(
-      (promise, line) =>
-        promise.then(() =>
-          new Promise<void>((resolve) => setTimeout(resolve, line.delay)).then(() => {
-            setTerminalLines((prev) => [...prev, line.text]);
-          }),
-        ),
-      Promise.resolve(),
-    );
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    for (const line of TERMINAL_LINES) {
+      await sleep(line.delay);
+      setTerminalLines((prev) => [...prev, line.text]);
+    }
+    await sleep(300);
     setShowSuccess(true);
     // Show component preview
-    await new Promise((resolve) => setTimeout(resolve, 600));
+    await sleep(600);
     setShowPreview(true);
     // Open main menu
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await sleep(400);
     setShowMainMenu(true);
     // Open sub menu with themes
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    await sleep(500);
     setShowSubMenu(true);
   };
 

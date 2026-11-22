@@ -15,7 +15,8 @@
       "Skill(claude-code-settings:codex-skill)",
       "Skill(autonomous-skill)",
       "Skill(claude-code-settings:autonomous-skill)",
-      "Bash(codex:*)"
+      "Bash(codex:*)",
+      "Read(**/.env.schema)"
     ],
     "deny": [
       "Bash(rm -rf:*)",

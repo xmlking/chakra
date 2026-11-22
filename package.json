@@ -24,11 +24,14 @@
   ],
   "type": "module",
   "scripts": {
+    "build": "pnpm --filter @workspace/i18n run build && APP_ENV=build VARLOCK_TELEMETRY_DISABLED=1 pnpm --filter web run build",
     "check": "vp check",
     "clean": "git clean -xdf coverage .evlog '.workflow-*' node_modules",
     "codegen": "vp run --filter './apps/*' --filter './packages/*' codegen",
     "prepare": "vp config",
-    "ready": "vp check && vp test && vp run -r build"
+    "ready": "vp check && vp test && vp run -r build",
+    "test": "APP_ENV=test vp test",
+    "test:coverage": "playwright install --with-deps chromium-headless-shell && APP_ENV=test vp test --coverage"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
@@ -38,9 +41,8 @@
     "@vitest/coverage-v8": "catalog:",
     "@vitest/ui": "catalog:",
     "@workflow/vitest": "catalog:",
-    "drizzle-kit": "catalog:",
     "oxlint-plugin-react-doctor": "catalog:",
-    "playwright": "1.64.1",
+    "playwright": "1.65.1",
     "shadcn": "catalog:",
     "typescript": "catalog:",
     "varlock": "catalog:",

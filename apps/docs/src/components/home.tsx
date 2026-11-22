@@ -4,17 +4,12 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@workspace/ui/comp
 import { cn } from "cn";
 // oxlint-disable react-doctor/jsx-pascal-case
 import { Database, Plug, Zap, Lock, Shuffle, Globe, Star } from "lucide-react";
-import { Link } from "waku";
 
-// oxlint-disable-next-line import/no-default-export
-export default function Page() {
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+export function Home() {
   return (
     <>
-      <title>Chakra AI</title>
-      <meta
-        property="description"
-        content="One API to read & write database, for your next library."
-      />
       <Hero />
       <Features />
       <CTA />
@@ -42,15 +37,15 @@ function Hero() {
           Evaluate, score, and optimize your agents with expert guidance on the path to production.
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-3 max-lg:justify-center">
-          <Link
-            to="/docs"
+          <a
+            href={`${basePath}/docs`}
             className={cn(
               buttonVariants({ size: "lg" }),
               "rounded-full text-sm tracking-normal normal-case",
             )}
           >
             Read the Docs
-          </Link>
+          </a>
 
           <a
             href="https://github.com/xmlking/chakra"
@@ -77,7 +72,7 @@ function Hero() {
 
       <img
         alt="banner"
-        src="banner.png"
+        src={`${basePath}/banner.png`}
         width="500"
         className="max-lg:-mt-36"
         fetchPriority="high"
@@ -145,12 +140,15 @@ function Features() {
           <Card
             // oxlint-disable-next-line react-doctor/no-array-index-key react-doctor/no-array-index-as-key
             key={i}
-            className="border bg-card/70 shadow-lg backdrop-saturate-200 dark:bg-card/50"
+            size="sm"
+            className="rounded-xl border bg-card/70 shadow-lg backdrop-saturate-200 dark:bg-card/50"
           >
             <CardHeader>
               <div className="flex items-center gap-3">
                 <FeatureIcon>{c.icon}</FeatureIcon>
-                <CardTitle>{c.title}</CardTitle>
+                <CardTitle className="font-sans text-base font-semibold tracking-normal normal-case">
+                  {c.title}
+                </CardTitle>
               </div>
               <CardDescription>{c.desc}</CardDescription>
             </CardHeader>
@@ -170,24 +168,24 @@ function CTA() {
         Implement FumaDB in minutes. Migrate slowly, or switch drivers instantly.
       </p>
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link
-          to="/docs/openapi"
+        <a
+          href={`${basePath}/docs/openapi`}
           className={cn(
             buttonVariants({}),
             "rounded-full text-sm font-semibold tracking-normal normal-case",
           )}
         >
           Get Started
-        </Link>
-        <Link
-          to="/docs"
+        </a>
+        <a
+          href={`${basePath}/docs`}
           className={cn(
             buttonVariants({ variant: "outline" }),
             "rounded-full bg-background text-sm font-semibold tracking-normal normal-case",
           )}
         >
           Learn More
-        </Link>
+        </a>
       </div>
     </section>
   );

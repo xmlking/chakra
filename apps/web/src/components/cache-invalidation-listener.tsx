@@ -20,7 +20,7 @@ export function CacheInvalidationListener() {
 
     const source = new EventSource("/api/cache-events");
     source.addEventListener("ready", () => {
-      void invalidateOrganizationQueries(queryClient, organizationId).catch((error: unknown) => {
+      invalidateOrganizationQueries(queryClient, organizationId).catch((error: unknown) => {
         console.error(
           "Failed to refresh organization queries after opening cache event stream",
           error,
@@ -45,7 +45,7 @@ export function CacheInvalidationListener() {
       }
       if (parsed.data.organizationId !== organizationId) return;
 
-      void invalidateTaggedQueries(queryClient, organizationId, parsed.data.tags).catch(
+      invalidateTaggedQueries(queryClient, organizationId, parsed.data.tags).catch(
         (error: unknown) => {
           console.error("Failed to invalidate organization queries", error);
         },

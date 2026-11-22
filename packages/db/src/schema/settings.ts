@@ -1,7 +1,5 @@
 import { sql } from "drizzle-orm";
 import { check, primaryKey, snakeCase } from "drizzle-orm/pg-core";
-import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-orm/zod";
-import { z } from "zod";
 
 import { organization } from "./auth";
 import { auditColumns } from "./column";
@@ -29,41 +27,3 @@ export const settings = snakeCase.table(
 );
 
 // ------------------ relations ------------------
-
-// ------------------ views ----------------------
-const KEY_REGEX = /^[A-Z]+(_[A-Z]+)*$/;
-// Schema
-export const settingsSelectSchema = createSelectSchema(settings);
-export const settingsInsertSchema = createInsertSchema(settings, {
-  key: (schema) =>
-    schema
-      .min(1, { message: "Key is required" })
-      .max(64, { message: "Key must be less than 64 characters" })
-      .trim()
-      .regex(KEY_REGEX, { message: "Invalid key format" }),
-}).omit({
-  type: true,
-  organizationId: true,
-  createdAt: true,
-  createdBy: true,
-  updatedAt: true,
-  updatedBy: true,
-});
-export const settingsBulkInsertSchema = z.object({
-  settings: z.array(settingsInsertSchema).min(1, "At least one entity is required"),
-});
-
-export const settingsUpdateSchema = createUpdateSchema(settings).omit({
-  key: true,
-  type: true,
-  organizationId: true,
-  createdAt: true,
-  createdBy: true,
-  updatedAt: true,
-  updatedBy: true,
-});
-
-// Types
-export type SettingsInsert = z.infer<typeof settingsInsertSchema>;
-export type SettingsBulkInsertSchema = z.infer<typeof settingsBulkInsertSchema>;
-export type SettingsUpdate = z.infer<typeof settingsUpdateSchema>;

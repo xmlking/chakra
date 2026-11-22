@@ -4,6 +4,9 @@
   "private": true,
   "description": "Drizzle database module",
   "type": "module",
+  "imports": {
+    "#env": "./env.ts"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./event-bus": "./src/event-bus/index.ts",
@@ -21,7 +24,7 @@
     "postinstall": "varlock codegen",
     "pull": "varlock run -- drizzle-kit pull",
     "push": "varlock run -- drizzle-kit push",
-    "seed": "varlock run -- bun scripts/seed.ts",
+    "seed": "varlock run -- tsx scripts/seed.ts",
     "skills": "varlock run -- drizzle-kit skills",
     "studio": "varlock run -- drizzle-kit studio",
     "typecheck": "tsc --noEmit",
@@ -46,10 +49,12 @@
     "@workflow/world-postgres": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-seed": "catalog:",
+    "tsx": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
+    "evlog": "catalog:",
     "typescript": "catalog:"
   }
 }

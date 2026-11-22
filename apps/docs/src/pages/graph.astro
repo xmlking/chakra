@@ -1,0 +1,19 @@
+---
+import { GraphView } from "#components/graph-view";
+import { buildGraph } from "#lib/build-graph";
+import PageLayout from "../layouts/PageLayout.astro";
+
+const graph = await buildGraph();
+---
+
+<PageLayout title="Graph View">
+  <!-- the layout pads the page, the graph takes the rest of its height -->
+  <div class="flex flex-1 flex-col">
+    <h1 class="mb-2 text-2xl font-semibold tracking-tight text-fd-foreground">Graph View</h1>
+    <p class="mb-4 text-sm text-fd-muted-foreground">
+      Each node is a page. Edges are links between pages. Hover to see descriptions, click to
+      navigate.
+    </p>
+    <GraphView client:load graph={graph} />
+  </div>
+</PageLayout>

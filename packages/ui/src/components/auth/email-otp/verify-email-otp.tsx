@@ -24,7 +24,7 @@ import {
   FieldLabel
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp"
 import {
   RESEND_COOLDOWN_SECONDS,
   useResendCooldown
@@ -62,11 +62,11 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
     redirectTo,
     viewPaths,
     Link
-  } = useAuth()
+  } = useAuth<EmailOtpAuthClient>()
   const { localization: emailOtpLocalization, otpLength } =
     useAuthPlugin(emailOtpPlugin)
 
-  const otpClient = authClient as EmailOtpAuthClient
+  const otpClient = authClient
   const isHydrated = useIsHydrated()
 
   const [email, setEmail] = useState(
@@ -153,7 +153,6 @@ export function VerifyEmailOtp({ className }: VerifyEmailOtpProps) {
                 <form.AppField name="code">
                   {(field) => (
                     <OtpField
-                      autoFocus
                       disabled={isPending}
                       label={emailOtpLocalization.code}
                       length={otpLength}

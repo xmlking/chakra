@@ -1,4 +1,11 @@
-import { authMutationKeys, validateStringLength } from "@better-auth-ui/core"
+import {
+  getAuthErrorCode,
+  getAuthLinkURL,
+  authMutationKeys,
+  validateEmailAddress,
+  validateStringLength
+} from "@better-auth-ui/core"
+
 import {
   isPasskeyAutoFillEnabled,
   withPasskeyAutoFill
@@ -36,7 +43,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { useSignInContinuation } from "#lib/auth/use-sign-in-continuation"
-import { usernamePlugin } from "#lib/auth/username-plugin"
+import { usernamePlugin } from "@better-auth-ui/core/plugins/username"
 import { cn } from "cn"
 import { isAuthFormFieldInvalid, useAuthForm } from "../auth-form"
 import { LastUsedBadge } from "../last-login-method/last-used-badge"
@@ -46,10 +53,6 @@ export type SignInUsernameProps = {
   className?: string
   socialLayout?: SocialLayout
   socialPosition?: "top" | "bottom"
-}
-
-function isEmail(value: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
 /**
@@ -69,6 +72,7 @@ export function SignInUsername({
     localization,
     plugins,
     socialProviders,
+    redirectTo,
     viewPaths,
     navigate,
     Link
@@ -81,18 +85,8 @@ export function SignInUsername({
 
   const { mutateAsync: signInEmail, isPending: isSignInEmailPending } =
     useSignInEmail(authClient, {
-      onError: (error, { email }) => {
-        form.setFieldValue("password", "")
-
-        if (error.error?.code === "EMAIL_NOT_VERIFIED") {
-          sessionStorage.setItem("better-auth-ui.verify-email", email)
-          navigate({
-            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
-          })
-        }
-
-        resetFetchOptions()
-      },
+      meta: { errorPresentation: "inline" },
+      onError: () => resetFetchOptions(),
       onSuccess: (data) => {
         sessionStorage.removeItem("better-auth-ui.verify-email")
         continueSignIn(data)
@@ -101,19 +95,8 @@ export function SignInUsername({
 
   const { mutateAsync: signInUsername, isPending: isSignInUsernamePending } =
     useSignInUsername(authClient, {
-      onError: (error) => {
-        form.setFieldValue("password", "")
-
-        if (error.error?.code === "EMAIL_NOT_VERIFIED") {
-          sessionStorage.removeItem("better-auth-ui.verify-email")
-
-          navigate({
-            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
-          })
-        }
-
-        resetFetchOptions()
-      },
+      meta: { errorPresentation: "inline" },
+      onError: () => resetFetchOptions(),
       onSuccess: (data) => {
         sessionStorage.removeItem("better-auth-ui.verify-email")
         continueSignIn(data)
@@ -129,8 +112,8 @@ export function SignInUsername({
   const isPending = signInMutating + signUpMutating > 0
   const isSignInPending = isSignInEmailPending || isSignInUsernamePending
 
-  const Captcha = plugins.find(
-    (plugin) => plugin.captchaComponent
+  const Captcha = plugins.find((plugin) =>
+    Boolean(plugin.captchaComponent)
   )?.captchaComponent
 
   const passkeyAutoFill = isPasskeyAutoFillEnabled(plugins)
@@ -139,23 +122,34 @@ export function SignInUsername({
   const form = useAuthForm({
     defaultValues: { identifier: "", password: "", rememberMe: false },
     onSubmit: async ({ value }) => {
-      if (isEmail(value.identifier)) {
-        await signInEmail({
-          email: value.identifier,
+      const identifier = value.identifier.trim()
+      const isEmail = identifier.includes("@")
+      try {
+        const params = {
           password: value.password,
           ...(emailAndPassword?.rememberMe
             ? { rememberMe: value.rememberMe }
             : {}),
           fetchOptions
-        })
-      } else {
-        await signInUsername({
-          username: value.identifier,
-          password: value.password,
-          ...(emailAndPassword?.rememberMe
-            ? { rememberMe: value.rememberMe }
-            : {}),
-          fetchOptions
+        }
+        if (isEmail) {
+          await signInEmail({ ...params, email: identifier })
+        } else {
+          await signInUsername({ ...params, username: identifier })
+        }
+      } catch (error) {
+        if (getAuthErrorCode(error) !== "EMAIL_NOT_VERIFIED") throw error
+
+        if (isEmail) {
+          sessionStorage.setItem("better-auth-ui.verify-email", identifier)
+        } else {
+          sessionStorage.removeItem("better-auth-ui.verify-email")
+        }
+        navigate({
+          to: getAuthLinkURL(
+            `${basePaths.auth}/${viewPaths.auth.verifyEmail}`,
+            redirectTo
+          )
         })
       }
     }
@@ -192,16 +186,23 @@ export function SignInUsername({
 
           {emailAndPassword?.enabled && (
             <form.AppForm>
-              <form.AuthFormRoot>
+              <form.AuthFormRoot
+                serverErrorMessage={localization.errors.generic}
+              >
                 <FieldGroup>
                   <form.AppField
                     name="identifier"
                     validators={{
                       onChange: ({ value }) =>
-                        validateStringLength(value, {
-                          requiredMessage: localization.auth.fieldRequired,
-                          trim: true
-                        })
+                        value.includes("@")
+                          ? validateEmailAddress(value, {
+                              invalidMessage: localization.auth.invalidEmail,
+                              requiredMessage: localization.auth.fieldRequired
+                            })
+                          : validateStringLength(value, {
+                              requiredMessage: localization.auth.fieldRequired,
+                              trim: true
+                            })
                     }}
                   >
                     {(field) => {
@@ -328,7 +329,9 @@ export function SignInUsername({
                               checked={field.state.value}
                               disabled={isPending}
                               onCheckedChange={(checked) =>
-                                field.handleChange(checked === true)
+                                field.handleChange(
+                                  typeof checked === "boolean" && checked
+                                )
                               }
                             />
 

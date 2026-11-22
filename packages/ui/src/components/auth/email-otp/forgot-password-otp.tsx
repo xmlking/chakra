@@ -2,6 +2,7 @@ import { getAuthLinkURL, validateEmailAddress } from "@better-auth-ui/core"
 import type { EmailOtpAuthClient } from "@better-auth-ui/core/plugins/email-otp"
 import { useAuth, useAuthPlugin, useFetchOptions } from "@better-auth-ui/react"
 import { useRequestPasswordResetOtp } from "@better-auth-ui/react/plugins/email-otp"
+import { useId } from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
 import {
@@ -11,7 +12,7 @@ import {
   FieldLabel
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp"
 import { cn } from "cn"
 import { isAuthFormFieldInvalid, useAuthForm } from "../auth-form"
 
@@ -34,6 +35,7 @@ export type ForgotPasswordOtpProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
+  const emailErrorId = useId()
   const {
     authClient,
     basePaths,
@@ -43,13 +45,14 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
     redirectTo,
     viewPaths,
     Link
-  } = useAuth()
+  } = useAuth<EmailOtpAuthClient>()
   const { localization: emailOtpLocalization } = useAuthPlugin(emailOtpPlugin)
 
   const { fetchOptions, resetFetchOptions } = useFetchOptions()
 
   const { mutateAsync: requestPasswordResetOtp, isPending } =
-    useRequestPasswordResetOtp(authClient as EmailOtpAuthClient, {
+    useRequestPasswordResetOtp(authClient, {
+      meta: { errorPresentation: "inline" },
       onError: () => resetFetchOptions(),
       onSuccess: (_data, { email }) => {
         sessionStorage.setItem(RESET_PASSWORD_OTP_STORAGE_KEY, email)
@@ -60,11 +63,11 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
   const form = useAuthForm({
     defaultValues: { email: "" },
     onSubmit: async ({ value }) =>
-      await requestPasswordResetOtp({ email: value.email, fetchOptions })
+      requestPasswordResetOtp({ email: value.email, fetchOptions })
   })
 
-  const Captcha = plugins.find(
-    (plugin) => plugin.captchaComponent
+  const Captcha = plugins.find((plugin) =>
+    Boolean(plugin.captchaComponent)
   )?.captchaComponent
 
   return (
@@ -77,7 +80,10 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
 
       <CardContent>
         <form.AppForm>
-          <form.AuthFormRoot>
+          <form.AuthFormRoot
+            noValidate
+            serverErrorMessage={localization.errors.generic}
+          >
             <FieldGroup>
               <form.AppField
                 name="email"
@@ -98,6 +104,7 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
                       </FieldLabel>
                       <Input
                         id="email"
+                        aria-describedby={isInvalid ? emailErrorId : undefined}
                         name={field.name}
                         type="email"
                         autoComplete="email"
@@ -111,7 +118,7 @@ export function ForgotPasswordOtp({ className }: ForgotPasswordOtpProps) {
                         }
                         aria-invalid={isInvalid}
                       />
-                      <field.AuthFormFieldError />
+                      <field.AuthFormFieldError id={emailErrorId} />
                     </Field>
                   )
                 }}

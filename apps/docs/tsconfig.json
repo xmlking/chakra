@@ -3,7 +3,8 @@
     "target": "ES2023",
     "lib": ["dom", "dom.iterable", "ES2023"],
     "jsx": "react-jsx",
-    "types": ["vite-plus/client"],
+    "jsxImportSource": "react",
+    "types": ["astro/client"],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -26,5 +27,6 @@
     },
     "noEmit": true
   },
+  "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["node_modules", "dist"]
 }

@@ -1,6 +1,9 @@
 import { validateMinimumItems } from "@better-auth-ui/core"
 import type { OrganizationAuthClient } from "@better-auth-ui/core/plugins/organization"
-import { parseMemberRoles } from "@better-auth-ui/core/plugins/organization"
+import {
+  parseMemberRoles,
+  organizationPlugin
+} from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useUpdateMemberRole } from "@better-auth-ui/react/plugins/organization"
 import { ShieldCheck } from "lucide-react"
@@ -27,7 +30,6 @@ import {
   FieldTitle
 } from "#components/shadcn/field"
 import { RadioGroup, RadioGroupItem } from "#components/shadcn/radio-group"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { useAuthForm } from "../auth-form"
 
 export type EditMemberRolesDialogProps = {
@@ -170,7 +172,11 @@ export function EditMemberRolesDialog({
                             disabled={disabled}
                             id={id}
                             onCheckedChange={(next) => {
-                              if (next === true && !checked) {
+                              if (
+                                typeof next === "boolean" &&
+                                next &&
+                                !checked
+                              ) {
                                 field.pushValue(role)
                                 return
                               }

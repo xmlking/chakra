@@ -20,13 +20,14 @@ import {
 } from "#components/shadcn/dialog"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import {
   getAuthAdditionalFieldValidators,
   isAuthFormFieldInvalid,
   useAuthForm
 } from "../auth-form"
-import { SlugField, sanitizeSlug } from "./slug-field"
+import { sanitizeSlug } from "./sanitize-slug"
+import { SlugField } from "./slug-field"
 
 /** Props for the `CreateOrganizationDialog` component. */
 export type CreateOrganizationDialogProps = {
@@ -127,7 +128,6 @@ export function CreateOrganizationDialog({
                       <Input
                         id="create-organization-name"
                         name={field.name}
-                        autoFocus
                         placeholder={organizationLocalization.namePlaceholder}
                         value={field.state.value}
                         onBlur={field.handleBlur}

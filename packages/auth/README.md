@@ -1,5 +1,15 @@
 # Auth
 
+## Role model
+
+- `superAdmin`: global application administrator; not an organization member role.
+- `admin`: organization administrator/member role.
+- `owner`: organization owner.
+- `member`: organization member.
+
+Use Better Auth's admin permission API for global `superAdmin` permissions and
+the organization permission API for `admin`, `owner`, and `member` permissions.
+
 ## Commands
 
 Update `better-auth` database schema, whenever auth config changed

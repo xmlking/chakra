@@ -1,0 +1,58 @@
+---
+title: Coding Agents
+description: "Instructions for Coding Agents"
+---
+
+## Install
+
+Install **Codex** or **Claude** you prefer or having license.
+
+```shell
+brew install --cask codex
+# or
+brew install --cask claude-code
+```
+
+## Troubleshoot
+
+In some environments, `MacOS Gatekeeper` may be preventing the binary from launching
+
+Here’s how you can get the Codex CLI working again on macOS:
+
+1. Remove the macOS quarantine flag
+
+   ```shell
+   xattr -d com.apple.quarantine $(which codex)
+   ```
+
+   ```shell
+   xattr -d com.apple.quarantine $(which claude)
+   ```
+
+2. Verify shell visibility and install path
+
+   <Callout type="info" title="Verify">
+     Confirm that the `codex` binary you’re invoking is the one you installed:
+   </Callout>
+
+   ```shell
+   which codex
+   codex --version
+   ```
+
+   ```shell
+   which claude
+   claude --version
+   ```
+
+   <Callout type="warn" title="Verify">
+     If these commands don’t show the correct path or version, make sure your `$PATH` includes the
+     directory where Codex/Claude was installed.
+   </Callout>
+
+3. Use the proper quit command for future sessions
+
+   <Callout type="info" title="Verify">
+     To exit gracefully, type `/quit` (not `\quit`). Using `/quit` ensures Codex cleans up before
+     terminating.
+   </Callout>

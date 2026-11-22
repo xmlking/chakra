@@ -15,7 +15,7 @@ const MAX_VISIBLE = 5;
 const actionRoutes: Record<string, string> = {
   workspace: "/dashboard/workspaces",
   product: "/dashboard/product",
-  billing: "/dashboard/billing",
+  // billing: "/dashboard/billing",
   open: "/dashboard/kanban",
   support: "/support",
 };
@@ -86,7 +86,9 @@ export function NotificationCenter() {
                     const route = actionRoutes[actionId];
                     if (route) {
                       markAsRead(notifId);
-                      void router.navigate({ to: route });
+                      router.navigate({ to: route }).catch((error: unknown) => {
+                        console.error("Failed to navigate from notification action", error);
+                      });
                     }
                   }}
                 />

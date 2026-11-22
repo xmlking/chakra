@@ -1,9 +1,15 @@
-import { authMutationKeys, validateEmailAddress } from "@better-auth-ui/core"
+import {
+  getAuthCallbackURL,
+  authMutationKeys,
+  validateEmailAddress
+} from "@better-auth-ui/core"
+
 import type { MagicLinkAuthClient } from "@better-auth-ui/core/plugins/magic-link"
 import { getSsoFallbackEmail } from "@better-auth-ui/core/plugins/sso"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useSignInMagicLink } from "@better-auth-ui/react/plugins/magic-link"
 import { useIsMutating } from "@tanstack/react-query"
+import { useId } from "react"
 
 import { Card, CardContent, CardHeader, CardTitle } from "#components/shadcn/card"
 import {
@@ -14,7 +20,7 @@ import {
   FieldSeparator
 } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { magicLinkPlugin } from "#lib/auth/magic-link-plugin"
+import { magicLinkPlugin } from "@better-auth-ui/core/plugins/magic-link"
 import { cn } from "cn"
 import { isAuthFormFieldInvalid, useAuthForm } from "./auth-form"
 import { MAGIC_LINK_SENT_STORAGE_KEY } from "./magic-link-sent"
@@ -40,6 +46,7 @@ export function MagicLink({
   socialLayout,
   socialPosition = "bottom"
 }: MagicLinkProps) {
+  const emailErrorId = useId()
   const {
     authClient,
     basePaths,
@@ -58,6 +65,7 @@ export function MagicLink({
 
   const { mutateAsync: signInMagicLink, isPending: signInMagicLinkPending } =
     useSignInMagicLink(authClient, {
+      meta: { errorPresentation: "inline" },
       onSuccess: (_data, variables) => {
         sessionStorage.setItem(MAGIC_LINK_SENT_STORAGE_KEY, variables.email)
         navigate({
@@ -77,8 +85,8 @@ export function MagicLink({
   const form = useAuthForm({
     defaultValues: { email: getSsoFallbackEmail() },
     onSubmit: async ({ value }) =>
-      await signInMagicLink({
-        callbackURL: `${baseURL}${redirectTo}`,
+      signInMagicLink({
+        callbackURL: getAuthCallbackURL(baseURL, redirectTo),
         email: value.email
       })
   })
@@ -109,7 +117,10 @@ export function MagicLink({
           )}
 
           <form.AppForm>
-            <form.AuthFormRoot>
+            <form.AuthFormRoot
+              noValidate
+              serverErrorMessage={localization.errors.generic}
+            >
               <FieldGroup>
                 <form.AppField
                   name="email"
@@ -130,6 +141,9 @@ export function MagicLink({
                         </FieldLabel>
                         <Input
                           id="email"
+                          aria-describedby={
+                            isInvalid ? emailErrorId : undefined
+                          }
                           name={field.name}
                           type="email"
                           autoComplete="email"
@@ -143,7 +157,7 @@ export function MagicLink({
                           disabled={isPending}
                           aria-invalid={isInvalid}
                         />
-                        <field.AuthFormFieldError />
+                        <field.AuthFormFieldError id={emailErrorId} />
                       </Field>
                     )
                   }}
@@ -166,6 +180,7 @@ export function MagicLink({
                     ))
                   )}
                 </div>
+                <form.AuthFormServerError />
               </FieldGroup>
             </form.AuthFormRoot>
           </form.AppForm>

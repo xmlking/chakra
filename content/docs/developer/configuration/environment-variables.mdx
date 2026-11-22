@@ -111,6 +111,67 @@ Never put a real secret in `.env.schema` or any other committed file.
   env to exactly what it declares.
 </Callout>
 
+## Variable reference
+
+Use the root `.env.local` for local development values. Deployed runtime values should come from
+the process environment or the platform's secret store. Never commit real secrets.
+
+### Workspace and app identity
+
+| Variable              | Used when             | Notes                                                                                                                                                |
+| --------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `APP_ENV`             | local, build, runtime | Selects `.env.[APP_ENV]` and `.env.[APP_ENV].local`. Use `development` locally, `build` during Docker builds, and `production` in the runtime image. |
+| `APP_NAME`            | local, build, runtime | Display name used by the app, docs and email templates.                                                                                              |
+| `FF_ENABLE_DARK_MODE` | local, build, runtime | Public dynamic feature flag for dark mode.                                                                                                           |
+
+### Authentication and Microsoft OAuth
+
+| Variable                          | Used when             | Notes                                                                                                                                              |
+| --------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_URL`                 | local, runtime        | Public dynamic base URL for Better Auth callbacks and API clients. Set it to the local web URL for development and the deployed origin at runtime. |
+| `BETTER_AUTH_SECRET`              | local, build, runtime | Secret used by Better Auth. Provide the real value through `.env.local` or the runtime secret store.                                               |
+| `BETTER_AUTH_JWT_EXPIRATION_TIME` | local, runtime        | JWT expiration duration. The auth package provides a default, but deployments can override it.                                                     |
+| `MICROSOFT_CLIENT_ID`             | local, runtime        | Microsoft OAuth application client id.                                                                                                             |
+| `MICROSOFT_CLIENT_SECRET`         | local, runtime        | Microsoft OAuth client secret.                                                                                                                     |
+| `MICROSOFT_TENANT_ID`             | local, runtime        | Microsoft tenant id used by the Microsoft OAuth provider.                                                                                          |
+
+### Database and seed data
+
+| Variable                        | Used when             | Notes                                                                                                                  |
+| ------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                  | local, build, runtime | PostgreSQL connection string used by the app, migrations, workflow storage and seed scripts. Build uses a placeholder. |
+| `BETTER_AUTH_ADMINS`            | local, build, runtime | Comma-separated UUIDv7 user ids granted admin access. Also used by seed scripts.                                       |
+| `BETTER_AUTH_ADMIN_EMAIL`       | local, build          | Admin email used by local seed/admin setup.                                                                            |
+| `BETTER_AUTH_ADMIN_PASSWORD`    | local, build          | Admin password used by local seed/admin setup.                                                                         |
+| `SHARED_ORGANIZATION_ID`        | local, build          | UUIDv7 organization id used by the seed script for shared local data.                                                  |
+
+### Email delivery
+
+| Variable                 | Used when             | Notes                                                                                                |
+| ------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| `EMAIL_FROM`             | local, runtime        | Sender address used by auth and app emails.                                                          |
+| `RESEND_API_KEY`         | local, build, runtime |  |
+| `SMTP_HOST`              | local, build, runtime |                                                               |
+| `SMTP_PORT`              | local, build, runtime |                                                       |
+| `SMTP_USER`              | local, build, runtime |          |
+| `SMTP_PASS`              | local, build, runtime |             |
+
+### File storage
+
+| Variable           | Used when             | Notes                                                                                               |
+| ------------------ | --------------------- | --------------------------------------------------------------------------------------------------- | --- |
+| `FILES_API_SECRET` | local, build, runtime | Secret used to protect file API endpoints. Use a placeholder in build and a real secret at runtime. |     |
+
+### AI and GitHub integration
+
+| Variable             | Used when             | Notes                                                                                         |
+| -------------------- | --------------------- | --------------------------------------------------------------------------------------------- |
+| `OPENAI_API_KEY`     | local, build, runtime | Required by the AI SDK and populated into `process.env` by varlock. Build uses a placeholder. |
+| `OPENROUTER_API_KEY` | local, runtime        | Optional API key for OpenRouter-backed AI calls when that provider is enabled.                |
+| `GITHUB_TOKEN`       | local, runtime        | Optional GitHub token for GitHub API access.                                                  |
+| `GITHUB_APP_ID`      | local, runtime        | GitHub App id for app-based GitHub integration.                                               |
+| `GITHUB_PRIVATE_KEY` | local, runtime        | GitHub App private key. Store as a secret and preserve the multi-line key format.             |
+
 ## Running things
 
 | Context                                | How env is loaded                                           |
@@ -127,8 +188,8 @@ first access.
 ## Environments
 
 `APP_ENV` (declared in the root schema) selects extra files: `.env.[APP_ENV]` and
-`.env.[APP_ENV].local` are loaded on top of the schema. The web build sets `APP_ENV=build`,
-and the runtime image sets `APP_ENV=production`.
+`.env.[APP_ENV].local` are loaded on top of the schema, if present. The Dockerfile sets
+`APP_ENV=build` for the build stage and `APP_ENV=production` for the runtime image.
 `NODE_ENV` is left to the frameworks and is not used as an environment switch.
 
 Values from the process environment always win over files, which is how compose and CI supply

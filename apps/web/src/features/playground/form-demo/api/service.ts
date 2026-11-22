@@ -1,0 +1,71 @@
+"use server";
+
+import { createServerFn } from "@tanstack/react-start";
+import { db } from "@workspace/db";
+import { ValidationError } from "@workspace/shared/errors";
+import { sleep } from "@workspace/shared/helpers";
+import { z } from "zod";
+
+import { validate } from "#lib/utils/validate";
+
+import { projectDeleteSchema, projectValidationSchema } from "../schema";
+
+export const createProject = createServerFn({ method: "POST" })
+  .validator(validate(projectValidationSchema))
+  .handler(async ({ data: parsedInput }) => {
+    console.debug(parsedInput);
+
+    const response = await db.query.settings.findMany({
+      with: {
+        organization: true,
+      },
+    });
+    console.debug("Existing settings:", response);
+    await sleep(2000);
+
+    if (Math.random() < 0.2) {
+      throw new ValidationError({
+        field: "email",
+        message: "Email already exists",
+      });
+    }
+
+    return { success: true, data: "Project created successfully" };
+  });
+
+export const updateProject = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      id: z.number().int().positive({ message: "Invalid project ID" }),
+      value: projectValidationSchema,
+    }),
+  )
+  .handler(async ({ data: parsedInput }) => {
+    // do something with the data
+    console.debug(parsedInput);
+    await sleep(2000);
+
+    return {
+      success: true,
+      message: "Project updated successfully",
+    };
+  });
+
+export const deleteProject = createServerFn({ method: "POST" })
+  .validator(projectDeleteSchema)
+  .handler(async ({ data: parsedInput }) => {
+    // do something with the data
+    console.debug(parsedInput);
+    await sleep(2000);
+
+    return {
+      success: true,
+      message: "Project deleted successfully",
+    };
+  });
+
+export const greetUser = createServerFn({ method: "GET" })
+  .validator((data: { name: string }) => data)
+  .handler(async ({ data }) => {
+    return `Hello, ${data.name}!`;
+  });
