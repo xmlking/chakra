@@ -1,5 +1,4 @@
 import { hashPassword } from "@better-auth/utils/password";
-import { eq } from "drizzle-orm";
 import { reset, seed } from "drizzle-seed";
 
 import { ENV } from "#env";

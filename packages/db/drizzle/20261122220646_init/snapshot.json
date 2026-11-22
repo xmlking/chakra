@@ -2,7 +2,7 @@
   "type": "base",
   "version": "9",
   "dialect": "postgres",
-  "id": "c0c491b3-fb07-4505-9b77-6cd84da11f5f",
+  "id": "56a2cadd-12bc-43cc-880f-d8991e0d34a2",
   "prevIds": [
     "00000000-0000-0000-0000-000000000000"
   ],
@@ -137,6 +137,26 @@
       "statementTarget": [
         "table",
         "public",
+        "inbox_presence"
+      ],
+      "writes": [
+        "s|tbl|public.inbox_presence",
+        "n|tbl|public.inbox_presence",
+        "e|tbl|public.inbox_presence",
+        "n|rel|public.inbox_presence",
+        "n|type|public.inbox_presence",
+        "n|rel|public.inbox_presence_pkey",
+        "n|rel|public.inbox_presence_user_id_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
         "invitation"
       ],
       "writes": [
@@ -203,6 +223,25 @@
         "n|rel|public.notification",
         "n|type|public.notification",
         "n|rel|public.notification_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "notification_delivery"
+      ],
+      "writes": [
+        "s|tbl|public.notification_delivery",
+        "n|tbl|public.notification_delivery",
+        "e|tbl|public.notification_delivery",
+        "n|rel|public.notification_delivery",
+        "n|type|public.notification_delivery",
+        "n|rel|public.notification_delivery_pkey"
       ],
       "reads": [
         "n|sch|public"
@@ -1308,6 +1347,29 @@
       "statementTarget": [
         "table",
         "public",
+        "inbox_presence"
+      ],
+      "writes": [
+        "s|fk|public.inbox_presence.inbox_presence_user_id_user_id_fkey",
+        "n|fk|public.inbox_presence.inbox_presence_user_id_user_id_fkey",
+        "e|fk|public.inbox_presence.inbox_presence_user_id_user_id_fkey",
+        "n|con|public.inbox_presence.inbox_presence_user_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.inbox_presence",
+        "n|sch|public",
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.inbox_presence.user_id",
+        "n|col|public.user.id",
+        "e|uniqueness|public.user.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
         "invitation"
       ],
       "writes": [
@@ -1414,6 +1476,52 @@
         "n|tbl|public.user",
         "n|sch|public",
         "n|col|public.notification.user_id",
+        "n|col|public.user.id",
+        "e|uniqueness|public.user.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "notification_delivery"
+      ],
+      "writes": [
+        "s|fk|public.notification_delivery.notification_delivery_notification_id_notification_id_fkey",
+        "n|fk|public.notification_delivery.notification_delivery_notification_id_notification_id_fkey",
+        "e|fk|public.notification_delivery.notification_delivery_notification_id_notification_id_fkey",
+        "n|con|public.notification_delivery.notification_delivery_notification_id_notification_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.notification_delivery",
+        "n|sch|public",
+        "n|tbl|public.notification",
+        "n|sch|public",
+        "n|col|public.notification_delivery.notification_id",
+        "n|col|public.notification.id",
+        "e|uniqueness|public.notification.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "notification_delivery"
+      ],
+      "writes": [
+        "s|fk|public.notification_delivery.notification_delivery_user_id_user_id_fkey",
+        "n|fk|public.notification_delivery.notification_delivery_user_id_user_id_fkey",
+        "e|fk|public.notification_delivery.notification_delivery_user_id_user_id_fkey",
+        "n|con|public.notification_delivery.notification_delivery_user_id_user_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.notification_delivery",
+        "n|sch|public",
+        "n|tbl|public.user",
+        "n|sch|public",
+        "n|col|public.notification_delivery.user_id",
         "n|col|public.user.id",
         "e|uniqueness|public.user.id"
       ]
@@ -1946,6 +2054,12 @@
     },
     {
       "schema": "public",
+      "name": "inbox_presence",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
       "name": "invitation",
       "isRlsEnabled": false,
       "entityType": "tables"
@@ -1965,6 +2079,12 @@
     {
       "schema": "public",
       "name": "notification",
+      "isRlsEnabled": false,
+      "entityType": "tables"
+    },
+    {
+      "schema": "public",
+      "name": "notification_delivery",
       "isRlsEnabled": false,
       "entityType": "tables"
     },
@@ -2703,6 +2823,45 @@
     },
     {
       "schema": "public",
+      "table": "inbox_presence",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "uuidv7()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "inbox_presence",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "inbox_presence",
+      "name": "last_seen_at",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
       "table": "invitation",
       "name": "id",
       "type": "uuid",
@@ -3094,6 +3253,175 @@
     {
       "schema": "public",
       "table": "notification",
+      "name": "seen_at",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification",
+      "name": "created_at",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "uuidv7()",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "notification_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "user_id",
+      "type": "uuid",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "type",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "channel",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "status",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "scheduled_for",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "attempts",
+      "type": "integer",
+      "typeSchema": null,
+      "notNull": true,
+      "dimensions": 0,
+      "default": "0",
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "claimed_at",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "sent_at",
+      "type": "timestamp",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "detail",
+      "type": "text",
+      "typeSchema": null,
+      "notNull": false,
+      "dimensions": 0,
+      "default": null,
+      "generated": null,
+      "identity": null,
+      "entityType": "columns"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
       "name": "created_at",
       "type": "timestamp",
       "typeSchema": null,
@@ -6268,6 +6596,23 @@
     },
     {
       "schema": "public",
+      "table": "inbox_presence",
+      "name": "inbox_presence_user_id_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "user",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
       "table": "invitation",
       "name": "invitation_organization_id_organization_id_fkey",
       "nameExplicit": false,
@@ -6338,6 +6683,40 @@
       "schema": "public",
       "table": "notification",
       "name": "notification_user_id_user_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "user",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "notification_delivery_notification_id_notification_id_fkey",
+      "nameExplicit": false,
+      "columns": [
+        "notification_id"
+      ],
+      "schemaTo": "public",
+      "tableTo": "notification",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "NO ACTION",
+      "onDelete": "CASCADE",
+      "entityType": "fks"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "notification_delivery_user_id_user_id_fkey",
       "nameExplicit": false,
       "columns": [
         "user_id"
@@ -6768,6 +7147,16 @@
     },
     {
       "schema": "public",
+      "table": "inbox_presence",
+      "name": "inbox_presence_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
       "table": "invitation",
       "name": "invitation_pkey",
       "columns": [
@@ -6800,6 +7189,16 @@
       "schema": "public",
       "table": "notification",
       "name": "notification_pkey",
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "notification_delivery",
+      "name": "notification_delivery_pkey",
       "columns": [
         "id"
       ],
@@ -6975,6 +7374,17 @@
       ],
       "nameExplicit": false,
       "entityType": "pks"
+    },
+    {
+      "schema": "public",
+      "table": "inbox_presence",
+      "name": "inbox_presence_user_id_key",
+      "nameExplicit": false,
+      "columns": [
+        "user_id"
+      ],
+      "nullsNotDistinct": false,
+      "entityType": "uniques"
     },
     {
       "schema": "public",

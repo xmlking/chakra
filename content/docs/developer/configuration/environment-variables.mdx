@@ -137,24 +137,24 @@ the process environment or the platform's secret store. Never commit real secret
 
 ### Database and seed data
 
-| Variable                        | Used when             | Notes                                                                                                                  |
-| ------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`                  | local, build, runtime | PostgreSQL connection string used by the app, migrations, workflow storage and seed scripts. Build uses a placeholder. |
-| `BETTER_AUTH_ADMINS`            | local, build, runtime | Comma-separated UUIDv7 user ids granted admin access. Also used by seed scripts.                                       |
-| `BETTER_AUTH_ADMIN_EMAIL`       | local, build          | Admin email used by local seed/admin setup.                                                                            |
-| `BETTER_AUTH_ADMIN_PASSWORD`    | local, build          | Admin password used by local seed/admin setup.                                                                         |
-| `SHARED_ORGANIZATION_ID`        | local, build          | UUIDv7 organization id used by the seed script for shared local data.                                                  |
+| Variable                     | Used when             | Notes                                                                                                                  |
+| ---------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`               | local, build, runtime | PostgreSQL connection string used by the app, migrations, workflow storage and seed scripts. Build uses a placeholder. |
+| `BETTER_AUTH_ADMINS`         | local, build, runtime | Comma-separated UUIDv7 user ids granted admin access. Also used by seed scripts.                                       |
+| `BETTER_AUTH_ADMIN_EMAIL`    | local, build          | Admin email used by local seed/admin setup.                                                                            |
+| `BETTER_AUTH_ADMIN_PASSWORD` | local, build          | Admin password used by local seed/admin setup.                                                                         |
+| `SHARED_ORGANIZATION_ID`     | local, build          | UUIDv7 organization id used by the seed script for shared local data.                                                  |
 
 ### Email delivery
 
-| Variable                 | Used when             | Notes                                                                                                |
-| ------------------------ | --------------------- | ---------------------------------------------------------------------------------------------------- |
-| `EMAIL_FROM`             | local, runtime        | Sender address used by auth and app emails.                                                          |
-| `RESEND_API_KEY`         | local, build, runtime |  |
-| `SMTP_HOST`              | local, build, runtime |                                                               |
-| `SMTP_PORT`              | local, build, runtime |                                                       |
-| `SMTP_USER`              | local, build, runtime |          |
-| `SMTP_PASS`              | local, build, runtime |             |
+| Variable         | Used when             | Notes                                       |
+| ---------------- | --------------------- | ------------------------------------------- |
+| `EMAIL_FROM`     | local, runtime        | Sender address used by auth and app emails. |
+| `RESEND_API_KEY` | local, build, runtime |                                             |
+| `SMTP_HOST`      | local, build, runtime |                                             |
+| `SMTP_PORT`      | local, build, runtime |                                             |
+| `SMTP_USER`      | local, build, runtime |                                             |
+| `SMTP_PASS`      | local, build, runtime |                                             |
 
 ### File storage
 

@@ -41,9 +41,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           setActive={async (organization) => {
             await setActiveOrganization({ organizationId: organization?.id ?? null });
             // HINT: Invalidate all relevant queries when the active organization changes to ensure fresh data.
-            await Promise.all([
-              queryClient.invalidateQueries({ queryKey: projectKeys.all }),
-            ]);
+            await Promise.all([queryClient.invalidateQueries({ queryKey: projectKeys.all })]);
           }}
         />
 

@@ -15,7 +15,6 @@ import {
 export const fileFolderPaths = (): FileFolderPaths => ({
   images: "/images",
   files: "/files",
-
 });
 
 /**
@@ -33,7 +32,6 @@ export function filesAllowedOrigins(): string[] {
   }
   return origins;
 }
-
 
 /** System (admin plugin) grant: honors `adminUserIds` and comma-separated roles. */
 const systemCan = async (headers: Headers, action: FileAction) =>
@@ -108,15 +106,11 @@ export async function authorizePreview(ctx: AuthorizeContext): Promise<Authorize
   const organizationId = session.session.activeOrganizationId;
   if (!organizationId) throw deny("no active organization");
 
-  const [canPreview] = await Promise.all([
-    orgCan(headers, "preview"),
-    orgCan(headers, "list"),
-  ]);
+  const [canPreview] = await Promise.all([orgCan(headers, "preview"), orgCan(headers, "list")]);
   if (!canPreview) throw deny("missing file:preview");
 
-
   // Org owners/admins download any file; members only open txt files.
-  const visible = (key: string) => key.endsWith(".txt")
+  const visible = (key: string) => key.endsWith(".txt");
 
   if (ctx.keys) {
     audit("preview", ctx, decision, true);

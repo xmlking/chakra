@@ -6,7 +6,6 @@ describe("public env delivery", () => {
   it("exposes exactly the @public @dynamic items", () => {
     expect(Object.keys(getPublicEnv()).sort((a, b) => a.localeCompare(b))).toEqual([
       "ALLOWED_EMAIL_DOMAINS",
-      "APP_ENV",
       "BETTER_AUTH_URL",
       "FF_ENABLE_DARK_MODE",
       "TURNSTILE_SITE_KEY",

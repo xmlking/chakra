@@ -18,6 +18,7 @@ import {
   TableIcon,
   GripHorizontalIcon,
   ExpandIcon,
+  HardDriveIcon,
 } from "lucide-react";
 
 import type { NavGroup, NavItem } from "#types";
@@ -107,79 +108,79 @@ export const navGroups: NavGroup[] = [
       },
       ...(import.meta.env.DEV
         ? ([
-          {
-            title: "Playground",
-            url: "/playground",
-            icon: BotIcon, // BugIcon
-            items: [
-              {
-                title: "Test",
-                url: "/playground/test",
-              },
-              {
-                title: "Workflow",
-                url: "/playground/workflow",
-              },
-              {
-                title: "Error",
-                url: "/playground/error",
-              },
-              {
-                title: "Form Demo",
-                url: "/playground/form-demo",
-              },
-              {
-                title: "Version",
-                url: "/api/health/live",
-              },
-              {
-                title: "Analytics",
-                url: "/dashboard/analytics",
-                icon: BarChart3Icon,
-                // icon: ChartBarIcon,
-                shortcut: ["g", "a"],
-              },
-              {
-                title: "Renewals",
-                url: "/playground/renewals",
-                icon: FolderKanbanIcon, // FolderIcon
-                shortcut: ["g", "p"],
-              },
-              {
-                title: "Renewals Risk",
-                url: "/playground/renewals-risk",
-                icon: TableIcon,
-              },
-              {
-                title: "Company",
-                url: "/playground/company",
-                icon: Building2Icon,
-              },
-              {
-                title: "Grouping",
-                url: "/playground/grouping",
-                icon: Building2Icon,
-              },
-              {
-                title: "Grouping Multi",
-                url: "/playground/grouping-multi",
-                icon: Building2Icon,
-              },
-              {
-                title: "Expansion",
-                url: "/playground/expansion",
-                icon: ExpandIcon,
-              },
-              { title: "Orders", url: "/playground/orders", icon: InboxIcon },
-              { title: "Team", url: "/dashboard/team", icon: UsersIcon },
-              {
-                title: "Drag Drop",
-                url: "/playground/drag-drop",
-                icon: GripHorizontalIcon,
-              },
-            ],
-          },
-        ] satisfies NavItem[])
+            {
+              title: "Playground",
+              url: "/playground",
+              icon: BotIcon, // BugIcon
+              items: [
+                {
+                  title: "Test",
+                  url: "/playground/test",
+                },
+                {
+                  title: "Workflow",
+                  url: "/playground/workflow",
+                },
+                {
+                  title: "Error",
+                  url: "/playground/error",
+                },
+                {
+                  title: "Form Demo",
+                  url: "/playground/form-demo",
+                },
+                {
+                  title: "Version",
+                  url: "/api/health/live",
+                },
+                {
+                  title: "Analytics",
+                  url: "/dashboard/analytics",
+                  icon: BarChart3Icon,
+                  // icon: ChartBarIcon,
+                  shortcut: ["g", "a"],
+                },
+                {
+                  title: "Renewals",
+                  url: "/playground/renewals",
+                  icon: FolderKanbanIcon, // FolderIcon
+                  shortcut: ["g", "p"],
+                },
+                {
+                  title: "Renewals Risk",
+                  url: "/playground/renewals-risk",
+                  icon: TableIcon,
+                },
+                {
+                  title: "Company",
+                  url: "/playground/company",
+                  icon: Building2Icon,
+                },
+                {
+                  title: "Grouping",
+                  url: "/playground/grouping",
+                  icon: Building2Icon,
+                },
+                {
+                  title: "Grouping Multi",
+                  url: "/playground/grouping-multi",
+                  icon: Building2Icon,
+                },
+                {
+                  title: "Expansion",
+                  url: "/playground/expansion",
+                  icon: ExpandIcon,
+                },
+                { title: "Orders", url: "/playground/orders", icon: InboxIcon },
+                { title: "Team", url: "/dashboard/team", icon: UsersIcon },
+                {
+                  title: "Drag Drop",
+                  url: "/playground/drag-drop",
+                  icon: GripHorizontalIcon,
+                },
+              ],
+            },
+          ] satisfies NavItem[])
         : []),
       {
         title: "Documentation",

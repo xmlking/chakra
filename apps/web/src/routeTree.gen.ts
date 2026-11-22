@@ -30,13 +30,21 @@ import { Route as ApiImagesRouteImport } from './routes/api/images'
 import { Route as ApiOrdersRouteImport } from './routes/api/orders'
 import { Route as ApiPublicEnvRouteImport } from './routes/api/public-env'
 import { Route as appAdminPageRouteImport } from './routes/(app)/admin/$page'
+import { Route as appAdminFilesRouteImport } from './routes/(app)/admin/files'
 import { Route as appAdminUsersRouteImport } from './routes/(app)/admin/users'
 import { Route as appDashboardIndexRouteImport } from './routes/(app)/dashboard/index'
 import { Route as appDashboardPageRouteImport } from './routes/(app)/dashboard/$page'
+import { Route as appPlaygroundCompanyRouteImport } from './routes/(app)/playground/company'
+import { Route as appPlaygroundDragDropRouteImport } from './routes/(app)/playground/drag-drop'
 import { Route as appPlaygroundErrorRouteImport } from './routes/(app)/playground/error'
+import { Route as appPlaygroundExpansionRouteImport } from './routes/(app)/playground/expansion'
 import { Route as appPlaygroundFilesRouteImport } from './routes/(app)/playground/files'
 import { Route as appPlaygroundFormDemoRouteImport } from './routes/(app)/playground/form-demo'
-import { Route as appPlaygroundPdfViewerRouteImport } from './routes/(app)/playground/pdf-viewer'
+import { Route as appPlaygroundGroupingRouteImport } from './routes/(app)/playground/grouping'
+import { Route as appPlaygroundGroupingMultiRouteImport } from './routes/(app)/playground/grouping-multi'
+import { Route as appPlaygroundOrdersRouteImport } from './routes/(app)/playground/orders'
+import { Route as appPlaygroundRenewalsRouteImport } from './routes/(app)/playground/renewals'
+import { Route as appPlaygroundRenewalsRiskRouteImport } from './routes/(app)/playground/renewals-risk'
 import { Route as appPlaygroundTestRouteImport } from './routes/(app)/playground/test'
 import { Route as appPlaygroundWorkflowRouteImport } from './routes/(app)/playground/workflow'
 import { Route as appReportsPageRouteImport } from './routes/(app)/reports.$page'
@@ -44,9 +52,11 @@ import { Route as appSettingsPageRouteImport } from './routes/(app)/settings/$pa
 import { Route as appSettingsNotificationsRouteImport } from './routes/(app)/settings/notifications'
 import { Route as appSupportIndexRouteImport } from './routes/(app)/support/index'
 import { Route as publicAuthPathRouteImport } from './routes/(public)/auth/$path'
+import { Route as ApiAdminFilesRouteImport } from './routes/api/admin/files'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as ApiChatIndexRouteImport } from './routes/api/chat/index'
 import { Route as ApiHealthLiveRouteImport } from './routes/api/health/live'
+import { Route as ApiPlaygroundOrdersRouteImport } from './routes/api/playground/orders'
 import { Route as appsecurityOrganizationPathRouteImport } from './routes/(app)/(security)/organization.$path'
 import { Route as appsecurityUserPathRouteImport } from './routes/(app)/(security)/user.$path'
 
@@ -152,6 +162,11 @@ const appAdminPageRoute = appAdminPageRouteImport.update({
   path: '/admin/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appAdminFilesRoute = appAdminFilesRouteImport.update({
+  id: '/admin/files',
+  path: '/admin/files',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appAdminUsersRoute = appAdminUsersRouteImport.update({
   id: '/admin/users',
   path: '/admin/users',
@@ -167,9 +182,24 @@ const appDashboardPageRoute = appDashboardPageRouteImport.update({
   path: '/dashboard/$page',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundCompanyRoute = appPlaygroundCompanyRouteImport.update({
+  id: '/playground/company',
+  path: '/playground/company',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundDragDropRoute = appPlaygroundDragDropRouteImport.update({
+  id: '/playground/drag-drop',
+  path: '/playground/drag-drop',
+  getParentRoute: () => appRouteRoute,
+} as any)
 const appPlaygroundErrorRoute = appPlaygroundErrorRouteImport.update({
   id: '/playground/error',
   path: '/playground/error',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundExpansionRoute = appPlaygroundExpansionRouteImport.update({
+  id: '/playground/expansion',
+  path: '/playground/expansion',
   getParentRoute: () => appRouteRoute,
 } as any)
 const appPlaygroundFilesRoute = appPlaygroundFilesRouteImport.update({
@@ -182,11 +212,33 @@ const appPlaygroundFormDemoRoute = appPlaygroundFormDemoRouteImport.update({
   path: '/playground/form-demo',
   getParentRoute: () => appRouteRoute,
 } as any)
-const appPlaygroundPdfViewerRoute = appPlaygroundPdfViewerRouteImport.update({
-  id: '/playground/pdf-viewer',
-  path: '/playground/pdf-viewer',
+const appPlaygroundGroupingRoute = appPlaygroundGroupingRouteImport.update({
+  id: '/playground/grouping',
+  path: '/playground/grouping',
   getParentRoute: () => appRouteRoute,
 } as any)
+const appPlaygroundGroupingMultiRoute =
+  appPlaygroundGroupingMultiRouteImport.update({
+    id: '/playground/grouping-multi',
+    path: '/playground/grouping-multi',
+    getParentRoute: () => appRouteRoute,
+  } as any)
+const appPlaygroundOrdersRoute = appPlaygroundOrdersRouteImport.update({
+  id: '/playground/orders',
+  path: '/playground/orders',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundRenewalsRoute = appPlaygroundRenewalsRouteImport.update({
+  id: '/playground/renewals',
+  path: '/playground/renewals',
+  getParentRoute: () => appRouteRoute,
+} as any)
+const appPlaygroundRenewalsRiskRoute =
+  appPlaygroundRenewalsRiskRouteImport.update({
+    id: '/playground/renewals-risk',
+    path: '/playground/renewals-risk',
+    getParentRoute: () => appRouteRoute,
+  } as any)
 const appPlaygroundTestRoute = appPlaygroundTestRouteImport.update({
   id: '/playground/test',
   path: '/playground/test',
@@ -223,6 +275,11 @@ const publicAuthPathRoute = publicAuthPathRouteImport.update({
   path: '/auth/$path',
   getParentRoute: () => publicRouteRoute,
 } as any)
+const ApiAdminFilesRoute = ApiAdminFilesRouteImport.update({
+  id: '/api/admin/files',
+  path: '/api/admin/files',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -238,6 +295,11 @@ const ApiHealthLiveRoute = ApiHealthLiveRouteImport.update({
   path: '/api/health/live',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPlaygroundOrdersRoute = ApiPlaygroundOrdersRouteImport.update({
+  id: '/api/playground/orders',
+  path: '/api/playground/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const appsecurityOrganizationPathRoute =
   appsecurityOrganizationPathRouteImport.update({
     id: '/(security)/organization/$path',
@@ -251,6 +313,7 @@ const appsecurityUserPathRoute = appsecurityUserPathRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof publicIndexRoute
   '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
   '/grouping': typeof appGroupingRoute
@@ -267,22 +330,31 @@ export interface FileRoutesByFullPath {
   '/api/images': typeof ApiImagesRoute
   '/api/orders': typeof ApiOrdersRoute
   '/api/public-env': typeof ApiPublicEnvRoute
-  '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
+  '/admin/files': typeof appAdminFilesRoute
   '/admin/users': typeof appAdminUsersRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/company': typeof appPlaygroundCompanyRoute
+  '/playground/drag-drop': typeof appPlaygroundDragDropRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/expansion': typeof appPlaygroundExpansionRoute
   '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
-  '/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
+  '/playground/grouping': typeof appPlaygroundGroupingRoute
+  '/playground/grouping-multi': typeof appPlaygroundGroupingMultiRoute
+  '/playground/orders': typeof appPlaygroundOrdersRoute
+  '/playground/renewals': typeof appPlaygroundRenewalsRoute
+  '/playground/renewals-risk': typeof appPlaygroundRenewalsRiskRoute
   '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
   '/settings/notifications': typeof appSettingsNotificationsRoute
   '/auth/$path': typeof publicAuthPathRoute
+  '/api/admin/files': typeof ApiAdminFilesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
+  '/api/playground/orders': typeof ApiPlaygroundOrdersRoute
   '/dashboard/': typeof appDashboardIndexRoute
   '/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
@@ -290,6 +362,7 @@ export interface FileRoutesByFullPath {
   '/user/$path': typeof appsecurityUserPathRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof publicIndexRoute
   '/company': typeof appCompanyRoute
   '/forbidden': typeof appForbiddenRoute
   '/grouping': typeof appGroupingRoute
@@ -306,22 +379,31 @@ export interface FileRoutesByTo {
   '/api/images': typeof ApiImagesRoute
   '/api/orders': typeof ApiOrdersRoute
   '/api/public-env': typeof ApiPublicEnvRoute
-  '/': typeof publicIndexRoute
   '/admin/$page': typeof appAdminPageRoute
+  '/admin/files': typeof appAdminFilesRoute
   '/admin/users': typeof appAdminUsersRoute
   '/dashboard/$page': typeof appDashboardPageRoute
+  '/playground/company': typeof appPlaygroundCompanyRoute
+  '/playground/drag-drop': typeof appPlaygroundDragDropRoute
   '/playground/error': typeof appPlaygroundErrorRoute
+  '/playground/expansion': typeof appPlaygroundExpansionRoute
   '/playground/files': typeof appPlaygroundFilesRoute
   '/playground/form-demo': typeof appPlaygroundFormDemoRoute
-  '/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
+  '/playground/grouping': typeof appPlaygroundGroupingRoute
+  '/playground/grouping-multi': typeof appPlaygroundGroupingMultiRoute
+  '/playground/orders': typeof appPlaygroundOrdersRoute
+  '/playground/renewals': typeof appPlaygroundRenewalsRoute
+  '/playground/renewals-risk': typeof appPlaygroundRenewalsRiskRoute
   '/playground/test': typeof appPlaygroundTestRoute
   '/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/reports/$page': typeof appReportsPageRoute
   '/settings/$page': typeof appSettingsPageRoute
   '/settings/notifications': typeof appSettingsNotificationsRoute
   '/auth/$path': typeof publicAuthPathRoute
+  '/api/admin/files': typeof ApiAdminFilesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
+  '/api/playground/orders': typeof ApiPlaygroundOrdersRoute
   '/dashboard': typeof appDashboardIndexRoute
   '/support': typeof appSupportIndexRoute
   '/api/chat': typeof ApiChatIndexRoute
@@ -351,20 +433,30 @@ export interface FileRoutesById {
   '/api/public-env': typeof ApiPublicEnvRoute
   '/(public)/': typeof publicIndexRoute
   '/(app)/admin/$page': typeof appAdminPageRoute
+  '/(app)/admin/files': typeof appAdminFilesRoute
   '/(app)/admin/users': typeof appAdminUsersRoute
   '/(app)/dashboard/$page': typeof appDashboardPageRoute
+  '/(app)/playground/company': typeof appPlaygroundCompanyRoute
+  '/(app)/playground/drag-drop': typeof appPlaygroundDragDropRoute
   '/(app)/playground/error': typeof appPlaygroundErrorRoute
+  '/(app)/playground/expansion': typeof appPlaygroundExpansionRoute
   '/(app)/playground/files': typeof appPlaygroundFilesRoute
   '/(app)/playground/form-demo': typeof appPlaygroundFormDemoRoute
-  '/(app)/playground/pdf-viewer': typeof appPlaygroundPdfViewerRoute
+  '/(app)/playground/grouping': typeof appPlaygroundGroupingRoute
+  '/(app)/playground/grouping-multi': typeof appPlaygroundGroupingMultiRoute
+  '/(app)/playground/orders': typeof appPlaygroundOrdersRoute
+  '/(app)/playground/renewals': typeof appPlaygroundRenewalsRoute
+  '/(app)/playground/renewals-risk': typeof appPlaygroundRenewalsRiskRoute
   '/(app)/playground/test': typeof appPlaygroundTestRoute
   '/(app)/playground/workflow': typeof appPlaygroundWorkflowRoute
   '/(app)/reports/$page': typeof appReportsPageRoute
   '/(app)/settings/$page': typeof appSettingsPageRoute
   '/(app)/settings/notifications': typeof appSettingsNotificationsRoute
   '/(public)/auth/$path': typeof publicAuthPathRoute
+  '/api/admin/files': typeof ApiAdminFilesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/api/health/live': typeof ApiHealthLiveRoute
+  '/api/playground/orders': typeof ApiPlaygroundOrdersRoute
   '/(app)/dashboard/': typeof appDashboardIndexRoute
   '/(app)/support/': typeof appSupportIndexRoute
   '/api/chat/': typeof ApiChatIndexRoute
@@ -374,6 +466,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/company'
     | '/forbidden'
     | '/grouping'
@@ -390,22 +483,31 @@ export interface FileRouteTypes {
     | '/api/images'
     | '/api/orders'
     | '/api/public-env'
-    | '/'
     | '/admin/$page'
+    | '/admin/files'
     | '/admin/users'
     | '/dashboard/$page'
+    | '/playground/company'
+    | '/playground/drag-drop'
     | '/playground/error'
+    | '/playground/expansion'
     | '/playground/files'
     | '/playground/form-demo'
-    | '/playground/pdf-viewer'
+    | '/playground/grouping'
+    | '/playground/grouping-multi'
+    | '/playground/orders'
+    | '/playground/renewals'
+    | '/playground/renewals-risk'
     | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
     | '/settings/notifications'
     | '/auth/$path'
+    | '/api/admin/files'
     | '/api/auth/$'
     | '/api/health/live'
+    | '/api/playground/orders'
     | '/dashboard/'
     | '/support/'
     | '/api/chat/'
@@ -413,6 +515,7 @@ export interface FileRouteTypes {
     | '/user/$path'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/company'
     | '/forbidden'
     | '/grouping'
@@ -429,22 +532,31 @@ export interface FileRouteTypes {
     | '/api/images'
     | '/api/orders'
     | '/api/public-env'
-    | '/'
     | '/admin/$page'
+    | '/admin/files'
     | '/admin/users'
     | '/dashboard/$page'
+    | '/playground/company'
+    | '/playground/drag-drop'
     | '/playground/error'
+    | '/playground/expansion'
     | '/playground/files'
     | '/playground/form-demo'
-    | '/playground/pdf-viewer'
+    | '/playground/grouping'
+    | '/playground/grouping-multi'
+    | '/playground/orders'
+    | '/playground/renewals'
+    | '/playground/renewals-risk'
     | '/playground/test'
     | '/playground/workflow'
     | '/reports/$page'
     | '/settings/$page'
     | '/settings/notifications'
     | '/auth/$path'
+    | '/api/admin/files'
     | '/api/auth/$'
     | '/api/health/live'
+    | '/api/playground/orders'
     | '/dashboard'
     | '/support'
     | '/api/chat'
@@ -473,20 +585,30 @@ export interface FileRouteTypes {
     | '/api/public-env'
     | '/(public)/'
     | '/(app)/admin/$page'
+    | '/(app)/admin/files'
     | '/(app)/admin/users'
     | '/(app)/dashboard/$page'
+    | '/(app)/playground/company'
+    | '/(app)/playground/drag-drop'
     | '/(app)/playground/error'
+    | '/(app)/playground/expansion'
     | '/(app)/playground/files'
     | '/(app)/playground/form-demo'
-    | '/(app)/playground/pdf-viewer'
+    | '/(app)/playground/grouping'
+    | '/(app)/playground/grouping-multi'
+    | '/(app)/playground/orders'
+    | '/(app)/playground/renewals'
+    | '/(app)/playground/renewals-risk'
     | '/(app)/playground/test'
     | '/(app)/playground/workflow'
     | '/(app)/reports/$page'
     | '/(app)/settings/$page'
     | '/(app)/settings/notifications'
     | '/(public)/auth/$path'
+    | '/api/admin/files'
     | '/api/auth/$'
     | '/api/health/live'
+    | '/api/playground/orders'
     | '/(app)/dashboard/'
     | '/(app)/support/'
     | '/api/chat/'
@@ -504,8 +626,10 @@ export interface RootRouteChildren {
   ApiImagesRoute: typeof ApiImagesRoute
   ApiOrdersRoute: typeof ApiOrdersRoute
   ApiPublicEnvRoute: typeof ApiPublicEnvRoute
+  ApiAdminFilesRoute: typeof ApiAdminFilesRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   ApiHealthLiveRoute: typeof ApiHealthLiveRoute
+  ApiPlaygroundOrdersRoute: typeof ApiPlaygroundOrdersRoute
   ApiChatIndexRoute: typeof ApiChatIndexRoute
 }
 
@@ -514,21 +638,21 @@ declare module '@tanstack/react-router' {
     '/(app)': {
       id: '/(app)'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof appRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app2)': {
       id: '/(app2)'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof app2RouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(public)': {
       id: '/(public)'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof publicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -658,6 +782,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appAdminPageRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/admin/files': {
+      id: '/(app)/admin/files'
+      path: '/admin/files'
+      fullPath: '/admin/files'
+      preLoaderRoute: typeof appAdminFilesRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/admin/users': {
       id: '/(app)/admin/users'
       path: '/admin/users'
@@ -679,11 +810,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appDashboardPageRouteImport
       parentRoute: typeof appRouteRoute
     }
+    '/(app)/playground/company': {
+      id: '/(app)/playground/company'
+      path: '/playground/company'
+      fullPath: '/playground/company'
+      preLoaderRoute: typeof appPlaygroundCompanyRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/drag-drop': {
+      id: '/(app)/playground/drag-drop'
+      path: '/playground/drag-drop'
+      fullPath: '/playground/drag-drop'
+      preLoaderRoute: typeof appPlaygroundDragDropRouteImport
+      parentRoute: typeof appRouteRoute
+    }
     '/(app)/playground/error': {
       id: '/(app)/playground/error'
       path: '/playground/error'
       fullPath: '/playground/error'
       preLoaderRoute: typeof appPlaygroundErrorRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/expansion': {
+      id: '/(app)/playground/expansion'
+      path: '/playground/expansion'
+      fullPath: '/playground/expansion'
+      preLoaderRoute: typeof appPlaygroundExpansionRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/playground/files': {
@@ -700,11 +852,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof appPlaygroundFormDemoRouteImport
       parentRoute: typeof appRouteRoute
     }
-    '/(app)/playground/pdf-viewer': {
-      id: '/(app)/playground/pdf-viewer'
-      path: '/playground/pdf-viewer'
-      fullPath: '/playground/pdf-viewer'
-      preLoaderRoute: typeof appPlaygroundPdfViewerRouteImport
+    '/(app)/playground/grouping': {
+      id: '/(app)/playground/grouping'
+      path: '/playground/grouping'
+      fullPath: '/playground/grouping'
+      preLoaderRoute: typeof appPlaygroundGroupingRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/grouping-multi': {
+      id: '/(app)/playground/grouping-multi'
+      path: '/playground/grouping-multi'
+      fullPath: '/playground/grouping-multi'
+      preLoaderRoute: typeof appPlaygroundGroupingMultiRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/orders': {
+      id: '/(app)/playground/orders'
+      path: '/playground/orders'
+      fullPath: '/playground/orders'
+      preLoaderRoute: typeof appPlaygroundOrdersRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/renewals': {
+      id: '/(app)/playground/renewals'
+      path: '/playground/renewals'
+      fullPath: '/playground/renewals'
+      preLoaderRoute: typeof appPlaygroundRenewalsRouteImport
+      parentRoute: typeof appRouteRoute
+    }
+    '/(app)/playground/renewals-risk': {
+      id: '/(app)/playground/renewals-risk'
+      path: '/playground/renewals-risk'
+      fullPath: '/playground/renewals-risk'
+      preLoaderRoute: typeof appPlaygroundRenewalsRiskRouteImport
       parentRoute: typeof appRouteRoute
     }
     '/(app)/playground/test': {
@@ -756,6 +936,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof publicAuthPathRouteImport
       parentRoute: typeof publicRouteRoute
     }
+    '/api/admin/files': {
+      id: '/api/admin/files'
+      path: '/api/admin/files'
+      fullPath: '/api/admin/files'
+      preLoaderRoute: typeof ApiAdminFilesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -775,6 +962,13 @@ declare module '@tanstack/react-router' {
       path: '/api/health/live'
       fullPath: '/api/health/live'
       preLoaderRoute: typeof ApiHealthLiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/playground/orders': {
+      id: '/api/playground/orders'
+      path: '/api/playground/orders'
+      fullPath: '/api/playground/orders'
+      preLoaderRoute: typeof ApiPlaygroundOrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(app)/(security)/organization/$path': {
@@ -801,12 +995,20 @@ interface appRouteRouteChildren {
   appRenewalsRoute: typeof appRenewalsRoute
   appRenewalsRiskRoute: typeof appRenewalsRiskRoute
   appAdminPageRoute: typeof appAdminPageRoute
+  appAdminFilesRoute: typeof appAdminFilesRoute
   appAdminUsersRoute: typeof appAdminUsersRoute
   appDashboardPageRoute: typeof appDashboardPageRoute
+  appPlaygroundCompanyRoute: typeof appPlaygroundCompanyRoute
+  appPlaygroundDragDropRoute: typeof appPlaygroundDragDropRoute
   appPlaygroundErrorRoute: typeof appPlaygroundErrorRoute
+  appPlaygroundExpansionRoute: typeof appPlaygroundExpansionRoute
   appPlaygroundFilesRoute: typeof appPlaygroundFilesRoute
   appPlaygroundFormDemoRoute: typeof appPlaygroundFormDemoRoute
-  appPlaygroundPdfViewerRoute: typeof appPlaygroundPdfViewerRoute
+  appPlaygroundGroupingRoute: typeof appPlaygroundGroupingRoute
+  appPlaygroundGroupingMultiRoute: typeof appPlaygroundGroupingMultiRoute
+  appPlaygroundOrdersRoute: typeof appPlaygroundOrdersRoute
+  appPlaygroundRenewalsRoute: typeof appPlaygroundRenewalsRoute
+  appPlaygroundRenewalsRiskRoute: typeof appPlaygroundRenewalsRiskRoute
   appPlaygroundTestRoute: typeof appPlaygroundTestRoute
   appPlaygroundWorkflowRoute: typeof appPlaygroundWorkflowRoute
   appReportsPageRoute: typeof appReportsPageRoute
@@ -825,12 +1027,20 @@ const appRouteRouteChildren: appRouteRouteChildren = {
   appRenewalsRoute: appRenewalsRoute,
   appRenewalsRiskRoute: appRenewalsRiskRoute,
   appAdminPageRoute: appAdminPageRoute,
+  appAdminFilesRoute: appAdminFilesRoute,
   appAdminUsersRoute: appAdminUsersRoute,
   appDashboardPageRoute: appDashboardPageRoute,
+  appPlaygroundCompanyRoute: appPlaygroundCompanyRoute,
+  appPlaygroundDragDropRoute: appPlaygroundDragDropRoute,
   appPlaygroundErrorRoute: appPlaygroundErrorRoute,
+  appPlaygroundExpansionRoute: appPlaygroundExpansionRoute,
   appPlaygroundFilesRoute: appPlaygroundFilesRoute,
   appPlaygroundFormDemoRoute: appPlaygroundFormDemoRoute,
-  appPlaygroundPdfViewerRoute: appPlaygroundPdfViewerRoute,
+  appPlaygroundGroupingRoute: appPlaygroundGroupingRoute,
+  appPlaygroundGroupingMultiRoute: appPlaygroundGroupingMultiRoute,
+  appPlaygroundOrdersRoute: appPlaygroundOrdersRoute,
+  appPlaygroundRenewalsRoute: appPlaygroundRenewalsRoute,
+  appPlaygroundRenewalsRiskRoute: appPlaygroundRenewalsRiskRoute,
   appPlaygroundTestRoute: appPlaygroundTestRoute,
   appPlaygroundWorkflowRoute: appPlaygroundWorkflowRoute,
   appReportsPageRoute: appReportsPageRoute,
@@ -890,8 +1100,10 @@ const rootRouteChildren: RootRouteChildren = {
   ApiImagesRoute: ApiImagesRoute,
   ApiOrdersRoute: ApiOrdersRoute,
   ApiPublicEnvRoute: ApiPublicEnvRoute,
+  ApiAdminFilesRoute: ApiAdminFilesRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   ApiHealthLiveRoute: ApiHealthLiveRoute,
+  ApiPlaygroundOrdersRoute: ApiPlaygroundOrdersRoute,
   ApiChatIndexRoute: ApiChatIndexRoute,
 }
 export const routeTree = rootRouteImport

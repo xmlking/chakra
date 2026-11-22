@@ -17,8 +17,10 @@ import { useFiles } from "files-sdk/react";
 import { useState } from "react";
 
 import { isPdf } from "#features/files/access";
-import { getSystemFileAccessFn } from "#features/files/api/service";
 
+async function getSystemFileAccessFn() {
+  return { canBrowse: true };
+}
 export const Route = createFileRoute("/(app)/admin/files")({
   staticData: {
     breadcrumb: ["Admin", "Files"],

@@ -24,7 +24,7 @@
     "postinstall": "varlock codegen",
     "pull": "varlock run -- drizzle-kit pull",
     "push": "varlock run -- drizzle-kit push",
-    "seed": "varlock run -- tsx scripts/seed.ts",
+    "seed": "varlock run -- vpx scripts/seed.ts",
     "skills": "varlock run -- drizzle-kit skills",
     "studio": "varlock run -- drizzle-kit studio",
     "typecheck": "tsc --noEmit",
@@ -49,7 +49,6 @@
     "@workflow/world-postgres": "catalog:",
     "drizzle-kit": "catalog:",
     "drizzle-seed": "catalog:",
-    "tsx": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
   },

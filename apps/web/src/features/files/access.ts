@@ -42,13 +42,6 @@ export function fileActionFor(operation: FilesOperation): FileAction | undefined
 
 const asFolder = (path: string) => (path.endsWith("/") ? path : `${path}/`);
 
-const isUnsafeKey = (key: string) =>
-  key.includes("\\") || key.includes("\0") || key.split("/").some((s) => s === ".." || s === ".");
-
-const startsWithIgnoreCase = (value: string, prefix: string) =>
-  value.toLowerCase().startsWith(prefix.toLowerCase());
-
-
 /**
  * True for PDFs, which get the tall preview. some PDFs may be stored as
  * `application/octet-stream`, so the extension counts too.

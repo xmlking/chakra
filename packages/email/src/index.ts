@@ -1,5 +1,5 @@
-import { createEmailClient, type EmailMessage } from "@opencoredev/email-sdk";
-import { EmailValidationError, resend } from "@opencoredev/email-sdk/resend";
+import { createEmailClient, EmailValidationError, type EmailMessage } from "@opencoredev/email-sdk";
+import { resend } from "@opencoredev/email-sdk/resend";
 import { smtp } from "@opencoredev/email-sdk/smtp";
 import { log } from "evlog";
 import { render } from "react-email";
@@ -19,9 +19,7 @@ import { ENV } from "../env";
 function createClient() {
   const { RESEND_API_KEY } = ENV;
   if (!RESEND_API_KEY) {
-    throw new EmailValidationError(
-      "Resend email is not configured: set RESEND_API_KEY.",
-    );
+    throw new EmailValidationError("Resend email is not configured: set RESEND_API_KEY.");
   }
 
   return createEmailClient({
