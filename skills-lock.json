@@ -50,7 +50,7 @@
       "commit": "20c9e88a5c007461a703f1c213572b073196113e"
     },
     "drizzle": {
-      "source": "./node_modules/.bun/drizzle-kit@1.0.0-rc.5+4ff31034054f58c6/node_modules/drizzle-kit/skills",
+      "source": "../../../../.bun/install/cache/.bunx-501/drizzle-kit@1.0.0-rc.6/node_modules/drizzle-kit/skills",
       "sourceType": "local",
       "computedHash": "c91331769b0cf9a9f5592d9ea5cf0998fdfcd81c4ed1fb0d8784ada819a797e9"
     },
@@ -86,8 +86,8 @@
       "source": "haydenbleasel/files-sdk",
       "sourceType": "github",
       "skillPath": "skills/files-sdk/SKILL.md",
-      "computedHash": "062c960cb06a4c0356e29fce0e8b9a78264af50f9e16ea32f016099fac6c47f9",
-      "commit": "5c7a755f8c4d54e8361f886ca16e49952f8346d5"
+      "computedHash": "2842f40d43c0e8d7e4b8a9dd62cf4b2d82585e2f7d218ef409110a17ccac27e2",
+      "commit": "4f0bfdfeb6ec69b4647a650302cdbfc6ecf1e41e"
     },
     "improve": {
       "source": "shadcn/improve",
