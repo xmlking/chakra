@@ -4,6 +4,9 @@
   "private": true,
   "description": "Better-Auth module",
   "type": "module",
+  "imports": {
+    "#env": "./env.ts"
+  },
   "exports": {
     ".": "./src/index.tsx",
     "./*": "./src/*.ts",
@@ -23,7 +26,6 @@
     "@better-auth/agent-auth": "catalog:",
     "@better-auth/api-key": "catalog:",
     "@better-auth/drizzle-adapter": "catalog:",
-    "@better-auth/infra": "catalog:",
     "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:",
     "@better-auth/stripe": "catalog:",

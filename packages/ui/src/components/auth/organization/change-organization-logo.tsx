@@ -19,7 +19,7 @@ import {
 } from "#components/shadcn/dropdown-menu"
 import { Label } from "#components/shadcn/label"
 import { Spinner } from "#components/shadcn/spinner"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import { OrganizationLogo } from "./organization-logo"
 
@@ -86,22 +86,24 @@ export function ChangeOrganizationLogo({
     updateOrganization(
       { data: { logo: "" } },
       {
-        onSuccess: async () => {
-          if (!currentLogo) {
-            toast.success(organizationLocalization.logoDeletedSuccess)
-            return
-          }
+        onSuccess: () => {
+          void (async () => {
+            if (!currentLogo) {
+              toast.success(organizationLocalization.logoDeletedSuccess)
+              return
+            }
 
-          setIsDeleting(true)
-          try {
-            await logo.delete?.(currentLogo)
-            toast.success(organizationLocalization.logoDeletedSuccess)
-          } catch (error) {
-            console.error("[Better Auth UI] Image operation failed", error)
-            toast.error(localization.errors.imageDeleteFailed)
-          } finally {
-            setIsDeleting(false)
-          }
+            setIsDeleting(true)
+            try {
+              await logo.delete?.(currentLogo)
+              toast.success(organizationLocalization.logoDeletedSuccess)
+            } catch (error) {
+              console.error("[Better Auth UI] Image operation failed", error)
+              toast.error(localization.errors.imageDeleteFailed)
+            } finally {
+              setIsDeleting(false)
+            }
+          })()
         }
       }
     )
@@ -122,7 +124,7 @@ export function ChangeOrganizationLogo({
         type="file"
         accept="image/*"
         className="hidden"
-        onChange={handleFileChange}
+        onChange={(e) => void handleFileChange(e)}
       />
 
       <div className="flex items-center gap-4">
@@ -131,7 +133,7 @@ export function ChangeOrganizationLogo({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-auto w-auto rounded-full p-0"
+            className="size-auto rounded-full p-0"
             disabled={!activeOrganization || isPending}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -171,7 +173,7 @@ export function ChangeOrganizationLogo({
 
               <DropdownMenuItem
                 disabled={!activeOrganization?.logo}
-                onClick={handleDelete}
+                onClick={() => void handleDelete()}
                 variant="destructive"
               >
                 <Trash2 />

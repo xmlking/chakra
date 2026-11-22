@@ -1,6 +1,7 @@
 import {
   groupOAuthConsents,
-  type OAuthProviderAuthClient
+  type OAuthProviderAuthClient,
+  oauthProviderPlugin
 } from "@better-auth-ui/core/plugins/oauth-provider"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import { useListOAuthConsents } from "@better-auth-ui/react/plugins/oauth-provider"
@@ -8,7 +9,6 @@ import { Fragment } from "react"
 
 import { Card, CardContent } from "#components/shadcn/card"
 import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
-import { oauthProviderPlugin } from "#lib/auth/oauth-provider-plugin"
 import { cn } from "cn"
 import { AuthorizedApplication } from "./authorized-application"
 import { AuthorizedApplicationSkeleton } from "./authorized-application-skeleton"
@@ -28,12 +28,10 @@ export type AuthorizedApplicationsProps = {
 export function AuthorizedApplications({
   className
 }: AuthorizedApplicationsProps) {
-  const { authClient } = useAuth()
+  const { authClient } = useAuth<OAuthProviderAuthClient>()
   const { localization } = useAuthPlugin(oauthProviderPlugin)
 
-  const { data: consents, isPending } = useListOAuthConsents(
-    authClient as OAuthProviderAuthClient
-  )
+  const { data: consents, isPending } = useListOAuthConsents(authClient)
 
   const applications = groupOAuthConsents(consents)
 

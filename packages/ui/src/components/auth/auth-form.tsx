@@ -14,7 +14,7 @@ import {
 } from "@tanstack/react-form"
 import {
   type ComponentProps,
-  type FormEvent,
+  type SubmitEvent,
   type ReactNode,
   useRef
 } from "react"
@@ -45,7 +45,7 @@ export function focusFirstInvalidAuthFormControl(form: HTMLFormElement) {
   })
 }
 
-function AuthFormFieldError() {
+function AuthFormFieldError({ id }: { id?: string }) {
   const field = useFieldContext<unknown>()
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
 
@@ -53,7 +53,7 @@ function AuthFormFieldError() {
 
   const errors = getFormFieldErrors(field.state.meta.errors)
 
-  return errors.length > 0 ? <FieldError errors={errors} /> : null
+  return errors.length > 0 ? <FieldError id={id} errors={errors} /> : null
 }
 
 function AuthFormServerError() {
@@ -98,9 +98,11 @@ export function clearAuthFormFieldServerError(
   form.setErrorMap({ onServer: undefined })
   if (!fieldName) return
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- AnyFormApi has untyped field names
   const fieldMeta = form.getFieldMeta(fieldName as never)
   if (!fieldMeta?.errorMap.onServer) return
 
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- AnyFormApi has untyped field names
   form.setFieldMeta(fieldName as never, (current = fieldMeta) => ({
     ...current,
     errorMap: { ...current.errorMap, onServer: undefined },
@@ -156,7 +158,7 @@ function AuthFormRoot({
   const form = useFormContext()
   const submittingRef = useRef(false)
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
     if (submittingRef.current || form.state.isSubmitting) return
 
@@ -188,7 +190,7 @@ function AuthFormRoot({
         clearAuthFormFieldServerError(form, fieldName)
         onInput?.(event)
       }}
-      onSubmit={submit}
+      onSubmit={(event) => void submit(event)}
     >
       {children}
     </form>

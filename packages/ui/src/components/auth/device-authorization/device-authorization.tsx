@@ -44,7 +44,7 @@ import {
   InputOTPSlot
 } from "#components/shadcn/input-otp"
 import { Spinner } from "#components/shadcn/spinner"
-import { deviceAuthorizationPlugin } from "#lib/auth/device-authorization-plugin"
+import { deviceAuthorizationPlugin } from "@better-auth-ui/core/plugins/device-authorization"
 import { UserAvatar } from "../user/user-avatar"
 import { cn } from "cn"
 import { useAuthForm } from "../auth-form"
@@ -89,11 +89,13 @@ function deviceAuthorizationReducer(
       return { step: "approved", codeError: "" }
     case "denied":
       return { step: "denied", codeError: "" }
+    default:
+      return action satisfies never
   }
 }
 
 function normalizeDeviceCode(value: string) {
-  return value.replace(/-/g, "").trim().toUpperCase()
+  return value.replaceAll("-", "").trim().toUpperCase()
 }
 
 function createDeviceCodeSlots(length: number) {
@@ -117,13 +119,14 @@ export type DeviceAuthorizationProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
-  const { authClient, basePaths, navigate, redirectTo, viewPaths } = useAuth()
+  const { authClient, basePaths, navigate, redirectTo, viewPaths } =
+    useAuth<DeviceAuthorizationAuthClient>()
   const {
     localization,
     userCodeLength,
     viewPaths: deviceAuthorizationViewPaths
   } = useAuthPlugin(deviceAuthorizationPlugin)
-  const deviceAuthClient = authClient as DeviceAuthorizationAuthClient
+  const deviceAuthClient = authClient
   const { data: session, isPending: isSessionPending } =
     useSession(deviceAuthClient)
   const [userCode, setUserCode] = useState("")
@@ -146,7 +149,7 @@ export function DeviceAuthorization({ className }: DeviceAuthorizationProps) {
 
     setUserCode(
       normalizeDeviceCode(code)
-        .replace(/[^A-Z0-9]/g, "")
+        .replaceAll(/[^A-Z0-9]/g, "")
         .slice(0, userCodeLength)
     )
   }, [userCodeLength])
@@ -364,7 +367,7 @@ function DeviceCodeForm({
                       value={field.state.value}
                       onChange={(value) => {
                         const nextCode = normalizeDeviceCode(value)
-                          .replace(/[^A-Z0-9]/g, "")
+                          .replaceAll(/[^A-Z0-9]/g, "")
                           .slice(0, userCodeLength)
                         field.handleChange(nextCode)
                         onCodeChange(nextCode)

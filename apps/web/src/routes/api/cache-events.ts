@@ -1,19 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { auth } from "@workspace/auth";
 
-import { ENV } from "#env";
-import { eventBus } from "#server/services/event-bus";
+import { eventBusMiddleware } from "#server/middleware/services";
 
 const encoder = new TextEncoder();
 
 export const Route = createFileRoute("/api/cache-events")({
   server: {
+    middleware: [eventBusMiddleware],
     handlers: {
-      GET: async ({ request }) => {
-        if (!ENV.DATABASE_URL) {
-          return Response.json({ error: "cache event stream is unavailable" }, { status: 503 });
-        }
-
+      GET: async ({ request, context: { eventBus } }) => {
         const session = await auth.api.getSession({ headers: request.headers });
         if (!session) {
           return Response.json({ error: "unauthorized" }, { status: 401 });

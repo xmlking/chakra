@@ -19,9 +19,8 @@ brew install dmno-dev/tap/varlock
 varlock telemetry disable
 
 # optional
-brew install cloudflared
-
 brew install rustfs/tap/rc
+brew install cloudflared
 ```
 
 Check and install playwright [browsers](https://playwright.dev/docs/browsers) and system dependencies if needed.
@@ -95,6 +94,7 @@ This project uses [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) for lint
 
 ```shell
 vp check
+vp check --quiet
 vp check --fix
 vp check --fix --quiet
 ```

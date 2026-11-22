@@ -7,15 +7,15 @@ import { UserRound } from "lucide-react"
 
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
-import { anonymousPlugin } from "#lib/auth/anonymous-plugin"
+import { anonymousPlugin } from "@better-auth-ui/core/plugins/anonymous"
 import { cn } from "cn"
 
 /** Sign in with a temporary anonymous account. */
 export function AnonymousButton() {
-  const { authClient, navigate, redirectTo } = useAuth()
+  const { authClient, navigate, redirectTo } = useAuth<AnonymousAuthClient>()
   const { localization } = useAuthPlugin(anonymousPlugin)
   const { mutate: signInAnonymous, isPending: anonymousPending } =
-    useSignInAnonymous(authClient as AnonymousAuthClient, {
+    useSignInAnonymous(authClient, {
       onSuccess: () => navigate({ to: redirectTo })
     })
 

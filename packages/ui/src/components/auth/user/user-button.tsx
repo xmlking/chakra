@@ -156,12 +156,12 @@ export function UserButton({
         ) : (
           <>
             {session || sessionPending || settingActiveSession ? (
-              <UserView isPending={!!settingActiveSession} />
+              <UserView isPending={settingActiveSession} />
             ) : (
               <>
                 <UserAvatar />
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="grid flex-1 text-left text-sm/tight">
                   {localization.auth.account}
                 </div>
               </>

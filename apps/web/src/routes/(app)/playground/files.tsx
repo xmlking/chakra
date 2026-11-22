@@ -39,7 +39,6 @@ function FilesPage() {
           accept="image/*,text/*,application/pdf"
           directory
           files={files}
-          prefix="docs/"
           onUploaded={bump}
           maxFiles={10}
         >
@@ -47,19 +46,13 @@ function FilesPage() {
           <DropzoneEmptyState />
           <DropzoneError />
         </Dropzone>
-        <FileSearch
-          files={files}
-          prefix="docs/"
-          defaultMatch="glob"
-          onSelect={(file) => setKey(file.key)}
-        />
+        <FileSearch files={files} defaultMatch="glob" onSelect={(file) => setKey(file.key)} />
         {/* file list   */}
         {/* <FileList files={files} key={`list-${version}`} prefix="docs/" onChanged={bump} /> */}
 
         <FileBrowser
           files={files}
           key={`browser-${version}`}
-          initialPrefix="docs/"
           onSelect={(file) => setKey(file.key)}
         />
         <p>Preview File: {key}</p>

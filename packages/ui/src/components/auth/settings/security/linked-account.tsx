@@ -1,10 +1,12 @@
 import {
+  getAuthCallbackURL,
   type AuthSocialProvider,
   getAuthErrorMessage,
   getProviderId,
   getProviderName,
   isReauthenticationRequiredError
 } from "@better-auth-ui/core"
+
 import {
   renderProviderIcon,
   useAccountInfo,
@@ -39,7 +41,7 @@ import { ReauthenticationAction } from "../../reauthentication"
 export type LinkedAccountProps = {
   account?: Account
   canUnlink?: boolean
-  provider: AuthSocialProvider | string
+  provider: AuthSocialProvider | (string & {})
 }
 
 /**
@@ -52,6 +54,13 @@ export type LinkedAccountProps = {
  * @param provider - The provider id
  * @returns A JSX element containing the linked account row
  */
+function readAccountString(data: unknown, key: "login" | "username") {
+  if (typeof data !== "object" || data === null || !(key in data))
+    return undefined
+  const value: unknown = Reflect.get(data, key)
+  return typeof value === "string" ? value : undefined
+}
+
 export function LinkedAccount({
   account,
   canUnlink = true,
@@ -83,13 +92,13 @@ export function LinkedAccount({
   const providerId = getProviderId(provider)
   const providerIcon = renderProviderIcon(provider)
   const providerName = getProviderName(provider)
-  const accountData = accountInfo?.data as
-    | { login?: string; username?: string }
-    | undefined
+  const accountData = accountInfo?.data
+  const accountLogin = readAccountString(accountData, "login")
+  const accountUsername = readAccountString(accountData, "username")
 
   const displayName =
-    accountData?.login ||
-    accountData?.username ||
+    accountLogin ||
+    accountUsername ||
     accountInfo?.user?.email ||
     accountInfo?.user?.name ||
     account?.accountId
@@ -148,7 +157,10 @@ export function LinkedAccount({
               onClick={() =>
                 linkSocial({
                   provider: providerId,
-                  callbackURL: `${baseURL}${window.location.pathname}`
+                  callbackURL: getAuthCallbackURL(
+                    baseURL,
+                    window.location.pathname
+                  )
                 })
               }
               disabled={isLinking}

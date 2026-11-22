@@ -17,7 +17,8 @@
 /* plugins */
 @import "fumadocs-ui/css/preset.css";
 @import "fumadocs-openapi/css/preset.css";
-@import "fumapress/css/preset.css";
+@import "@fumapress/astro/css/preset.css";
+@import "@fumapress/blog/css/preset.css";
 @import "@fumapress/tegami/css/preset.css";
 @import "@fumapress/feedback/css/preset.css";
 

@@ -1,7 +1,16 @@
+import {
+  type ReactNode,
+  type ComponentProps,
+  useEffect,
+  useRef,
+  useState
+} from "react"
+
 import { getClampedTablePageIndex } from "@better-auth-ui/core"
 import {
   hasMemberRole,
-  type OrganizationAuthClient
+  type OrganizationAuthClient,
+  organizationPlugin
 } from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react"
 import {
@@ -14,7 +23,6 @@ import {
 import { keepPreviousData } from "@tanstack/react-query"
 import type { Member, User } from "better-auth/client"
 import { Filter, Search, X } from "lucide-react"
-import { type ComponentProps, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
 import { Badge } from "#components/shadcn/badge"
@@ -39,11 +47,10 @@ import {
   TableHeader,
   TableRow
 } from "#components/shadcn/table"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { cn } from "cn"
 import { InviteMemberDialog } from "./invite-member-dialog"
 import { OrganizationMemberRow } from "./organization-member-row"
-import { OrganizationMemberRowSkeleton } from "./organization-member-row-skeleton"
+import { OrganizationTableRowSkeleton } from "./organization-table-row-skeleton"
 import { OrganizationSortableTableHead } from "./organization-sortable-table-head"
 import {
   createOrganizationColumnHelper,
@@ -135,8 +142,9 @@ export function OrganizationMembers({
     MEMBER_COLUMN_IDS
   )
   const { columnFilters, globalFilter, pagination, sorting } = tableState
-  const roleFilter = String(
-    columnFilters.find((filter) => filter.id === "role")?.value ?? "all"
+  const roleFilter = toStringValue(
+    columnFilters.find((filter) => filter.id === "role")?.value,
+    "all"
   )
   const previousOrganizationId = useRef<string | undefined>(undefined)
 
@@ -307,6 +315,53 @@ export function OrganizationMembers({
   const atMembershipLimit =
     membershipLimit !== undefined && total >= membershipLimit
 
+  const columnIds = [
+    ...(showSelection ? ["select"] : []),
+    ...table.getVisibleLeafColumns().map((column) => column.id),
+    "actions"
+  ]
+
+  const headerCells: Record<string, ReactNode> = {
+    select: (
+      <TableHead key="select" className="w-10">
+        <OrganizationTableSelectAll
+          allSelected={table.getIsAllPageRowsSelected()}
+          disabled={isPending}
+          localization={organizationLocalization}
+          onCheckedChange={(checked) =>
+            table.toggleAllPageRowsSelected(checked)
+          }
+          someSelected={table.getIsSomePageRowsSelected()}
+        />
+      </TableHead>
+    ),
+    // list-members cannot sort by fields on the joined user.
+    user: paged ? (
+      <TableHead key="user">{organizationLocalization.member}</TableHead>
+    ) : (
+      <OrganizationSortableTableHead
+        key="user"
+        column={table.getColumn("user")}
+      >
+        {organizationLocalization.member}
+      </OrganizationSortableTableHead>
+    ),
+    role: (
+      <OrganizationSortableTableHead
+        key="role"
+        column={table.getColumn("role")}
+      >
+        {organizationLocalization.role}
+      </OrganizationSortableTableHead>
+    ),
+    teams: <TableHead key="teams">{organizationLocalization.teams}</TableHead>,
+    actions: (
+      <TableHead key="actions" className="text-end">
+        {organizationLocalization.actions}
+      </TableHead>
+    )
+  }
+
   return (
     <div className={cn("flex flex-col gap-3", className)} {...props}>
       <div className="flex items-end justify-between gap-3">
@@ -450,71 +505,25 @@ export function OrganizationMembers({
         <Card className="p-0">
           <Table aria-label={organizationLocalization.members}>
             <TableHeader>
-              <TableRow>
-                {showSelection && (
-                  <TableHead className="w-10">
-                    <OrganizationTableSelectAll
-                      allSelected={table.getIsAllPageRowsSelected()}
-                      disabled={isPending}
-                      localization={organizationLocalization}
-                      onCheckedChange={(checked) =>
-                        table.toggleAllPageRowsSelected(checked)
-                      }
-                      someSelected={table.getIsSomePageRowsSelected()}
-                    />
-                  </TableHead>
-                )}
-
-                {/* Name and email live on the joined user row, which
-                    list-members cannot sort by. */}
-                {paged ? (
-                  <TableHead>{organizationLocalization.member}</TableHead>
-                ) : (
-                  <OrganizationSortableTableHead
-                    column={table.getColumn("user")}
-                  >
-                    {organizationLocalization.member}
-                  </OrganizationSortableTableHead>
-                )}
-
-                {table.getColumn("role")?.getIsVisible() && (
-                  <OrganizationSortableTableHead
-                    column={table.getColumn("role")}
-                  >
-                    {organizationLocalization.role}
-                  </OrganizationSortableTableHead>
-                )}
-
-                {showTeams && table.getColumn("teams")?.getIsVisible() && (
-                  <TableHead>{organizationLocalization.teams}</TableHead>
-                )}
-
-                <TableHead className="text-end">
-                  {organizationLocalization.actions}
-                </TableHead>
-              </TableRow>
+              <TableRow>{columnIds.map((id) => headerCells[id])}</TableRow>
             </TableHeader>
 
             <TableBody>
               {isPending ? (
-                <OrganizationMemberRowSkeleton showTeams={showTeams} />
+                <OrganizationTableRowSkeleton columnIds={columnIds} />
               ) : (
                 !!activeOrganization &&
                 table
                   .getRowModel()
                   .rows.map((row) => (
                     <OrganizationMemberRow
+                      columnIds={columnIds}
                       key={row.original.id}
                       member={row.original}
                       isOwner={isOwner}
                       ownerCount={ownerCount}
                       organization={activeOrganization}
                       selectableRow={showSelection ? row : undefined}
-                      showRole={table.getColumn("role")?.getIsVisible()}
-                      showTeams={
-                        showTeams &&
-                        table.getColumn("teams")?.getIsVisible() === true
-                      }
                     />
                   ))
               )}
@@ -530,7 +539,7 @@ export function OrganizationMembers({
           onFirstPage={() => table.firstPage()}
           onLastPage={() => table.lastPage()}
           onNextPage={() => table.nextPage()}
-          onPageSizeChange={(pageSize) => table.setPageSize(pageSize)}
+          onPageSizeChange={(nextPageSize) => table.setPageSize(nextPageSize)}
           onPreviousPage={() => table.previousPage()}
           pageCount={table.getPageCount()}
           pageIndex={pagination.pageIndex}
@@ -545,4 +554,13 @@ export function OrganizationMembers({
       )}
     </div>
   )
+}
+
+/** Reads a primitive filter or payload value as a string, or returns the fallback. */
+function toStringValue(value: unknown, fallback: string) {
+  return typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? String(value)
+    : fallback
 }

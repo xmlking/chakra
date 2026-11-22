@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "#components/shadcn/dropdown-menu"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import { UserView } from "../user/user-view"
 import { CreateOrganizationDialog } from "./create-organization-dialog"
@@ -115,7 +115,7 @@ export function OrganizationSwitcher({
           <DropdownMenuTrigger
             className={cn(
               buttonVariants({ variant: "ghost" }),
-              "h-auto px-2 py-2 text-left",
+              "h-auto p-2 text-left",
               className
             )}
             disabled={!session || isPending}
@@ -145,7 +145,7 @@ export function OrganizationSwitcher({
           className="min-w-64 max-w-svw"
         >
           {activeOrganization ? (
-            <div className="flex items-center justify-between gap-4 px-2 py-2">
+            <div className="flex items-center justify-between gap-4 p-2">
               <OrganizationView
                 hideRole
                 hideSlug={hideSlug}
@@ -170,7 +170,7 @@ export function OrganizationSwitcher({
               )}
             </div>
           ) : !isPending && session?.user && !hidePersonal ? (
-            <div className="flex items-center justify-between gap-4 px-2 py-2">
+            <div className="flex items-center justify-between gap-4 p-2">
               <UserView hideSubtitle={hideSlug} />
 
               {!hideSettings && (

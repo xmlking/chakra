@@ -23,7 +23,7 @@
     "codegen": "varlock codegen",
     "dev": "vp dev",
     "postinstall": "varlock codegen",
-    "preview": "vp preview",
+    "preview": "varlock run -- vp preview",
     "workflow:observe": "varlock run -- workflow inspect runs",
     "workflow:observe:web": "varlock run -- workflow inspect runs --web"
   },

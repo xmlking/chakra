@@ -1,8 +1,9 @@
-import type { OAuthProviderAuthClient } from "@better-auth-ui/core/plugins/oauth-provider"
 import {
+  type OAuthProviderAuthClient,
   hasOAuthPrompt,
   type OAuthAuthorizationRequest,
-  parseOAuthAuthorizationRequest
+  parseOAuthAuthorizationRequest,
+  oauthProviderPlugin
 } from "@better-auth-ui/core/plugins/oauth-provider"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import {
@@ -20,7 +21,6 @@ import {
   CardTitle
 } from "#components/shadcn/card"
 import { Spinner } from "#components/shadcn/spinner"
-import { oauthProviderPlugin } from "#lib/auth/oauth-provider-plugin"
 import { cn } from "cn"
 import type { SocialLayout } from "../provider-buttons"
 import { SignUp } from "../sign-up"
@@ -49,9 +49,9 @@ export function OAuthSignUp({
   socialLayout,
   socialPosition
 }: OAuthSignUpProps) {
-  const { authClient } = useAuth()
+  const { authClient } = useAuth<OAuthProviderAuthClient>()
   const { localization } = useAuthPlugin(oauthProviderPlugin)
-  const oauthClient = authClient as OAuthProviderAuthClient
+  const oauthClient = authClient
 
   const [request, setRequest] = useState<OAuthAuthorizationRequest>()
   const [isCreated, setIsCreated] = useState(false)

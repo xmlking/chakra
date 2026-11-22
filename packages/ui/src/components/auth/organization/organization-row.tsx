@@ -7,7 +7,7 @@ import { Settings as SettingsIcon } from "lucide-react"
 import { Button } from "#components/shadcn/button"
 import { Item, ItemActions } from "#components/shadcn/item"
 import { Spinner } from "#components/shadcn/spinner"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { OrganizationView } from "./organization-view"
 
 export type OrganizationRowProps = {

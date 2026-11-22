@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { FormPage } from "#features/form-demo/form-page";
+import { FormPage } from "#features/playground/form-demo/form-page";
 
 export const Route = createFileRoute("/(app)/playground/form-demo")({
   staticData: {

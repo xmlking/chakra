@@ -13,15 +13,15 @@
       "url": "https://mcp.better-auth.com/mcp"
     },
     "shadcn": {
-      "command": "bunx",
+      "command": "vpx",
       "args": ["shadcn@latest", "mcp"]
     },
     "assistant-ui": {
-      "command": "bunx",
+      "command": "vpx",
       "args": ["-y", "@assistant-ui/mcp-docs-server"]
     },
     "drizzle": {
-      "command": "bunx",
+      "command": "vpx",
       "args": ["drizzle-kit", "mcp"]
     },
     "reui": {
@@ -30,6 +30,10 @@
       "headers": {
         "Authorization": "Bearer ${input:reui-token}"
       }
+    },
+    "chrome-devtools": {
+      "command": "vpx",
+      "args": ["-y", "chrome-devtools-mcp@latest"]
     },
     "mcp-toolbox": {
       "type": "http",

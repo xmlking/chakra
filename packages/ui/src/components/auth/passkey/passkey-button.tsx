@@ -15,7 +15,7 @@ import { useCallback, useMemo } from "react"
 
 import { Button } from "#components/shadcn/button"
 import { Spinner } from "#components/shadcn/spinner"
-import { passkeyPlugin } from "#lib/auth/passkey-plugin"
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey"
 import { cn } from "cn"
 
 export type PasskeyButtonProps = {

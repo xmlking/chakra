@@ -17,7 +17,8 @@
 /* plugins */
 @import "fumadocs-ui/css/preset.css";
 @import "fumadocs-openapi/css/preset.css";
-@import "fumapress/css/preset.css";
+@import "@fumapress/astro/css/preset.css";
+@import "@fumapress/blog/css/preset.css";
 @import "@fumapress/tegami/css/preset.css";
 @import "@fumapress/feedback/css/preset.css";
 
@@ -30,6 +31,8 @@
 }
 
 :root {
+  /* match the docs layout width to the Home Layout's (Fumadocs defaults docs to 97rem) */
+  --fd-layout-width: 1400px;
   --primary: oklch(54.52% 0.22128 294.796);
   /* --primary: oklch(55.639% 0.16448 43.087); */
   /* --primary: oklch(0.5676 0.2368 25.41); */

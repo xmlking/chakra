@@ -11,27 +11,37 @@ It is a signal bus, not a durable queue. A notification that fires while an inst
 
 Declare the channel contract once, then publish and subscribe anywhere on the server:
 
-```ts title="apps/web/src/server/services/event-bus.ts"
+```ts title="apps/web/src/server/services/event-bus.server.ts"
 export type AppEvents = {
   "cache:invalidate": { organizationId: string; tags: string[] };
   "billing:payment_failed": { organizationId: string; subscriptionId: string };
 };
 
-export const eventBus = new EventBus<AppEvents>({
-  connectionString: ENV.DATABASE_URL ?? "",
-  publisher: db,
-  channelPrefix: `${ENV.APP_NAME}_`,
-});
+// Long-running singleton service wrapping a lazily built EventBus<AppEvents>:
+// start() / shutdown() / publishEvent() / on() / getMetrics(). `EventBus.close()` is
+// terminal, so shutdown() drops the closed bus and the next call builds a fresh one.
+export class EventBusService {
+  /* ... */
+}
+
+// HMR-safe singleton registry on globalThis
+export const eventBusService =
+  globalForEventBus.__eventBusService ??
+  (globalForEventBus.__eventBusService = new EventBusService());
 ```
+
+Server functions and server routes get it injected as `context.eventBus` through
+`eventBusMiddleware` (`#server/middleware/services`); plugins and other services import
+`eventBusService` directly.
 
 ```ts
 // Subscribe. Returns an unsubscribe function.
-const off = eventBus.on("cache:invalidate", async ({ data }) => {
+const off = eventBusService.on("cache:invalidate", async ({ data }) => {
   await cache.invalidateTags(data.tags);
 });
 
 // Publish standalone (goes through the Drizzle pool).
-await eventBus.publish("cache:invalidate", {
+await eventBusService.publishEvent("cache:invalidate", {
   organizationId: "org_123",
   tags: ["user:42"],
 });
@@ -39,7 +49,7 @@ await eventBus.publish("cache:invalidate", {
 // Publish inside a transaction: delivered only if the transaction commits.
 await db.transaction(async (tx) => {
   await tx.update(users).set({ name }).where(eq(users.id, id));
-  await eventBus.publish(
+  await eventBusService.publishEvent(
     "cache:invalidate",
     { organizationId: "org_123", tags: [`user:${id}`] },
     tx,
@@ -57,9 +67,9 @@ duplicate subscriptions.
 ```ts title="apps/web/src/server/plugins/event-bus.ts (inside the Nitro plugin)"
 import { auth } from "@workspace/auth";
 
-import { eventBus } from "#server/services/event-bus";
+import { eventBusService } from "#server/services/event-bus.server";
 
-const unsubscribePaymentFailed = eventBus.on(
+const unsubscribePaymentFailed = eventBusService.on(
   "billing:payment_failed",
   async ({ data }) => {
     await auth.api.notify({
@@ -78,10 +88,10 @@ const unsubscribePaymentFailed = eventBus.on(
 
 nitroApp.hooks?.hook("close", async () => {
   unsubscribePaymentFailed();
-  await eventBus.close();
+  await eventBusService.shutdown();
 });
 
-await eventBus.start();
+await eventBusService.start();
 ```
 
 Publish the event from trusted server code, such as a verified billing webhook. Set organization
@@ -91,7 +101,7 @@ metadata when creating the subscription and validate it before publishing:
 const organizationId = subscription.metadata.orgId;
 if (!organizationId) throw new Error("Subscription is missing its organization id");
 
-await eventBus.publish("billing:payment_failed", {
+await eventBusService.publishEvent("billing:payment_failed", {
   organizationId,
   subscriptionId: subscription.id,
 });

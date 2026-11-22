@@ -16,7 +16,7 @@ import {
 import { useEffect, useMemo } from "react"
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "#components/shadcn/tabs"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import { OrganizationPeople } from "./organization-people"
 import { OrganizationRoles } from "./organization-roles"
@@ -28,7 +28,7 @@ export type OrganizationProps = {
   hideNav?: boolean
   path?: string
   /** @remarks `OrganizationView` */
-  view?: OrganizationView | string
+  view?: OrganizationView | (string & {})
 }
 
 /**
@@ -97,7 +97,7 @@ export function Organization({
       ...extensionTabs.map((tab) => [tab.id, tab.path] as const)
     ].find(([, segment]) => segment === path)
 
-    return match?.[0] as OrganizationView | undefined
+    return match?.[0]
   }, [
     extensionTabs,
     view,

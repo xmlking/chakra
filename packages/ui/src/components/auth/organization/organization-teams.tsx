@@ -57,13 +57,12 @@ import { Input } from "#components/shadcn/input"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from "#components/shadcn/select"
 import { Spinner } from "#components/shadcn/spinner"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import {
   getAuthAdditionalFieldValidators,
   isAuthFormFieldInvalid,
@@ -259,12 +258,6 @@ function TeamDialog({
   })
   const removeMember = useRemoveTeamMember(authClient)
   const memberIds = new Set(teamMembers.data?.map((member) => member.userId))
-  const availableMembers = organizationMembers
-    .filter((member) => !memberIds.has(member.userId))
-    .map((member) => ({
-      label: member.user.name || member.user.email,
-      value: member.userId
-    }))
   const memberLimitReached =
     maximumMembersPerTeam !== undefined &&
     (teamMembers.data?.length ?? 0) >= maximumMembersPerTeam
@@ -354,7 +347,6 @@ function TeamDialog({
                       </FieldLabel>
                       <Input
                         aria-invalid={isInvalid}
-                        autoFocus
                         disabled={pending || !canEdit}
                         id="organization-team-name"
                         name={field.name}
@@ -407,7 +399,6 @@ function TeamDialog({
                       <FieldLabel>{localization.addTeamMember}</FieldLabel>
                       <Select
                         disabled={canAddMember.isPending || memberLimitReached}
-                        items={availableMembers}
                         onValueChange={(value) => setUserId(value ?? "")}
                         value={userId}
                       >
@@ -417,16 +408,16 @@ function TeamDialog({
                           />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectGroup>
-                            {availableMembers.map((member) => (
+                          {organizationMembers
+                            .filter((member) => !memberIds.has(member.userId))
+                            .map((member) => (
                               <SelectItem
-                                key={member.value}
-                                value={member.value}
+                                key={member.userId}
+                                value={member.userId}
                               >
-                                {member.label}
+                                {member.user.name || member.user.email}
                               </SelectItem>
                             ))}
-                          </SelectGroup>
                         </SelectContent>
                       </Select>
                     </Field>
@@ -514,18 +505,11 @@ function TeamDialog({
             <DialogFooter className="sm:justify-between">
               {team && (canDelete.isPending || canDelete.data?.success) && (
                 <AlertDialog>
-                  <AlertDialogTrigger
-                    className={buttonVariants({ variant: "destructive" })}
-                    disabled={
-                      canDelete.isPending ||
-                      removeTeam.isPending ||
-                      !canRemoveTeam
-                    }
-                    type="button"
-                  >
-                    <Trash2 data-icon="inline-start" />
-                    {localization.deleteTeam}
-                  </AlertDialogTrigger>
+                  <AlertDialogTrigger render={<Button disabled={
+                                                          canDelete.isPending ||
+                                                          removeTeam.isPending ||
+                                                          !canRemoveTeam
+                                                        } type="button" variant="destructive" />}><Trash2 data-icon="inline-start" />{localization.deleteTeam}</AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>

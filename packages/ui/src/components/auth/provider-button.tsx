@@ -1,4 +1,5 @@
 import {
+  getAuthCallbackURL,
   type AuthSocialProvider,
   type AuthView,
   authMutationKeys,
@@ -6,6 +7,7 @@ import {
   getProviderName,
   type OAuthPopupAuthClient
 } from "@better-auth-ui/core"
+
 import {
   renderProviderIcon,
   useAuth,
@@ -48,15 +50,15 @@ export function ProviderButton({
     navigate,
     redirectTo,
     socialSignInMode
-  } = useAuth()
+  } = useAuth<OAuthPopupAuthClient>()
 
-  const callbackURL = `${baseURL}${redirectTo}`
+  const callbackURL = getAuthCallbackURL(baseURL, redirectTo)
   const { fetchOptions, resetFetchOptions } = useFetchOptions()
 
   const { mutate: signInSocial, isPending: signInSocialPending } =
     useSignInSocial(authClient, { onError: resetFetchOptions })
   const { mutate: signInPopup, isPending: signInPopupPending } =
-    useSignInOAuthPopup(authClient as OAuthPopupAuthClient, {
+    useSignInOAuthPopup(authClient, {
       onError: resetFetchOptions
     })
 

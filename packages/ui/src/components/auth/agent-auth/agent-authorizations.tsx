@@ -26,7 +26,7 @@ import { Button } from "#components/shadcn/button"
 import { Card, CardContent } from "#components/shadcn/card"
 import { Skeleton } from "#components/shadcn/skeleton"
 import { Spinner } from "#components/shadcn/spinner"
-import { agentAuthPlugin } from "#lib/auth/agent-auth-plugin"
+import { agentAuthPlugin } from "@better-auth-ui/core/plugins/agent-auth"
 import { cn } from "cn"
 
 type RevokeTarget = {

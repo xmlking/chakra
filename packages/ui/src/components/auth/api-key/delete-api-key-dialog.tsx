@@ -20,7 +20,7 @@ import { Button } from "#components/shadcn/button"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
-import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key"
 
 export type DeleteApiKeyDialogProps = {
   open: boolean

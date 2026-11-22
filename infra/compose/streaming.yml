@@ -17,7 +17,7 @@ services:
   #   Healthcheck:   http://localhost:6632/health
   ###########################################################################
   queen:
-    image: ghcr.io/queen-mq/queen:2.6.0
+    image: ghcr.io/queen-mq/queen:2.10.0
     container_name: queen
     hostname: queen
     restart: unless-stopped

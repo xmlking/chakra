@@ -42,7 +42,6 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
@@ -125,7 +124,7 @@ function CopyButton({
           ? localization.settings.copiedToClipboard
           : localization.settings.copyToClipboard
       }
-      onClick={handleCopy}
+      onClick={() => void handleCopy()}
       disabled={isDisabled}
     >
       {copied ? <Check /> : <Copy />}
@@ -307,7 +306,6 @@ export function AdditionalField({
         <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
         <Select
-          items={field.options ?? []}
           name={name}
           value={valueToString(value) || undefined}
           onValueChange={(nextValue) => onChange(nextValue)}
@@ -324,13 +322,11 @@ export function AdditionalField({
           </SelectTrigger>
 
           <SelectContent>
-            <SelectGroup>
-              {field.options?.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
+            {field.options?.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -624,11 +620,11 @@ function DateInput({
               selected={date}
               defaultMonth={date}
               captionLayout="dropdown"
-              onSelect={(value) => {
-                if (!value) {
+              onSelect={(selectedDate) => {
+                if (!selectedDate) {
                   onChange(null)
                 } else {
-                  const nextValue = new Date(value)
+                  const nextValue = new Date(selectedDate)
                   if (isDateTime && time.trim()) {
                     const [hours = "0", minutes = "0", seconds = "0"] =
                       time.split(":")

@@ -1,13 +1,13 @@
 import {
   hasMemberRole,
-  type OrganizationAuthClient
+  type OrganizationAuthClient,
+  organizationPlugin
 } from "@better-auth-ui/core/plugins/organization"
 import { useAuth, useAuthPlugin } from "@better-auth-ui/react"
 import {
   useActiveMemberRole,
   useHasPermission
 } from "@better-auth-ui/react/plugins/organization"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
 import { ApiKeys } from "./api-keys"
 
 export type OrganizationApiKeysProps = {
@@ -22,6 +22,14 @@ export type OrganizationApiKeysProps = {
  * Access is resolved per API-key action. The configured organization creator
  * role receives Better Auth's creator override.
  */
+type OrganizationPermissions = Parameters<
+  OrganizationAuthClient["organization"]["hasPermission"]
+>[0]["permissions"]
+
+const apiKeyPermissions = (action: string) =>
+  // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- the API key plugin adds the apiKey resource, which the default organization access-control types do not list
+  ({ apiKey: [action] }) as OrganizationPermissions
+
 export function OrganizationApiKeys({
   className,
   organizationId
@@ -38,27 +46,19 @@ export function OrganizationApiKeys({
   }
   const canRead = useHasPermission(authClient, {
     ...permissionOptions,
-    permissions: { apiKey: ["read"] } as Parameters<
-      OrganizationAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"]
+    permissions: apiKeyPermissions("read")
   })
   const canCreate = useHasPermission(authClient, {
     ...permissionOptions,
-    permissions: { apiKey: ["create"] } as Parameters<
-      OrganizationAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"]
+    permissions: apiKeyPermissions("create")
   })
   const canUpdate = useHasPermission(authClient, {
     ...permissionOptions,
-    permissions: { apiKey: ["update"] } as Parameters<
-      OrganizationAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"]
+    permissions: apiKeyPermissions("update")
   })
   const canDelete = useHasPermission(authClient, {
     ...permissionOptions,
-    permissions: { apiKey: ["delete"] } as Parameters<
-      OrganizationAuthClient["organization"]["hasPermission"]
-    >[0]["permissions"]
+    permissions: apiKeyPermissions("delete")
   })
   const permissionPending =
     !isCreator &&

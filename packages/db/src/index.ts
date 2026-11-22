@@ -1,7 +1,8 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { ENV } from "../env";
+import { ENV } from "#env";
+
 import { DrizzleQueryLogger } from "./logger";
 import { relations } from "./relations";
 import { authRelations } from "./schema/auth";
@@ -20,3 +21,4 @@ export const db = drizzle({
 });
 
 export * from "drizzle-orm";
+export { alias } from "drizzle-orm/pg-core";

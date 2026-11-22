@@ -1,5 +1,3 @@
-/* oxlint-disable */
-
 import { useQueryErrorResetBoundary } from "@tanstack/react-query";
 import { Link, rootRouteId, useMatch, useRouter } from "@tanstack/react-router";
 import type { ErrorComponentProps } from "@tanstack/react-router";
@@ -24,6 +22,7 @@ export function DefaultError({ error }: ErrorComponentProps) {
   });
 
   const isDev = getIsDev();
+  const errorDetails = error instanceof Error ? error : new Error(String(error));
 
   const queryClientErrorBoundary = useQueryErrorResetBoundary();
 
@@ -75,11 +74,11 @@ export function DefaultError({ error }: ErrorComponentProps) {
                 <AccordionContent>
                   <div className="rounded-md bg-muted p-4">
                     <h3 className="mb-2 font-semibold">Error Message:</h3>
-                    {/* @ts-expect-error TanStack Router exposes boundary errors as unknown. */}
-                    <p className="mb-4 text-sm">{error.message}</p>
+                    <p className="mb-4 text-sm">{errorDetails.message}</p>
                     <h3 className="mb-2 font-semibold">Stack Trace:</h3>
-                    {/* @ts-expect-error TanStack Router exposes boundary errors as unknown. */}
-                    <pre className="overflow-x-auto text-xs whitespace-pre-wrap">{error.stack}</pre>
+                    <pre className="overflow-x-auto text-xs whitespace-pre-wrap">
+                      {errorDetails.stack}
+                    </pre>
                   </div>
                 </AccordionContent>
               </AccordionItem>

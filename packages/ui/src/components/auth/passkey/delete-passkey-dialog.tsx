@@ -17,7 +17,7 @@ import { Button } from "#components/shadcn/button"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Spinner } from "#components/shadcn/spinner"
-import { passkeyPlugin } from "#lib/auth/passkey-plugin"
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey"
 
 export type ListedPasskey = {
   id: string

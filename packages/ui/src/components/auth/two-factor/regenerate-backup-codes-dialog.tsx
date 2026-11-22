@@ -17,7 +17,7 @@ import {
 } from "#components/shadcn/alert-dialog"
 import { Field, FieldError, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { twoFactorPlugin } from "#lib/auth/two-factor-plugin"
+import { twoFactorPlugin } from "@better-auth-ui/core/plugins/two-factor"
 import { useTwoFactorPasswordRequirement } from "#lib/auth/use-two-factor-password"
 import { useAuthForm } from "../auth-form"
 import { BackupCodes } from "./backup-codes"
@@ -40,7 +40,7 @@ export function RegenerateBackupCodesDialog({
   open,
   onOpenChange
 }: RegenerateBackupCodesDialogProps) {
-  const { authClient, localization } = useAuth()
+  const { authClient, localization } = useAuth<TwoFactorAuthClient>()
   const { localization: twoFactorLocalization } = useAuthPlugin(twoFactorPlugin)
   const { isPending: isResolvingPasswordRequirement, requiresPassword } =
     useTwoFactorPasswordRequirement()
@@ -51,7 +51,7 @@ export function RegenerateBackupCodesDialog({
     mutateAsync: generateBackupCodes,
     isPending: isGenerating,
     reset: resetGeneration
-  } = useGenerateBackupCodes(authClient as TwoFactorAuthClient, {
+  } = useGenerateBackupCodes(authClient, {
     onSuccess: (data) => {
       setCodes(data.backupCodes)
       toast.success(twoFactorLocalization.backupCodesRegenerated)
@@ -121,7 +121,6 @@ export function RegenerateBackupCodesDialog({
                         name={field.name}
                         type="password"
                         autoComplete="current-password"
-                        autoFocus
                         required
                         placeholder={localization.auth.passwordPlaceholder}
                         disabled={isPending}

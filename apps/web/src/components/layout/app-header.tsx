@@ -1,4 +1,3 @@
-import { InboxButton } from "@byo-oss/notifications/react";
 import { useRouter } from "@tanstack/react-router";
 import { authClient } from "@workspace/auth/client";
 import { UserButton } from "@workspace/ui/components/auth/user/user-button";
@@ -10,6 +9,8 @@ import { ThemeSwitcher } from "@workspace/ui/components/theme-switcher";
 import { LayoutToggle } from "#components/layout-toggle";
 import { LocaleSwitcher } from "#components/locale-switcher";
 import { RouterBreadcrumb } from "#components/router-breadcrumb";
+
+import { AppInbox } from "./app-inbox";
 
 export function AppHeader() {
   const router = useRouter();
@@ -33,9 +34,9 @@ export function AppHeader() {
           <LayoutToggle className="hidden lg:flex" />
           {/* <ModeToggle /> */}
           <ThemeSwitcher />
-          <InboxButton
+          <AppInbox
             client={authClient}
-            onNavigate={(href) => router.navigate({ href })}
+            onNavigate={(href) => router.navigate({ href, resetScroll: false })}
             buttonClassName={buttonVariants({ variant: "ghost", size: "icon" })}
           />
           <UserButton size="icon" align="end" />

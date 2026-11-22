@@ -33,7 +33,7 @@ import {
   InputGroupButton,
   InputGroupInput
 } from "#components/shadcn/input-group"
-import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp"
 import { cn } from "cn"
 import {
   isAuthFormFieldInvalid,
@@ -72,7 +72,7 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
     redirectTo,
     viewPaths,
     Link
-  } = useAuth()
+  } = useAuth<EmailOtpAuthClient>()
   const { localization: emailOtpLocalization, otpLength } =
     useAuthPlugin(emailOtpPlugin)
 
@@ -83,7 +83,7 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 
   const { mutateAsync: resetPasswordOtp, isPending } = useResetPasswordOtp(
-    authClient as EmailOtpAuthClient,
+    authClient,
     {
       onError: (error) => {
         // The haveIBeenPwned plugin rejects on the password itself, so it
@@ -201,7 +201,6 @@ export function ResetPasswordOtp({ className }: ResetPasswordOtpProps) {
               >
                 {(field) => (
                   <OtpField
-                    autoFocus={hasStoredEmail}
                     disabled={isPending}
                     label={emailOtpLocalization.code}
                     length={otpLength}

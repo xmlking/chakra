@@ -1,0 +1,12 @@
+---
+import HomeLayout from "@fumapress/astro/components/HomeLayout.astro";
+
+// the layout of custom pages under src/pages: the Home Layout of the site, with page padding
+type Props = { title?: string; description?: string };
+---
+
+<HomeLayout {...Astro.props}>
+  <div class="mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-4 py-6">
+    <slot />
+  </div>
+</HomeLayout>

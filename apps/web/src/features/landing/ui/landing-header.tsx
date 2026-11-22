@@ -8,13 +8,16 @@ import { ArrowRightIcon, BoxIcon, MenuIcon } from "lucide-react";
 
 // import { ModeToggle } from "#components/mode-toggle";
 
-const navLinks = [
+const navLinks: Array<{ label: string; href: string; external?: boolean }> = [
   { label: "Product", href: "/#features" },
   { label: "Solutions", href: "/#solutions" },
   { label: "Pricing", href: "#pricing" },
   { label: "About", href: "/about" },
   { label: "Docs", href: "/#docs" },
 ];
+
+const navLinkClassName =
+  "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground";
 
 export function LandingHeader() {
   const { authClient } = useAuth();
@@ -31,15 +34,23 @@ export function LandingHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.external ? (
+              <a
+                key={link.label}
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+                className={navLinkClassName}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.label} to={link.href} className={navLinkClassName}>
+                {link.label}
+              </Link>
+            ),
+          )}
         </nav>
 
         <div className="flex items-center gap-2">

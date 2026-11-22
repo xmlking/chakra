@@ -22,7 +22,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { Label } from "#components/shadcn/label"
-import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key"
 
 export type NewApiKeyDialogProps = {
   open: boolean
@@ -96,7 +96,7 @@ export function NewApiKeyDialog({
                     ? localization.settings.copiedToClipboard
                     : localization.settings.copyToClipboard
                 }
-                onClick={copySecretKey}
+                onClick={() => void copySecretKey()}
               >
                 {copied ? <Check /> : <Copy />}
               </InputGroupButton>

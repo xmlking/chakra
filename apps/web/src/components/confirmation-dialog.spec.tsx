@@ -108,6 +108,6 @@ describe("ConfirmationDialog", () => {
     );
 
     await expect.element(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-    await expect.element(screen.getByRole("button", { name: "Confirm" })).toBeDisabled();
+    await expect.element(screen.getByRole("button", { name: /Confirm/ })).toBeDisabled();
   });
 });

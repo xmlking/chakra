@@ -50,7 +50,7 @@ services:
     healthcheck:
       disable: true
     volumes:
-      - ../mcp-toolbox/tools.yaml:/app/tools.yaml:ro
+      - ${PWD}/infra/mcp-toolbox/tools.yaml:/app/tools.yaml:ro
     deploy:
       resources:
         limits:

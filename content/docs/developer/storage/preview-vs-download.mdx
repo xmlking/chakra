@@ -1,0 +1,51 @@
+---
+title: Preview vs download
+description: How Content-Type and Content-Disposition decide whether a file from /api/files previews inline or downloads.
+---
+
+Whether the browser renders a file or saves it depends on two response headers: `Content-Type` and `Content-Disposition`. For files served through `/api/files`, both are set by the files-sdk gateway together with our `authorize` hook in `apps/web/src/routes/api/files.ts`.
+
+## How the two headers combine
+
+| `Content-Disposition` | `Content-Type`               | Result in `<object>`, `<iframe>` or a new tab     |
+| --------------------- | ---------------------------- | ------------------------------------------------- |
+| `attachment`          | anything                     | **Downloads.** `attachment` always wins.          |
+| `inline` or absent    | `application/pdf`            | **Previews** in the browser's PDF viewer.         |
+| `inline` or absent    | `image/png`, `text/plain`, … | **Previews**, if the browser can render it.       |
+| `inline` or absent    | `application/octet-stream`   | **Downloads.** The browser can't tell what it is. |
+
+To preview a file, it needs **both** an `inline` (or no) disposition **and** a type the browser can render. The stored type alone is not enough: a blob stored as `application/pdf` still downloads if the response carries `attachment`.
+
+Responses from the gateway's download proxy also send `X-Content-Type-Options: nosniff`, so the browser never guesses a type from the bytes. A wrong stored type is never corrected for you.
+
+## Where the `attachment` default comes from
+
+The gateway defaults to `attachment` so that user-uploaded HTML or SVG can't run in our origin (stored XSS). There are two paths, each with its own default:
+
+| Path                           | Used by                                      | Default                                                        | Configured by                                                                                                 |
+| ------------------------------ | -------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Signed URL (`op=url`)          | `files.url()`, `FilePreview pdfSource="url"` | Always `attachment`. There is no router option to change this. | Only `authorize` returning `{ disposition }`                                                                  |
+| Download proxy (`op=download`) | `files.download()`, proxy fallback URLs      | `attachment`                                                   | `createFilesRouter({ forceDownloadDisposition })`, default `true`; or `authorize` returning `{ disposition }` |
+
+We keep `forceDownloadDisposition` at its default. Instead, `authorize` opts specific keys into inline.
+
+## Our inline rule
+
+`authorize` returns this for `url` and `download` on keys that start with `files_` and end in `.pdf`:
+
+```ts
+return {
+  disposition: `inline; filename="…"; filename*=UTF-8''…`,
+  responseContentType: "application/pdf",
+};
+```
+
+- `disposition` makes the PDF preview instead of download, and keeps a readable filename for the viewer's Download button.
+- `responseContentType` overrides the served type (sent as Azure SAS `rsct`). It isn't needed when the blob is stored as `application/pdf`. It is there for PDFs stored as `application/octet-stream`, which would otherwise download anyway.
+
+Any key outside that prefix gets `attachment` and downloads, even if it is a correctly typed PDF. To preview another prefix inline, add it to this rule.
+
+## `FilePreview` and `pdfSource`
+
+- `pdfSource="blob"` (default): downloads the bytes and shows a `blob:` URL. `blob:` URLs carry no headers, so the PDF previews whatever the server's disposition is. The cost: the whole file is held in memory before anything renders, and the Download button gets a random name.
+- `pdfSource="url"`: points the viewer at the signed URL. The browser streams the file and shows the first pages early, which is better for large PDFs. It only previews keys that `authorize` serves `inline`; any other key downloads. Signed URLs expire after `defaultExpiresIn` (300 s by default), so pages of a long PDF fetched later can fail.

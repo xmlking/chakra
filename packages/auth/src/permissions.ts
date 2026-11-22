@@ -29,9 +29,11 @@ const statement = {
   tools: ["view", "manage"],
   chats: ["manage"],
   models: ["view", "manage"],
+  dashboard: ["view"],
   apiKey: ["create", "read", "update", "delete"],
   featureFlag: ["create", "read", "update", "delete"],
   agents: ["read", "create", "update", "delete"],
+  file: ["preview", "list", "upload", "update", "delete", "purge"],
 } as const;
 
 // Create access control instance
@@ -60,10 +62,11 @@ const user = ac.newRole({
   ...userAc.statements,
 });
 
-const superAdmin = ac.newRole({
+const admin = ac.newRole({
   ...adminAc.statements,
   organization: ["update", "delete"],
   featureFlag: ["create", "read", "update", "delete"],
+  file: ["preview", "list", "upload", "update", "delete", "purge"],
 });
 
 const owner = ac.newRole({
@@ -73,22 +76,26 @@ const owner = ac.newRole({
   tools: ["view", "manage"],
   chats: ["manage"],
   models: ["view", "manage"],
+  dashboard: ["view"],
   //  Organization owners automatically have full access to all API key operations, regardless of explicit permission configuration.
   apiKey: ["create", "read", "update", "delete"],
   featureFlag: ["create", "read", "update", "delete"],
   agents: ["read", "create", "update", "delete"],
+  file: ["preview", "list"],
 });
 
-const admin = ac.newRole({
+const orgAdmin = ac.newRole({
   ...orgAdminAc.statements,
   analytics: ["view-basic", "view-advanced", "export"],
   subscription: ["read", "update", "cancel", "manage_billing", "view_usage"],
   tools: ["view", "manage"],
   chats: ["manage"],
   models: ["view", "manage"],
+  dashboard: ["view"],
   apiKey: ["create", "read", "update", "delete"],
   featureFlag: ["create", "read", "update", "delete"],
   agents: ["read", "create", "update", "delete"],
+  file: ["preview", "list"],
 });
 
 const member = ac.newRole({
@@ -98,20 +105,18 @@ const member = ac.newRole({
   tools: ["read"],
   chats: ["read"],
   models: ["view"],
+  dashboard: ["view"],
   agents: ["read"],
+  file: ["preview"],
 });
 
-const billing = ac.newRole({
-  subscription: ["read", "update", "cancel", "manage_billing", "view_usage"],
-  tools: ["read"],
-  chats: ["read"],
-});
-
-export const roles = {
+export const sysRoles = {
   user,
-  superAdmin,
-  owner,
   admin,
+} as const;
+
+export const orgRoles = {
+  owner,
+  admin: orgAdmin,
   member,
-  billing,
 } as const;

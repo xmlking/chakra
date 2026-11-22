@@ -13,7 +13,7 @@ import {
 } from "#components/shadcn/dialog"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
-import { passkeyPlugin } from "#lib/auth/passkey-plugin"
+import { passkeyPlugin } from "@better-auth-ui/core/plugins/passkey"
 import { useAuthForm } from "../auth-form"
 import type { ListedPasskey } from "./delete-passkey-dialog"
 
@@ -60,7 +60,6 @@ export function RenamePasskeyDialog({
                   <Input
                     id={`passkey-name-${passkey.id}`}
                     name={field.name}
-                    autoFocus
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(event) => field.handleChange(event.target.value)}

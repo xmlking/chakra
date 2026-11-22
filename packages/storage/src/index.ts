@@ -6,9 +6,6 @@ import { softDelete } from "files-sdk/soft-delete";
 
 import { ENV } from "../env";
 
-/**
- * TODO: create index.azure.ts, index.gcs.ts etc
- */
 export const images = createFiles({
   adapter: s3Fetch({
     bucket: ENV.S3_IMAGES_BUCKET,
@@ -57,6 +54,10 @@ export const files = createFiles({
   }),
   plugins: [
     signedUrlPolicy({
+      // Off so the `/api/files` gateway's `authorize` can serve print batch PDFs `inline`; the
+      // policy's default `attachment` would override it. The gateway still forces `attachment` on
+      // every other key.
+      disposition: false,
       maxExpiresIn: 15 * 60, // no URL lives longer than 15 minutes
       maxUploadSize: 10 * 1024 * 1024, // every signed upload caps at 10 MiB
     }),

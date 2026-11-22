@@ -1,8 +1,11 @@
 import {
+  getAuthErrorCode,
+  getAuthLinkURL,
   authMutationKeys,
   validateEmailAddress,
   validateStringLength
 } from "@better-auth-ui/core"
+
 import {
   isPasskeyAutoFillEnabled,
   withPasskeyAutoFill
@@ -66,6 +69,7 @@ export function SignIn({
     localization,
     plugins,
     socialProviders,
+    redirectTo,
     viewPaths,
     navigate,
     Link
@@ -76,18 +80,8 @@ export function SignIn({
 
   const { mutateAsync: signInEmail, isPending: signInEmailPending } =
     useSignInEmail(authClient, {
-      onError: (error, { email }) => {
-        form.setFieldValue("password", "")
-
-        if (error.error?.code === "EMAIL_NOT_VERIFIED") {
-          sessionStorage.setItem("better-auth-ui.verify-email", email)
-          navigate({
-            to: `${basePaths.auth}/${viewPaths.auth.verifyEmail}`
-          })
-        }
-
-        resetFetchOptions()
-      },
+      meta: { errorPresentation: "inline" },
+      onError: () => resetFetchOptions(),
       onSuccess: (data) => continueSignIn(data)
     })
 
@@ -99,8 +93,8 @@ export function SignIn({
   })
   const isPending = signInMutating + signUpMutating > 0
 
-  const Captcha = plugins.find(
-    (plugin) => plugin.captchaComponent
+  const Captcha = plugins.find((plugin) =>
+    Boolean(plugin.captchaComponent)
   )?.captchaComponent
 
   const passkeyAutoFill = isPasskeyAutoFillEnabled(plugins)
@@ -108,15 +102,29 @@ export function SignIn({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const form = useAuthForm({
     defaultValues: { email: "", password: "", rememberMe: false },
-    onSubmit: async ({ value }) =>
-      await signInEmail({
-        email: value.email,
-        password: value.password,
-        ...(emailAndPassword?.rememberMe
-          ? { rememberMe: value.rememberMe }
-          : {}),
-        fetchOptions
-      })
+    onSubmit: async ({ value }) => {
+      const email = value.email.trim()
+      try {
+        await signInEmail({
+          email,
+          password: value.password,
+          ...(emailAndPassword?.rememberMe
+            ? { rememberMe: value.rememberMe }
+            : {}),
+          fetchOptions
+        })
+      } catch (error) {
+        if (getAuthErrorCode(error) !== "EMAIL_NOT_VERIFIED") throw error
+
+        sessionStorage.setItem("better-auth-ui.verify-email", email)
+        navigate({
+          to: getAuthLinkURL(
+            `${basePaths.auth}/${viewPaths.auth.verifyEmail}`,
+            redirectTo
+          )
+        })
+      }
+    }
   })
 
   const showSeparator =
@@ -150,7 +158,9 @@ export function SignIn({
 
           {emailAndPassword?.enabled && (
             <form.AppForm>
-              <form.AuthFormRoot>
+              <form.AuthFormRoot
+                serverErrorMessage={localization.errors.generic}
+              >
                 <FieldGroup>
                   <form.AppField
                     name="email"
@@ -284,7 +294,9 @@ export function SignIn({
                               checked={field.state.value}
                               disabled={isPending}
                               onCheckedChange={(checked) =>
-                                field.handleChange(checked === true)
+                                field.handleChange(
+                                  typeof checked === "boolean" && checked
+                                )
                               }
                             />
 
@@ -303,6 +315,8 @@ export function SignIn({
                   {Captcha && (
                     <div className="flex justify-center">{Captcha}</div>
                   )}
+
+                  <form.AuthFormServerError />
 
                   <div className="flex flex-col gap-3">
                     <form.AuthFormSubmitButton

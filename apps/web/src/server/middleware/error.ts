@@ -11,7 +11,10 @@ const formatZodFieldErrors = (fieldErrors: Record<string, any>): FieldErrors => 
 
   for (const [field, issues] of Object.entries(fieldErrors)) {
     if (Array.isArray(issues) && issues.length > 0) {
-      result[field] = issues.map((i) => i?.message || "Invalid field");
+      // `flatten().fieldErrors` holds message strings, not issue objects.
+      result[field] = issues.map(
+        (i) => (typeof i === "string" ? i : i?.message) || "Invalid field",
+      );
     }
   }
 

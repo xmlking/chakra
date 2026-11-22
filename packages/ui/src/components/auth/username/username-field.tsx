@@ -13,7 +13,7 @@ import {
   InputGroupInput
 } from "#components/shadcn/input-group"
 import { Spinner } from "#components/shadcn/spinner"
-import { usernamePlugin } from "#lib/auth/username-plugin"
+import { usernamePlugin } from "@better-auth-ui/core/plugins/username"
 
 /**
  * Renderer for the `username` additional field. Owns availability checking,
@@ -109,7 +109,7 @@ export function UsernameField({
           onChange={(e) => handleChange(e.target.value)}
           onInvalid={(e) => {
             e.preventDefault()
-            const el = e.target as HTMLInputElement
+            const el = e.currentTarget
             const msg = el.validity.valueMissing
               ? authLocalization.auth.fieldRequired
               : el.validity.tooShort

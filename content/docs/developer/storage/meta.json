@@ -1,4 +1,4 @@
 {
   "title": "Storage",
-  "pages": ["overview", "configuration", "managing-files", "upload"]
+  "pages": ["overview", "configuration", "managing-files", "upload", "preview-vs-download"]
 }

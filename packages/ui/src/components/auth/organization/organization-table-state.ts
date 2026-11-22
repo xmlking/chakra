@@ -17,11 +17,11 @@ import {
   type Updater
 } from "@tanstack/react-table"
 import {
-  type MutableRefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
+  type RefObject,
   useState
 } from "react"
 import { ORGANIZATION_TABLE_PAGE_SIZE } from "./organization-table"
@@ -56,7 +56,7 @@ function writeUrlState(
   stateKey: string,
   defaultPageSize: number,
   state: OrganizationTableUrlState,
-  syncedSearch: MutableRefObject<string>
+  syncedSearch: RefObject<string>
 ) {
   const next = serializeTableUrlState(
     adapters.search.read(),
@@ -164,9 +164,10 @@ export function useOrganizationTableState(
   useEffect(() => {
     const resetPage = () => {
       if (restoringUrlState.current) return
-      const current = paginationAtom.get()
-      if (current.pageIndex === 0) rowSelectionAtom.set({})
-      else paginationAtom.set({ ...current, pageIndex: 0 })
+      rowSelectionAtom.set({})
+      paginationAtom.set((current) =>
+        current.pageIndex === 0 ? current : { ...current, pageIndex: 0 }
+      )
     }
     const subscriptions = [
       columnFiltersAtom.subscribe(resetPage),

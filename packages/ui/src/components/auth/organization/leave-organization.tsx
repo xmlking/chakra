@@ -4,7 +4,7 @@ import { useActiveOrganization } from "@better-auth-ui/react/plugins/organizatio
 import { useState } from "react"
 
 import { Button } from "#components/shadcn/button"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { LeaveOrganizationDialog } from "./leave-organization-dialog"
 
 /**
@@ -22,7 +22,7 @@ export function LeaveOrganization() {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-sm font-medium leading-tight">
+        <p className="text-sm/tight font-medium">
           {organizationLocalization.leaveOrganization}
         </p>
 

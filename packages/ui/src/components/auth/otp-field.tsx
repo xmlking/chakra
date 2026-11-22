@@ -1,5 +1,3 @@
-"use client"
-
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { useId } from "react"
 
@@ -28,7 +26,7 @@ export type OtpFieldProps = {
 
 /** Strip everything the numeric slots can't hold — pasted codes often carry spaces or dashes. */
 function normalizeCode(value: string) {
-  return value.replace(/\D/g, "")
+  return value.replaceAll(/\D/g, "")
 }
 
 /**
@@ -64,6 +62,7 @@ export function OtpField({
         aria-invalid={!!errorMessage}
         aria-label={label}
         autoComplete="one-time-code"
+        // oxlint-disable-next-line jsx-a11y/no-autofocus -- forwards an explicit autoFocus prop from the caller; the built-in views do not set it
         autoFocus={autoFocus}
         containerClassName="w-full justify-center"
         disabled={disabled}

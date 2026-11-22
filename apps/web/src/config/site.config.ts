@@ -1,8 +1,9 @@
+import { ENV } from "#env";
 import type { SiteConfig } from "#types";
 
 export const siteConfig: SiteConfig = {
-  name: "Chakra",
-  title: "Agent Management App | Chakra",
+  name: ENV.APP_NAME,
+  title: `Agent Management App | ${ENV.APP_NAME}`,
   description: "A control plane for enterprise agentic assets",
   origin: "https://chakra.vercel.dev",
   keywords: [

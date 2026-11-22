@@ -20,12 +20,11 @@ import { ItemGroup, ItemSeparator } from "#components/shadcn/item"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from "#components/shadcn/select"
-import { apiKeyPlugin } from "#lib/auth/api-key-plugin"
+import { apiKeyPlugin } from "@better-auth-ui/core/plugins/api-key"
 import { cn } from "cn"
 import { useServerTableState } from "../server-table-state"
 import { ApiKey } from "./api-key"
@@ -82,12 +81,6 @@ export function ApiKeys({
   const sortBy = primarySort?.id === "name" ? "name" : "createdAt"
   const sortDirection = primarySort?.desc ? "desc" : "asc"
   const sort = `${sortBy}:${sortDirection}`
-  const sortItems = [
-    { label: apiKeyLocalization.newest, value: "createdAt:desc" },
-    { label: apiKeyLocalization.oldest, value: "createdAt:asc" },
-    { label: apiKeyLocalization.nameAscending, value: "name:asc" },
-    { label: apiKeyLocalization.nameDescending, value: "name:desc" }
-  ]
 
   const {
     data: listData,
@@ -132,6 +125,7 @@ export function ApiKeys({
     pagination.pageIndex,
     setPagination
   ])
+
   const table = useApiKeyTable(
     {
       atoms: tableState.atoms,
@@ -166,10 +160,9 @@ export function ApiKeys({
         )}
       </div>
       <Select
-        items={sortItems}
         value={sort}
         onValueChange={(value) => {
-          const [id, direction] = (value ?? "createdAt:desc").split(":")
+          const [id = "createdAt", direction = "desc"] = value.split(":")
           table.setSorting([{ id, desc: direction === "desc" }])
         }}
       >
@@ -177,13 +170,18 @@ export function ApiKeys({
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectGroup>
-            {sortItems.map((item) => (
-              <SelectItem key={item.value} value={item.value}>
-                {item.label}
-              </SelectItem>
-            ))}
-          </SelectGroup>
+          <SelectItem value="createdAt:desc">
+            {apiKeyLocalization.newest}
+          </SelectItem>
+          <SelectItem value="createdAt:asc">
+            {apiKeyLocalization.oldest}
+          </SelectItem>
+          <SelectItem value="name:asc">
+            {apiKeyLocalization.nameAscending}
+          </SelectItem>
+          <SelectItem value="name:desc">
+            {apiKeyLocalization.nameDescending}
+          </SelectItem>
         </SelectContent>
       </Select>
 

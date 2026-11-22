@@ -8,7 +8,7 @@ import type { Organization } from "better-auth/client"
 import type { ComponentProps } from "react"
 
 import { Badge } from "#components/shadcn/badge"
-import { organizationPlugin } from "#lib/auth/organization-plugin"
+import { organizationPlugin } from "@better-auth-ui/core/plugins/organization"
 import { cn } from "cn"
 import {
   OrganizationLogo,
@@ -94,7 +94,7 @@ export function OrganizationView({
 
       <div className="flex min-w-0 flex-col">
         <div className="flex min-w-0 items-center gap-2">
-          <p className="truncate text-sm font-medium leading-tight text-foreground">
+          <p className="truncate text-sm/tight font-medium text-foreground">
             {resolvedOrganization?.name}
           </p>
 
@@ -106,7 +106,7 @@ export function OrganizationView({
         </div>
 
         {!hideSlug && !!resolvedOrganization?.slug && (
-          <p className="truncate overflow-x-hidden text-muted-foreground text-xs font-mono leading-tight">
+          <p className="truncate overflow-x-hidden text-muted-foreground text-xs/tight font-mono">
             {slugPrefix}
             {resolvedOrganization.slug}
           </p>

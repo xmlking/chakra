@@ -32,6 +32,8 @@ unnecessary for this one-way stream.
 delivers the invalidation after the underlying data change commits; rollback discards both:
 
 ```ts
+import { publishCacheInvalidation } from "#lib/cache-invalidation.server";
+
 await db.transaction(async (tx) => {
   await tx.update(projects).set({ name }).where(eq(projects.id, projectId));
   await publishCacheInvalidation(tx, organizationId, ["projects", `project:${projectId}`]);

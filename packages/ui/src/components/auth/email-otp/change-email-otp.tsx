@@ -14,7 +14,7 @@ import { Card, CardContent, CardFooter } from "#components/shadcn/card"
 import { Field, FieldLabel } from "#components/shadcn/field"
 import { Input } from "#components/shadcn/input"
 import { Skeleton } from "#components/shadcn/skeleton"
-import { emailOtpPlugin } from "#lib/auth/email-otp-plugin"
+import { emailOtpPlugin } from "@better-auth-ui/core/plugins/email-otp"
 import { cn } from "cn"
 import { submitAuthForm, useAuthForm } from "../auth-form"
 import { OpenEmailButton } from "../open-email-button"
@@ -50,6 +50,8 @@ function changeEmailReducer(
       return { step: "newCode", newEmail: action.newEmail }
     case "restarted":
       return initialChangeEmailState
+    default:
+      return action satisfies never
   }
 }
 
@@ -68,14 +70,14 @@ export type ChangeEmailOtpProps = {
  * @param className - Additional CSS classes applied to the card.
  */
 export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
-  const { authClient, localization } = useAuth()
+  const { authClient, localization } = useAuth<EmailOtpAuthClient>()
   const {
     localization: emailOtpLocalization,
     otpLength,
     verifyCurrentEmail
   } = useAuthPlugin(emailOtpPlugin)
 
-  const otpClient = authClient as EmailOtpAuthClient
+  const otpClient = authClient
   const { data: session } = useSession(otpClient)
   const currentEmail = session?.user.email
 
@@ -220,7 +222,6 @@ export function ChangeEmailOtp({ className }: ChangeEmailOtpProps) {
                   <form.AppField name="code">
                     {(field) => (
                       <OtpField
-                        autoFocus
                         disabled={isPending}
                         label={
                           state.step === "currentCode"

@@ -3,7 +3,8 @@ import {
   type BillingInterval,
   type BillingPlan,
   type BillingScope,
-  followBillingAction
+  followBillingAction,
+  billingPlugin
 } from "@better-auth-ui/core/plugins/billing"
 import { useAuth, useAuthPlugin, useSession } from "@better-auth-ui/react"
 import {
@@ -44,13 +45,11 @@ import { Progress } from "#components/shadcn/progress"
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from "#components/shadcn/select"
 import { Spinner } from "#components/shadcn/spinner"
-import { billingPlugin } from "#lib/auth/billing-plugin"
 import { cn } from "cn"
 
 type SubscriptionAction = "cancel" | "restore"
@@ -214,15 +213,6 @@ export function BillingSettings({
   const resolvedInterval = intervals.includes(interval)
     ? interval
     : (intervals[0] ?? "month")
-  const intervalItems = intervals.map((value) => ({
-    label:
-      value === "month"
-        ? localization.perMonth
-        : value === "year"
-          ? localization.perYear
-          : localization.oneTime,
-    value
-  }))
   const isActionPending =
     cancelSubscription.isPending || restoreSubscription.isPending
 
@@ -373,24 +363,27 @@ export function BillingSettings({
           </h3>
           {intervals.length > 1 && (
             <Select
-              items={intervalItems}
               value={resolvedInterval}
               onValueChange={(value) => {
-                if (!value) return
-                setInterval(value as BillingInterval)
+                const nextInterval = intervals.find(
+                  (candidateInterval) => candidateInterval === value
+                )
+                if (nextInterval) setInterval(nextInterval)
               }}
             >
               <SelectTrigger className="w-36" aria-label={localization.plans}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectGroup>
-                  {intervalItems.map((item) => (
-                    <SelectItem key={item.value} value={item.value}>
-                      {item.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
+                {intervals.map((entry) => (
+                  <SelectItem key={entry} value={entry}>
+                    {entry === "month"
+                      ? localization.perMonth
+                      : entry === "year"
+                        ? localization.perYear
+                        : localization.oneTime}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           )}

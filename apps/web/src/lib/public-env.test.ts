@@ -4,7 +4,9 @@ import { getPublicEnv, PUBLIC_ENV_ENDPOINT, publicEnvBootScript } from "./public
 
 describe("public env delivery", () => {
   it("exposes exactly the @public @dynamic items", () => {
-    expect(Object.keys(getPublicEnv()).sort()).toEqual([
+    expect(Object.keys(getPublicEnv()).sort((a, b) => a.localeCompare(b))).toEqual([
+      "ALLOWED_EMAIL_DOMAINS",
+      "APP_ENV",
       "BETTER_AUTH_URL",
       "FF_ENABLE_DARK_MODE",
       "TURNSTILE_SITE_KEY",
@@ -14,6 +16,7 @@ describe("public env delivery", () => {
   it("never includes sensitive items", () => {
     const env = getPublicEnv() as Record<string, unknown>;
     for (const key of [
+      "ENV",
       "BETTER_AUTH_SECRET",
       "DATABASE_URL",
       "TURNSTILE_SECRET_KEY",

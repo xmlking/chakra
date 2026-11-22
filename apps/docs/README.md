@@ -1,7 +1,7 @@
 # docs
 
-This is a Fumapress app powered by Waku and Fumadocs.
-[Create Fumapress](https://press.fumadocs.dev/docs).
+This is a Fumapress app powered by Astro and Fumadocs.
+[Fumapress on Astro](https://press.fumadocs.dev/docs/astro).
 
 Run development server:
 
@@ -18,5 +18,5 @@ vp run docs#build
 Preview
 
 ```shell
-vp run docs#start
+vp run docs#preview
 ```
